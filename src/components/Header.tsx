@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { FileText, Menu, X } from 'lucide-react';
+import { FileText, Menu, X, Users } from 'lucide-react';
 
 const navItems = [
   { name: 'Projects', path: '/projects', icon: FileText },

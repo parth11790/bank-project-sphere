@@ -71,10 +71,10 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-lg leading-none">{user.name}</h3>
               {user.otp_enabled && (
-                <ShieldCheck size={16} className="text-green-500" title="OTP Enabled" />
+                <ShieldCheck size={16} className="text-green-500" aria-label="OTP Enabled" />
               )}
               {!user.otp_enabled && (
-                <ShieldAlert size={16} className="text-amber-500" title="OTP Disabled" />
+                <ShieldAlert size={16} className="text-amber-500" aria-label="OTP Disabled" />
               )}
             </div>
             <p className="text-sm text-muted-foreground">{user.email}</p>
