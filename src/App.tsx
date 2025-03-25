@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import Projects from "./pages/Projects";
+import Project from "./pages/Project";
 import NotFound from "./pages/NotFound";
 import CreateProject from "./pages/CreateProject";
 import ProjectParticipants from "./pages/ProjectParticipants";
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/projects" element={<Projects />} />
+            <Route path="/project/:projectId" element={<Project />} />
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
             <Route path="/project/dashboard/:projectId" element={<ProjectDashboard />} />

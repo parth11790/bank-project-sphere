@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash, ArrowUpRight } from 'lucide-react';
 import { getUserById } from '@/lib/mockData';
+import { useNavigate } from 'react-router-dom';
 
 interface ProjectCardProps {
   project: {
@@ -24,7 +25,9 @@ interface ProjectCardProps {
   onDelete?: () => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onEdit, onDelete }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete }) => {
+  const navigate = useNavigate();
+  
   // Format the loan amount with commas and currency symbol
   const formattedAmount = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -37,6 +40,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onEdit, onD
 
   // Calculate time since last update
   const updatedTimeAgo = formatDistanceToNow(new Date(project.updated_at), { addSuffix: true });
+
+  // Handle view project click
+  const handleViewClick = () => {
+    navigate(`/project/${project.project_id}`);
+  };
 
   return (
     <motion.div
@@ -72,7 +80,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, onEdit, onD
           </div>
         </CardContent>
         <CardFooter className="flex justify-between pt-2 border-t border-border/50">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={onClick}>
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={handleViewClick}>
             <Eye size={16} className="mr-1" /> View
           </Button>
           <div className="flex space-x-2">
