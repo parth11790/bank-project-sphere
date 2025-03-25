@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Users, 
   FileText, 
@@ -72,6 +72,16 @@ const ProjectDashboard: React.FC = () => {
                 <h1 className="text-3xl font-bold">{projectData.name}</h1>
               </div>
               <p className="text-muted-foreground">Project ID: {projectId}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
+                className="flex items-center gap-2"
+              >
+                <BarChart className="h-4 w-4" />
+                <span>Use of Proceeds</span>
+              </Button>
             </div>
           </div>
 

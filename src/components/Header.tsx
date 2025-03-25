@@ -1,14 +1,12 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { Home, BarChart, Users, FileText, Menu, X } from 'lucide-react';
+import { FileText, Menu, X } from 'lucide-react';
 
 const navItems = [
   { name: 'Projects', path: '/projects', icon: FileText },
-  { name: 'Use of Proceeds', path: '/use-of-proceeds', icon: BarChart },
 ];
 
 const Header: React.FC = () => {
