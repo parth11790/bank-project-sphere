@@ -11,6 +11,9 @@ import Projects from "./pages/Projects";
 import Users from "./pages/Users";
 import UseOfProceeds from "./pages/UseOfProceeds";
 import NotFound from "./pages/NotFound";
+import CreateProject from "./pages/CreateProject";
+import ProjectParticipants from "./pages/ProjectParticipants";
+import ProjectDashboard from "./pages/ProjectDashboard";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +30,9 @@ const App = () => (
             <Route path="/projects" element={<Projects />} />
             <Route path="/users" element={<Users />} />
             <Route path="/use-of-proceeds" element={<UseOfProceeds />} />
+            <Route path="/create-project" element={<CreateProject />} />
+            <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
+            <Route path="/project/dashboard/:projectId" element={<ProjectDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
