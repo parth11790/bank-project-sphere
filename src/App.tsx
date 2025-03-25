@@ -6,9 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
-import Users from "./pages/Users";
 import UseOfProceeds from "./pages/UseOfProceeds";
 import NotFound from "./pages/NotFound";
 import CreateProject from "./pages/CreateProject";
@@ -26,9 +24,7 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/users" element={<Users />} />
             <Route path="/use-of-proceeds" element={<UseOfProceeds />} />
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />

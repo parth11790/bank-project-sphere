@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Home, BarChart, Users, FileText, Menu, X } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: Home },
   { name: 'Projects', path: '/projects', icon: FileText },
-  { name: 'Users', path: '/users', icon: Users },
   { name: 'Use of Proceeds', path: '/use-of-proceeds', icon: BarChart },
 ];
 
