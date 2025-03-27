@@ -10,15 +10,35 @@ import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const projectTypes = ["Expansion", "Refi", "Acquisition", "Start up"];
+
+const loanTypes = [
+  "USDA B and I",
+  "504",
+  "7(a) GP",
+  "7(a) PLP",
+  "Conventional",
+  "Express",
+  "Conventional LOC",
+  "ITL GP",
+  "ITL PLP",
+  "Pari Passu",
+  "7 (a) Small Loan"
+];
 
 const formSchema = z.object({
   project_name: z.string().min(3, {
     message: "Project name must be at least 3 characters.",
   }),
-  project_type: z.string().min(2, {
-    message: "Project type is required.",
+  project_type: z.string({
+    required_error: "Please select a project type.",
+  }),
+  loan_type: z.string({
+    required_error: "Please select a loan type.",
   }),
   description: z.string().optional(),
 });
@@ -31,6 +51,7 @@ const CreateProject: React.FC = () => {
     defaultValues: {
       project_name: "",
       project_type: "",
+      loan_type: "",
       description: "",
     },
   });
@@ -90,9 +111,51 @@ const CreateProject: React.FC = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Project Type</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g. Construction Loan" {...field} />
-                        </FormControl>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a project type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {projectTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="loan_type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Loan Type</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a loan type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {loanTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
