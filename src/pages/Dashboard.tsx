@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -19,21 +18,6 @@ const Dashboard: React.FC = () => {
     currency: 'USD',
     maximumFractionDigits: 0,
   }).format(totalProjectValue);
-
-  const handleEdit = (projectId: string) => {
-    toast({
-      title: "Edit Project",
-      description: `Editing project ${projectId} (Demo only)`,
-    });
-  };
-
-  const handleDelete = (projectId: string) => {
-    toast({
-      title: "Delete Project",
-      description: `Deleting project ${projectId} (Demo only)`,
-      variant: "destructive",
-    });
-  };
 
   const stats = [
     {
@@ -142,11 +126,7 @@ const Dashboard: React.FC = () => {
                         transition={{ duration: 0.3, delay: 0.1 + index * 0.1 }}
                       >
                         <Link to={`/project/${project.project_id}`}>
-                          <ProjectCard
-                            project={project}
-                            onEdit={() => handleEdit(project.project_id)}
-                            onDelete={() => handleDelete(project.project_id)}
-                          />
+                          <ProjectCard project={project} />
                         </Link>
                       </motion.div>
                     ))}
