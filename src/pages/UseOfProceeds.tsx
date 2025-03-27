@@ -7,11 +7,10 @@ import UseOfProceedsTable from '@/components/UseOfProceedsTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { projects, getUseOfProceedsForProject, getProjectById } from '@/lib/mockData';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 
 const UseOfProceeds: React.FC = () => {
-  const { toast } = useToast();
   const { projectId } = useParams<{ projectId: string }>();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId || '');
   const selectedProject = getProjectById(selectedProjectId);
@@ -25,9 +24,44 @@ const UseOfProceeds: React.FC = () => {
   }, [projectId]);
 
   const handleSave = (updatedData: any) => {
+    // Determine loan types based on Use of Proceeds data
+    // This is simplified example logic - in a real app, 
+    // this would be more sophisticated based on business rules
+    const hasConstruction = updatedData.some((item: any) => 
+      item.overall_category === 'Construction' && item.value > 0
+    );
+    
+    const hasRefinance = updatedData.some((item: any) => 
+      item.row_name === 'REFINANCE' && item.value > 0
+    );
+    
+    const hasWorkingCapital = updatedData.some((item: any) => 
+      item.overall_category === 'Working Capital' && item.value > 0
+    );
+    
+    // Determine appropriate loan types based on the proceeds data
+    const determinedLoanTypes = [];
+    
+    if (hasConstruction) {
+      determinedLoanTypes.push('504');
+    }
+    
+    if (hasRefinance) {
+      determinedLoanTypes.push('7(a) GP');
+    }
+    
+    if (hasWorkingCapital) {
+      determinedLoanTypes.push('Express');
+    }
+    
+    // If no specific types determined, default to Conventional
+    if (determinedLoanTypes.length === 0) {
+      determinedLoanTypes.push('Conventional');
+    }
+    
     toast({
       title: "Data Saved",
-      description: "Use of proceeds data has been updated (Demo only)",
+      description: `Use of proceeds data has been updated. Loan types: ${determinedLoanTypes.join(', ')} (Demo only)`,
     });
   };
 
@@ -96,6 +130,13 @@ const UseOfProceeds: React.FC = () => {
                         maximumFractionDigits: 0,
                       }).format(selectedProject.loan_amount)}
                     </span>
+                    {selectedProject.city && selectedProject.state && (
+                      <>
+                        <span className="hidden sm:inline text-muted-foreground">•</span>
+                        <span className="text-muted-foreground">Location:</span>
+                        <span className="font-medium">{selectedProject.city}, {selectedProject.state}</span>
+                      </>
+                    )}
                   </div>
                 )}
               </CardContent>
