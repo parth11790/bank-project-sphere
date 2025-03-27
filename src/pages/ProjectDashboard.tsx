@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { 
   Users, 
   FileText, 
@@ -17,15 +17,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { projects, users, getUserById } from '@/lib/mockData';
 
 const ProjectDashboard: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  
+  // Find the project by ID from mockData
+  const project = projects.find(p => p.project_id === projectId);
+  
+  // If project doesn't exist, redirect to the projects list
+  if (!project) {
+    return <Navigate to="/projects" replace />;
+  }
 
-  // Mock data - in a real app this would come from an API
+  // Format the loan amount with commas and currency symbol
+  const formattedAmount = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(project.loan_amount);
+  
+  // Mock data for the dashboard
   const projectData = {
-    name: "Commercial Loan Project",
-    createdAt: new Date().toLocaleDateString(),
     stats: {
       buyers: 2,
       sellers: 1,
@@ -41,13 +58,39 @@ const ProjectDashboard: React.FC = () => {
     recentActivity: [
       { id: '1', text: 'John Doe uploaded Proof of Income', time: '2 hours ago' },
       { id: '2', text: 'Jane Smith completed Personal Information form', time: '4 hours ago' },
-      { id: '3', text: 'You assigned 3 new documents to John Doe', time: '1 day ago' },
+      { id: '3', text: `You assigned 3 new documents to ${users[2].name}`, time: '1 day ago' },
       { id: '4', text: 'Property Deed document was rejected', time: '2 days ago' }
+    ],
+    participants: [
+      { 
+        userId: users[2].user_id, 
+        documents: { assigned: 8, completed: 3 },
+        forms: { assigned: 5, completed: 2 }
+      },
+      { 
+        userId: users[4].user_id, 
+        documents: { assigned: 7, completed: 3 },
+        forms: { assigned: 3, completed: 1 }
+      },
+      { 
+        userId: users[0].user_id, 
+        documents: { assigned: 0, completed: 0 },
+        forms: { assigned: 0, completed: 0 }
+      }
     ]
   };
 
   const documentsProgress = (projectData.stats.documents.completed / projectData.stats.documents.total) * 100;
   const formsProgress = (projectData.stats.forms.completed / projectData.stats.forms.total) * 100;
+
+  // Get user initials for avatar fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,15 +108,22 @@ const ProjectDashboard: React.FC = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={() => navigate(`/project/participants/${projectId}`)}
+                  onClick={() => navigate('/projects')}
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <h1 className="text-3xl font-bold">{projectData.name}</h1>
+                <h1 className="text-3xl font-bold">{project.project_name}</h1>
               </div>
               <p className="text-muted-foreground">Project ID: {projectId}</p>
             </div>
             <div className="flex gap-2">
+              <Button 
+                onClick={() => navigate(`/project/participants/${projectId}`)}
+                className="flex items-center gap-2"
+              >
+                <Users className="h-4 w-4" />
+                <span>Participants</span>
+              </Button>
               <Button 
                 variant="outline" 
                 onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
@@ -84,6 +134,40 @@ const ProjectDashboard: React.FC = () => {
               </Button>
             </div>
           </div>
+
+          {/* Project Details Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Details</CardTitle>
+              <CardDescription>Information about this project</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="text-sm font-medium mb-1">Project Type</h3>
+                  <p>{project.project_type}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium mb-1">Loan Amount</h3>
+                  <p>{formattedAmount}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium mb-1">Loan Types</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.loan_types.map((type, index) => (
+                      <span key={index} className="px-2 py-1 bg-muted rounded-md text-xs">
+                        {type}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium mb-1">Created At</h3>
+                  <p>{new Date(project.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard 
@@ -108,7 +192,7 @@ const ProjectDashboard: React.FC = () => {
             />
             <StatCard 
               title="Created On"
-              value={projectData.createdAt}
+              value={new Date(project.created_at).toLocaleDateString()}
               description="Project start date"
               icon={<Calendar className="h-4 w-4" />}
             />
@@ -117,86 +201,61 @@ const ProjectDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>Project Overview</CardTitle>
-                <CardDescription>All activities in this project</CardDescription>
+                <CardTitle>Participant Progress</CardTitle>
+                <CardDescription>Document and form completion status by participant</CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="dashboard">
-                  <TabsList className="grid w-full grid-cols-3 mb-4">
-                    <TabsTrigger value="dashboard">
-                      <LayoutDashboard className="h-4 w-4 mr-2" />
-                      Dashboard
-                    </TabsTrigger>
-                    <TabsTrigger value="activity">
-                      <Bell className="h-4 w-4 mr-2" />
-                      Activity
-                    </TabsTrigger>
-                    <TabsTrigger value="reports">
-                      <BarChart className="h-4 w-4 mr-2" />
-                      Reports
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="dashboard">
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <h3 className="text-sm font-medium">Document Completion</h3>
-                          <Progress value={documentsProgress} className="h-2" />
-                          <p className="text-xs text-muted-foreground">
-                            {projectData.stats.documents.completed} of {projectData.stats.documents.total} documents uploaded
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <h3 className="text-sm font-medium">Form Completion</h3>
-                          <Progress value={formsProgress} className="h-2" />
-                          <p className="text-xs text-muted-foreground">
-                            {projectData.stats.forms.completed} of {projectData.stats.forms.total} forms completed
-                          </p>
-                        </div>
-                      </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Participant</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead className="text-center">Documents</TableHead>
+                      <TableHead className="text-center">Forms</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {projectData.participants.map((participant) => {
+                      const user = getUserById(participant.userId);
+                      if (!user) return null;
                       
-                      <div className="pt-4">
-                        <h3 className="text-sm font-medium mb-3">Participant Status</h3>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm p-2 rounded bg-muted/50">
-                            <span>Buyers</span>
-                            <span className="font-medium">{projectData.stats.buyers}</span>
-                          </div>
-                          <div className="flex justify-between text-sm p-2 rounded bg-muted/50">
-                            <span>Sellers</span>
-                            <span className="font-medium">{projectData.stats.sellers}</span>
-                          </div>
-                          <div className="flex justify-between text-sm p-2 rounded bg-muted/50">
-                            <span>Total Participants</span>
-                            <span className="font-medium">{projectData.stats.buyers + projectData.stats.sellers}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="activity">
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Recent Activity</h3>
-                      <div className="space-y-4">
-                        {projectData.recentActivity.map(activity => (
-                          <div key={activity.id} className="flex flex-col space-y-1 pb-3 border-b">
-                            <p className="text-sm">{activity.text}</p>
-                            <span className="text-xs text-muted-foreground">{activity.time}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="reports">
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <BarChart className="h-10 w-10 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Reports Coming Soon</h3>
-                      <p className="text-sm text-muted-foreground max-w-md">
-                        Project reports and analytics will be available in a future update.
-                      </p>
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                      return (
+                        <TableRow key={participant.userId}>
+                          <TableCell className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
+                              <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                            </Avatar>
+                            <span>{user.name}</span>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'buyer' ? 'secondary' : 'outline'}>
+                              {user.role.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex flex-col items-center">
+                              <span>{participant.documents.completed}/{participant.documents.assigned}</span>
+                              <Progress 
+                                value={(participant.documents.completed / (participant.documents.assigned || 1)) * 100} 
+                                className="h-1.5 w-24 mt-1" 
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex flex-col items-center">
+                              <span>{participant.forms.completed}/{participant.forms.assigned}</span>
+                              <Progress 
+                                value={(participant.forms.completed / (participant.forms.assigned || 1)) * 100} 
+                                className="h-1.5 w-24 mt-1" 
+                              />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
             

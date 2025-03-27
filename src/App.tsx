@@ -26,10 +26,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/project/:projectId" element={<Project />} />
+            <Route path="/project/:projectId" element={<ProjectDashboard />} />
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
-            <Route path="/project/dashboard/:projectId" element={<ProjectDashboard />} />
             <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
