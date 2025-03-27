@@ -1,4 +1,3 @@
-
 // Mock data for development purposes
 
 // Generate a random ID
@@ -71,12 +70,12 @@ export const users = [
   },
 ];
 
-// Mock projects data
+// Mock projects data with updated project types
 export const projects = [
   {
     project_id: "proj_1",
     project_name: "Downtown Heights",
-    project_type: "Construction Loan",
+    project_type: "Expansion",
     loan_types: ["Commercial", "Development"],
     loan_amount: 5000000,
     created_by: "user_1",
@@ -86,7 +85,7 @@ export const projects = [
   {
     project_id: "proj_2",
     project_name: "Riverside Apartments",
-    project_type: "Mortgage",
+    project_type: "Acquisition",
     loan_types: ["Residential", "Multi-Family"],
     loan_amount: 8500000,
     created_by: "user_2",
@@ -96,7 +95,7 @@ export const projects = [
   {
     project_id: "proj_3",
     project_name: "Tech Park Development",
-    project_type: "Business Loan",
+    project_type: "Start up",
     loan_types: ["Commercial"],
     loan_amount: 12000000,
     created_by: "user_1",
@@ -106,7 +105,7 @@ export const projects = [
   {
     project_id: "proj_4",
     project_name: "Green Valley Homes",
-    project_type: "Construction Loan",
+    project_type: "Refi",
     loan_types: ["Residential", "Development"],
     loan_amount: 3200000,
     created_by: "user_4",
@@ -116,7 +115,7 @@ export const projects = [
   {
     project_id: "proj_5",
     project_name: "City Center Office Complex",
-    project_type: "Commercial Mortgage",
+    project_type: "Acquisition",
     loan_types: ["Commercial"],
     loan_amount: 22000000,
     created_by: "user_2",

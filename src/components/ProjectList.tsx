@@ -1,13 +1,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { Grid, List, Search, Plus, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import ProjectCard from './ProjectCard';
-import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface Project {
   project_id: string;
@@ -25,7 +24,7 @@ interface ProjectListProps {
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
-  const { toast } = useToast();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
   const [searchTerm, setSearchTerm] = React.useState('');
 
@@ -35,21 +34,6 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
     project.project_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.loan_types.some(type => type.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
-  const handleEdit = (projectId: string) => {
-    toast({
-      title: "Edit Project",
-      description: `Editing project ${projectId} (Demo only)`,
-    });
-  };
-
-  const handleDelete = (projectId: string) => {
-    toast({
-      title: "Delete Project",
-      description: `Deleting project ${projectId} (Demo only)`,
-      variant: "destructive",
-    });
-  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -89,7 +73,10 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
             <span>Filter</span>
           </Button>
           
-          <Button className="flex items-center gap-1">
+          <Button 
+            className="flex items-center gap-1"
+            onClick={() => navigate('/create-project')}
+          >
             <Plus size={16} />
             <span>New Project</span>
           </Button>
@@ -118,13 +105,7 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
                 show: { opacity: 1, y: 0 }
               }}
             >
-              <Link to={`/project/${project.project_id}`}>
-                <ProjectCard
-                  project={project}
-                  onEdit={() => handleEdit(project.project_id)}
-                  onDelete={() => handleDelete(project.project_id)}
-                />
-              </Link>
+              <ProjectCard project={project} />
             </motion.div>
           ))}
         </motion.div>
