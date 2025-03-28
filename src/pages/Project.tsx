@@ -60,10 +60,13 @@ const Project: React.FC = () => {
   if (isError || !project) {
     return <Navigate to="/projects" replace />;
   }
+
+  // Ensure loan_types is an array, otherwise initialize it as an empty array
+  const loanTypes = Array.isArray(project.loan_types) ? project.loan_types : [];
   
-  // Calculate total loan amount from individual loan types
-  const totalLoanAmount = Array.isArray(project.loan_types) 
-    ? project.loan_types.reduce((total, loan) => total + loan.amount, 0) 
+  // Calculate total loan amount from individual loan types if they exist
+  const totalLoanAmount = loanTypes.length > 0
+    ? loanTypes.reduce((total, loan) => total + (typeof loan === 'object' && loan.amount ? loan.amount : 0), 0)
     : project.loan_amount || 0;
 
   return (
@@ -144,7 +147,7 @@ const Project: React.FC = () => {
               <div>
                 <h3 className="text-sm font-medium mb-2">Loan Information</h3>
                 <div className="border rounded-md divide-y">
-                  {Array.isArray(project.loan_types) && project.loan_types.map((loan, index) => (
+                  {loanTypes.length > 0 ? loanTypes.map((loan, index) => (
                     <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <span className="font-medium">{loan.type}</span>
@@ -158,7 +161,11 @@ const Project: React.FC = () => {
                         }).format(loan.amount)}
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                    <div className="p-3">
+                      <span className="text-muted-foreground">No loan type details available</span>
+                    </div>
+                  )}
                   <div className="p-3 flex justify-between bg-muted/50">
                     <span className="font-bold">Total Loan Amount</span>
                     <span className="font-bold">

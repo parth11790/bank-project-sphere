@@ -1,163 +1,205 @@
-import { users, businesses, projects } from './mockData';
 
-// Mock implementations of the Supabase service functions
-export const getProjectsData = async () => {
-  return projects.map(project => ({
-    project_id: project.project_id,
-    project_name: project.project_name,
-    project_type: project.project_type,
-    loan_amount: project.loan_amount,
-    // Instead of passing the whole loan_types object, extract just the types
-    loan_types: project.loan_types.map(lt => lt.type),
-    created_at: project.created_at,
-    updated_at: project.updated_at,
-    city: project.city,
-    state: project.state,
-    created_by_user: { name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown' }
-  }));
-};
+// Define mock data types
+export interface User {
+  user_id: string;
+  name: string;
+  email: string;
+  role: string;
+  bank_id?: string;
+  otp_enabled?: boolean;
+}
 
-export const getProjectByIdData = async (projectId: string) => {
-  const project = projects.find(p => p.project_id === projectId);
-  if (!project) return null;
-  
-  return {
-    project_id: project.project_id,
-    project_name: project.project_name,
-    project_type: project.project_type,
-    loan_amount: project.loan_amount,
-    // Pass the complete loan_types objects for this function to display details
-    loan_types: project.loan_types,
-    created_at: project.created_at,
-    updated_at: project.updated_at,
-    city: project.city,
-    state: project.state,
-    created_by_user: { name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown' }
+export interface Business {
+  business_id: string;
+  name: string;
+  entity_type: string;
+  owner_id: string;
+  financial_data?: {
+    [year: string]: {
+      revenue: number;
+      wages: number;
+      cogs: number;
+      gross_profit: number;
+      other_expenses: number;
+      total_noi: number;
+      nom_percentage: number;
+    }
   };
-};
+}
 
-export const getProjectParticipantsData = async (projectId: string) => {
-  const project = projects.find(p => p.project_id === projectId);
-  if (!project) return [];
-  
-  return project.participants.map(participant => {
-    const user = users.find(u => u.user_id === participant.userId);
-    return {
-      participant_id: `part_${participant.userId}`,
-      user_id: participant.userId,
-      project_id: projectId,
-      user: {
-        name: user?.name || 'Unknown',
-        email: user?.email || 'unknown@example.com',
-        role: participant.role
+export interface LoanType {
+  type: string;
+  amount: number;
+  description: string;
+}
+
+export interface Project {
+  project_id: string;
+  project_name: string;
+  project_type: string;
+  loan_types: LoanType[];
+  loan_amount: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  city?: string;
+  state?: string;
+  participants: { userId: string; role: string }[];
+}
+
+// Mock data
+export const users: User[] = [
+  { 
+    user_id: 'user_1', 
+    name: 'John Smith', 
+    email: 'john@example.com', 
+    role: 'buyer',
+    otp_enabled: false
+  },
+  { 
+    user_id: 'user_2', 
+    name: 'Jane Doe', 
+    email: 'jane@example.com', 
+    role: 'seller',
+    otp_enabled: true
+  },
+  { 
+    user_id: 'user_3', 
+    name: 'Mark Johnson', 
+    email: 'mark@example.com', 
+    role: 'buyer',
+    otp_enabled: false
+  },
+  { 
+    user_id: 'user_4', 
+    name: 'Sarah Williams', 
+    email: 'sarah@bankexample.com', 
+    role: 'bank_officer',
+    bank_id: 'bank_1',
+    otp_enabled: true
+  },
+  { 
+    user_id: 'user_5', 
+    name: 'Robert Brown', 
+    email: 'robert@bankexample.com', 
+    role: 'loan_specialist',
+    bank_id: 'bank_1',
+    otp_enabled: false
+  }
+];
+
+export const businesses: Business[] = [
+  {
+    business_id: 'business_1',
+    name: 'Acme Corporation',
+    entity_type: 'LLC',
+    owner_id: 'user_1',
+    financial_data: {
+      '2021': {
+        revenue: 500000,
+        wages: 150000,
+        cogs: 200000,
+        gross_profit: 300000,
+        other_expenses: 50000,
+        total_noi: 100000,
+        nom_percentage: 20
+      },
+      '2022': {
+        revenue: 600000,
+        wages: 180000,
+        cogs: 220000,
+        gross_profit: 380000,
+        other_expenses: 60000,
+        total_noi: 140000,
+        nom_percentage: 23
       }
-    };
-  });
-};
-
-export const getBusinessesByOwnerIdData = async (userId: string) => {
-  return businesses.filter(b => b.owner_id === userId);
-};
-
-export const getBusinessFinancialDataData = async (businessId: string) => {
-  const business = businesses.find(b => b.business_id === businessId);
-  if (!business || !business.financial_data) return [];
-  
-  return Object.entries(business.financial_data).map(([year, data]) => ({
-    data_id: `fin_${businessId}_${year}`,
-    business_id: businessId,
-    year,
-    revenue: data.revenue,
-    wages: data.wages,
-    cogs: data.cogs,
-    gross_profit: data.gross_profit,
-    other_expenses: data.other_expenses,
-    total_noi: data.total_noi,
-    nom_percentage: data.nom_percentage
-  }));
-};
-
-// Mock form and document interfaces
-export interface FormTemplate {
-  form_id: string;
-  name: string;
-  entity_type: string;
-}
-
-export interface Document {
-  document_id: string;
-  name: string;
-  entity_type: string;
-}
-
-// Mock form templates and documents data
-const individualForms: FormTemplate[] = [
-  { form_id: "form_1", name: "Personal Information Form", entity_type: "individual" },
-  { form_id: "form_2", name: "Intent Form", entity_type: "individual" },
-  { form_id: "form_3", name: "Personal Financial Statement", entity_type: "individual" },
-  { form_id: "form_4", name: "Resume", entity_type: "individual" },
-  { form_id: "form_5", name: "Tax Returns", entity_type: "individual" },
-  { form_id: "form_6", name: "Acquisition Questionnaire", entity_type: "individual" },
-  { form_id: "form_7", name: "Broker Listing Form", entity_type: "individual" },
+    }
+  },
+  {
+    business_id: 'business_2',
+    name: 'XYZ Enterprises',
+    entity_type: 'S-Corp',
+    owner_id: 'user_2',
+    financial_data: {
+      '2021': {
+        revenue: 750000,
+        wages: 250000,
+        cogs: 300000,
+        gross_profit: 450000,
+        other_expenses: 100000,
+        total_noi: 100000,
+        nom_percentage: 13
+      },
+      '2022': {
+        revenue: 900000,
+        wages: 300000,
+        cogs: 350000,
+        gross_profit: 550000,
+        other_expenses: 120000,
+        total_noi: 130000,
+        nom_percentage: 14
+      }
+    }
+  }
 ];
 
-const businessForms: FormTemplate[] = [
-  { form_id: "form_8", name: "Tax Returns", entity_type: "business" },
-  { form_id: "form_9", name: "Balance Sheet", entity_type: "business" },
-  { form_id: "form_10", name: "Profit & Loss Report", entity_type: "business" },
-  { form_id: "form_11", name: "Accounts Receivable & Accounts Payable", entity_type: "business" },
-  { form_id: "form_12", name: "Inventory and Equipment List", entity_type: "business" },
-  { form_id: "form_13", name: "Broker Listing", entity_type: "business" },
-  { form_id: "form_14", name: "Acquisition Questionnaire", entity_type: "business" },
-  { form_id: "form_15", name: "Business Debt Schedule", entity_type: "business" },
-  { form_id: "form_16", name: "K1 Schedules", entity_type: "business" },
+export const projects: Project[] = [
+  {
+    project_id: 'project_1',
+    project_name: 'Main Street Acquisition',
+    project_type: 'Business Acquisition',
+    loan_types: [
+      { type: 'SBA 7(a)', amount: 2000000, description: 'Standard SBA loan' },
+      { type: 'Owner Financing', amount: 500000, description: 'Seller carry back' }
+    ],
+    loan_amount: 2500000,
+    created_by: 'user_4',
+    created_at: '2023-03-15T10:00:00Z',
+    updated_at: '2023-05-20T14:30:00Z',
+    city: 'Chicago',
+    state: 'IL',
+    participants: [
+      { userId: 'user_1', role: 'buyer' },
+      { userId: 'user_2', role: 'seller' },
+      { userId: 'user_4', role: 'bank_officer' },
+      { userId: 'user_5', role: 'loan_specialist' }
+    ]
+  },
+  {
+    project_id: 'project_2',
+    project_name: 'Riverside Development',
+    project_type: 'Commercial Real Estate',
+    loan_types: [
+      { type: 'SBA 504', amount: 5000000, description: 'CDC/SBA loan' },
+      { type: 'Conventional', amount: 1000000, description: 'Bank loan' }
+    ],
+    loan_amount: 6000000,
+    created_by: 'user_5',
+    created_at: '2023-06-10T09:15:00Z',
+    updated_at: '2023-07-05T11:45:00Z',
+    city: 'Denver',
+    state: 'CO',
+    participants: [
+      { userId: 'user_3', role: 'buyer' },
+      { userId: 'user_4', role: 'bank_officer' }
+    ]
+  }
 ];
 
-const individualDocuments: Document[] = [
-  { document_id: "doc_1", name: "Driver's License", entity_type: "individual" },
-  { document_id: "doc_2", name: "Tax Returns", entity_type: "individual" },
-  { document_id: "doc_3", name: "Resume", entity_type: "individual" },
-];
-
-const businessDocuments: Document[] = [
-  { document_id: "doc_4", name: "Business License", entity_type: "business" },
-  { document_id: "doc_5", name: "Tax Returns", entity_type: "business" },
-  { document_id: "doc_6", name: "Financial Statements", entity_type: "business" },
-];
-
-export const getFormTemplatesData = async (entityType: string) => {
-  return entityType === 'individual' ? individualForms : businessForms;
+// Utility functions
+export const getUserById = (userId: string): User | undefined => {
+  return users.find(user => user.user_id === userId);
 };
 
-export const getDocumentsData = async (entityType: string) => {
-  return entityType === 'individual' ? individualDocuments : businessDocuments;
+export const getBusinessById = (businessId: string): Business | undefined => {
+  return businesses.find(business => business.business_id === businessId);
 };
 
-export const getAssignedFormsData = async (participantId: string, businessId?: string) => {
-  // Mock assigned forms - for demo purposes, assign first 2 forms
-  const forms = businessId ? businessForms.slice(0, 2) : individualForms.slice(0, 2);
-  return forms.map(form => ({
-    assignment_id: `af_${participantId}_${form.form_id}`,
-    participant_id: participantId,
-    business_id: businessId,
-    form_id: form.form_id,
-    form
-  }));
+export const getProjectById = (projectId: string): Project | undefined => {
+  return projects.find(project => project.project_id === projectId);
 };
 
-export const getAssignedDocumentsData = async (participantId: string, businessId?: string) => {
-  // Mock assigned documents - for demo purposes, assign first 2 documents
-  const documents = businessId ? businessDocuments.slice(0, 2) : individualDocuments.slice(0, 2);
-  return documents.map(document => ({
-    assignment_id: `ad_${participantId}_${document.document_id}`,
-    participant_id: participantId,
-    business_id: businessId,
-    document_id: document.document_id,
-    document
-  }));
-};
-
-// Add mock data for UseOfProceedsTable
+// Mock data for UseOfProceedsTable
 export const mockUseOfProceedsColumns = [
   { column_id: 'col_1', column_name: 'Total' },
   { column_id: 'col_2', column_name: 'Phase 1' },
@@ -173,10 +215,21 @@ export const mockUseOfProceedsRows = [
 ];
 
 // Function for bank lookup
-export const getBankById = (bankId) => {
+export const getBankById = (bankId: string) => {
   return {
     bank_id: bankId,
     name: `Bank ${bankId}`,
     location: 'New York, NY'
   };
+};
+
+// Mock function for use of proceeds data
+export const getUseOfProceedsForProject = (projectId: string) => {
+  // Just return some sample data for demonstration
+  return [
+    { id: 1, overall_category: 'Land', row_name: 'LAND & BUILDING', value: 500000 },
+    { id: 2, overall_category: 'Construction', row_name: 'CONSTRUCTION', value: 1000000 },
+    { id: 3, overall_category: 'Furniture Fixtures and Equipment', row_name: 'EQUIPMENT', value: 300000 },
+    { id: 4, overall_category: 'Working Capital', row_name: 'WORKING CAPITAL', value: 200000 }
+  ];
 };

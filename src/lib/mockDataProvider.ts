@@ -1,5 +1,5 @@
 
-import { users, businesses, projects } from './mockData';
+import { users, businesses, projects, Project, Business, User, LoanType } from './mockData';
 
 // Mock implementations of the Supabase service functions
 export const getProjectsData = async () => {
