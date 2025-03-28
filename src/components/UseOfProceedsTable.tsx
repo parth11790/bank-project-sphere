@@ -174,7 +174,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
   // Handle value change when editing
   const handleValueChange = (rowName: string, columnName: string, value: string) => {
     const key = `${rowName}-${columnName}`;
-    const numericValue = value === '' ? 0 : parseFloat(value);
+    const numericValue = value === '' ? 0 : Number(value);
     
     setEditedData(prev => ({
       ...prev,
