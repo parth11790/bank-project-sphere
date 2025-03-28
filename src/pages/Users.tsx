@@ -6,13 +6,7 @@ import UserList from '@/components/UserList';
 import { User } from '@/types/user';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-import { users as mockUsers } from '@/lib/mockData';
-
-// Function to get users - would be in supabaseService.ts in a real app
-const getUsers = async (): Promise<User[]> => {
-  // Use the mock users directly - ensure they match our User type
-  return mockUsers as User[];
-};
+import { getUsers } from '@/services/userService';
 
 const Users: React.FC = () => {
   const { data: users, isLoading } = useQuery({
