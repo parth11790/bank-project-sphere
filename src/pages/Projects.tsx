@@ -9,6 +9,7 @@ import { Plus } from 'lucide-react';
 import { getProjects } from '@/services/supabaseService';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Project } from '@/types/project';
 
 const Projects: React.FC = () => {
   const navigate = useNavigate();

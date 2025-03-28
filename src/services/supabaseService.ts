@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -12,10 +11,10 @@ import {
   getAssignedFormsData,
   getAssignedDocumentsData
 } from '@/lib/mockDataProvider';
-import { Project, ApiResponse as ProjectApiResponse, isProject } from '@/types/project';
-import { Business, BusinessFinancialData, ApiResponse as BusinessApiResponse, isBusiness } from '@/types/business';
-import { FormTemplate, Document, ApiResponse as FormApiResponse, isFormTemplate } from '@/types/form';
-import { Participant, ApiResponse as ParticipantApiResponse, isParticipant } from '@/types/participant';
+import { Project, isProject } from '@/types/project';
+import { Business, BusinessFinancialData, isBusiness } from '@/types/business';
+import { FormTemplate, Document, isFormTemplate } from '@/types/form';
+import { Participant, isParticipant } from '@/types/participant';
 
 // Flag to use mock data or actual supabase
 const USE_MOCK_DATA = true;
@@ -35,7 +34,7 @@ export const getProjects = async (): Promise<Project[]> => {
     if (error) throw error;
     
     // Filter and transform API data to match our Project type
-    return (data || []).filter((item: any) => isProject(item)) as Project[];
+    return data?.filter(item => isProject(item as any)).map(item => item as unknown as Project) || [];
   } catch (error: any) {
     console.error('Error fetching projects:', error.message);
     toast.error('Failed to load projects');
@@ -58,7 +57,7 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
     
     if (error) throw error;
     
-    return isProject(data) ? data : null;
+    return isProject(data as any) ? (data as unknown as Project) : null;
   } catch (error: any) {
     console.error(`Error fetching project ${projectId}:`, error.message);
     toast.error('Failed to load project details');
@@ -81,7 +80,7 @@ export const getProjectParticipants = async (projectId: string): Promise<Partici
     if (error) throw error;
     
     // Filter and transform API data to match our Participant type
-    return (data || []).filter((item: any) => isParticipant(item)) as Participant[];
+    return data?.filter(item => isParticipant(item as any)).map(item => item as unknown as Participant) || [];
   } catch (error: any) {
     console.error(`Error fetching participants for project ${projectId}:`, error.message);
     toast.error('Failed to load project participants');
@@ -104,7 +103,7 @@ export const getBusinessesByOwnerId = async (userId: string): Promise<Business[]
     if (error) throw error;
     
     // Filter and transform API data to match our Business type
-    return (data || []).filter((item: any) => isBusiness(item)) as Business[];
+    return data?.filter(item => isBusiness(item as any)).map(item => item as unknown as Business) || [];
   } catch (error: any) {
     console.error(`Error fetching businesses for user ${userId}:`, error.message);
     toast.error('Failed to load business data');
@@ -125,8 +124,8 @@ export const getBusinessFinancialData = async (businessId: string): Promise<Busi
     
     if (error) throw error;
     
-    // Cast to unknown first to avoid TypeScript errors
-    return (data || []) as unknown as BusinessFinancialData[];
+    // We'll need to add type checking for BusinessFinancialData
+    return (data || []).map(item => item as unknown as BusinessFinancialData);
   } catch (error: any) {
     console.error(`Error fetching financial data for business ${businessId}:`, error.message);
     toast.error('Failed to load financial data');
@@ -149,7 +148,7 @@ export const getFormTemplates = async (entityType: string): Promise<FormTemplate
     if (error) throw error;
     
     // Filter and transform API data to match our FormTemplate type
-    return (data || []).filter((item: any) => isFormTemplate(item)) as FormTemplate[];
+    return data?.filter(item => isFormTemplate(item as any)).map(item => item as unknown as FormTemplate) || [];
   } catch (error: any) {
     console.error(`Error fetching form templates for ${entityType}:`, error.message);
     toast.error('Failed to load form templates');
@@ -170,8 +169,7 @@ export const getDocuments = async (entityType: string): Promise<Document[]> => {
     
     if (error) throw error;
     
-    // Cast to unknown first to avoid TypeScript errors
-    return (data || []) as unknown as Document[];
+    return (data || []).map(item => item as unknown as Document);
   } catch (error: any) {
     console.error(`Error fetching documents for ${entityType}:`, error.message);
     toast.error('Failed to load document types');
