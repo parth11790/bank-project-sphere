@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Plus, Trash2, FileText, ClipboardCheck, ArrowRight, Building2, ChevronLeft } from 'lucide-react';
@@ -13,38 +13,45 @@ import AssignmentDialog from '@/components/AssignmentDialog';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 import { 
-  projects, 
-  getUserById, 
-  getBusinessByOwnerId, 
-  individualEntityForms, 
-  businessEntityForms 
-} from '@/lib/mockData';
+  getProjectById, 
+  getProjectParticipants, 
+  getBusinessesByOwnerId, 
+  getFormTemplates, 
+  getDocuments,
+  getAssignedForms,
+  getAssignedDocuments
+} from '@/services/supabaseService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Form {
-  id: string;
+  form_id: string;
   name: string;
 }
 
 interface Document {
-  id: string;
+  document_id: string;
   name: string;
 }
 
+interface Business {
+  business_id: string;
+  name: string;
+  entity_type: string;
+  documents: Document[];
+  forms: Form[];
+}
+
 interface Participant {
-  id: string;
+  participant_id: string;
+  user_id: string;
   name: string;
   email: string;
-  type: 'buyer' | 'seller';
   role: string;
   documents: Document[];
   forms: Form[];
-  business?: {
-    name: string;
-    entity_type: string;
-    documents: Document[];
-    forms: Form[];
-  };
+  business?: Business;
 }
 
 const ProjectParticipants: React.FC = () => {
@@ -55,72 +62,124 @@ const ProjectParticipants: React.FC = () => {
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
   const [assignmentType, setAssignmentType] = useState<'documents' | 'forms'>('documents');
   const [entityType, setEntityType] = useState<'individual' | 'business'>('individual');
+  const [participants, setParticipants] = useState<Participant[]>([]);
   
-  // Get project from mock data
-  const project = projects.find(p => p.project_id === projectId);
-  
-  if (!project) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container py-6 px-4 md:px-6 max-w-6xl">
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold mb-2">Project Not Found</h2>
-            <p className="text-muted-foreground mb-6">The requested project could not be found.</p>
-            <Button onClick={() => navigate('/projects')}>
-              View All Projects
-            </Button>
-          </div>
-        </main>
-      </div>
-    );
-  }
-  
-  // Transform project participants data into the format we need
-  const transformParticipants = (): Participant[] => {
-    if (!project.participants) return [];
+  // Get project details
+  const { data: project, isLoading: projectLoading } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => getProjectById(projectId || ''),
+    enabled: !!projectId,
+  });
+
+  // Get project participants
+  const { data: participantsData, isLoading: participantsLoading, refetch: refetchParticipants } = useQuery({
+    queryKey: ['participants', projectId],
+    queryFn: () => getProjectParticipants(projectId || ''),
+    enabled: !!projectId,
+  });
+
+  // Load individual forms and documents
+  const { data: individualForms } = useQuery({
+    queryKey: ['forms', 'individual'],
+    queryFn: () => getFormTemplates('individual'),
+  });
+
+  const { data: individualDocuments } = useQuery({
+    queryKey: ['documents', 'individual'],
+    queryFn: () => getDocuments('individual'),
+  });
+
+  // Load business forms and documents
+  const { data: businessForms } = useQuery({
+    queryKey: ['forms', 'business'],
+    queryFn: () => getFormTemplates('business'),
+  });
+
+  const { data: businessDocuments } = useQuery({
+    queryKey: ['documents', 'business'],
+    queryFn: () => getDocuments('business'),
+  });
+
+  // Transform participants data to include forms, documents, and businesses
+  useEffect(() => {
+    const loadParticipantData = async () => {
+      if (!participantsData || participantsLoading) return;
+      
+      const transformedParticipants: Participant[] = [];
+      
+      for (const participant of participantsData) {
+        // Get assigned documents and forms for the individual
+        const assignedDocs = await getAssignedDocuments(participant.participant_id);
+        const assignedForms = await getAssignedForms(participant.participant_id);
+        
+        // Format documents and forms for individual
+        const documents = assignedDocs.map(doc => ({
+          document_id: doc.document.document_id,
+          name: doc.document.name
+        }));
+        
+        const forms = assignedForms.map(form => ({
+          form_id: form.form.form_id,
+          name: form.form.name
+        }));
+        
+        // Get businesses owned by this participant
+        const businesses = await getBusinessesByOwnerId(participant.user_id);
+        let business: Business | undefined;
+        
+        if (businesses.length > 0) {
+          const businessData = businesses[0]; // Just get the first business for now
+          
+          // Get assigned documents and forms for the business
+          const businessDocs = await getAssignedDocuments(participant.participant_id, businessData.business_id);
+          const businessForms = await getAssignedForms(participant.participant_id, businessData.business_id);
+          
+          business = {
+            business_id: businessData.business_id,
+            name: businessData.name,
+            entity_type: businessData.entity_type,
+            documents: businessDocs.map(doc => ({
+              document_id: doc.document.document_id,
+              name: doc.document.name
+            })),
+            forms: businessForms.map(form => ({
+              form_id: form.form.form_id,
+              name: form.form.name
+            }))
+          };
+        }
+
+        transformedParticipants.push({
+          participant_id: participant.participant_id,
+          user_id: participant.user_id,
+          name: participant.user.name,
+          email: participant.user.email,
+          role: participant.user.role,
+          documents,
+          forms,
+          business
+        });
+      }
+      
+      setParticipants(transformedParticipants);
+    };
     
-    return project.participants.map(p => {
-      const user = getUserById(p.userId);
-      if (!user) return null;
-      
-      const business = user.business ? {
-        name: user.business,
-        entity_type: getBusinessByOwnerId(user.user_id)?.entity_type || 'Unknown',
-        documents: [
-          { id: 'd1', name: 'Tax Returns' },
-          { id: 'd2', name: 'Balance Sheet' }
-        ],
-        forms: businessEntityForms.slice(0, 3).map(form => ({ id: form.id, name: form.name }))
-      } : undefined;
-      
-      return {
-        id: user.user_id,
-        name: user.name,
-        email: user.email,
-        type: (user.role === 'buyer' || user.role === 'seller') ? user.role as 'buyer' | 'seller' : 'buyer',
-        role: user.role,
-        documents: [
-          { id: 'd1', name: 'Proof of Identity' },
-          { id: 'd2', name: 'Proof of Address' }
-        ],
-        forms: individualEntityForms.slice(0, 3).map(form => ({ id: form.id, name: form.name })),
-        business
-      };
-    }).filter(Boolean) as Participant[];
-  };
-  
-  const participants = transformParticipants();
-  
-  const handleAddParticipant = (participant: Omit<Participant, 'id' | 'documents' | 'forms' | 'role'>) => {
+    loadParticipantData();
+  }, [participantsData, participantsLoading]);
+
+  const handleAddParticipant = (participant: Omit<Participant, 'participant_id' | 'documents' | 'forms' | 'user_id'>) => {
     // In a real app, this would call an API to add the participant
-    toast(`${participant.type === 'buyer' ? 'Buyer' : 'Seller'} added successfully`);
+    toast(`${participant.role === 'buyer' ? 'Buyer' : 'Seller'} added successfully`);
     setIsParticipantDialogOpen(false);
+    // Refetch participants to update the list
+    refetchParticipants();
   };
 
   const handleRemoveParticipant = (id: string) => {
     // In a real app, this would call an API to remove the participant
     toast('Participant removed');
+    // Refetch participants to update the list
+    refetchParticipants();
   };
 
   const handleAssignDocument = (items: { name: string }[]) => {
@@ -128,6 +187,8 @@ const ProjectParticipants: React.FC = () => {
     
     toast(`${assignmentType === 'documents' ? 'Documents' : 'Forms'} assigned to ${currentParticipant.name} successfully`);
     setIsAssignmentDialogOpen(false);
+    // Refetch participants to update the list
+    refetchParticipants();
   };
 
   const openAssignDialog = (participant: Participant, type: 'documents' | 'forms', entity: 'individual' | 'business' = 'individual') => {
@@ -141,6 +202,7 @@ const ProjectParticipants: React.FC = () => {
   const sellers = participants.filter(p => p.role === 'seller');
   const bankUsers = participants.filter(p => p.role !== 'buyer' && p.role !== 'seller');
 
+  // Get user initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -148,6 +210,34 @@ const ProjectParticipants: React.FC = () => {
       .join('')
       .toUpperCase();
   };
+
+  if (projectLoading || participantsLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-6 px-4 md:px-6 max-w-6xl">
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+            
+            <Tabs defaultValue="buyers">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="buyers">Buyers</TabsTrigger>
+                <TabsTrigger value="sellers">Sellers</TabsTrigger>
+                <TabsTrigger value="bank">Bank Personnel</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="buyers" className="mt-6">
+                <Skeleton className="h-72 w-full" />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -165,7 +255,7 @@ const ProjectParticipants: React.FC = () => {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => navigate(`/project/dashboard/${projectId}`)}
+                  onClick={() => navigate(`/project/${projectId}`)}
                   className="flex items-center gap-1"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -173,7 +263,7 @@ const ProjectParticipants: React.FC = () => {
                 </Button>
               </div>
               <h1 className="text-3xl font-bold mt-4">Project Participants</h1>
-              <p className="text-muted-foreground">{project.project_name}</p>
+              <p className="text-muted-foreground">{project?.project_name}</p>
             </div>
             <Button 
               onClick={() => navigate(`/project/dashboard/${projectId}`)}
@@ -197,7 +287,7 @@ const ProjectParticipants: React.FC = () => {
                   onClick={() => {
                     setIsParticipantDialogOpen(true);
                     // Pre-select buyer type
-                    setCurrentParticipant({ id: '', name: '', email: '', type: 'buyer', role: 'buyer', documents: [], forms: [] });
+                    setCurrentParticipant({ participant_id: '', user_id: '', name: '', email: '', role: 'buyer', documents: [], forms: [] });
                   }}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -213,7 +303,7 @@ const ProjectParticipants: React.FC = () => {
                       variant="outline"
                       onClick={() => {
                         setIsParticipantDialogOpen(true);
-                        setCurrentParticipant({ id: '', name: '', email: '', type: 'buyer', role: 'buyer', documents: [], forms: [] });
+                        setCurrentParticipant({ participant_id: '', user_id: '', name: '', email: '', role: 'buyer', documents: [], forms: [] });
                       }}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -225,15 +315,17 @@ const ProjectParticipants: React.FC = () => {
                 <div className="grid grid-cols-1 gap-6">
                   {buyers.map(buyer => (
                     <ParticipantCard 
-                      key={buyer.id}
+                      key={buyer.participant_id}
                       participant={buyer}
-                      onDelete={() => handleRemoveParticipant(buyer.id)}
+                      onDelete={() => handleRemoveParticipant(buyer.participant_id)}
                       onAssignDocuments={() => openAssignDialog(buyer, 'documents')}
                       onAssignForms={() => openAssignDialog(buyer, 'forms')}
                       onAssignBusinessDocuments={buyer.business ? 
                         () => openAssignDialog(buyer, 'documents', 'business') : undefined}
                       onAssignBusinessForms={buyer.business ? 
                         () => openAssignDialog(buyer, 'forms', 'business') : undefined}
+                      onAddBusiness={() => toast('Add business functionality would be implemented here')}
+                      formTemplates={{ individual: individualForms || [], business: businessForms || [] }}
                     />
                   ))}
                 </div>
@@ -247,7 +339,7 @@ const ProjectParticipants: React.FC = () => {
                   onClick={() => {
                     setIsParticipantDialogOpen(true);
                     // Pre-select seller type
-                    setCurrentParticipant({ id: '', name: '', email: '', type: 'seller', role: 'seller', documents: [], forms: [] });
+                    setCurrentParticipant({ participant_id: '', user_id: '', name: '', email: '', role: 'seller', documents: [], forms: [] });
                   }}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -263,7 +355,7 @@ const ProjectParticipants: React.FC = () => {
                       variant="outline"
                       onClick={() => {
                         setIsParticipantDialogOpen(true);
-                        setCurrentParticipant({ id: '', name: '', email: '', type: 'seller', role: 'seller', documents: [], forms: [] });
+                        setCurrentParticipant({ participant_id: '', user_id: '', name: '', email: '', role: 'seller', documents: [], forms: [] });
                       }}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -275,15 +367,17 @@ const ProjectParticipants: React.FC = () => {
                 <div className="grid grid-cols-1 gap-6">
                   {sellers.map(seller => (
                     <ParticipantCard 
-                      key={seller.id}
+                      key={seller.participant_id}
                       participant={seller}
-                      onDelete={() => handleRemoveParticipant(seller.id)}
+                      onDelete={() => handleRemoveParticipant(seller.participant_id)}
                       onAssignDocuments={() => openAssignDialog(seller, 'documents')}
                       onAssignForms={() => openAssignDialog(seller, 'forms')}
                       onAssignBusinessDocuments={seller.business ? 
                         () => openAssignDialog(seller, 'documents', 'business') : undefined}
                       onAssignBusinessForms={seller.business ? 
                         () => openAssignDialog(seller, 'forms', 'business') : undefined}
+                      onAddBusiness={() => toast('Add business functionality would be implemented here')}
+                      formTemplates={{ individual: individualForms || [], business: businessForms || [] }}
                     />
                   ))}
                 </div>
@@ -304,7 +398,7 @@ const ProjectParticipants: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {bankUsers.map(user => (
-                    <Card key={user.id}>
+                    <Card key={user.participant_id}>
                       <CardHeader className="pb-3">
                         <div className="flex justify-between items-start">
                           <div className="flex items-center gap-3">
@@ -337,7 +431,7 @@ const ProjectParticipants: React.FC = () => {
         open={isParticipantDialogOpen}
         onOpenChange={setIsParticipantDialogOpen}
         onSave={handleAddParticipant}
-        defaultType={currentParticipant?.type}
+        defaultType={currentParticipant?.role}
       />
 
       <AssignmentDialog
@@ -358,6 +452,11 @@ interface ParticipantCardProps {
   onAssignForms: () => void;
   onAssignBusinessDocuments?: () => void;
   onAssignBusinessForms?: () => void;
+  onAddBusiness: () => void;
+  formTemplates: {
+    individual: Form[];
+    business: Form[];
+  };
 }
 
 const ParticipantCard: React.FC<ParticipantCardProps> = ({
@@ -366,7 +465,9 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
   onAssignDocuments,
   onAssignForms,
   onAssignBusinessDocuments,
-  onAssignBusinessForms
+  onAssignBusinessForms,
+  onAddBusiness,
+  formTemplates
 }) => {
   const getInitials = (name: string) => {
     return name
@@ -429,7 +530,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
                   ) : (
                     <div className="grid gap-2">
                       {participant.documents.map(doc => (
-                        <div key={doc.id} className="flex items-center justify-between p-2 bg-muted rounded-md">
+                        <div key={doc.document_id} className="flex items-center justify-between p-2 bg-muted rounded-md">
                           <div className="flex items-center">
                             <FileText className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
                             <span className="text-sm">{doc.name}</span>
@@ -455,9 +556,9 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
                     <div className="grid gap-2">
                       {participant.forms.map(form => (
                         <div 
-                          key={form.id} 
+                          key={form.form_id} 
                           className="flex items-center justify-between p-2 bg-muted rounded-md cursor-pointer hover:bg-muted/80"
-                          onClick={() => handleFormClick(form.id, form.name)}
+                          onClick={() => handleFormClick(form.form_id, form.name)}
                         >
                           <div className="flex items-center">
                             <ClipboardCheck className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
@@ -498,7 +599,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
                     ) : (
                       <div className="grid gap-2">
                         {participant.business.documents.map(doc => (
-                          <div key={doc.id} className="flex items-center justify-between p-2 bg-muted rounded-md">
+                          <div key={doc.document_id} className="flex items-center justify-between p-2 bg-muted rounded-md">
                             <div className="flex items-center">
                               <FileText className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
                               <span className="text-sm">{doc.name}</span>
@@ -524,9 +625,9 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
                       <div className="grid gap-2">
                         {participant.business.forms.map(form => (
                           <div 
-                            key={form.id} 
+                            key={form.form_id} 
                             className="flex items-center justify-between p-2 bg-muted rounded-md cursor-pointer hover:bg-muted/80"
-                            onClick={() => handleFormClick(form.id, form.name)}
+                            onClick={() => handleFormClick(form.form_id, form.name)}
                           >
                             <div className="flex items-center">
                               <ClipboardCheck className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
@@ -548,7 +649,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
         
         {!participant.business && participant.role !== 'bank_officer' && participant.role !== 'loan_specialist' && participant.role !== 'bank_manager' && (
           <div className="flex justify-center pt-2">
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full" onClick={onAddBusiness}>
               <Building2 className="h-4 w-4 mr-2" />
               Add Business
             </Button>

@@ -1,239 +1,224 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { ArrowRight, Building2, ChartPieIcon, BarChart, ShieldCheck, LogIn } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Building2, Loader2 } from 'lucide-react';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/projects';
+  const { signIn, signUp, user, loading } = useAuth();
+  
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupName, setSignupName] = useState('');
+  const [signupRole, setSignupRole] = useState('buyer');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  // If already logged in, redirect to projects
+  React.useEffect(() => {
+    if (user && !loading) {
+      navigate('/projects');
+    }
+  }, [user, loading, navigate]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Demo login - in a real app, this would call an authentication API
-    if (email && password) {
-      toast("Login successful");
-      navigate('/dashboard');
-    } else {
-      toast("Please enter both email and password");
+    const { error } = await signIn(loginEmail, loginPassword);
+    
+    setIsSubmitting(false);
+    
+    if (!error) {
+      navigate(from);
     }
   };
 
-  const features = [
-    {
-      icon: Building2,
-      title: 'Project Management',
-      description: 'Organize and track all loan projects in one centralized location.',
-    },
-    {
-      icon: ChartPieIcon,
-      title: 'Financial Tracking',
-      description: 'Monitor loan proceeds and fund allocation with precision.',
-    },
-    {
-      icon: BarChart,
-      title: 'Data Visualization',
-      description: 'Visualize project data through intuitive charts and graphs.',
-    },
-    {
-      icon: ShieldCheck,
-      title: 'User Authentication',
-      description: 'Secure role-based access control with optional two-factor authentication.',
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const userData = {
+      name: signupName,
+      role: signupRole
+    };
+    
+    const { error } = await signUp(signupEmail, signupPassword, userData);
+    
+    setIsSubmitting(false);
+    
+    if (!error) {
+      // Stay on the login tab, they need to check email for confirmation
+      // or will be auto-logged in if email confirmation is disabled
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-24 px-4">
-        <div className="absolute inset-0 -z-10 h-full w-full bg-white">
-          <div className="absolute h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+    <div className="min-h-screen flex items-center justify-center bg-muted/40 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        <div className="text-center mb-8">
+          <div className="flex justify-center">
+            <div className="rounded-full bg-primary/10 p-3 mb-3">
+              <Building2 className="h-10 w-10 text-primary" />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold">Bank Project Sphere</h1>
+          <p className="text-muted-foreground">Manage your banking projects in one place</p>
         </div>
         
-        <div className="container mx-auto max-w-6xl relative">
-          <motion.div 
-            className="text-center flex flex-col items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="relative mb-6">
-              <motion.div 
-                className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full blur"
-                animate={{ 
-                  scale: [1, 1.05, 1],
-                  opacity: [0.7, 0.9, 0.7] 
-                }}
-                transition={{ 
-                  duration: 3,
-                  repeat: Infinity,
-                  repeatType: "reverse" 
-                }}
-              />
-              <div className="relative bg-white p-1 rounded-full">
-                <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary">
-                  Banking Innovation
-                </span>
-              </div>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 max-w-3xl gradient-text">
-              Intelligent Banking Project Management
-            </h1>
-            
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl">
-              Streamline loan project workflows and financial tracking with an intuitive, powerful platform designed for modern banking institutions.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <Card className="h-full">
-                  <CardHeader>
-                    <CardTitle>Login to your account</CardTitle>
-                    <CardDescription>Enter your credentials to access the platform</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleLogin} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input 
-                          id="email" 
-                          type="email" 
-                          placeholder="you@example.com" 
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input 
-                          id="password" 
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                        />
-                      </div>
-                      <Button type="submit" className="w-full">
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Sign In
-                      </Button>
-                    </form>
-                  </CardContent>
-                  <CardFooter className="flex justify-center">
-                    <p className="text-sm text-muted-foreground">
-                      Don't have an account? <Link to="/sign-up" className="text-primary font-medium">Sign up</Link>
-                    </p>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="flex items-center"
-              >
-                <div>
-                  <h2 className="text-2xl font-bold mb-4">Get Started Now</h2>
-                  <p className="text-muted-foreground mb-6">
-                    Join thousands of banking professionals who are already optimizing their project management workflows.
-                  </p>
-                  <div className="flex flex-col gap-4">
-                    <Button asChild variant="outline" className="justify-between">
-                      <Link to="/projects">
-                        View Projects
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button asChild className="justify-between">
-                      <Link to="/dashboard">
-                        Dashboard
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="login">
+            <Card>
+              <form onSubmit={handleLogin}>
+                <CardHeader>
+                  <CardTitle>Login</CardTitle>
+                  <CardDescription>Enter your credentials to access your account</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="your@email.com" 
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      required
+                    />
                   </div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-secondary/50">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful Features</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Our platform offers all the tools you need to manage complex banking projects efficiently.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="h-full border-border/50 hover-lift">
-                  <CardHeader>
-                    <div className="p-2 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                      <feature.icon className="h-6 w-6 text-primary" />
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <Button type="button" variant="link" size="sm" className="px-0">
+                        Forgot password?
+                      </Button>
                     </div>
-                    <CardTitle>{feature.title}</CardTitle>
-                    <CardDescription>{feature.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button variant="ghost" className="text-primary/80 hover:text-primary">
-                      Learn more <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-secondary/50 py-8 px-4 mt-auto">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-xl font-bold gradient-text mb-4 md:mb-0">Sphere</div>
-            <div className="flex space-x-6">
-              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-                Dashboard
-              </Link>
-              <Link to="/projects" className="text-muted-foreground hover:text-foreground transition-colors">
-                Projects
-              </Link>
-              <Link to="/users" className="text-muted-foreground hover:text-foreground transition-colors">
-                Users
-              </Link>
-              <Link to="/use-of-proceeds" className="text-muted-foreground hover:text-foreground transition-colors">
-                Use of Proceeds
-              </Link>
-            </div>
-          </div>
-          <div className="border-t border-border/50 mt-6 pt-6 text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Sphere Banking. All rights reserved.
-          </div>
-        </div>
-      </footer>
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging in...
+                      </>
+                    ) : (
+                      'Login'
+                    )}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="signup">
+            <Card>
+              <form onSubmit={handleSignup}>
+                <CardHeader>
+                  <CardTitle>Create Account</CardTitle>
+                  <CardDescription>Enter your details to create a new account</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input 
+                      id="name" 
+                      type="text" 
+                      placeholder="John Doe" 
+                      value={signupName}
+                      onChange={(e) => setSignupName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <Input 
+                      id="signup-email" 
+                      type="email" 
+                      placeholder="your@email.com" 
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Password</Label>
+                    <Input 
+                      id="signup-password" 
+                      type="password" 
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">I am a</Label>
+                    <select
+                      id="role"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={signupRole}
+                      onChange={(e) => setSignupRole(e.target.value)}
+                      required
+                    >
+                      <option value="buyer">Buyer</option>
+                      <option value="seller">Seller</option>
+                      <option value="bank_officer">Bank Officer</option>
+                      <option value="loan_specialist">Loan Specialist</option>
+                    </select>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      'Create Account'
+                    )}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </motion.div>
     </div>
   );
 };

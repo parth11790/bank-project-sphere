@@ -1,17 +1,22 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { projects } from '@/lib/mockData';
 import { Users, BarChart, FileText, ArrowLeft, TrendingUp } from 'lucide-react';
+import { getProjectById } from '@/services/supabaseService';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface LoanType {
+  loan_type_id: string;
+  project_id: string;
   type: string;
   amount: number;
   description: string;
+  created_at: string;
 }
 
 interface Project {
@@ -30,17 +35,36 @@ interface Project {
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+
+  const { data: project, isLoading, isError } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => getProjectById(projectId || ''),
+    enabled: !!projectId,
+  });
   
-  // Find the project by ID
-  const project = projects.find(p => p.project_id === projectId) as Project | undefined;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-6 px-4 md:px-6 max-w-6xl">
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-10 w-96" />
+            </div>
+            <Skeleton className="h-72 w-full" />
+          </div>
+        </main>
+      </div>
+    );
+  }
   
-  // If project doesn't exist, redirect to the projects list
-  if (!project) {
+  if (isError || !project) {
     return <Navigate to="/projects" replace />;
   }
   
   // Calculate total loan amount from individual loan types
-  const totalLoanAmount = project.loan_types.reduce((total, loan) => total + loan.amount, 0);
+  const totalLoanAmount = project.loan_types?.reduce((total, loan) => total + loan.amount, 0) || 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,8 +144,8 @@ const Project: React.FC = () => {
               <div>
                 <h3 className="text-sm font-medium mb-2">Loan Information</h3>
                 <div className="border rounded-md divide-y">
-                  {project.loan_types.map((loan, index) => (
-                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  {project.loan_types?.map((loan) => (
+                    <div key={loan.loan_type_id} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <span className="font-medium">{loan.type}</span>
                         <p className="text-sm text-muted-foreground">{loan.description}</p>

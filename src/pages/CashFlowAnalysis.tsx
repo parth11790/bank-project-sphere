@@ -1,221 +1,387 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, Download, Filter } from 'lucide-react';
-import { projects, businesses, getBusinessById, getBusinessByOwnerId, getUserById } from '@/lib/mockData';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { getProjectById, getProjectParticipants, getBusinessesByOwnerId, getBusinessFinancialData } from '@/services/supabaseService';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface BusinessFinancialData {
+  data_id: string;
+  business_id: string;
+  year: string;
+  revenue: number;
+  wages: number;
+  cogs: number;
+  gross_profit: number;
+  other_expenses: number;
+  total_noi: number;
+  nom_percentage: number;
+}
+
+interface Business {
+  business_id: string;
+  name: string;
+  entity_type: string;
+  owner_id: string;
+  financial_data?: BusinessFinancialData[];
+}
 
 const CashFlowAnalysis: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const navigate = useNavigate();
-  const [selectedYear, setSelectedYear] = useState<string>("2023");
-  
-  // Find the project by ID
-  const project = projects.find(p => p.project_id === projectId);
-  
-  // If project doesn't exist, redirect to the projects list
-  if (!project) {
-    return <Navigate to="/projects" replace />;
-  }
-  
-  // Get the seller participants from this project
-  const sellerParticipants = project.participants?.filter(p => {
-    const user = getUserById(p.userId);
-    return user && user.role === 'seller';
-  }) || [];
-  
-  // Get the businesses for these sellers
-  const sellerBusinesses = sellerParticipants.map(p => {
-    const user = getUserById(p.userId);
-    if (user && user.business) {
-      const business = businesses.find(b => b.name === user.business);
-      return business;
-    }
-    return null;
-  }).filter(Boolean);
-  
-  const years = ["2021", "2022", "2023"];
-  
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [years, setYears] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch project details
+  const { data: project, isLoading: projectLoading } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => getProjectById(projectId || ''),
+    enabled: !!projectId,
+  });
+
+  // Fetch project participants
+  const { data: participants, isLoading: participantsLoading } = useQuery({
+    queryKey: ['participants', projectId],
+    queryFn: () => getProjectParticipants(projectId || ''),
+    enabled: !!projectId,
+  });
+
+  // Load businesses and their financial data
+  useEffect(() => {
+    const loadBusinessData = async () => {
+      if (!participants || participantsLoading) return;
+
+      // Get seller participants only
+      const sellers = participants.filter(p => p.user.role === 'seller');
+      if (sellers.length === 0) {
+        setIsLoading(false);
+        return;
+      }
+
+      const allBusinesses: Business[] = [];
+      const allYears = new Set<string>();
+
+      // For each seller, get their businesses
+      for (const seller of sellers) {
+        const sellerBusinesses = await getBusinessesByOwnerId(seller.user_id);
+        
+        // For each business, fetch financial data
+        for (const business of sellerBusinesses) {
+          const financialData = await getBusinessFinancialData(business.business_id);
+          
+          // Add years to our set of years
+          financialData.forEach(data => allYears.add(data.year));
+          
+          // Add business with its financial data
+          allBusinesses.push({
+            ...business,
+            financial_data: financialData
+          });
+        }
+      }
+
+      // Sort years chronologically
+      const sortedYears = Array.from(allYears).sort();
+      
+      setBusinesses(allBusinesses);
+      setYears(sortedYears);
+      setIsLoading(false);
+    };
+
+    loadBusinessData();
+  }, [participants, participantsLoading, projectId]);
+
   const handleExport = () => {
-    toast("Exporting cash flow data (Demo only)");
+    toast.success("Exporting cash flow data (Demo only)");
   };
+
+  if (projectLoading || isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-6 px-4 md:px-6 max-w-6xl">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+          <div className="mt-8">
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-6 px-4 md:px-6 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+          >
             <div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(`/project/dashboard/${projectId}`)}
-                >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Back to Project
-                </Button>
-              </div>
-              <h1 className="text-3xl font-bold mt-4">Cash Flow Analysis</h1>
-              <p className="text-muted-foreground">{project.project_name}</p>
+              <h1 className="text-3xl font-bold mb-1">Cash Flow Analysis</h1>
+              <p className="text-muted-foreground">
+                {project?.project_name} - Financial data for all seller businesses
+              </p>
             </div>
             
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={handleExport} className="flex items-center gap-1">
+              <Button variant="outline" size="sm" asChild>
+                <Link to={`/project/${projectId}`} className="flex items-center gap-1">
+                  <ChevronLeft className="h-4 w-4" />
+                  <span>Back to Project</span>
+                </Link>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleExport} 
+                className="flex items-center gap-1"
+              >
                 <Download className="h-4 w-4" />
                 <span>Export</span>
               </Button>
             </div>
-          </div>
+          </motion.div>
 
-          <Card>
-            <CardHeader>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <CardTitle>Business Cash Flow Summary</CardTitle>
-                  <CardDescription>Financial performance of seller businesses</CardDescription>
-                </div>
-                <Tabs defaultValue={selectedYear} onValueChange={setSelectedYear} className="w-[200px]">
-                  <TabsList className="grid grid-cols-3">
-                    {years.map(year => (
-                      <TabsTrigger key={year} value={year}>{year}</TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[250px]">Business</TableHead>
-                      <TableHead>Entity Type</TableHead>
-                      <TableHead className="text-right">Revenue</TableHead>
-                      <TableHead className="text-right">Wages</TableHead>
-                      <TableHead className="text-right">COGS</TableHead>
-                      <TableHead className="text-right">Gross Profit</TableHead>
-                      <TableHead className="text-right">Gross Margin</TableHead>
-                      <TableHead className="text-right">Other Expenses</TableHead>
-                      <TableHead className="text-right">Total NOI</TableHead>
-                      <TableHead className="text-right">NOM %</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sellerBusinesses.map((business) => {
-                      if (!business) return null;
-                      const financialData = business.financial_data[selectedYear as keyof typeof business.financial_data];
-                      
-                      if (!financialData) {
-                        return (
-                          <TableRow key={business.business_id}>
-                            <TableCell className="font-medium">{business.name}</TableCell>
-                            <TableCell>{business.entity_type}</TableCell>
-                            <TableCell colSpan={8} className="text-center text-muted-foreground">
-                              No financial data available for {selectedYear}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      }
-                      
-                      const grossMargin = (financialData.gross_profit / financialData.revenue * 100).toFixed(1);
-                      
-                      return (
-                        <TableRow key={business.business_id}>
-                          <TableCell className="font-medium">{business.name}</TableCell>
-                          <TableCell>{business.entity_type}</TableCell>
-                          <TableCell className="text-right">
-                            {financialData.revenue.toLocaleString('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {financialData.wages.toLocaleString('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {financialData.cogs.toLocaleString('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {financialData.gross_profit.toLocaleString('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">{grossMargin}%</TableCell>
-                          <TableCell className="text-right">
-                            {financialData.other_expenses.toLocaleString('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {financialData.total_noi.toLocaleString('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              maximumFractionDigits: 0,
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">{financialData.nom_percentage}%</TableCell>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {businesses.length > 0 ? (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle>Business Financial Data</CardTitle>
+                  <CardDescription>
+                    Combined financial data for all seller businesses involved in this project
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableCaption>Financial data for seller businesses</TableCaption>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[250px]">Business</TableHead>
+                          <TableHead>Entity Type</TableHead>
+                          {years.map(year => (
+                            <TableHead key={year} className="text-right">{year}</TableHead>
+                          ))}
                         </TableRow>
-                      );
-                    })}
-                    
-                    {sellerBusinesses.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={10} className="text-center py-6 text-muted-foreground">
-                          No seller businesses found for this project
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              {sellerBusinesses.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="text-lg font-semibold mb-4">Trend Analysis</h3>
-                  <p className="text-muted-foreground mb-4">
-                    The financial data shows that 
-                    {sellerBusinesses.map(b => b?.name).join(' and ')} 
-                    maintained healthy profit margins over the last three years,
-                    with consistent growth in revenue and net operating income.
-                    This indicates good operational stability and financial health.
+                      </TableHeader>
+                      <TableBody>
+                        {businesses.map(business => (
+                          <React.Fragment key={business.business_id}>
+                            {/* Revenue row */}
+                            <TableRow>
+                              <TableCell className="font-medium" rowSpan={9}>
+                                {business.name}
+                              </TableCell>
+                              <TableCell rowSpan={9}>{business.entity_type}</TableCell>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                Revenue
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-revenue-${year}`} className="text-right">
+                                    {yearData ? new Intl.NumberFormat('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD',
+                                      maximumFractionDigits: 0,
+                                    }).format(yearData.revenue) : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* Wages row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                Wages
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-wages-${year}`} className="text-right">
+                                    {yearData ? new Intl.NumberFormat('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD',
+                                      maximumFractionDigits: 0,
+                                    }).format(yearData.wages) : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* COGS row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                COGS
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-cogs-${year}`} className="text-right">
+                                    {yearData ? new Intl.NumberFormat('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD',
+                                      maximumFractionDigits: 0,
+                                    }).format(yearData.cogs) : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* Gross Profit row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                Gross Profit
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-gross-profit-${year}`} className="text-right">
+                                    {yearData ? new Intl.NumberFormat('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD',
+                                      maximumFractionDigits: 0,
+                                    }).format(yearData.gross_profit) : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* Gross Margin row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                Gross Margin
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const grossMargin = yearData && yearData.revenue > 0 
+                                  ? (yearData.gross_profit / yearData.revenue * 100) 
+                                  : 0;
+                                
+                                return (
+                                  <TableCell key={`${business.business_id}-gross-margin-${year}`} className="text-right">
+                                    {yearData ? `${grossMargin.toFixed(2)}%` : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* Other Expenses row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                Other Expenses
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-other-expenses-${year}`} className="text-right">
+                                    {yearData ? new Intl.NumberFormat('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD',
+                                      maximumFractionDigits: 0,
+                                    }).format(yearData.other_expenses) : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* Total NOI row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                Total NOI
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-total-noi-${year}`} className="text-right">
+                                    {yearData ? new Intl.NumberFormat('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD',
+                                      maximumFractionDigits: 0,
+                                    }).format(yearData.total_noi) : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                            
+                            {/* NOM row */}
+                            <TableRow>
+                              <TableCell className="font-medium" colSpan={years.length + 1}>
+                                NOM
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              {years.map(year => {
+                                const yearData = business.financial_data?.find(data => data.year === year);
+                                return (
+                                  <TableCell key={`${business.business_id}-nom-${year}`} className="text-right">
+                                    {yearData ? `${yearData.nom_percentage.toFixed(2)}%` : '-'}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          </React.Fragment>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <div className="p-3 rounded-full bg-muted/50 mb-4">
+                    <FileSpreadsheet className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">No Financial Data Available</h3>
+                  <p className="text-muted-foreground text-center max-w-md mb-6">
+                    No seller businesses with financial data found for this project.
                   </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+                  <div className="flex gap-3">
+                    <Button variant="outline" asChild>
+                      <Link to={`/project/${projectId}`}>Back to Project</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link to={`/project/participants/${projectId}`}>Add Sellers</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
+        </div>
       </main>
     </div>
   );
