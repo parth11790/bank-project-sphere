@@ -10,10 +10,24 @@ import { projects, getUseOfProceedsForProject, getProjectById } from '@/lib/mock
 import { toast } from 'sonner';
 import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 
+// Define an interface that includes city and state properties
+interface Project {
+  project_id: string;
+  project_name: string;
+  project_type: string;
+  loan_types: string[];
+  loan_amount: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  city?: string;
+  state?: string;
+}
+
 const UseOfProceeds: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId || '');
-  const selectedProject = getProjectById(selectedProjectId);
+  const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
   const proceedsData = getUseOfProceedsForProject(selectedProjectId);
 
   // Update the selectedProjectId if the URL param changes
@@ -59,17 +73,13 @@ const UseOfProceeds: React.FC = () => {
       determinedLoanTypes.push('Conventional');
     }
     
-    toast({
-      title: "Data Saved",
-      description: `Use of proceeds data has been updated. Loan types: ${determinedLoanTypes.join(', ')} (Demo only)`,
-    });
+    // Fix: Use the toast correctly
+    toast(`Data Saved - Loan types: ${determinedLoanTypes.join(', ')} (Demo only)`);
   };
 
   const handleExport = () => {
-    toast({
-      title: "Export Initiated",
-      description: "Exporting data to spreadsheet (Demo only)",
-    });
+    // Fix: Use the toast correctly
+    toast("Exporting data to spreadsheet (Demo only)");
   };
 
   return (

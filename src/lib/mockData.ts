@@ -81,6 +81,8 @@ export const projects = [
     created_by: "user_1",
     created_at: generateDate(),
     updated_at: generateDate(),
+    city: "San Francisco",
+    state: "CA"
   },
   {
     project_id: "proj_2",
@@ -91,6 +93,8 @@ export const projects = [
     created_by: "user_2",
     created_at: generateDate(),
     updated_at: generateDate(),
+    city: "Portland",
+    state: "OR"
   },
   {
     project_id: "proj_3",
@@ -101,6 +105,8 @@ export const projects = [
     created_by: "user_1",
     created_at: generateDate(),
     updated_at: generateDate(),
+    city: "Austin",
+    state: "TX"
   },
   {
     project_id: "proj_4",
@@ -111,6 +117,8 @@ export const projects = [
     created_by: "user_4",
     created_at: generateDate(),
     updated_at: generateDate(),
+    city: "Denver",
+    state: "CO"
   },
   {
     project_id: "proj_5",
@@ -121,6 +129,8 @@ export const projects = [
     created_by: "user_2",
     created_at: generateDate(),
     updated_at: generateDate(),
+    city: "Chicago",
+    state: "IL"
   },
 ];
 
