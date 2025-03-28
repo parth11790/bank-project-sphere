@@ -16,5 +16,5 @@ export interface ApiResponse {
 
 // Type guard to check if an object is a User
 export function isUser(obj: User | ApiResponse): obj is User {
-  return 'user_id' in obj && 'name' in obj;
+  return 'user_id' in obj && 'name' in obj && 'email' in obj && 'role' in obj;
 }

@@ -67,7 +67,7 @@ const Projects: React.FC = () => {
             </Button>
           </div>
 
-          <ProjectList projects={projects || []} />
+          <ProjectList projects={projects as Project[] || []} />
         </div>
       </main>
     </div>

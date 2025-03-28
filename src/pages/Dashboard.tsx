@@ -8,7 +8,7 @@ import RecentProjects from '@/components/dashboard/RecentProjects';
 import PortfolioSummary from '@/components/dashboard/PortfolioSummary';
 import { useQuery } from '@tanstack/react-query';
 import { getProjects } from '@/services/supabaseService';
-import { getUsers } from '@/lib/mockData';
+import { users } from '@/lib/mockData';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard: React.FC = () => {
@@ -17,7 +17,7 @@ const Dashboard: React.FC = () => {
     queryFn: getProjects
   });
   
-  const users = getUsers();
+  // Use the users array directly instead of a function
   
   if (projectsLoading) {
     return (
