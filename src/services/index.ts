@@ -16,7 +16,7 @@ import {
 // Export the mock data functions as our main service functions
 export const getProjects = getProjectsData;
 export const getProjectById = getProjectByIdData;
-export const getProjectParticipants = getProjectParticipantsData;
+export const getProjectParticipants = getParticipantsWithDetailsData; // Use the detailed participants data by default
 export const getParticipantsWithDetails = getParticipantsWithDetailsData;
 export const getBusinessesByOwnerId = getBusinessesByOwnerIdData;
 export const getBusinessFinancialData = getBusinessFinancialDataData;

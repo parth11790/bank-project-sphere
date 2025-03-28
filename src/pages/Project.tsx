@@ -17,7 +17,8 @@ import {
   Store,
   DollarSign
 } from 'lucide-react';
-import { getProjectById, getProjectParticipants } from '@/services';
+import { getProjectById } from '@/services';
+import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,7 +35,7 @@ import {
   Tooltip
 } from 'recharts';
 import { Project as ProjectType } from '@/types/project';
-import { Participant } from '@/types/participant';
+import { ParticipantWithDetails } from '@/hooks/useParticipantData';
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -48,7 +49,7 @@ const Project: React.FC = () => {
   
   const { data: participants, isLoading: participantsLoading } = useQuery({
     queryKey: ['participants', projectId],
-    queryFn: () => getProjectParticipants(projectId || ''),
+    queryFn: () => getParticipantsWithDetailsData(projectId || ''),
     enabled: !!projectId
   });
   
@@ -77,15 +78,35 @@ const Project: React.FC = () => {
     );
   }
   
+  // Handle case where project is not found
+  if (!project) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center h-[50vh]">
+          <h1 className="text-2xl font-bold mb-4">Project Not Found</h1>
+          <p className="text-muted-foreground mb-6">The project you're looking for doesn't exist or has been removed.</p>
+          <Button onClick={() => navigate('/projects')}>Back to Projects</Button>
+        </div>
+      </Layout>
+    );
+  }
+  
   const projectData = project as ProjectType;
-  const participantsData = participants as Participant[];
+  const participantsData = participants || [];
   
   const buyerParticipants = participantsData.filter(p => p.role === 'buyer');
   const sellerParticipants = participantsData.filter(p => p.role === 'seller');
-  const bankParticipants = participantsData.filter(p => p.role === 'bank_officer');
+  const bankParticipants = participantsData.filter(p => 
+    p.role === 'bank_officer' || p.role === 'loan_specialist' || p.role === 'bank_manager'
+  );
   
-  // Calculate total loan amount
-  const totalLoanAmount = projectData.loan_types.reduce((sum, loan) => sum + loan.amount, 0);
+  // Calculate total loan amount, handling both string and object loan types
+  const totalLoanAmount = projectData.loan_types.reduce((sum, loan) => {
+    if (typeof loan === 'string') {
+      return sum; // Skip if loan is just a string
+    }
+    return sum + (loan.amount || 0);
+  }, 0);
   
   // Format loan amount with commas and dollar sign
   const formatCurrency = (amount: number) => {
@@ -97,12 +118,22 @@ const Project: React.FC = () => {
   };
   
   // Data for the loan type distribution pie chart
-  const loanDistributionData = projectData.loan_types.map(loan => ({
-    name: loan.type,
-    value: loan.amount
-  }));
+  const loanDistributionData = projectData.loan_types
+    .filter((loan): loan is { type: string; amount: number; description: string } => 
+      typeof loan !== 'string' && !!loan.amount
+    )
+    .map(loan => ({
+      name: loan.type,
+      value: loan.amount
+    }));
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+  
+  // Get status string safely
+  const getStatusString = (status: string | undefined) => {
+    if (!status) return 'Unknown';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
   
   return (
     <Layout>
@@ -122,11 +153,11 @@ const Project: React.FC = () => {
                 projectData.status === 'pending' ? 'secondary' :
                 'outline'
               }>
-                {projectData.status.charAt(0).toUpperCase() + projectData.status.slice(1)}
+                {getStatusString(projectData.status)}
               </Badge>
             </div>
             <p className="text-muted-foreground">
-              {projectData.description}
+              {projectData.description || 'No description available'}
             </p>
           </div>
           
@@ -168,7 +199,7 @@ const Project: React.FC = () => {
                   <h3 className="text-sm font-medium text-muted-foreground mb-2">Project Details</h3>
                   <dl className="grid grid-cols-[120px_1fr] gap-2">
                     <dt className="text-sm font-medium">Status:</dt>
-                    <dd className="text-sm">{projectData.status.charAt(0).toUpperCase() + projectData.status.slice(1)}</dd>
+                    <dd className="text-sm">{getStatusString(projectData.status)}</dd>
                     
                     <dt className="text-sm font-medium">Type:</dt>
                     <dd className="text-sm">{projectData.project_type}</dd>
@@ -184,12 +215,17 @@ const Project: React.FC = () => {
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-2">Loan Summary</h3>
                   <dl className="space-y-2">
-                    {projectData.loan_types.map((loan, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <dt className="text-sm font-medium">{loan.type}:</dt>
-                        <dd className="text-sm font-mono">{formatCurrency(loan.amount)}</dd>
-                      </div>
-                    ))}
+                    {projectData.loan_types.map((loan, index) => {
+                      const loanType = typeof loan === 'string' ? loan : loan.type;
+                      const loanAmount = typeof loan === 'string' ? 0 : (loan.amount || 0);
+                      
+                      return (
+                        <div key={index} className="flex justify-between items-center">
+                          <dt className="text-sm font-medium">{loanType}:</dt>
+                          <dd className="text-sm font-mono">{formatCurrency(loanAmount)}</dd>
+                        </div>
+                      );
+                    })}
                     <Separator className="my-2" />
                     <div className="flex justify-between items-center font-bold">
                       <dt className="text-sm">Total Loan Amount:</dt>
@@ -315,7 +351,7 @@ const Project: React.FC = () => {
               {/* Bank Personnel */}
               <div>
                 <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
-                  <Building2 className="h-5 w-5" />
+                  <Building className="h-5 w-5" />
                   Bank Personnel ({bankParticipants.length})
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -324,16 +360,19 @@ const Project: React.FC = () => {
                       <CardContent className="p-0">
                         <div className="flex items-center gap-4 p-4">
                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                            <Building2 className="h-5 w-5 text-primary" />
+                            <Building className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium">{participant.name}</p>
-                            <p className="text-xs text-muted-foreground">{participant.email}</p>
+                            <p className="font-medium">{participant.name || 'Unknown'}</p>
+                            <p className="text-xs text-muted-foreground">{participant.email || 'No email'}</p>
                           </div>
                         </div>
                         <div className="border-t px-4 py-3 bg-muted/50">
                           <div className="flex justify-between text-xs">
-                            <span>Tasks: {participant.documents.length + participant.forms.length}</span>
+                            <span>Tasks: {
+                              (participant.documents?.length || 0) + 
+                              (participant.forms?.length || 0)
+                            }</span>
                             <div className="flex items-center gap-1">
                               <CheckCircle2 className="h-3 w-3 text-green-500" />
                               <span>Active</span>
@@ -361,14 +400,15 @@ const Project: React.FC = () => {
                             <UserCircle className="h-5 w-5 text-blue-500" />
                           </div>
                           <div>
-                            <p className="font-medium">{participant.name}</p>
-                            <p className="text-xs text-muted-foreground">{participant.email}</p>
+                            <p className="font-medium">{participant.name || 'Unknown'}</p>
+                            <p className="text-xs text-muted-foreground">{participant.email || 'No email'}</p>
                           </div>
                         </div>
                         <div className="border-t px-4 py-3 bg-muted/50">
                           <div className="flex justify-between text-xs">
                             <span>
-                              Docs: {participant.documents.length}/{participant.documents.length + 3}
+                              Docs: {participant.documents?.length || 0}/
+                              {(participant.documents?.length || 0) + 3}
                             </span>
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-yellow-500" />
@@ -376,7 +416,8 @@ const Project: React.FC = () => {
                             </div>
                           </div>
                           <Progress 
-                            value={(participant.documents.length / (participant.documents.length + 3)) * 100} 
+                            value={((participant.documents?.length || 0) / 
+                              ((participant.documents?.length || 0) + 3)) * 100} 
                             className="h-1 mt-2" 
                           />
                         </div>
@@ -401,8 +442,8 @@ const Project: React.FC = () => {
                             <Store className="h-5 w-5 text-green-500" />
                           </div>
                           <div>
-                            <p className="font-medium">{participant.name}</p>
-                            <p className="text-xs text-muted-foreground">{participant.email}</p>
+                            <p className="font-medium">{participant.name || 'Unknown'}</p>
+                            <p className="text-xs text-muted-foreground">{participant.email || 'No email'}</p>
                             {participant.business && (
                               <p className="text-xs mt-1 text-primary">{participant.business.name}</p>
                             )}
@@ -411,7 +452,8 @@ const Project: React.FC = () => {
                         <div className="border-t px-4 py-3 bg-muted/50">
                           <div className="flex justify-between text-xs">
                             <span>
-                              Docs: {participant.documents.length}/{participant.documents.length + 2}
+                              Docs: {participant.documents?.length || 0}/
+                              {(participant.documents?.length || 0) + 2}
                             </span>
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-yellow-500" />
@@ -419,7 +461,8 @@ const Project: React.FC = () => {
                             </div>
                           </div>
                           <Progress 
-                            value={(participant.documents.length / (participant.documents.length + 2)) * 100} 
+                            value={((participant.documents?.length || 0) / 
+                              ((participant.documents?.length || 0) + 2)) * 100} 
                             className="h-1 mt-2" 
                           />
                         </div>
