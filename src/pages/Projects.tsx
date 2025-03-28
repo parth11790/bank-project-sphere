@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { getProjects } from '@/services/supabaseService';
 import { useQuery } from '@tanstack/react-query';
-import { Project } from '@/types/project';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Projects: React.FC = () => {
@@ -67,7 +66,7 @@ const Projects: React.FC = () => {
             </Button>
           </div>
 
-          <ProjectList projects={projects as Project[] || []} />
+          <ProjectList projects={projects || []} />
         </div>
       </main>
     </div>

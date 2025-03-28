@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import { Building2, Users as UsersIcon, CreditCard, Calendar } from 'lucide-react';
@@ -16,8 +15,6 @@ const Dashboard: React.FC = () => {
     queryKey: ['projects'],
     queryFn: getProjects
   });
-  
-  // Use the users array directly instead of a function
   
   if (projectsLoading) {
     return (

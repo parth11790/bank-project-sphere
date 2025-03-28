@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Plus, SlidersHorizontal } from 'lucide-react';
@@ -6,15 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import UserCard from './UserCard';
 import { useToast } from '@/hooks/use-toast';
-
-interface User {
-  user_id: string;
-  email: string;
-  name: string;
-  role: string;
-  bank_id: string;
-  otp_enabled: boolean;
-}
+import { User } from '@/types/user';
 
 interface UserListProps {
   users: User[];

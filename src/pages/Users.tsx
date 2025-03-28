@@ -10,8 +10,8 @@ import { users as mockUsers } from '@/lib/mockData';
 
 // Function to get users - would be in supabaseService.ts in a real app
 const getUsers = async (): Promise<User[]> => {
-  // Use the mock users directly
-  return mockUsers as User[];
+  // Use the mock users directly - ensure they match our User type
+  return mockUsers as unknown as User[];
 };
 
 const Users: React.FC = () => {

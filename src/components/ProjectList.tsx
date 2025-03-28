@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Grid, List, Search, Plus, SlidersHorizontal } from 'lucide-react';
@@ -7,17 +6,7 @@ import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import ProjectCard from './ProjectCard';
 import { useNavigate } from 'react-router-dom';
-
-interface Project {
-  project_id: string;
-  project_name: string;
-  project_type: string;
-  loan_types: string[];
-  loan_amount: number;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Project } from '@/types/project';
 
 interface ProjectListProps {
   projects: Project[];
@@ -32,7 +21,11 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
   const filteredProjects = projects.filter(project => 
     project.project_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     project.project_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.loan_types.some(type => type.toLowerCase().includes(searchTerm.toLowerCase()))
+    (Array.isArray(project.loan_types) && project.loan_types.some(type => 
+      typeof type === 'string' 
+        ? type.toLowerCase().includes(searchTerm.toLowerCase())
+        : type.type.toLowerCase().includes(searchTerm.toLowerCase())
+    ))
   );
 
   const container = {
