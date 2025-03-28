@@ -9,32 +9,13 @@ import { Users, BarChart, FileText, ArrowLeft, TrendingUp } from 'lucide-react';
 import { getProjectById } from '@/services/supabaseService';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface LoanType {
-  type: string;
-  amount: number;
-  description: string;
-}
-
-interface Project {
-  project_id: string;
-  project_name: string;
-  project_type: string;
-  loan_types: LoanType[];
-  loan_amount: number;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  city?: string;
-  state?: string;
-  created_by_user?: { name: string };
-}
+import { LoanType, Project as ProjectType, isProject } from '@/types/project';
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
-  const { data: project, isLoading, isError } = useQuery({
+  const { data: projectData, isLoading, isError } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId,
@@ -57,10 +38,12 @@ const Project: React.FC = () => {
     );
   }
   
-  if (isError || !project) {
+  if (isError || !projectData || !isProject(projectData)) {
     return <Navigate to="/projects" replace />;
   }
 
+  const project = projectData as ProjectType;
+  
   // Safely handle loan_types whether they're objects or strings
   const loanTypes = Array.isArray(project.loan_types) 
     ? project.loan_types 
@@ -158,8 +141,8 @@ const Project: React.FC = () => {
                   {loanTypes.length > 0 ? loanTypes.map((loan, index) => {
                     // Safely extract data whether loan is an object or string
                     const loanType = typeof loan === 'object' ? loan.type : loan;
-                    const loanAmount = typeof loan === 'object' ? loan.amount : 0;
-                    const loanDescription = typeof loan === 'object' ? loan.description : '';
+                    const loanAmount = typeof loan === 'object' && 'amount' in loan ? loan.amount : 0;
+                    const loanDescription = typeof loan === 'object' && 'description' in loan ? loan.description : '';
 
                     return (
                       <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">

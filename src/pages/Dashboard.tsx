@@ -1,16 +1,49 @@
 
 import React from 'react';
 import Header from '@/components/Header';
-import { projects, users } from '@/lib/mockData';
 import { Building2, Users as UsersIcon, CreditCard, Calendar } from 'lucide-react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import StatCard from '@/components/dashboard/StatCard';
 import RecentProjects from '@/components/dashboard/RecentProjects';
 import PortfolioSummary from '@/components/dashboard/PortfolioSummary';
+import { useQuery } from '@tanstack/react-query';
+import { getProjects } from '@/services/supabaseService';
+import { getUsers } from '@/lib/mockData';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard: React.FC = () => {
-  const recentProjects = projects.slice(0, 3);
-  const totalProjectValue = projects.reduce((sum, project) => sum + project.loan_amount, 0);
+  const { data: projects, isLoading: projectsLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: getProjects
+  });
+  
+  const users = getUsers();
+  
+  if (projectsLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-6 px-4 md:px-6 max-w-6xl">
+          <div className="flex flex-col gap-6">
+            <DashboardHeader />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Skeleton className="h-60 w-full lg:col-span-2" />
+              <Skeleton className="h-60 w-full" />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+  
+  const recentProjects = (projects || []).slice(0, 3);
+  const totalProjectValue = (projects || []).reduce((sum, project) => sum + project.loan_amount, 0);
   const formattedTotalValue = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -20,7 +53,7 @@ const Dashboard: React.FC = () => {
   const stats = [
     {
       title: "Total Projects",
-      value: projects.length,
+      value: (projects || []).length,
       icon: Building2,
       change: "+12%",
       positive: true,
@@ -74,7 +107,7 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <RecentProjects projects={recentProjects} />
             <PortfolioSummary 
-              projectsCount={projects.length} 
+              projectsCount={(projects || []).length} 
               formattedTotalValue={formattedTotalValue} 
             />
           </div>

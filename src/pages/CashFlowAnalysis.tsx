@@ -10,27 +10,9 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { getProjectById, getProjectParticipants, getBusinessesByOwnerId, getBusinessFinancialData } from '@/services/supabaseService';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface BusinessFinancialData {
-  data_id: string;
-  business_id: string;
-  year: string;
-  revenue: number;
-  wages: number;
-  cogs: number;
-  gross_profit: number;
-  other_expenses: number;
-  total_noi: number;
-  nom_percentage: number;
-}
-
-interface Business {
-  business_id: string;
-  name: string;
-  entity_type: string;
-  owner_id: string;
-  financial_data?: BusinessFinancialData[];
-}
+import { Business, BusinessFinancialData, isBusiness } from '@/types/business';
+import { Project, isProject } from '@/types/project';
+import { Participant, isParticipant } from '@/types/participant';
 
 const CashFlowAnalysis: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -39,14 +21,14 @@ const CashFlowAnalysis: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch project details
-  const { data: project, isLoading: projectLoading } = useQuery({
+  const { data: projectData, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId,
   });
 
   // Fetch project participants
-  const { data: participants, isLoading: participantsLoading } = useQuery({
+  const { data: participantsData, isLoading: participantsLoading } = useQuery({
     queryKey: ['participants', projectId],
     queryFn: () => getProjectParticipants(projectId || ''),
     enabled: !!projectId,
@@ -55,10 +37,10 @@ const CashFlowAnalysis: React.FC = () => {
   // Load businesses and their financial data
   useEffect(() => {
     const loadBusinessData = async () => {
-      if (!participants || participantsLoading) return;
+      if (!participantsData || participantsLoading) return;
 
       // Get seller participants only
-      const sellers = participants.filter(p => p.user.role === 'seller');
+      const sellers = participantsData.filter(p => isParticipant(p) && p.user.role === 'seller');
       if (sellers.length === 0) {
         setIsLoading(false);
         return;
@@ -73,6 +55,8 @@ const CashFlowAnalysis: React.FC = () => {
         
         // For each business, fetch financial data
         for (const business of sellerBusinesses) {
+          if (!isBusiness(business)) continue;
+          
           const financialData = await getBusinessFinancialData(business.business_id);
           
           // Add years to our set of years
@@ -81,7 +65,18 @@ const CashFlowAnalysis: React.FC = () => {
           // Add business with its financial data
           allBusinesses.push({
             ...business,
-            financial_data: financialData
+            financial_data: financialData.reduce((acc, curr) => {
+              acc[curr.year] = {
+                revenue: curr.revenue,
+                wages: curr.wages,
+                cogs: curr.cogs,
+                gross_profit: curr.gross_profit,
+                other_expenses: curr.other_expenses,
+                total_noi: curr.total_noi,
+                nom_percentage: curr.nom_percentage
+              };
+              return acc;
+            }, {} as Record<string, any>)
           });
         }
       }
@@ -95,11 +90,13 @@ const CashFlowAnalysis: React.FC = () => {
     };
 
     loadBusinessData();
-  }, [participants, participantsLoading, projectId]);
+  }, [participantsData, participantsLoading, projectId]);
 
   const handleExport = () => {
     toast.success("Exporting cash flow data (Demo only)");
   };
+
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
 
   if (projectLoading || isLoading) {
     return (
@@ -132,7 +129,7 @@ const CashFlowAnalysis: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold mb-1">Cash Flow Analysis</h1>
               <p className="text-muted-foreground">
-                {project?.project_name} - Financial data for all seller businesses
+                {project?.project_name || 'Project'} - Financial data for all seller businesses
               </p>
             </div>
             
@@ -197,7 +194,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-revenue-${year}`} className="text-right">
                                     {yearData ? new Intl.NumberFormat('en-US', {
@@ -218,7 +215,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-wages-${year}`} className="text-right">
                                     {yearData ? new Intl.NumberFormat('en-US', {
@@ -239,7 +236,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-cogs-${year}`} className="text-right">
                                     {yearData ? new Intl.NumberFormat('en-US', {
@@ -260,7 +257,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-gross-profit-${year}`} className="text-right">
                                     {yearData ? new Intl.NumberFormat('en-US', {
@@ -281,7 +278,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 const grossMargin = yearData && yearData.revenue > 0 
                                   ? (yearData.gross_profit / yearData.revenue * 100) 
                                   : 0;
@@ -302,7 +299,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-other-expenses-${year}`} className="text-right">
                                     {yearData ? new Intl.NumberFormat('en-US', {
@@ -323,7 +320,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-total-noi-${year}`} className="text-right">
                                     {yearData ? new Intl.NumberFormat('en-US', {
@@ -344,7 +341,7 @@ const CashFlowAnalysis: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               {years.map(year => {
-                                const yearData = business.financial_data?.find(data => data.year === year);
+                                const yearData = business.financial_data?.[year];
                                 return (
                                   <TableCell key={`${business.business_id}-nom-${year}`} className="text-right">
                                     {yearData ? `${yearData.nom_percentage.toFixed(2)}%` : '-'}

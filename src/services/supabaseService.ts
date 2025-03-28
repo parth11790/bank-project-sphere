@@ -12,12 +12,16 @@ import {
   getAssignedFormsData,
   getAssignedDocumentsData
 } from '@/lib/mockDataProvider';
+import { Project, ApiResponse as ProjectApiResponse, isProject } from '@/types/project';
+import { Business, BusinessFinancialData, ApiResponse as BusinessApiResponse, isBusiness } from '@/types/business';
+import { FormTemplate, Document, ApiResponse as FormApiResponse, isFormTemplate } from '@/types/form';
+import { Participant, ApiResponse as ParticipantApiResponse, isParticipant } from '@/types/participant';
 
 // Flag to use mock data or actual supabase
 const USE_MOCK_DATA = true;
 
 // Project Services
-export const getProjects = async () => {
+export const getProjects = async (): Promise<Project[]> => {
   if (USE_MOCK_DATA) {
     return getProjectsData();
   }
@@ -29,7 +33,9 @@ export const getProjects = async () => {
       .select('*');
     
     if (error) throw error;
-    return data || [];
+    
+    // Filter and transform API data to match our Project type
+    return (data || []).filter(isProject) as Project[];
   } catch (error: any) {
     console.error('Error fetching projects:', error.message);
     toast.error('Failed to load projects');
@@ -37,7 +43,7 @@ export const getProjects = async () => {
   }
 };
 
-export const getProjectById = async (projectId: string) => {
+export const getProjectById = async (projectId: string): Promise<Project | null> => {
   if (USE_MOCK_DATA) {
     return getProjectByIdData(projectId);
   }
@@ -51,7 +57,8 @@ export const getProjectById = async (projectId: string) => {
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return isProject(data) ? data : null;
   } catch (error: any) {
     console.error(`Error fetching project ${projectId}:`, error.message);
     toast.error('Failed to load project details');
@@ -60,7 +67,7 @@ export const getProjectById = async (projectId: string) => {
 };
 
 // Participants Services
-export const getProjectParticipants = async (projectId: string) => {
+export const getProjectParticipants = async (projectId: string): Promise<Participant[]> => {
   if (USE_MOCK_DATA) {
     return getProjectParticipantsData(projectId);
   }
@@ -72,7 +79,9 @@ export const getProjectParticipants = async (projectId: string) => {
       .select('*');
     
     if (error) throw error;
-    return data || [];
+    
+    // Filter and transform API data to match our Participant type
+    return (data || []).filter(isParticipant) as Participant[];
   } catch (error: any) {
     console.error(`Error fetching participants for project ${projectId}:`, error.message);
     toast.error('Failed to load project participants');
@@ -81,7 +90,7 @@ export const getProjectParticipants = async (projectId: string) => {
 };
 
 // Business Services
-export const getBusinessesByOwnerId = async (userId: string) => {
+export const getBusinessesByOwnerId = async (userId: string): Promise<Business[]> => {
   if (USE_MOCK_DATA) {
     return getBusinessesByOwnerIdData(userId);
   }
@@ -93,7 +102,9 @@ export const getBusinessesByOwnerId = async (userId: string) => {
       .select('*');
     
     if (error) throw error;
-    return data || [];
+    
+    // Filter and transform API data to match our Business type
+    return (data || []).filter(isBusiness) as Business[];
   } catch (error: any) {
     console.error(`Error fetching businesses for user ${userId}:`, error.message);
     toast.error('Failed to load business data');
@@ -101,7 +112,7 @@ export const getBusinessesByOwnerId = async (userId: string) => {
   }
 };
 
-export const getBusinessFinancialData = async (businessId: string) => {
+export const getBusinessFinancialData = async (businessId: string): Promise<BusinessFinancialData[]> => {
   if (USE_MOCK_DATA) {
     return getBusinessFinancialDataData(businessId);
   }
@@ -113,7 +124,9 @@ export const getBusinessFinancialData = async (businessId: string) => {
       .select('*');
     
     if (error) throw error;
-    return data || [];
+    
+    // We'll need to implement proper type checking here when the API is set up
+    return data as BusinessFinancialData[] || [];
   } catch (error: any) {
     console.error(`Error fetching financial data for business ${businessId}:`, error.message);
     toast.error('Failed to load financial data');
@@ -122,7 +135,7 @@ export const getBusinessFinancialData = async (businessId: string) => {
 };
 
 // Forms and Documents Services
-export const getFormTemplates = async (entityType: string) => {
+export const getFormTemplates = async (entityType: string): Promise<FormTemplate[]> => {
   if (USE_MOCK_DATA) {
     return getFormTemplatesData(entityType);
   }
@@ -134,7 +147,9 @@ export const getFormTemplates = async (entityType: string) => {
       .select('*');
     
     if (error) throw error;
-    return data || [];
+    
+    // Filter and transform API data to match our FormTemplate type
+    return (data || []).filter(isFormTemplate) as FormTemplate[];
   } catch (error: any) {
     console.error(`Error fetching form templates for ${entityType}:`, error.message);
     toast.error('Failed to load form templates');
@@ -142,7 +157,7 @@ export const getFormTemplates = async (entityType: string) => {
   }
 };
 
-export const getDocuments = async (entityType: string) => {
+export const getDocuments = async (entityType: string): Promise<Document[]> => {
   if (USE_MOCK_DATA) {
     return getDocumentsData(entityType);
   }
@@ -154,7 +169,8 @@ export const getDocuments = async (entityType: string) => {
       .select('*');
     
     if (error) throw error;
-    return data || [];
+    
+    return data as Document[] || [];
   } catch (error: any) {
     console.error(`Error fetching documents for ${entityType}:`, error.message);
     toast.error('Failed to load document types');

@@ -20,6 +20,8 @@ import ParticipantHeader from '@/components/participants/ParticipantHeader';
 import ParticipantsList from '@/components/participants/ParticipantsList';
 import BankPersonnelList from '@/components/participants/BankPersonnelList';
 import { useParticipantData, Participant } from '@/hooks/useParticipantData';
+import { Project, isProject } from '@/types/project';
+import { FormTemplate, isFormTemplate } from '@/types/form';
 
 const ProjectParticipants: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -30,7 +32,7 @@ const ProjectParticipants: React.FC = () => {
   const [entityType, setEntityType] = useState<'individual' | 'business'>('individual');
   
   // Get project details
-  const { data: project, isLoading: projectLoading } = useQuery({
+  const { data: projectData, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId,
@@ -46,26 +48,34 @@ const ProjectParticipants: React.FC = () => {
   } = useParticipantData(projectId || '');
 
   // Load individual forms and documents
-  const { data: individualForms } = useQuery({
+  const { data: individualFormsData } = useQuery({
     queryKey: ['forms', 'individual'],
     queryFn: () => getFormTemplates('individual'),
   });
 
-  const { data: individualDocuments } = useQuery({
+  const { data: individualDocumentsData } = useQuery({
     queryKey: ['documents', 'individual'],
     queryFn: () => getDocuments('individual'),
   });
 
   // Load business forms and documents
-  const { data: businessForms } = useQuery({
+  const { data: businessFormsData } = useQuery({
     queryKey: ['forms', 'business'],
     queryFn: () => getFormTemplates('business'),
   });
 
-  const { data: businessDocuments } = useQuery({
+  const { data: businessDocumentsData } = useQuery({
     queryKey: ['documents', 'business'],
     queryFn: () => getDocuments('business'),
   });
+
+  // Process form data to ensure it matches expected format
+  const individualForms = individualFormsData || [];
+  const businessForms = businessFormsData || [];
+  const individualDocuments = individualDocumentsData || [];
+  const businessDocuments = businessDocumentsData || [];
+
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
 
   const handleAddParticipant = (participant: Omit<Participant, 'participant_id' | 'documents' | 'forms' | 'user_id'>) => {
     // In a real app, this would call an API to add the participant
@@ -164,7 +174,7 @@ const ProjectParticipants: React.FC = () => {
         >
           <ParticipantHeader 
             projectId={projectId || ''}
-            projectName={project?.project_name || ''}
+            projectName={project?.project_name || 'Project'}
           />
 
           <Tabs defaultValue="buyers">
@@ -187,8 +197,8 @@ const ProjectParticipants: React.FC = () => {
                 onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
                 onAddBusiness={() => toast('Add business functionality would be implemented here')}
                 formTemplates={{ 
-                  individual: individualForms || [], 
-                  business: businessForms || [] 
+                  individual: individualForms.filter(isFormTemplate), 
+                  business: businessForms.filter(isFormTemplate) 
                 }}
               />
             </TabsContent>
@@ -206,8 +216,8 @@ const ProjectParticipants: React.FC = () => {
                 onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
                 onAddBusiness={() => toast('Add business functionality would be implemented here')}
                 formTemplates={{ 
-                  individual: individualForms || [], 
-                  business: businessForms || [] 
+                  individual: individualForms.filter(isFormTemplate), 
+                  business: businessForms.filter(isFormTemplate) 
                 }}
               />
             </TabsContent>

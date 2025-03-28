@@ -1,8 +1,13 @@
 
-import { users, businesses, projects, Project, Business, User, LoanType } from './mockData';
+import { users, businesses, projects } from './mockData';
+import { Project, isProject } from '@/types/project';
+import { Business, isBusiness, BusinessFinancialData } from '@/types/business';
+import { User, isUser } from '@/types/user';
+import { FormTemplate, Document, isFormTemplate } from '@/types/form';
+import { Participant, isParticipant } from '@/types/participant';
 
 // Mock implementations of the Supabase service functions
-export const getProjectsData = async () => {
+export const getProjectsData = async (): Promise<Project[]> => {
   return projects.map(project => ({
     project_id: project.project_id,
     project_name: project.project_name,
@@ -19,7 +24,7 @@ export const getProjectsData = async () => {
   }));
 };
 
-export const getProjectByIdData = async (projectId: string) => {
+export const getProjectByIdData = async (projectId: string): Promise<Project | null> => {
   const project = projects.find(p => p.project_id === projectId);
   if (!project) return null;
   
@@ -39,7 +44,7 @@ export const getProjectByIdData = async (projectId: string) => {
   };
 };
 
-export const getProjectParticipantsData = async (projectId: string) => {
+export const getProjectParticipantsData = async (projectId: string): Promise<Participant[]> => {
   const project = projects.find(p => p.project_id === projectId);
   if (!project) return [];
   
@@ -58,11 +63,11 @@ export const getProjectParticipantsData = async (projectId: string) => {
   });
 };
 
-export const getBusinessesByOwnerIdData = async (userId: string) => {
+export const getBusinessesByOwnerIdData = async (userId: string): Promise<Business[]> => {
   return businesses.filter(b => b.owner_id === userId);
 };
 
-export const getBusinessFinancialDataData = async (businessId: string) => {
+export const getBusinessFinancialDataData = async (businessId: string): Promise<BusinessFinancialData[]> => {
   const business = businesses.find(b => b.business_id === businessId);
   if (!business || !business.financial_data) return [];
   
@@ -79,19 +84,6 @@ export const getBusinessFinancialDataData = async (businessId: string) => {
     nom_percentage: data.nom_percentage
   }));
 };
-
-// Mock form and document interfaces
-export interface FormTemplate {
-  form_id: string;
-  name: string;
-  entity_type: string;
-}
-
-export interface Document {
-  document_id: string;
-  name: string;
-  entity_type: string;
-}
 
 // Mock form templates and documents data
 const individualForms: FormTemplate[] = [
@@ -128,11 +120,11 @@ const businessDocuments: Document[] = [
   { document_id: "doc_6", name: "Financial Statements", entity_type: "business" },
 ];
 
-export const getFormTemplatesData = async (entityType: string) => {
+export const getFormTemplatesData = async (entityType: string): Promise<FormTemplate[]> => {
   return entityType === 'individual' ? individualForms : businessForms;
 };
 
-export const getDocumentsData = async (entityType: string) => {
+export const getDocumentsData = async (entityType: string): Promise<Document[]> => {
   return entityType === 'individual' ? individualDocuments : businessDocuments;
 };
 

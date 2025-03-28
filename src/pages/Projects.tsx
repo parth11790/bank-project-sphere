@@ -4,12 +4,44 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import ProjectList from '@/components/ProjectList';
-import { projects } from '@/lib/mockData';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { getProjects } from '@/services/supabaseService';
+import { useQuery } from '@tanstack/react-query';
+import { Project } from '@/types/project';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Projects: React.FC = () => {
   const navigate = useNavigate();
+  
+  const { data: projects, isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: getProjects
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-6 px-4 md:px-6 max-w-6xl">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold mb-1">Projects</h1>
+                <p className="text-muted-foreground">Manage and track all your banking projects</p>
+              </div>
+              <Button disabled className="w-full sm:w-auto">
+                <Plus className="h-4 w-4 mr-2" />
+                Create New Project
+              </Button>
+            </div>
+            
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </main>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-background">
@@ -35,7 +67,7 @@ const Projects: React.FC = () => {
             </Button>
           </div>
 
-          <ProjectList projects={projects} />
+          <ProjectList projects={projects || []} />
         </div>
       </main>
     </div>
