@@ -7,15 +7,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import ProjectCard from '@/components/ProjectCard';
 
+interface LoanType {
+  type: string;
+  amount: number;
+  description: string;
+}
+
 interface Project {
   project_id: string;
   project_name: string;
   project_type: string;
-  loan_types: string[];
+  loan_types: string[] | LoanType[];
   loan_amount: number;
   created_by: string;
   created_at: string;
   updated_at: string;
+  city?: string;
+  state?: string;
 }
 
 interface RecentProjectsProps {
@@ -53,9 +61,7 @@ const RecentProjects: React.FC<RecentProjectsProps> = ({ projects }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 + index * 0.1 }}
               >
-                <Link to={`/project/${project.project_id}`}>
-                  <ProjectCard project={project} />
-                </Link>
+                <ProjectCard project={project} />
               </motion.div>
             ))}
           </div>

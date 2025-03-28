@@ -8,12 +8,13 @@ export const getProjectsData = async () => {
     project_name: project.project_name,
     project_type: project.project_type,
     loan_amount: project.loan_amount,
-    // Instead of passing the whole loan_types object, extract just the types
+    // Return the loan types as array of strings for list views
     loan_types: project.loan_types.map(lt => lt.type),
     created_at: project.created_at,
     updated_at: project.updated_at,
     city: project.city,
     state: project.state,
+    created_by: project.created_by,
     created_by_user: { name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown' }
   }));
 };
@@ -33,6 +34,7 @@ export const getProjectByIdData = async (projectId: string) => {
     updated_at: project.updated_at,
     city: project.city,
     state: project.state,
+    created_by: project.created_by,
     created_by_user: { name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown' }
   };
 };

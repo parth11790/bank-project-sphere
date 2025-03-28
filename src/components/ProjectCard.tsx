@@ -7,12 +7,18 @@ import { Badge } from '@/components/ui/badge';
 import { getUserById } from '@/lib/mockData';
 import { useNavigate } from 'react-router-dom';
 
+interface LoanType {
+  type: string;
+  amount: number;
+  description: string;
+}
+
 interface ProjectCardProps {
   project: {
     project_id: string;
     project_name: string;
     project_type: string;
-    loan_types: string[];
+    loan_types: string[] | LoanType[];
     loan_amount: number;
     created_by?: string;
     created_at: string;
@@ -49,6 +55,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     ? `${project.city}, ${project.state}` 
     : project.city || project.state || 'Location not specified';
 
+  // Process loan types appropriately based on their type
+  const processedLoanTypes = Array.isArray(project.loan_types) 
+    ? project.loan_types.map(lt => typeof lt === 'string' ? lt : lt.type)
+    : [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -75,10 +86,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             <div className="text-sm text-muted-foreground">
               Created by {createdBy || 'Unknown'} • Updated {updatedTimeAgo}
             </div>
-            {Array.isArray(project.loan_types) && project.loan_types.length > 0 && (
+            {processedLoanTypes.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-1">
                 <span className="text-xs text-muted-foreground mr-1">Loan Types:</span>
-                {project.loan_types.map((type, index) => (
+                {processedLoanTypes.map((type, index) => (
                   <Badge key={index} variant="secondary" className="text-xs">
                     {type}
                   </Badge>
