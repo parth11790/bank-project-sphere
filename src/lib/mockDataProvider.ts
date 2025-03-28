@@ -8,6 +8,7 @@ export const getProjectsData = async () => {
     project_name: project.project_name,
     project_type: project.project_type,
     loan_amount: project.loan_amount,
+    // Instead of passing the whole loan_types object, extract just the types
     loan_types: project.loan_types.map(lt => lt.type),
     created_at: project.created_at,
     updated_at: project.updated_at,
@@ -26,7 +27,8 @@ export const getProjectByIdData = async (projectId: string) => {
     project_name: project.project_name,
     project_type: project.project_type,
     loan_amount: project.loan_amount,
-    loan_types: project.loan_types.map(lt => lt.type),
+    // Pass the complete loan_types objects for this function to display details
+    loan_types: project.loan_types,
     created_at: project.created_at,
     updated_at: project.updated_at,
     city: project.city,

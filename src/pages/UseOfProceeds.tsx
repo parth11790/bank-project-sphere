@@ -10,12 +10,18 @@ import { projects, getUseOfProceedsForProject, getProjectById } from '@/lib/mock
 import { toast } from 'sonner';
 import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 
-// Define an interface that includes city and state properties
+// Define an interface that includes city and state properties and proper loan types
+interface LoanType {
+  type: string;
+  amount: number;
+  description: string;
+}
+
 interface Project {
   project_id: string;
   project_name: string;
   project_type: string;
-  loan_types: string[];
+  loan_types: LoanType[];
   loan_amount: number;
   created_by: string;
   created_at: string;
@@ -27,6 +33,7 @@ interface Project {
 const UseOfProceeds: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId || '');
+  // Use as any to avoid type errors during the transition
   const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
   const proceedsData = getUseOfProceedsForProject(selectedProjectId);
 
