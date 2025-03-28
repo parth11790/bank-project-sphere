@@ -25,6 +25,18 @@ interface UseOfProceedsTableProps {
   onSave?: (updatedData: any) => void;
 }
 
+// Define types for columns and rows to match mockData structure
+type UseOfProceedsColumn = {
+  column_id: string;
+  column_name: string;
+}
+
+type UseOfProceedsRow = {
+  row_id: string;
+  row_name: string;
+  overall_category?: string;
+}
+
 // Define the category options based on the user's requirements
 const categoryOptions = [
   { overall: 'Purchase', category: 'BUSINESS ASSETS' },
@@ -64,8 +76,8 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
   const [editedData, setEditedData] = useState<{ [key: string]: number }>({});
   
   // State for managing custom columns and rows
-  const [columns, setColumns] = useState(mockUseOfProceedsColumns);
-  const [rows, setRows] = useState(mockUseOfProceedsRows);
+  const [columns, setColumns] = useState<UseOfProceedsColumn[]>(mockUseOfProceedsColumns);
+  const [rows, setRows] = useState<UseOfProceedsRow[]>(mockUseOfProceedsRows);
   
   // State for dialogs
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
@@ -102,7 +114,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
     rows.forEach(row => {
       // Find the overall category for this row
       const categoryOption = categoryOptions.find(opt => opt.category === row.row_name);
-      const overallCategory = categoryOption ? categoryOption.overall : '';
+      const overallCategory = row.overall_category || (categoryOption ? categoryOption.overall : '');
       
       tableData[row.row_name] = { overall_category: overallCategory };
       columns.forEach(column => {
@@ -131,7 +143,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
   const handleAddColumn = () => {
     if (newColumnName.trim() === '') return;
     
-    const newColumn = {
+    const newColumn: UseOfProceedsColumn = {
       column_id: `col_${Date.now()}`,
       column_name: newColumnName
     };
@@ -145,7 +157,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
   const handleAddRow = () => {
     if (newRowCategory.trim() === '') return;
     
-    const newRow = {
+    const newRow: UseOfProceedsRow = {
       row_id: `row_${Date.now()}`,
       row_name: newRowCategory,
       overall_category: newRowOverallCategory
