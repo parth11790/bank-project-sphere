@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Building2, 
@@ -17,7 +16,7 @@ import { motion } from 'framer-motion';
 import { getProjects } from '@/services';
 import { users } from '@/lib/mockData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Project } from '@/types/project';
+import { Project, LoanType, getLoanAmount } from '@/types/project';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Layout from '@/components/Layout';
@@ -77,9 +76,11 @@ const Dashboard: React.FC = () => {
   
   const projectsArray = (projects || []) as Project[];
   const recentProjects = projectsArray.slice(0, 3);
+  
   const totalProjectValue = projectsArray.reduce((sum, project) => {
-    const loanAmounts = project.loan_types.reduce((sum, loan) => sum + loan.amount, 0);
-    return sum + loanAmounts;
+    return sum + project.loan_types.reduce((loanSum, loan) => {
+      return loanSum + getLoanAmount(loan);
+    }, 0);
   }, 0);
   
   const formattedTotalValue = new Intl.NumberFormat('en-US', {
@@ -119,7 +120,6 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  // Monthly project data for the chart
   const monthlyData = [
     { name: 'Jan', value: 400000 },
     { name: 'Feb', value: 600000 },
@@ -131,7 +131,6 @@ const Dashboard: React.FC = () => {
     { name: 'Aug', value: totalProjectValue },
   ];
 
-  // Project status data for pie chart
   const statusData = [
     { name: 'Active', value: 4 },
     { name: 'Pending', value: 2 },
@@ -140,7 +139,6 @@ const Dashboard: React.FC = () => {
   
   const COLORS = ['#0088FE', '#FFBB28', '#00C49F'];
 
-  // Task data
   const pendingTasks = [
     { id: 1, title: "Review Downtown Office Purchase", dueDate: "Today", priority: "High" },
     { id: 2, title: "Sign Restaurant Expansion Documents", dueDate: "Tomorrow", priority: "Medium" },
@@ -157,7 +155,6 @@ const Dashboard: React.FC = () => {
       >
         <DashboardHeader />
 
-        {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, index) => (
             <StatCard
@@ -172,7 +169,6 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* Charts and Analytics Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
             <CardHeader>
@@ -253,7 +249,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Projects and Tasks Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <RecentProjects projects={recentProjects} className="lg:col-span-2" />
           
@@ -296,7 +291,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Progress Section */}
         <div className="grid grid-cols-1 gap-6">
           <Card>
             <CardHeader>
@@ -313,7 +307,7 @@ const Dashboard: React.FC = () => {
                         {Math.floor(Math.random() * 40) + 60}% complete
                       </p>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => navigate(`/project/${project.id}`)}>
+                    <Button variant="ghost" size="icon" onClick={() => navigate(`/project/${project.project_id}`)}>
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>

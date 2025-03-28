@@ -102,7 +102,9 @@ const ProjectList: React.FC<ProjectListProps> = ({ projects }) => {
                 show: { opacity: 1, y: 0 }
               }}
             >
-              <ProjectCard project={project} />
+              <ProjectCard 
+                project={project} 
+              />
             </motion.div>
           ))}
         </motion.div>

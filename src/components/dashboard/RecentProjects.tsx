@@ -6,34 +6,17 @@ import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import ProjectCard from '@/components/ProjectCard';
-
-interface LoanType {
-  type: string;
-  amount: number;
-  description: string;
-}
-
-interface Project {
-  project_id: string;
-  project_name: string;
-  project_type: string;
-  loan_types: string[] | LoanType[];
-  loan_amount: number;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  city?: string;
-  state?: string;
-}
+import { Project } from '@/types/project';
 
 interface RecentProjectsProps {
   projects: Project[];
+  className?: string;
 }
 
-const RecentProjects: React.FC<RecentProjectsProps> = ({ projects }) => {
+const RecentProjects: React.FC<RecentProjectsProps> = ({ projects, className = "" }) => {
   return (
     <motion.div
-      className="lg:col-span-2"
+      className={`lg:col-span-2 ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}

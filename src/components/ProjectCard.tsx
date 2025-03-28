@@ -6,27 +6,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { getUserById } from '@/lib/mockData';
 import { useNavigate } from 'react-router-dom';
-
-interface LoanType {
-  type: string;
-  amount: number;
-  description: string;
-}
+import { Project, LoanType, getLoanAmount } from '@/types/project';
 
 interface ProjectCardProps {
-  project: {
-    project_id: string;
-    project_name: string;
-    project_type: string;
-    loan_types: string[] | LoanType[];
-    loan_amount: number;
-    created_by?: string;
-    created_at: string;
-    updated_at: string;
-    city?: string;
-    state?: string;
-    created_by_user?: { name: string };
-  };
+  project: Project;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
@@ -53,7 +36,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   const location = project.city && project.state 
     ? `${project.city}, ${project.state}` 
-    : project.city || project.state || 'Location not specified';
+    : project.city || project.state || project.location || 'Location not specified';
 
   // Process loan types appropriately based on their type
   const processedLoanTypes = Array.isArray(project.loan_types) 

@@ -1,9 +1,8 @@
-
 import { users, businesses, projects } from './mockData';
 import { Project, isProject } from '@/types/project';
 import { Business, isBusiness, BusinessFinancialData } from '@/types/business';
 import { FormTemplate, Document, isFormTemplate } from '@/types/form';
-import { Participant, isParticipant } from '@/types/participant';
+import { Participant, isParticipant, ParticipantWithDetails } from '@/types/participant';
 
 // Mock implementations of the service functions
 export const getProjectsData = async (): Promise<Project[]> => {
@@ -25,23 +24,6 @@ export const getProjectByIdData = async (projectId: string): Promise<Project | n
 };
 
 // Mock participant data
-export interface ParticipantWithDetails {
-  participant_id: string;
-  user_id: string;
-  name: string;
-  email: string;
-  role: string;
-  documents: Document[];
-  forms: FormTemplate[];
-  business?: {
-    business_id: string;
-    name: string;
-    entity_type: string;
-    documents: Document[];
-    forms: FormTemplate[];
-  };
-}
-
 export const getProjectParticipantsData = async (projectId: string): Promise<Participant[]> => {
   const project = projects.find(p => p.project_id === projectId);
   if (!project) return [];
@@ -51,12 +33,11 @@ export const getProjectParticipantsData = async (projectId: string): Promise<Par
     return {
       participant_id: `part_${participant.userId}`,
       user_id: participant.userId,
-      project_id: projectId,
-      user: {
-        name: user?.name || 'Unknown',
-        email: user?.email || 'unknown@example.com',
-        role: participant.role
-      }
+      name: user?.name || 'Unknown',
+      email: user?.email || 'unknown@example.com',
+      role: participant.role,
+      documents: [],
+      forms: []
     };
   });
 };

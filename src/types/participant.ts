@@ -28,6 +28,10 @@ export interface Participant {
   };
 }
 
+export interface ParticipantWithDetails extends Participant {
+  // Additional fields for detailed participant view
+}
+
 export interface ApiResponse {
   created_at: string;
   id: number;

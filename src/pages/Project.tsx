@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -34,8 +33,8 @@ import {
   Legend,
   Tooltip
 } from 'recharts';
-import { Project as ProjectType } from '@/types/project';
-import { ParticipantWithDetails } from '@/hooks/useParticipantData';
+import { Project as ProjectType, getStatusString } from '@/types/project';
+import { Participant, ParticipantWithDetails } from '@/types/participant';
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -78,7 +77,6 @@ const Project: React.FC = () => {
     );
   }
   
-  // Handle case where project is not found
   if (!project) {
     return (
       <Layout>
@@ -100,15 +98,13 @@ const Project: React.FC = () => {
     p.role === 'bank_officer' || p.role === 'loan_specialist' || p.role === 'bank_manager'
   );
   
-  // Calculate total loan amount, handling both string and object loan types
   const totalLoanAmount = projectData.loan_types.reduce((sum, loan) => {
     if (typeof loan === 'string') {
-      return sum; // Skip if loan is just a string
+      return sum;
     }
     return sum + (loan.amount || 0);
   }, 0);
   
-  // Format loan amount with commas and dollar sign
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -117,7 +113,6 @@ const Project: React.FC = () => {
     }).format(amount);
   };
   
-  // Data for the loan type distribution pie chart
   const loanDistributionData = projectData.loan_types
     .filter((loan): loan is { type: string; amount: number; description: string } => 
       typeof loan !== 'string' && !!loan.amount
@@ -129,12 +124,6 @@ const Project: React.FC = () => {
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
   
-  // Get status string safely
-  const getStatusString = (status: string | undefined) => {
-    if (!status) return 'Unknown';
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
-  
   return (
     <Layout>
       <motion.div
@@ -143,7 +132,6 @@ const Project: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="grid gap-6"
       >
-        {/* Page header with project title and navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -186,7 +174,6 @@ const Project: React.FC = () => {
           </div>
         </div>
         
-        {/* Project overview and loan summary */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
             <CardHeader>
@@ -340,7 +327,6 @@ const Project: React.FC = () => {
           </Card>
         </div>
         
-        {/* Participant progress */}
         <Card>
           <CardHeader>
             <CardTitle>Participant Progress</CardTitle>
@@ -348,7 +334,6 @@ const Project: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="grid gap-6">
-              {/* Bank Personnel */}
               <div>
                 <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
                   <Building className="h-5 w-5" />
@@ -385,7 +370,6 @@ const Project: React.FC = () => {
                 </div>
               </div>
               
-              {/* Buyers */}
               <div>
                 <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
                   <UserCircle className="h-5 w-5" />
@@ -427,7 +411,6 @@ const Project: React.FC = () => {
                 </div>
               </div>
               
-              {/* Sellers */}
               <div>
                 <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
                   <Store className="h-5 w-5" />

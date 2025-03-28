@@ -1,5 +1,5 @@
-
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ProjectList from '@/components/ProjectList';
@@ -8,7 +8,7 @@ import { Plus, Filter, ArrowUpDown } from 'lucide-react';
 import { getProjects } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Project } from '@/types/project';
+import { Project, getLoanAmount } from '@/types/project';
 import Layout from '@/components/Layout';
 import {
   Select,
@@ -66,19 +66,27 @@ const Projects: React.FC = () => {
   
   const projectsArray = (projects || []) as Project[];
   
-  // Filter projects by status if a filter is selected
   const filteredProjects = statusFilter === "all" 
     ? projectsArray 
     : projectsArray.filter(project => project.status === statusFilter);
   
-  // Sort projects by date
   const sortedProjects = [...filteredProjects].sort((a, b) => {
     const dateA = new Date(a.created_at).getTime();
     const dateB = new Date(b.created_at).getTime();
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
   
-  // Get summary stats
+  const projectCountByType = projectsArray.reduce((acc, project) => {
+    const type = project.project_type;
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const totalLoanAmount = projectsArray.reduce((sum, project) => {
+    const amount = project.loan_types.reduce((total, loan) => total + getLoanAmount(loan), 0);
+    return sum + amount;
+  }, 0);
+  
   const totalProjects = projectsArray.length;
   const activeProjects = projectsArray.filter(project => project.status === 'active').length;
   const totalValue = projectsArray.reduce((sum, project) => {
@@ -147,7 +155,6 @@ const Projects: React.FC = () => {
             </div>
           </div>
           
-          {/* Project Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="p-4 pb-2">

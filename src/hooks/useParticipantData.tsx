@@ -1,35 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
+import { Participant, ParticipantWithDetails } from '@/types/participant';
 
-export interface Form {
-  form_id: string;
-  name: string;
-}
-
-export interface Document {
-  document_id: string;
-  name: string;
-}
-
-export interface Business {
-  business_id: string;
-  name: string;
-  entity_type: string;
-  documents: Document[];
-  forms: Form[];
-}
-
-export interface Participant {
-  participant_id: string;
-  user_id: string;
-  name: string;
-  email: string;
-  role: string;
-  documents: Document[];
-  forms: Form[];
-  business?: Business;
-}
+export { Participant, ParticipantWithDetails };
 
 export const useParticipantData = (projectId: string) => {
   const [buyers, setBuyers] = useState<Participant[]>([]);
