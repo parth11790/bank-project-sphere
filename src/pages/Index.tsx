@@ -5,13 +5,17 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, UserCircle, Store } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
   
   const handleRoleSelection = (role: string) => {
-    // Simply navigate to projects page with the selected role
-    navigate('/projects');
+    // Store the role in localStorage for future reference
+    localStorage.setItem('userRole', role);
+    toast.success(`Logged in as ${role === 'bank_officer' ? 'Bank User' : role === 'buyer' ? 'Buyer' : 'Seller'}`);
+    // Navigate to the dashboard
+    navigate('/dashboard');
   };
 
   return (

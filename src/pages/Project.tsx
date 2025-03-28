@@ -1,62 +1,93 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
-import Header from '@/components/Header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Users, BarChart, FileText, ArrowLeft, TrendingUp, DollarSign } from 'lucide-react';
-import { getProjectById } from '@/services';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { 
+  ChevronRight, 
+  Users, 
+  FileText, 
+  Calendar, 
+  CreditCard, 
+  BarChart3, 
+  Building,
+  CheckCircle2,
+  Clock,
+  UserCircle,
+  Store,
+  DollarSign
+} from 'lucide-react';
+import { getProjectById, getProjectParticipants } from '@/services';
+import Layout from '@/components/Layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LoanType, Project as ProjectType, isProject } from '@/types/project';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer, 
+  Legend,
+  Tooltip
+} from 'recharts';
+import { Project as ProjectType } from '@/types/project';
+import { Participant } from '@/types/participant';
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
-
-  const { data: projectData, isLoading, isError } = useQuery({
+  
+  const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
-    enabled: !!projectId,
+    enabled: !!projectId
   });
+  
+  const { data: participants, isLoading: participantsLoading } = useQuery({
+    queryKey: ['participants', projectId],
+    queryFn: () => getProjectParticipants(projectId || ''),
+    enabled: !!projectId
+  });
+  
+  const isLoading = projectLoading || participantsLoading;
   
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container py-6 px-4 md:px-6 max-w-6xl">
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <Skeleton className="h-10 w-64" />
-              <Skeleton className="h-10 w-96" />
-            </div>
-            <Skeleton className="h-72 w-full" />
+      <Layout>
+        <div className="grid gap-6">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-10 w-24" />
           </div>
-        </main>
-      </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Skeleton className="h-32 md:col-span-2" />
+            <Skeleton className="h-32" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Skeleton className="h-64" />
+            <Skeleton className="h-64" />
+          </div>
+        </div>
+      </Layout>
     );
   }
   
-  if (isError || !projectData || !isProject(projectData)) {
-    return <Navigate to="/projects" replace />;
-  }
-
-  const project = projectData as ProjectType;
+  const projectData = project as ProjectType;
+  const participantsData = participants as Participant[];
   
-  // Safely handle loan_types
-  const loanTypes = Array.isArray(project.loan_types) 
-    ? project.loan_types 
-    : [];
-    
+  const buyerParticipants = participantsData.filter(p => p.role === 'buyer');
+  const sellerParticipants = participantsData.filter(p => p.role === 'seller');
+  const bankParticipants = participantsData.filter(p => p.role === 'bank_officer');
+  
   // Calculate total loan amount
-  const totalLoanAmount = loanTypes.reduce((total, loan) => {
-    if (typeof loan === 'object' && 'amount' in loan) {
-      return total + loan.amount;
-    }
-    return total;
-  }, 0);
-
+  const totalLoanAmount = projectData.loan_types.reduce((sum, loan) => sum + loan.amount, 0);
+  
+  // Format loan amount with commas and dollar sign
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -64,109 +95,350 @@ const Project: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
-
+  
+  // Data for the loan type distribution pie chart
+  const loanDistributionData = projectData.loan_types.map(loan => ({
+    name: loan.type,
+    value: loan.amount
+  }));
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+  
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container py-6 px-4 md:px-6 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <Layout>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="grid gap-6"
+      >
+        {/* Page header with project title and navigation */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => navigate('/projects')}
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold">{project.project_name}</h1>
-                <p className="text-muted-foreground">Project ID: {projectId}</p>
-              </div>
+              <h1 className="text-3xl font-bold">{projectData.project_name}</h1>
+              <Badge variant={
+                projectData.status === 'active' ? 'default' :
+                projectData.status === 'pending' ? 'secondary' :
+                'outline'
+              }>
+                {projectData.status.charAt(0).toUpperCase() + projectData.status.slice(1)}
+              </Badge>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button 
-                onClick={() => navigate(`/project/participants/${projectId}`)}
-                className="flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                <span>Participants</span>
-              </Button>
-              <Button 
-                onClick={() => navigate(`/project/dashboard/${projectId}`)}
-                className="flex items-center gap-2"
-              >
-                <BarChart className="h-4 w-4" />
-                <span>Dashboard</span>
-              </Button>
-              <Button 
-                onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <FileText className="h-4 w-4" />
-                <span>Use of Proceeds</span>
-              </Button>
-              <Button 
-                onClick={() => navigate(`/project/cash-flow/${projectId}`)}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <TrendingUp className="h-4 w-4" />
-                <span>Cash Flow Analysis</span>
-              </Button>
-            </div>
+            <p className="text-muted-foreground">
+              {projectData.description}
+            </p>
           </div>
-
-          <Card>
+          
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline"
+              onClick={() => navigate(`/project/participants/${projectId}`)}
+            >
+              <Users className="mr-2 h-4 w-4" />
+              Participants
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate(`/project/dashboard/${projectId}`)}
+            >
+              <BarChart3 className="mr-2 h-4 w-4" />
+              Dashboard
+            </Button>
+            <Button
+              variant="default"
+              onClick={() => navigate(`/project/cash-flow/${projectId}`)}
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Cash Flow Analysis
+            </Button>
+          </div>
+        </div>
+        
+        {/* Project overview and loan summary */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Project Details</CardTitle>
-              <CardDescription>Information about this project</CardDescription>
+              <CardTitle>Project Overview</CardTitle>
+              <CardDescription>Key project information and loan details</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="grid gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Project Type</h3>
-                  <p>{project.project_type}</p>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Project Details</h3>
+                  <dl className="grid grid-cols-[120px_1fr] gap-2">
+                    <dt className="text-sm font-medium">Status:</dt>
+                    <dd className="text-sm">{projectData.status.charAt(0).toUpperCase() + projectData.status.slice(1)}</dd>
+                    
+                    <dt className="text-sm font-medium">Type:</dt>
+                    <dd className="text-sm">{projectData.project_type}</dd>
+                    
+                    <dt className="text-sm font-medium">Start Date:</dt>
+                    <dd className="text-sm">{new Date(projectData.created_at).toLocaleDateString()}</dd>
+                    
+                    <dt className="text-sm font-medium">Location:</dt>
+                    <dd className="text-sm">{projectData.location || 'Not specified'}</dd>
+                  </dl>
                 </div>
+                
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Location</h3>
-                  <p>{project.city}, {project.state}</p>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Loan Summary</h3>
+                  <dl className="space-y-2">
+                    {projectData.loan_types.map((loan, index) => (
+                      <div key={index} className="flex justify-between items-center">
+                        <dt className="text-sm font-medium">{loan.type}:</dt>
+                        <dd className="text-sm font-mono">{formatCurrency(loan.amount)}</dd>
+                      </div>
+                    ))}
+                    <Separator className="my-2" />
+                    <div className="flex justify-between items-center font-bold">
+                      <dt className="text-sm">Total Loan Amount:</dt>
+                      <dd className="text-sm font-mono">{formatCurrency(totalLoanAmount)}</dd>
+                    </div>
+                  </dl>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-sm font-medium mb-2">Loan Information</h3>
-                <div className="border rounded-md divide-y">
-                  {loanTypes.map((loan, index) => (
-                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <span className="font-medium">{loan.type}</span>
-                        <p className="text-sm text-muted-foreground">{loan.description}</p>
-                      </div>
-                      <div className="text-right font-medium">
-                        {formatCurrency(loan.amount)}
-                      </div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-4">Loan Distribution</h3>
+                <div className="flex justify-center h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={loanDistributionData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        paddingAngle={5}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      >
+                        {loanDistributionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => formatCurrency(value as number)} 
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="justify-between border-t px-6 py-4">
+              <div className="text-xs text-muted-foreground">
+                Last updated: {new Date(projectData.updated_at || projectData.created_at).toLocaleString()}
+              </div>
+              <Button 
+                variant="outline"
+                onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
+              >
+                <DollarSign className="mr-2 h-4 w-4" />
+                Use of Proceeds
+              </Button>
+            </CardFooter>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Completion</CardTitle>
+              <CardDescription>Overall progress tracking</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              <div className="space-y-2 text-center">
+                <div className="inline-flex items-center justify-center rounded-full border-8 border-primary/10 p-8">
+                  <div className="text-4xl font-bold">65%</div>
+                </div>
+                <div className="text-xs text-muted-foreground">Overall Completion</div>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Documentation</span>
                     </div>
-                  ))}
-                  <div className="p-3 flex justify-between bg-muted/50">
-                    <span className="font-bold">Total Loan Amount</span>
-                    <span className="font-bold">
-                      {formatCurrency(totalLoanAmount)}
-                    </span>
+                    <span className="text-sm">80%</span>
                   </div>
+                  <Progress value={80} className="h-2" />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Participants</span>
+                    </div>
+                    <span className="text-sm">100%</span>
+                  </div>
+                  <Progress value={100} className="h-2" />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Business Analysis</span>
+                    </div>
+                    <span className="text-sm">45%</span>
+                  </div>
+                  <Progress value={45} className="h-2" />
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Loan Approval</span>
+                    </div>
+                    <span className="text-sm">25%</span>
+                  </div>
+                  <Progress value={25} className="h-2" />
                 </div>
               </div>
             </CardContent>
           </Card>
-        </motion.div>
-      </main>
-    </div>
+        </div>
+        
+        {/* Participant progress */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Participant Progress</CardTitle>
+            <CardDescription>Status of all project participants</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6">
+              {/* Bank Personnel */}
+              <div>
+                <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                  <Building2 className="h-5 w-5" />
+                  Bank Personnel ({bankParticipants.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {bankParticipants.map((participant) => (
+                    <Card key={participant.participant_id} className="overflow-hidden">
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-4 p-4">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                            <Building2 className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{participant.name}</p>
+                            <p className="text-xs text-muted-foreground">{participant.email}</p>
+                          </div>
+                        </div>
+                        <div className="border-t px-4 py-3 bg-muted/50">
+                          <div className="flex justify-between text-xs">
+                            <span>Tasks: {participant.documents.length + participant.forms.length}</span>
+                            <div className="flex items-center gap-1">
+                              <CheckCircle2 className="h-3 w-3 text-green-500" />
+                              <span>Active</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Buyers */}
+              <div>
+                <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                  <UserCircle className="h-5 w-5" />
+                  Buyers ({buyerParticipants.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {buyerParticipants.map((participant) => (
+                    <Card key={participant.participant_id} className="overflow-hidden">
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-4 p-4">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10">
+                            <UserCircle className="h-5 w-5 text-blue-500" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{participant.name}</p>
+                            <p className="text-xs text-muted-foreground">{participant.email}</p>
+                          </div>
+                        </div>
+                        <div className="border-t px-4 py-3 bg-muted/50">
+                          <div className="flex justify-between text-xs">
+                            <span>
+                              Docs: {participant.documents.length}/{participant.documents.length + 3}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3 text-yellow-500" />
+                              <span>In Progress</span>
+                            </div>
+                          </div>
+                          <Progress 
+                            value={(participant.documents.length / (participant.documents.length + 3)) * 100} 
+                            className="h-1 mt-2" 
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Sellers */}
+              <div>
+                <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                  <Store className="h-5 w-5" />
+                  Sellers ({sellerParticipants.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {sellerParticipants.map((participant) => (
+                    <Card key={participant.participant_id} className="overflow-hidden">
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-4 p-4">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10">
+                            <Store className="h-5 w-5 text-green-500" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{participant.name}</p>
+                            <p className="text-xs text-muted-foreground">{participant.email}</p>
+                            {participant.business && (
+                              <p className="text-xs mt-1 text-primary">{participant.business.name}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="border-t px-4 py-3 bg-muted/50">
+                          <div className="flex justify-between text-xs">
+                            <span>
+                              Docs: {participant.documents.length}/{participant.documents.length + 2}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3 text-yellow-500" />
+                              <span>In Progress</span>
+                            </div>
+                          </div>
+                          <Progress 
+                            value={(participant.documents.length / (participant.documents.length + 2)) * 100} 
+                            className="h-1 mt-2" 
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-end border-t px-6 py-4">
+            <Button onClick={() => navigate(`/project/participants/${projectId}`)}>
+              View All Participants
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardFooter>
+        </Card>
+      </motion.div>
+    </Layout>
   );
 };
 

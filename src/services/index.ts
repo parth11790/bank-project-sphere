@@ -9,13 +9,15 @@ import {
   getFormTemplatesData,
   getDocumentsData,
   getAssignedFormsData,
-  getAssignedDocumentsData
+  getAssignedDocumentsData,
+  getParticipantsWithDetailsData
 } from '@/lib/mockDataProvider';
 
 // Export the mock data functions as our main service functions
 export const getProjects = getProjectsData;
 export const getProjectById = getProjectByIdData;
 export const getProjectParticipants = getProjectParticipantsData;
+export const getParticipantsWithDetails = getParticipantsWithDetailsData;
 export const getBusinessesByOwnerId = getBusinessesByOwnerIdData;
 export const getBusinessFinancialData = getBusinessFinancialDataData;
 export const getFormTemplates = getFormTemplatesData;
