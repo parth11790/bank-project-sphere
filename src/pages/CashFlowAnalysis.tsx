@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { getProjectById, getProjectParticipants, getBusinessesByOwnerId, getBusinessFinancialData } from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Business, BusinessFinancialData, isBusiness } from '@/types/business';
+import { Business, isBusiness } from '@/types/business';
 import { Project, isProject } from '@/types/project';
 import { Participant, isParticipant } from '@/types/participant';
 

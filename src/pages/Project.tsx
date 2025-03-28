@@ -5,7 +5,7 @@ import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, BarChart, FileText, ArrowLeft, TrendingUp } from 'lucide-react';
+import { Users, BarChart, FileText, ArrowLeft, TrendingUp, DollarSign } from 'lucide-react';
 import { getProjectById } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -44,21 +44,26 @@ const Project: React.FC = () => {
 
   const project = projectData as ProjectType;
   
-  // Safely handle loan_types whether they're objects or strings
+  // Safely handle loan_types
   const loanTypes = Array.isArray(project.loan_types) 
     ? project.loan_types 
     : [];
     
-  // Safely calculate total loan amount
-  const totalLoanAmount = loanTypes.length > 0 && typeof loanTypes[0] === 'object'
-    ? loanTypes.reduce((total, loan) => {
-        // Check if loan is an object with amount property
-        if (typeof loan === 'object' && 'amount' in loan && typeof loan.amount === 'number') {
-          return total + loan.amount;
-        }
-        return total;
-      }, 0)
-    : project.loan_amount || 0;
+  // Calculate total loan amount
+  const totalLoanAmount = loanTypes.reduce((total, loan) => {
+    if (typeof loan === 'object' && 'amount' in loan) {
+      return total + loan.amount;
+    }
+    return total;
+  }, 0);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -138,42 +143,21 @@ const Project: React.FC = () => {
               <div>
                 <h3 className="text-sm font-medium mb-2">Loan Information</h3>
                 <div className="border rounded-md divide-y">
-                  {loanTypes.length > 0 ? loanTypes.map((loan, index) => {
-                    // Safely extract data whether loan is an object or string
-                    const loanType = typeof loan === 'object' ? loan.type : loan;
-                    const loanAmount = typeof loan === 'object' && 'amount' in loan ? loan.amount : 0;
-                    const loanDescription = typeof loan === 'object' && 'description' in loan ? loan.description : '';
-
-                    return (
-                      <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <span className="font-medium">{loanType}</span>
-                          <p className="text-sm text-muted-foreground">{loanDescription}</p>
-                        </div>
-                        <div className="text-right font-medium">
-                          {typeof loan === 'object' && 'amount' in loan ? (
-                            new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              maximumFractionDigits: 0,
-                            }).format(loanAmount)
-                          ) : 'N/A'}
-                        </div>
+                  {loanTypes.map((loan, index) => (
+                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="font-medium">{loan.type}</span>
+                        <p className="text-sm text-muted-foreground">{loan.description}</p>
                       </div>
-                    );
-                  }) : (
-                    <div className="p-3">
-                      <span className="text-muted-foreground">No loan type details available</span>
+                      <div className="text-right font-medium">
+                        {formatCurrency(loan.amount)}
+                      </div>
                     </div>
-                  )}
+                  ))}
                   <div className="p-3 flex justify-between bg-muted/50">
                     <span className="font-bold">Total Loan Amount</span>
                     <span className="font-bold">
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        maximumFractionDigits: 0,
-                      }).format(totalLoanAmount)}
+                      {formatCurrency(totalLoanAmount)}
                     </span>
                   </div>
                 </div>

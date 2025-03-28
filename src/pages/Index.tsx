@@ -2,38 +2,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, UserCircle, Store, Briefcase } from 'lucide-react';
+import { Building2, UserCircle, Store } from 'lucide-react';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
   
-  const handleRoleSelection = async (role: string) => {
-    // For demo purposes, automatically sign in with predefined credentials based on role
-    let email = '';
-    let password = 'password123';
-    
-    switch(role) {
-      case 'bank_officer':
-        email = 'bank@example.com';
-        break;
-      case 'buyer':
-        email = 'buyer@example.com';
-        break;
-      case 'seller':
-        email = 'seller@example.com';
-        break;
-    }
-    
-    // Sign in with the selected role
-    const { error } = await signIn(email, password);
-    
-    if (!error) {
-      navigate('/projects');
-    }
+  const handleRoleSelection = (role: string) => {
+    // Simply navigate to projects page with the selected role
+    navigate('/projects');
   };
 
   return (
@@ -66,8 +44,8 @@ const Index: React.FC = () => {
                 className="flex flex-col items-center h-auto p-6 gap-3"
                 onClick={() => handleRoleSelection('bank_officer')}
               >
-                <Briefcase className="h-10 w-10" />
-                <span className="text-lg">Bank Officer</span>
+                <Building2 className="h-10 w-10" />
+                <span className="text-lg">Bank User</span>
               </Button>
               
               <Button 
