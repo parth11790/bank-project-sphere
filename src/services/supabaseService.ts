@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { 
@@ -34,7 +35,9 @@ export const getProjects = async (): Promise<Project[]> => {
     if (error) throw error;
     
     // Filter and transform API data to match our Project type
-    return data?.filter(item => isProject(item as any)).map(item => item as unknown as Project) || [];
+    // Use proper type casting with unknown as intermediary
+    return data?.filter(item => isProject(item as any))
+      .map(item => item as unknown as Project) || [];
   } catch (error: any) {
     console.error('Error fetching projects:', error.message);
     toast.error('Failed to load projects');
@@ -80,7 +83,8 @@ export const getProjectParticipants = async (projectId: string): Promise<Partici
     if (error) throw error;
     
     // Filter and transform API data to match our Participant type
-    return data?.filter(item => isParticipant(item as any)).map(item => item as unknown as Participant) || [];
+    return data?.filter(item => isParticipant(item as any))
+      .map(item => item as unknown as Participant) || [];
   } catch (error: any) {
     console.error(`Error fetching participants for project ${projectId}:`, error.message);
     toast.error('Failed to load project participants');
@@ -103,7 +107,8 @@ export const getBusinessesByOwnerId = async (userId: string): Promise<Business[]
     if (error) throw error;
     
     // Filter and transform API data to match our Business type
-    return data?.filter(item => isBusiness(item as any)).map(item => item as unknown as Business) || [];
+    return data?.filter(item => isBusiness(item as any))
+      .map(item => item as unknown as Business) || [];
   } catch (error: any) {
     console.error(`Error fetching businesses for user ${userId}:`, error.message);
     toast.error('Failed to load business data');
@@ -148,7 +153,8 @@ export const getFormTemplates = async (entityType: string): Promise<FormTemplate
     if (error) throw error;
     
     // Filter and transform API data to match our FormTemplate type
-    return data?.filter(item => isFormTemplate(item as any)).map(item => item as unknown as FormTemplate) || [];
+    return data?.filter(item => isFormTemplate(item as any))
+      .map(item => item as unknown as FormTemplate) || [];
   } catch (error: any) {
     console.error(`Error fetching form templates for ${entityType}:`, error.message);
     toast.error('Failed to load form templates');
