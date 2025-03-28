@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -236,7 +237,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
       } else {
         // Add a new item if it doesn't exist
         updatedData.push({
-          id: `proc_new_${Date.now()}`,
+          proceeds_id: `proc_new_${Date.now()}`,
           project_id: projectId,
           column_name: columnName,
           row_name: rowName,

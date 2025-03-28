@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import BankPersonnelCard from './BankPersonnelCard';
 
 // Define the type for bank personnel to match the data we have
-interface BankPersonnel {
+export interface BankPersonnel {
   participant_id: string;
   user_id: string;
   name: string;

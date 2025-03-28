@@ -67,6 +67,9 @@ export const useParticipantData = (projectId: string) => {
       const transformedParticipants: Participant[] = [];
       
       for (const participant of participantsData) {
+        // Skip if participantsData returns a different format
+        if (!('participant_id' in participant)) continue;
+        
         // Get assigned documents and forms for the individual
         const assignedDocs = await (USE_MOCK_DATA 
           ? getAssignedDocumentsData(participant.participant_id)
@@ -87,6 +90,9 @@ export const useParticipantData = (projectId: string) => {
           name: form.form.name
         }));
         
+        // Skip if user_id is missing
+        if (!('user_id' in participant)) continue;
+        
         // Get businesses owned by this participant
         const businesses = await (USE_MOCK_DATA
           ? getBusinessesByOwnerIdData(participant.user_id)
@@ -94,7 +100,7 @@ export const useParticipantData = (projectId: string) => {
           
         let business: Business | undefined;
         
-        if (businesses.length > 0) {
+        if (businesses.length > 0 && 'business_id' in businesses[0]) {
           const businessData = businesses[0]; // Just get the first business for now
           
           // Get assigned documents and forms for the business
@@ -120,6 +126,9 @@ export const useParticipantData = (projectId: string) => {
             }))
           };
         }
+
+        // Skip if user property is missing
+        if (!('user' in participant)) continue;
 
         transformedParticipants.push({
           participant_id: participant.participant_id,

@@ -23,7 +23,7 @@ export const getProjects = async () => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -43,11 +43,11 @@ export const getProjectById = async (projectId: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*')
-      .eq('id', projectId)
+      .eq('id', Number(projectId))
       .single();
     
     if (error) throw error;
@@ -66,7 +66,7 @@ export const getProjectParticipants = async (projectId: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -87,7 +87,7 @@ export const getBusinessesByOwnerId = async (userId: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -107,7 +107,7 @@ export const getBusinessFinancialData = async (businessId: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -128,7 +128,7 @@ export const getFormTemplates = async (entityType: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -148,7 +148,7 @@ export const getDocuments = async (entityType: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -168,7 +168,7 @@ export const getAssignedForms = async (participantId: string, businessId?: strin
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -188,7 +188,7 @@ export const getAssignedDocuments = async (participantId: string, businessId?: s
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');
@@ -210,7 +210,7 @@ export const getUseOfProceeds = async (projectId: string) => {
   }
   
   try {
-    // This will be replaced with actual Supabase query once database is set up
+    // When Supabase tables are set up, replace this with proper queries
     const { data, error } = await supabase
       .from('test')
       .select('*');

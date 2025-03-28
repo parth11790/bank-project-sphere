@@ -11,12 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface LoanType {
-  loan_type_id: string;
-  project_id: string;
   type: string;
   amount: number;
   description: string;
-  created_at: string;
 }
 
 interface Project {
@@ -30,6 +27,7 @@ interface Project {
   updated_at: string;
   city?: string;
   state?: string;
+  created_by_user?: { name: string };
 }
 
 const Project: React.FC = () => {
@@ -64,7 +62,9 @@ const Project: React.FC = () => {
   }
   
   // Calculate total loan amount from individual loan types
-  const totalLoanAmount = project.loan_types?.reduce((total, loan) => total + loan.amount, 0) || 0;
+  const totalLoanAmount = Array.isArray(project.loan_types) 
+    ? project.loan_types.reduce((total, loan) => total + loan.amount, 0) 
+    : project.loan_amount || 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -144,8 +144,8 @@ const Project: React.FC = () => {
               <div>
                 <h3 className="text-sm font-medium mb-2">Loan Information</h3>
                 <div className="border rounded-md divide-y">
-                  {project.loan_types?.map((loan) => (
-                    <div key={loan.loan_type_id} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  {Array.isArray(project.loan_types) && project.loan_types.map((loan, index) => (
+                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <span className="font-medium">{loan.type}</span>
                         <p className="text-sm text-muted-foreground">{loan.description}</p>
