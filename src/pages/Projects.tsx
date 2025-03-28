@@ -90,8 +90,7 @@ const Projects: React.FC = () => {
   const totalProjects = projectsArray.length;
   const activeProjects = projectsArray.filter(project => project.status === 'active').length;
   const totalValue = projectsArray.reduce((sum, project) => {
-    const loanAmounts = project.loan_types.reduce((sum, loan) => sum + loan.amount, 0);
-    return sum + loanAmounts;
+    return sum + project.loan_amount;
   }, 0);
   
   const formattedTotalValue = new Intl.NumberFormat('en-US', {

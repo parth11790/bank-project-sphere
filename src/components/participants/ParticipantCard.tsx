@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -14,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Participant as ParticipantType } from '@/types/participant';
 
 export interface Form {
   form_id: string;
@@ -33,16 +33,7 @@ export interface Business {
   forms: Form[];
 }
 
-export interface Participant {
-  participant_id: string;
-  user_id: string;
-  name: string;
-  email: string;
-  role: string;
-  documents: Document[];
-  forms: Form[];
-  business?: Business;
-}
+export interface Participant extends ParticipantType {}
 
 interface ParticipantCardProps {
   participant: Participant;

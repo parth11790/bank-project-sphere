@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { Participant, ParticipantWithDetails } from '@/types/participant';
 
-export { Participant, ParticipantWithDetails };
+export type { Participant, ParticipantWithDetails };
 
 export const useParticipantData = (projectId: string) => {
   const [buyers, setBuyers] = useState<Participant[]>([]);

@@ -5,11 +5,11 @@ export interface Participant {
   name: string;
   email: string;
   role: string;
-  documents?: Array<{
+  documents: Array<{
     document_id: string;
     name: string;
   }>;
-  forms?: Array<{
+  forms: Array<{
     form_id: string;
     name: string;
   }>;
@@ -17,11 +17,11 @@ export interface Participant {
     business_id: string;
     name: string;
     entity_type: string;
-    documents?: Array<{
+    documents: Array<{
       document_id: string;
       name: string;
     }>;
-    forms?: Array<{
+    forms: Array<{
       form_id: string;
       name: string;
     }>;

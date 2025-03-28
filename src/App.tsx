@@ -7,19 +7,47 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import Projects from "./pages/Projects";
-import Project from "./pages/Project";
-import NotFound from "./pages/NotFound";
-import CreateProject from "./pages/CreateProject";
-import ProjectParticipants from "./pages/ProjectParticipants";
-import ProjectDashboard from "./pages/ProjectDashboard";
-import UseOfProceeds from "./pages/UseOfProceeds";
-import CashFlowAnalysis from "./pages/CashFlowAnalysis";
-import FormView from "./pages/FormView";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const queryClient = new QueryClient();
+// Lazy load pages to implement code-splitting (microservices approach)
+const Index = lazy(() => import("./pages/Index"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Project = lazy(() => import("./pages/Project"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const CreateProject = lazy(() => import("./pages/CreateProject"));
+const ProjectParticipants = lazy(() => import("./pages/ProjectParticipants"));
+const ProjectDashboard = lazy(() => import("./pages/ProjectDashboard"));
+const UseOfProceeds = lazy(() => import("./pages/UseOfProceeds"));
+const CashFlowAnalysis = lazy(() => import("./pages/CashFlowAnalysis"));
+const FormView = lazy(() => import("./pages/FormView"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="container py-20 px-4">
+    <div className="space-y-8 max-w-6xl mx-auto">
+      <Skeleton className="h-12 w-3/4" />
+      <Skeleton className="h-72 w-full" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    </div>
+  </div>
+);
+
+// Create a new QueryClient with specific settings for better error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -29,19 +57,21 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/project/:projectId" element={<Project />} />
-              <Route path="/create-project" element={<CreateProject />} />
-              <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
-              <Route path="/project/dashboard/:projectId" element={<ProjectDashboard />} />
-              <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
-              <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />
-              <Route path="/form/:formId" element={<FormView />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/project/:projectId" element={<Project />} />
+                <Route path="/create-project" element={<CreateProject />} />
+                <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
+                <Route path="/project/dashboard/:projectId" element={<ProjectDashboard />} />
+                <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
+                <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />
+                <Route path="/form/:formId" element={<FormView />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </AnimatePresence>
         </BrowserRouter>
       </TooltipProvider>
