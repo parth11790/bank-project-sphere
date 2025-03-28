@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import { Building2, Users as UsersIcon, CreditCard, Calendar } from 'lucide-react';
@@ -42,8 +43,9 @@ const Dashboard: React.FC = () => {
     );
   }
   
-  const recentProjects = (projects || []).slice(0, 3);
-  const totalProjectValue = (projects || []).reduce((sum, project) => sum + project.loan_amount, 0);
+  const projectsArray = (projects || []) as Project[];
+  const recentProjects = projectsArray.slice(0, 3);
+  const totalProjectValue = projectsArray.reduce((sum, project) => sum + project.loan_amount, 0);
   const formattedTotalValue = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -53,7 +55,7 @@ const Dashboard: React.FC = () => {
   const stats = [
     {
       title: "Total Projects",
-      value: (projects || []).length,
+      value: projectsArray.length,
       icon: Building2,
       change: "+12%",
       positive: true,

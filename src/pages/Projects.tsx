@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -43,6 +42,8 @@ const Projects: React.FC = () => {
     );
   }
   
+  const projectsArray = (projects || []) as Project[];
+  
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -67,7 +68,7 @@ const Projects: React.FC = () => {
             </Button>
           </div>
 
-          <ProjectList projects={projects || []} />
+          <ProjectList projects={projectsArray} />
         </div>
       </main>
     </div>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -46,9 +47,7 @@ export const useParticipantData = (projectId: string) => {
   // Get project participants
   const { data: participantsData, isLoading: participantsLoading, refetch: refetchParticipants } = useQuery({
     queryKey: ['participants', projectId],
-    queryFn: () => USE_MOCK_DATA 
-      ? getProjectParticipantsData(projectId) 
-      : getProjectParticipants(projectId || ''),
+    queryFn: () => getProjectParticipants(projectId || ''),
     enabled: !!projectId,
   });
 
@@ -64,13 +63,9 @@ export const useParticipantData = (projectId: string) => {
         if (!('participant_id' in participant)) continue;
         
         // Get assigned documents and forms for the individual
-        const assignedDocs = await (USE_MOCK_DATA 
-          ? getAssignedDocumentsData(participant.participant_id)
-          : getAssignedDocuments(participant.participant_id));
+        const assignedDocs = await getAssignedDocuments(participant.participant_id);
           
-        const assignedForms = await (USE_MOCK_DATA
-          ? getAssignedFormsData(participant.participant_id)
-          : getAssignedForms(participant.participant_id));
+        const assignedForms = await getAssignedForms(participant.participant_id);
         
         // Format documents and forms for individual
         const documents = assignedDocs.map(doc => ({
@@ -87,9 +82,7 @@ export const useParticipantData = (projectId: string) => {
         if (!('user_id' in participant)) continue;
         
         // Get businesses owned by this participant
-        const businesses = await (USE_MOCK_DATA
-          ? getBusinessesByOwnerIdData(participant.user_id)
-          : getBusinessesByOwnerId(participant.user_id));
+        const businesses = await getBusinessesByOwnerId(participant.user_id);
           
         let business: Business | undefined;
         
@@ -97,13 +90,9 @@ export const useParticipantData = (projectId: string) => {
           const businessData = businesses[0]; // Just get the first business for now
           
           // Get assigned documents and forms for the business
-          const businessDocs = await (USE_MOCK_DATA
-            ? getAssignedDocumentsData(participant.participant_id, businessData.business_id)
-            : getAssignedDocuments(participant.participant_id, businessData.business_id));
+          const businessDocs = await getAssignedDocuments(participant.participant_id, businessData.business_id);
             
-          const businessForms = await (USE_MOCK_DATA
-            ? getAssignedFormsData(participant.participant_id, businessData.business_id)
-            : getAssignedForms(participant.participant_id, businessData.business_id));
+          const businessForms = await getAssignedForms(participant.participant_id, businessData.business_id);
           
           business = {
             business_id: businessData.business_id,

@@ -1,8 +1,8 @@
 
-// Re-export all services for convenient imports
+// Re-export all service functions for easier imports
 export * from './projectService';
 export * from './participantService';
-export * from './businessService';
 export * from './formService';
-export * from './proceedsService';
+export * from './businessService';
 export * from './userService';
+export * from './proceedsService';
