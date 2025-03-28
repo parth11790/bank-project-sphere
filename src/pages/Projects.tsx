@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import ProjectList from '@/components/ProjectList';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { getProjects } from '@/services/supabaseService';
+import { getProjects } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Project } from '@/types/project';

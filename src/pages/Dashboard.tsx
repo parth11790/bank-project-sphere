@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import { Building2, Users as UsersIcon, CreditCard, Calendar } from 'lucide-react';
@@ -7,9 +6,10 @@ import StatCard from '@/components/dashboard/StatCard';
 import RecentProjects from '@/components/dashboard/RecentProjects';
 import PortfolioSummary from '@/components/dashboard/PortfolioSummary';
 import { useQuery } from '@tanstack/react-query';
-import { getProjects } from '@/services/supabaseService';
+import { getProjects } from '@/services';
 import { users } from '@/lib/mockData';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Project } from '@/types/project';
 
 const Dashboard: React.FC = () => {
   const { data: projects, isLoading: projectsLoading } = useQuery({

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
@@ -8,7 +9,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
-import { getProjectById, getProjectParticipants, getBusinessesByOwnerId, getBusinessFinancialData } from '@/services/supabaseService';
+import { getProjectById, getProjectParticipants, getBusinessesByOwnerId, getBusinessFinancialData } from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Business, BusinessFinancialData, isBusiness } from '@/types/business';
 import { Project, isProject } from '@/types/project';

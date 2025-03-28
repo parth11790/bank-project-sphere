@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -6,13 +5,7 @@ import {
   getBusinessesByOwnerId,
   getAssignedDocuments,
   getAssignedForms
-} from '@/services/supabaseService';
-import {
-  getProjectParticipantsData,
-  getBusinessesByOwnerIdData,
-  getAssignedDocumentsData,
-  getAssignedFormsData
-} from '@/lib/mockDataProvider';
+} from '@/services';
 
 // Define our data types
 export interface Document {

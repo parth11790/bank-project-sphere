@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, BarChart, FileText, ArrowLeft, TrendingUp } from 'lucide-react';
-import { getProjectById } from '@/services/supabaseService';
+import { getProjectById } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LoanType, Project as ProjectType, isProject } from '@/types/project';

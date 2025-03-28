@@ -12,7 +12,7 @@ import {
   getProjectById, 
   getFormTemplates, 
   getDocuments
-} from '@/services/supabaseService';
+} from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Import our new components
