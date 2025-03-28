@@ -6,11 +6,9 @@ import {
   Users, 
   FileText, 
   ClipboardCheck, 
-  Bell, 
   BarChart, 
-  LayoutDashboard,
-  Calendar,
-  ArrowLeft
+  ArrowLeft, 
+  TrendingUp
 } from 'lucide-react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,30 +20,52 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { projects, users, getUserById } from '@/lib/mockData';
 
+interface LoanType {
+  type: string;
+  amount: number;
+  description: string;
+}
+
+interface Project {
+  project_id: string;
+  project_name: string;
+  project_type: string;
+  loan_types: LoanType[];
+  loan_amount: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  city?: string;
+  state?: string;
+  participants?: { userId: string; role: string }[];
+}
+
 const ProjectDashboard: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   
   // Find the project by ID from mockData
-  const project = projects.find(p => p.project_id === projectId);
+  const project = projects.find(p => p.project_id === projectId) as Project | undefined;
   
   // If project doesn't exist, redirect to the projects list
   if (!project) {
     return <Navigate to="/projects" replace />;
   }
-
-  // Format the loan amount with commas and currency symbol
-  const formattedAmount = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(project.loan_amount);
+  
+  // Calculate total loan amount from individual loan types
+  const totalLoanAmount = project.loan_types.reduce((total, loan) => total + loan.amount, 0);
   
   // Mock data for the dashboard
   const projectData = {
     stats: {
-      buyers: 2,
-      sellers: 1,
+      buyers: project.participants?.filter(p => {
+        const user = getUserById(p.userId);
+        return user && user.role === 'buyer';
+      }).length || 0,
+      sellers: project.participants?.filter(p => {
+        const user = getUserById(p.userId);
+        return user && user.role === 'seller';
+      }).length || 0,
       documents: {
         total: 15,
         completed: 6
@@ -58,26 +78,26 @@ const ProjectDashboard: React.FC = () => {
     recentActivity: [
       { id: '1', text: 'John Doe uploaded Proof of Income', time: '2 hours ago' },
       { id: '2', text: 'Jane Smith completed Personal Information form', time: '4 hours ago' },
-      { id: '3', text: `You assigned 3 new documents to ${users[2].name}`, time: '1 day ago' },
+      { id: '3', text: `You assigned 3 new documents to ${getUserById('user_3')?.name || 'Participant'}`, time: '1 day ago' },
       { id: '4', text: 'Property Deed document was rejected', time: '2 days ago' }
     ],
-    participants: [
-      { 
-        userId: users[2].user_id, 
-        documents: { assigned: 8, completed: 3 },
-        forms: { assigned: 5, completed: 2 }
-      },
-      { 
-        userId: users[4].user_id, 
-        documents: { assigned: 7, completed: 3 },
-        forms: { assigned: 3, completed: 1 }
-      },
-      { 
-        userId: users[0].user_id, 
-        documents: { assigned: 0, completed: 0 },
-        forms: { assigned: 0, completed: 0 }
-      }
-    ]
+    participants: project.participants?.map(p => {
+      const user = getUserById(p.userId);
+      if (!user) return null;
+      
+      // Generate some random numbers for document and form stats
+      const docsAssigned = Math.floor(Math.random() * 8) + 3;
+      const docsCompleted = Math.floor(Math.random() * docsAssigned);
+      const formsAssigned = Math.floor(Math.random() * 6) + 2;
+      const formsCompleted = Math.floor(Math.random() * formsAssigned);
+      
+      return {
+        userId: p.userId,
+        role: p.role,
+        documents: { assigned: docsAssigned, completed: docsCompleted },
+        forms: { assigned: formsAssigned, completed: formsCompleted }
+      };
+    }).filter(Boolean) || []
   };
 
   const documentsProgress = (projectData.stats.documents.completed / projectData.stats.documents.total) * 100;
@@ -91,6 +111,22 @@ const ProjectDashboard: React.FC = () => {
       .join('')
       .toUpperCase();
   };
+
+  // Group participants by role
+  const buyerParticipants = projectData.participants.filter(p => {
+    const user = getUserById(p.userId);
+    return user && user.role === 'buyer';
+  });
+  
+  const sellerParticipants = projectData.participants.filter(p => {
+    const user = getUserById(p.userId);
+    return user && user.role === 'seller';
+  });
+  
+  const bankParticipants = projectData.participants.filter(p => {
+    const user = getUserById(p.userId);
+    return user && (user.role === 'bank_officer' || user.role === 'loan_specialist' || user.role === 'bank_manager');
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,7 +152,7 @@ const ProjectDashboard: React.FC = () => {
               </div>
               <p className="text-muted-foreground">Project ID: {projectId}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button 
                 onClick={() => navigate(`/project/participants/${projectId}`)}
                 className="flex items-center gap-2"
@@ -129,8 +165,16 @@ const ProjectDashboard: React.FC = () => {
                 onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
                 className="flex items-center gap-2"
               >
-                <BarChart className="h-4 w-4" />
+                <FileText className="h-4 w-4" />
                 <span>Use of Proceeds</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/project/cash-flow/${projectId}`)}
+                className="flex items-center gap-2"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span>Cash Flow Analysis</span>
               </Button>
             </div>
           </div>
@@ -148,28 +192,45 @@ const ProjectDashboard: React.FC = () => {
                   <p>{project.project_type}</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Loan Amount</h3>
-                  <p>{formattedAmount}</p>
+                  <h3 className="text-sm font-medium mb-1">Location</h3>
+                  <p>{project.city}, {project.state}</p>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Loan Types</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.loan_types.map((type, index) => (
-                      <span key={index} className="px-2 py-1 bg-muted rounded-md text-xs">
-                        {type}
-                      </span>
-                    ))}
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium mb-2">Loan Information</h3>
+                <div className="border rounded-md divide-y">
+                  {project.loan_types.map((loan, index) => (
+                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="font-medium">{loan.type}</span>
+                        <p className="text-sm text-muted-foreground">{loan.description}</p>
+                      </div>
+                      <div className="text-right font-medium">
+                        {new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                          maximumFractionDigits: 0,
+                        }).format(loan.amount)}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="p-3 flex justify-between bg-muted/50">
+                    <span className="font-bold">Total Loan Amount</span>
+                    <span className="font-bold">
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumFractionDigits: 0,
+                      }).format(totalLoanAmount)}
+                    </span>
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Created At</h3>
-                  <p>{new Date(project.created_at).toLocaleDateString()}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <StatCard 
               title="Participants"
               value={`${projectData.stats.buyers + projectData.stats.sellers}`}
@@ -190,12 +251,6 @@ const ProjectDashboard: React.FC = () => {
               icon={<ClipboardCheck className="h-4 w-4" />}
               progress={formsProgress}
             />
-            <StatCard 
-              title="Created On"
-              value={new Date(project.created_at).toLocaleDateString()}
-              description="Project start date"
-              icon={<Calendar className="h-4 w-4" />}
-            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -205,57 +260,167 @@ const ProjectDashboard: React.FC = () => {
                 <CardDescription>Document and form completion status by participant</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Participant</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead className="text-center">Documents</TableHead>
-                      <TableHead className="text-center">Forms</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {projectData.participants.map((participant) => {
-                      const user = getUserById(participant.userId);
-                      if (!user) return null;
-                      
-                      return (
-                        <TableRow key={participant.userId}>
-                          <TableCell className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
-                              <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                            </Avatar>
-                            <span>{user.name}</span>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={user.role === 'buyer' ? 'secondary' : 'outline'}>
-                              {user.role.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex flex-col items-center">
-                              <span>{participant.documents.completed}/{participant.documents.assigned}</span>
-                              <Progress 
-                                value={(participant.documents.completed / (participant.documents.assigned || 1)) * 100} 
-                                className="h-1.5 w-24 mt-1" 
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex flex-col items-center">
-                              <span>{participant.forms.completed}/{participant.forms.assigned}</span>
-                              <Progress 
-                                value={(participant.forms.completed / (participant.forms.assigned || 1)) * 100} 
-                                className="h-1.5 w-24 mt-1" 
-                              />
-                            </div>
-                          </TableCell>
+                <Tabs defaultValue="buyers">
+                  <TabsList className="mb-4">
+                    <TabsTrigger value="buyers">Buyers</TabsTrigger>
+                    <TabsTrigger value="sellers">Sellers</TabsTrigger>
+                    <TabsTrigger value="bank">Bank Personnel</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="buyers">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Participant</TableHead>
+                          <TableHead className="text-center">Documents</TableHead>
+                          <TableHead className="text-center">Forms</TableHead>
                         </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {buyerParticipants.length > 0 ? (
+                          buyerParticipants.map((participant) => {
+                            const user = getUserById(participant.userId);
+                            if (!user) return null;
+                            
+                            return (
+                              <TableRow key={participant.userId}>
+                                <TableCell className="flex items-center gap-2">
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
+                                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                                  </Avatar>
+                                  <span>{user.name}</span>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <div className="flex flex-col items-center">
+                                    <span>{participant.documents.completed}/{participant.documents.assigned}</span>
+                                    <Progress 
+                                      value={(participant.documents.completed / (participant.documents.assigned || 1)) * 100} 
+                                      className="h-1.5 w-24 mt-1" 
+                                    />
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <div className="flex flex-col items-center">
+                                    <span>{participant.forms.completed}/{participant.forms.assigned}</span>
+                                    <Progress 
+                                      value={(participant.forms.completed / (participant.forms.assigned || 1)) * 100} 
+                                      className="h-1.5 w-24 mt-1" 
+                                    />
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
+                              No buyers for this project
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TabsContent>
+                  
+                  <TabsContent value="sellers">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Participant</TableHead>
+                          <TableHead className="text-center">Documents</TableHead>
+                          <TableHead className="text-center">Forms</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {sellerParticipants.length > 0 ? (
+                          sellerParticipants.map((participant) => {
+                            const user = getUserById(participant.userId);
+                            if (!user) return null;
+                            
+                            return (
+                              <TableRow key={participant.userId}>
+                                <TableCell className="flex items-center gap-2">
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
+                                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                                  </Avatar>
+                                  <span>{user.name}</span>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <div className="flex flex-col items-center">
+                                    <span>{participant.documents.completed}/{participant.documents.assigned}</span>
+                                    <Progress 
+                                      value={(participant.documents.completed / (participant.documents.assigned || 1)) * 100} 
+                                      className="h-1.5 w-24 mt-1" 
+                                    />
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <div className="flex flex-col items-center">
+                                    <span>{participant.forms.completed}/{participant.forms.assigned}</span>
+                                    <Progress 
+                                      value={(participant.forms.completed / (participant.forms.assigned || 1)) * 100} 
+                                      className="h-1.5 w-24 mt-1" 
+                                    />
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
+                              No sellers for this project
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TabsContent>
+                  
+                  <TabsContent value="bank">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Personnel</TableHead>
+                          <TableHead>Role</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {bankParticipants.length > 0 ? (
+                          bankParticipants.map((participant) => {
+                            const user = getUserById(participant.userId);
+                            if (!user) return null;
+                            
+                            return (
+                              <TableRow key={participant.userId}>
+                                <TableCell className="flex items-center gap-2">
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
+                                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                                  </Avatar>
+                                  <span>{user.name}</span>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="capitalize">
+                                    {user.role.replace('_', ' ')}
+                                  </Badge>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={2} className="text-center py-4 text-muted-foreground">
+                              No bank personnel assigned to this project
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
             

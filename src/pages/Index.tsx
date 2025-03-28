@@ -1,35 +1,54 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Building2, ChartPieIcon, BarChart, ShieldCheck } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-const features = [
-  {
-    icon: Building2,
-    title: 'Project Management',
-    description: 'Organize and track all loan projects in one centralized location.',
-  },
-  {
-    icon: ChartPieIcon,
-    title: 'Financial Tracking',
-    description: 'Monitor loan proceeds and fund allocation with precision.',
-  },
-  {
-    icon: BarChart,
-    title: 'Data Visualization',
-    description: 'Visualize project data through intuitive charts and graphs.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'User Authentication',
-    description: 'Secure role-based access control with optional two-factor authentication.',
-  }
-];
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { ArrowRight, Building2, ChartPieIcon, BarChart, ShieldCheck, LogIn } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Index: React.FC = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Demo login - in a real app, this would call an authentication API
+    if (email && password) {
+      toast("Login successful");
+      navigate('/dashboard');
+    } else {
+      toast("Please enter both email and password");
+    }
+  };
+
+  const features = [
+    {
+      icon: Building2,
+      title: 'Project Management',
+      description: 'Organize and track all loan projects in one centralized location.',
+    },
+    {
+      icon: ChartPieIcon,
+      title: 'Financial Tracking',
+      description: 'Monitor loan proceeds and fund allocation with precision.',
+    },
+    {
+      icon: BarChart,
+      title: 'Data Visualization',
+      description: 'Visualize project data through intuitive charts and graphs.',
+    },
+    {
+      icon: ShieldCheck,
+      title: 'User Authentication',
+      description: 'Secure role-based access control with optional two-factor authentication.',
+    }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
@@ -73,38 +92,80 @@ const Index: React.FC = () => {
               Streamline loan project workflows and financial tracking with an intuitive, powerful platform designed for modern banking institutions.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="font-medium px-8">
-                <Link to="/dashboard">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="font-medium px-8">
-                <Link to="/projects">
-                  View Projects
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-
-          {/* Featured Image */}
-          <motion.div 
-            className="mt-16 relative mx-auto max-w-4xl"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-          >
-            <div className="relative bg-white rounded-xl overflow-hidden shadow-xl border border-border/50">
-              <div className="aspect-video bg-gradient-to-br from-primary/5 to-blue-500/5 p-2 sm:p-8">
-                <div className="w-full h-full bg-white rounded-lg border border-border/50 flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <h3 className="text-xl font-semibold mb-2">Dashboard Preview</h3>
-                    <p className="text-muted-foreground">Interactive visualization of banking project data</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Card className="h-full">
+                  <CardHeader>
+                    <CardTitle>Login to your account</CardTitle>
+                    <CardDescription>Enter your credentials to access the platform</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleLogin} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          placeholder="you@example.com" 
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input 
+                          id="password" 
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                      </div>
+                      <Button type="submit" className="w-full">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Sign In
+                      </Button>
+                    </form>
+                  </CardContent>
+                  <CardFooter className="flex justify-center">
+                    <p className="text-sm text-muted-foreground">
+                      Don't have an account? <Link to="/sign-up" className="text-primary font-medium">Sign up</Link>
+                    </p>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex items-center"
+              >
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Get Started Now</h2>
+                  <p className="text-muted-foreground mb-6">
+                    Join thousands of banking professionals who are already optimizing their project management workflows.
+                  </p>
+                  <div className="flex flex-col gap-4">
+                    <Button asChild variant="outline" className="justify-between">
+                      <Link to="/projects">
+                        View Projects
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button asChild className="justify-between">
+                      <Link to="/dashboard">
+                        Dashboard
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-[80%] h-12 bg-black/5 blur-xl rounded-full"></div>
           </motion.div>
         </div>
       </section>
@@ -145,43 +206,6 @@ const Index: React.FC = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <motion.div
-            className="rounded-xl overflow-hidden relative"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.7 }}
-            viewport={{ once: true }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20"></div>
-            <div className="relative p-8 md:p-16 flex flex-col md:flex-row items-center justify-between">
-              <div className="mb-8 md:mb-0 md:mr-8">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to get started?</h2>
-                <p className="text-lg text-muted-foreground mb-6 max-w-md">
-                  Join thousands of banking professionals who are already optimizing their project management workflows.
-                </p>
-                <Button asChild size="lg" className="font-medium px-8">
-                  <Link to="/dashboard">
-                    Explore Dashboard <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <div className="w-full md:w-1/3 aspect-square bg-white/90 rounded-xl shadow-lg p-4 md:p-6 backdrop-blur-md border border-white/30">
-                <div className="w-full h-full rounded-lg border border-border/50 flex items-center justify-center">
-                  <div className="text-center p-4">
-                    <h3 className="text-xl font-semibold mb-2">Get a Demo</h3>
-                    <p className="text-muted-foreground mb-4">See the platform in action</p>
-                    <Button variant="outline">Request Demo</Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </section>
 

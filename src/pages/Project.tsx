@@ -6,26 +6,41 @@ import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { projects } from '@/lib/mockData';
-import { Users, BarChart, FileText, ArrowLeft } from 'lucide-react';
+import { Users, BarChart, FileText, ArrowLeft, TrendingUp } from 'lucide-react';
+
+interface LoanType {
+  type: string;
+  amount: number;
+  description: string;
+}
+
+interface Project {
+  project_id: string;
+  project_name: string;
+  project_type: string;
+  loan_types: LoanType[];
+  loan_amount: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  city?: string;
+  state?: string;
+}
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   
   // Find the project by ID
-  const project = projects.find(p => p.project_id === projectId);
+  const project = projects.find(p => p.project_id === projectId) as Project | undefined;
   
   // If project doesn't exist, redirect to the projects list
   if (!project) {
     return <Navigate to="/projects" replace />;
   }
   
-  // Format the loan amount with commas and currency symbol
-  const formattedAmount = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(project.loan_amount);
+  // Calculate total loan amount from individual loan types
+  const totalLoanAmount = project.loan_types.reduce((total, loan) => total + loan.amount, 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,6 +89,14 @@ const Project: React.FC = () => {
                 <FileText className="h-4 w-4" />
                 <span>Use of Proceeds</span>
               </Button>
+              <Button 
+                onClick={() => navigate(`/project/cash-flow/${projectId}`)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span>Cash Flow Analysis</span>
+              </Button>
             </div>
           </div>
 
@@ -89,22 +112,39 @@ const Project: React.FC = () => {
                   <p>{project.project_type}</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium mb-1">Loan Amount</h3>
-                  <p>{formattedAmount}</p>
+                  <h3 className="text-sm font-medium mb-1">Location</h3>
+                  <p>{project.city}, {project.state}</p>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Loan Types</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.loan_types.map((type, index) => (
-                      <span key={index} className="px-2 py-1 bg-muted rounded-md text-xs">
-                        {type}
-                      </span>
-                    ))}
+              </div>
+              
+              <div>
+                <h3 className="text-sm font-medium mb-2">Loan Information</h3>
+                <div className="border rounded-md divide-y">
+                  {project.loan_types.map((loan, index) => (
+                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="font-medium">{loan.type}</span>
+                        <p className="text-sm text-muted-foreground">{loan.description}</p>
+                      </div>
+                      <div className="text-right font-medium">
+                        {new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                          maximumFractionDigits: 0,
+                        }).format(loan.amount)}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="p-3 flex justify-between bg-muted/50">
+                    <span className="font-bold">Total Loan Amount</span>
+                    <span className="font-bold">
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumFractionDigits: 0,
+                      }).format(totalLoanAmount)}
+                    </span>
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Created At</h3>
-                  <p>{new Date(project.created_at).toLocaleDateString()}</p>
                 </div>
               </div>
             </CardContent>
