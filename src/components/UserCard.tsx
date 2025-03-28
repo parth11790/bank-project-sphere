@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Edit, Trash, ShieldCheck, ShieldAlert } from 'lucide-react';
-import { getBankById } from '@/lib/mockData';
 
 interface UserCardProps {
   user: {
@@ -14,17 +13,14 @@ interface UserCardProps {
     email: string;
     name: string;
     role: string;
-    bank_id: string;
-    otp_enabled: boolean;
+    bank_id?: string;
+    otp_enabled?: boolean;
   };
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
-  // Get the bank the user belongs to
-  const bank = getBankById(user.bank_id);
-  
   // Get user initials for avatar fallback
   const getInitials = (name: string) => {
     return name
@@ -73,7 +69,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
               {user.otp_enabled && (
                 <ShieldCheck size={16} className="text-green-500" aria-label="OTP Enabled" />
               )}
-              {!user.otp_enabled && (
+              {user.otp_enabled === false && (
                 <ShieldAlert size={16} className="text-amber-500" aria-label="OTP Disabled" />
               )}
             </div>
@@ -85,9 +81,11 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
             <Badge variant={getBadgeVariant(user.role)}>
               {formatRole(user.role)}
             </Badge>
-            <span className="text-xs text-muted-foreground">
-              {bank?.bank_name || 'Unknown Bank'}
-            </span>
+            {user.bank_id && (
+              <span className="text-xs text-muted-foreground">
+                {user.bank_id}
+              </span>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex justify-end pt-2 gap-2 border-t border-border/50">

@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 
 // Generate a date within the last year
@@ -7,6 +6,24 @@ const generateDate = () => {
   const pastDate = new Date(now.setMonth(now.getMonth() - Math.floor(Math.random() * 12)));
   return pastDate.toISOString();
 };
+
+// Mock data for use of proceeds table
+export const mockUseOfProceedsColumns = [
+  { column_id: "col_1", column_name: "Main" },
+  { column_id: "col_2", column_name: "Phase 1" },
+  { column_id: "col_3", column_name: "Phase 2" }
+];
+
+export const mockUseOfProceedsRows = [
+  { row_id: "row_1", row_name: "BUSINESS ACQUISITION", overall_category: "Acquisition" },
+  { row_id: "row_2", row_name: "REAL ESTATE PURCHASE", overall_category: "Real Estate" },
+  { row_id: "row_3", row_name: "WORKING CAPITAL", overall_category: "Working Capital" },
+  { row_id: "row_4", row_name: "EQUIPMENT", overall_category: "Equipment" },
+  { row_id: "row_5", row_name: "RENOVATIONS", overall_category: "Construction" },
+  { row_id: "row_6", row_name: "REFINANCE", overall_category: "Refinance" },
+  { row_id: "row_7", row_name: "INVENTORY", overall_category: "Inventory" },
+  { row_id: "row_8", row_name: "TOTAL", overall_category: "Total" }
+];
 
 // Define valid loan types with descriptions
 export const validLoanTypes = [
@@ -18,6 +35,18 @@ export const validLoanTypes = [
   { id: "export", name: "Export", description: "Financing for businesses that export" },
   { id: "conventional", name: "Conventional", description: "Traditional bank loan with standard terms" },
 ];
+
+// Banks data
+export const banks = [
+  { bank_id: "bank_1", bank_name: "First National Bank" },
+  { bank_id: "bank_2", bank_name: "Metro Credit Union" },
+  { bank_id: "bank_3", bank_name: "Community Trust Bank" },
+];
+
+// Helper function to get bank by ID
+export const getBankById = (id: string) => {
+  return banks.find(bank => bank.bank_id === id);
+};
 
 // Users data
 export const users = [

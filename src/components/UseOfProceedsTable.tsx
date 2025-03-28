@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,9 +14,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 interface UseOfProceedsTableProps {
   projectId: string;
   data: Array<{
-    proceeds_id: string;
-    project_id: string;
-    column_name: string;
+    id?: number;
+    proceeds_id?: string;
+    project_id?: string;
+    column_name?: string;
     row_name: string;
     overall_category?: string;
     value: number;
@@ -112,9 +112,8 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
     
     // Initialize the table data with empty values
     rows.forEach(row => {
-      // Find the overall category for this row
-      const categoryOption = categoryOptions.find(opt => opt.category === row.row_name);
-      const overallCategory = row.overall_category || (categoryOption ? categoryOption.overall : '');
+      const categoryOption = data.find(item => item.row_name === row.row_name);
+      const overallCategory = row.overall_category || (categoryOption ? categoryOption.overall_category : '');
       
       tableData[row.row_name] = { overall_category: overallCategory };
       columns.forEach(column => {
@@ -124,13 +123,16 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
     
     // Fill in the values from the data
     data.forEach(item => {
-      if (tableData[item.row_name]) {
+      if (tableData[item.row_name] && item.column_name) {
         tableData[item.row_name][item.column_name] = item.value;
         
         // Add overall category if it exists in the data
         if (item.overall_category) {
           tableData[item.row_name].overall_category = item.overall_category;
         }
+      } else if (tableData[item.row_name]) {
+        // For mock data which might not have column_name, use the first column
+        tableData[item.row_name][columns[0].column_name] = item.value;
       }
     });
     
@@ -234,7 +236,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
       } else {
         // Add a new item if it doesn't exist
         updatedData.push({
-          proceeds_id: `proc_new_${Date.now()}`,
+          id: `proc_new_${Date.now()}`,
           project_id: projectId,
           column_name: columnName,
           row_name: rowName,

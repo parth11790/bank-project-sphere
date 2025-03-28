@@ -5,8 +5,14 @@ import {
   getProjectParticipants,
   getBusinessesByOwnerId,
   getAssignedDocuments,
-  getAssignedForms,
+  getAssignedForms
 } from '@/services/supabaseService';
+import {
+  getProjectParticipantsData,
+  getBusinessesByOwnerIdData,
+  getAssignedDocumentsData,
+  getAssignedFormsData
+} from '@/lib/mockDataProvider';
 
 // Define our data types
 export interface Document {
@@ -38,13 +44,18 @@ export interface Participant {
   business?: Business;
 }
 
+// Use mock data flag for development
+const USE_MOCK_DATA = true;
+
 export const useParticipantData = (projectId: string) => {
   const [participants, setParticipants] = useState<Participant[]>([]);
 
   // Get project participants
   const { data: participantsData, isLoading: participantsLoading, refetch: refetchParticipants } = useQuery({
     queryKey: ['participants', projectId],
-    queryFn: () => getProjectParticipants(projectId || ''),
+    queryFn: () => USE_MOCK_DATA 
+      ? getProjectParticipantsData(projectId) 
+      : getProjectParticipants(projectId || ''),
     enabled: !!projectId,
   });
 
@@ -57,8 +68,13 @@ export const useParticipantData = (projectId: string) => {
       
       for (const participant of participantsData) {
         // Get assigned documents and forms for the individual
-        const assignedDocs = await getAssignedDocuments(participant.participant_id);
-        const assignedForms = await getAssignedForms(participant.participant_id);
+        const assignedDocs = await (USE_MOCK_DATA 
+          ? getAssignedDocumentsData(participant.participant_id)
+          : getAssignedDocuments(participant.participant_id));
+          
+        const assignedForms = await (USE_MOCK_DATA
+          ? getAssignedFormsData(participant.participant_id)
+          : getAssignedForms(participant.participant_id));
         
         // Format documents and forms for individual
         const documents = assignedDocs.map(doc => ({
@@ -72,15 +88,23 @@ export const useParticipantData = (projectId: string) => {
         }));
         
         // Get businesses owned by this participant
-        const businesses = await getBusinessesByOwnerId(participant.user_id);
+        const businesses = await (USE_MOCK_DATA
+          ? getBusinessesByOwnerIdData(participant.user_id)
+          : getBusinessesByOwnerId(participant.user_id));
+          
         let business: Business | undefined;
         
         if (businesses.length > 0) {
           const businessData = businesses[0]; // Just get the first business for now
           
           // Get assigned documents and forms for the business
-          const businessDocs = await getAssignedDocuments(participant.participant_id, businessData.business_id);
-          const businessForms = await getAssignedForms(participant.participant_id, businessData.business_id);
+          const businessDocs = await (USE_MOCK_DATA
+            ? getAssignedDocumentsData(participant.participant_id, businessData.business_id)
+            : getAssignedDocuments(participant.participant_id, businessData.business_id));
+            
+          const businessForms = await (USE_MOCK_DATA
+            ? getAssignedFormsData(participant.participant_id, businessData.business_id)
+            : getAssignedForms(participant.participant_id, businessData.business_id));
           
           business = {
             business_id: businessData.business_id,

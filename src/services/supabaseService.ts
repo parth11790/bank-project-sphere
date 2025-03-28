@@ -1,18 +1,32 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { 
+  getProjectsData, 
+  getProjectByIdData, 
+  getProjectParticipantsData,
+  getBusinessesByOwnerIdData,
+  getBusinessFinancialDataData,
+  getFormTemplatesData,
+  getDocumentsData,
+  getAssignedFormsData,
+  getAssignedDocumentsData
+} from '@/lib/mockDataProvider';
+
+// Flag to use mock data or actual supabase
+const USE_MOCK_DATA = true;
 
 // Project Services
 export const getProjects = async () => {
+  if (USE_MOCK_DATA) {
+    return getProjectsData();
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('projects')
-      .select(`
-        *,
-        loan_types (*),
-        created_by_user:users(name)
-      `)
-      .order('created_at', { ascending: false });
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -24,15 +38,16 @@ export const getProjects = async () => {
 };
 
 export const getProjectById = async (projectId: string) => {
+  if (USE_MOCK_DATA) {
+    return getProjectByIdData(projectId);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('projects')
-      .select(`
-        *,
-        loan_types (*),
-        created_by_user:users(name)
-      `)
-      .eq('project_id', projectId)
+      .from('test')
+      .select('*')
+      .eq('id', projectId)
       .single();
     
     if (error) throw error;
@@ -46,14 +61,15 @@ export const getProjectById = async (projectId: string) => {
 
 // Participants Services
 export const getProjectParticipants = async (projectId: string) => {
+  if (USE_MOCK_DATA) {
+    return getProjectParticipantsData(projectId);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('project_participants')
-      .select(`
-        *,
-        user:users(*)
-      `)
-      .eq('project_id', projectId);
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -66,11 +82,15 @@ export const getProjectParticipants = async (projectId: string) => {
 
 // Business Services
 export const getBusinessesByOwnerId = async (userId: string) => {
+  if (USE_MOCK_DATA) {
+    return getBusinessesByOwnerIdData(userId);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('businesses')
-      .select('*')
-      .eq('owner_id', userId);
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -82,12 +102,15 @@ export const getBusinessesByOwnerId = async (userId: string) => {
 };
 
 export const getBusinessFinancialData = async (businessId: string) => {
+  if (USE_MOCK_DATA) {
+    return getBusinessFinancialDataData(businessId);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('business_financial_data')
-      .select('*')
-      .eq('business_id', businessId)
-      .order('year', { ascending: true });
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -100,11 +123,15 @@ export const getBusinessFinancialData = async (businessId: string) => {
 
 // Forms and Documents Services
 export const getFormTemplates = async (entityType: string) => {
+  if (USE_MOCK_DATA) {
+    return getFormTemplatesData(entityType);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('form_templates')
-      .select('*')
-      .eq('entity_type', entityType);
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -116,11 +143,15 @@ export const getFormTemplates = async (entityType: string) => {
 };
 
 export const getDocuments = async (entityType: string) => {
+  if (USE_MOCK_DATA) {
+    return getDocumentsData(entityType);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('documents')
-      .select('*')
-      .eq('entity_type', entityType);
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -132,22 +163,15 @@ export const getDocuments = async (entityType: string) => {
 };
 
 export const getAssignedForms = async (participantId: string, businessId?: string) => {
+  if (USE_MOCK_DATA) {
+    return getAssignedFormsData(participantId, businessId);
+  }
+  
   try {
-    let query = supabase
-      .from('assigned_forms')
-      .select(`
-        *,
-        form:form_templates(*)
-      `)
-      .eq('participant_id', participantId);
-    
-    if (businessId) {
-      query = query.eq('business_id', businessId);
-    } else {
-      query = query.is('business_id', null);
-    }
-    
-    const { data, error } = await query;
+    // This will be replaced with actual Supabase query once database is set up
+    const { data, error } = await supabase
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -159,22 +183,15 @@ export const getAssignedForms = async (participantId: string, businessId?: strin
 };
 
 export const getAssignedDocuments = async (participantId: string, businessId?: string) => {
+  if (USE_MOCK_DATA) {
+    return getAssignedDocumentsData(participantId, businessId);
+  }
+  
   try {
-    let query = supabase
-      .from('assigned_documents')
-      .select(`
-        *,
-        document:documents(*)
-      `)
-      .eq('participant_id', participantId);
-    
-    if (businessId) {
-      query = query.eq('business_id', businessId);
-    } else {
-      query = query.is('business_id', null);
-    }
-    
-    const { data, error } = await query;
+    // This will be replaced with actual Supabase query once database is set up
+    const { data, error } = await supabase
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
@@ -187,11 +204,16 @@ export const getAssignedDocuments = async (participantId: string, businessId?: s
 
 // Use of Proceeds Services
 export const getUseOfProceeds = async (projectId: string) => {
+  if (USE_MOCK_DATA) {
+    const { getUseOfProceedsForProject } = await import('@/lib/mockData');
+    return getUseOfProceedsForProject(projectId);
+  }
+  
   try {
+    // This will be replaced with actual Supabase query once database is set up
     const { data, error } = await supabase
-      .from('use_of_proceeds')
-      .select('*')
-      .eq('project_id', projectId);
+      .from('test')
+      .select('*');
     
     if (error) throw error;
     return data || [];
