@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
-import Header from '@/components/Header';
+import Layout from '@/components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ParticipantDialog from '@/components/ParticipantDialog';
 import AssignmentDialog from '@/components/AssignmentDialog';
@@ -136,47 +136,13 @@ const ProjectParticipants: React.FC = () => {
 
   if (projectLoading || participantsLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="container py-6 px-4 md:px-6 max-w-6xl">
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <Skeleton className="h-10 w-64" />
-              <Skeleton className="h-10 w-32" />
-            </div>
-            
-            <Tabs defaultValue="buyers">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="buyers">Buyers</TabsTrigger>
-                <TabsTrigger value="sellers">Sellers</TabsTrigger>
-                <TabsTrigger value="bank">Bank Personnel</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="buyers" className="mt-6">
-                <Skeleton className="h-72 w-full" />
-              </TabsContent>
-            </Tabs>
+      <Layout>
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-10 w-32" />
           </div>
-        </main>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container py-6 px-4 md:px-6 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          <ParticipantHeader 
-            projectId={projectId || ''}
-            projectName={project?.project_name || 'Project'}
-          />
-
+          
           <Tabs defaultValue="buyers">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="buyers">Buyers</TabsTrigger>
@@ -185,49 +151,77 @@ const ProjectParticipants: React.FC = () => {
             </TabsList>
             
             <TabsContent value="buyers" className="mt-6">
-              <ParticipantsList 
-                title="Buyers"
-                participants={buyers}
-                emptyMessage="No buyers added yet"
-                onAddParticipant={openAddBuyerDialog}
-                onRemoveParticipant={handleRemoveParticipant}
-                onAssignDocuments={(participant) => openAssignDialog(participant, 'documents')}
-                onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
-                onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
-                onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
-                onAddBusiness={() => toast('Add business functionality would be implemented here')}
-                formTemplates={{ 
-                  individual: individualForms.filter(isFormTemplate), 
-                  business: businessForms.filter(isFormTemplate) 
-                }}
-              />
-            </TabsContent>
-            
-            <TabsContent value="sellers" className="mt-6">
-              <ParticipantsList 
-                title="Sellers"
-                participants={sellers}
-                emptyMessage="No sellers added yet"
-                onAddParticipant={openAddSellerDialog}
-                onRemoveParticipant={handleRemoveParticipant}
-                onAssignDocuments={(participant) => openAssignDialog(participant, 'documents')}
-                onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
-                onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
-                onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
-                onAddBusiness={() => toast('Add business functionality would be implemented here')}
-                formTemplates={{ 
-                  individual: individualForms.filter(isFormTemplate), 
-                  business: businessForms.filter(isFormTemplate) 
-                }}
-              />
-            </TabsContent>
-            
-            <TabsContent value="bank" className="mt-6">
-              <BankPersonnelList bankUsers={bankUsers} />
+              <Skeleton className="h-72 w-full" />
             </TabsContent>
           </Tabs>
-        </motion.div>
-      </main>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-6"
+      >
+        <ParticipantHeader 
+          projectId={projectId || ''}
+          projectName={project?.project_name || 'Project'}
+        />
+
+        <Tabs defaultValue="buyers">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="buyers">Buyers</TabsTrigger>
+            <TabsTrigger value="sellers">Sellers</TabsTrigger>
+            <TabsTrigger value="bank">Bank Personnel</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="buyers" className="mt-6">
+            <ParticipantsList 
+              title="Buyers"
+              participants={buyers}
+              emptyMessage="No buyers added yet"
+              onAddParticipant={openAddBuyerDialog}
+              onRemoveParticipant={handleRemoveParticipant}
+              onAssignDocuments={(participant) => openAssignDialog(participant, 'documents')}
+              onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
+              onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
+              onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
+              onAddBusiness={() => toast('Add business functionality would be implemented here')}
+              formTemplates={{ 
+                individual: individualForms.filter(isFormTemplate), 
+                business: businessForms.filter(isFormTemplate) 
+              }}
+            />
+          </TabsContent>
+          
+          <TabsContent value="sellers" className="mt-6">
+            <ParticipantsList 
+              title="Sellers"
+              participants={sellers}
+              emptyMessage="No sellers added yet"
+              onAddParticipant={openAddSellerDialog}
+              onRemoveParticipant={handleRemoveParticipant}
+              onAssignDocuments={(participant) => openAssignDialog(participant, 'documents')}
+              onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
+              onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
+              onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
+              onAddBusiness={() => toast('Add business functionality would be implemented here')}
+              formTemplates={{ 
+                individual: individualForms.filter(isFormTemplate), 
+                business: businessForms.filter(isFormTemplate) 
+              }}
+            />
+          </TabsContent>
+          
+          <TabsContent value="bank" className="mt-6">
+            <BankPersonnelList bankUsers={bankUsers} />
+          </TabsContent>
+        </Tabs>
+      </motion.div>
 
       <ParticipantDialog 
         open={isParticipantDialogOpen}
@@ -243,7 +237,7 @@ const ProjectParticipants: React.FC = () => {
         type={assignmentType}
         participantName={currentParticipant?.name || ''}
       />
-    </div>
+    </Layout>
   );
 };
 
