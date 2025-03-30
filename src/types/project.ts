@@ -1,54 +1,47 @@
 
-export interface LoanType {
+import { User } from './user';
+import { Business } from './business';
+
+export type LoanType = {
   type: string;
   amount: number;
-  description: string;
-}
+  term?: number;
+  rate?: number;
+  payment?: number;
+};
 
 export interface Project {
   project_id: string;
   project_name: string;
   project_type: string;
-  status?: string;
-  description?: string;
-  loan_types: (LoanType | string)[];
-  loan_amount: number;
-  created_by: string;
+  status: 'active' | 'pending' | 'completed' | string;
   created_at: string;
   updated_at: string;
+  created_by?: string;
+  created_by_user?: User;
+  description?: string;
+  loan_amount: number;
+  loan_types: (LoanType | string)[];
+  category?: string;
   city?: string;
   state?: string;
   location?: string;
-  created_by_user?: { 
-    name: string 
-  };
-  participants?: Array<{ 
-    userId: string; 
-    role: string 
-  }>;
+  participants?: {
+    id: string;
+    role: string;
+    user: User;
+  }[];
+  businesses?: Business[];
+  documentIds?: string[];
+  buyers?: string[];
+  seller?: string;
 }
 
-export interface ApiResponse {
-  created_at: string;
-  id: number;
-  [key: string]: any;
-}
-
-// Type guard to check if an object is a Project
-export function isProject(obj: Project | ApiResponse): obj is Project {
-  return 'project_id' in obj && 'project_name' in obj;
-}
-
-// Helper function to safely get loan amount from either string or LoanType
-export function getLoanAmount(loan: string | LoanType): number {
-  if (typeof loan === 'string') {
-    return 0; // Default value for string loan types
+// A helper function to get the loan amount from either a string or LoanType object
+export const getLoanAmount = (loanType: LoanType | string): number => {
+  if (typeof loanType === 'string') {
+    // If it's a string, we can't determine the amount, return 0
+    return 0;
   }
-  return loan.amount;
-}
-
-// Helper function to get status string safely
-export function getStatusString(status: string | undefined): string {
-  if (!status) return 'Unknown';
-  return status.charAt(0).toUpperCase() + status.slice(1);
-}
+  return loanType.amount || 0;
+};

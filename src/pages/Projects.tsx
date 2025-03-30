@@ -1,14 +1,14 @@
-import React from 'react';
-import { useState } from 'react';
+
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ProjectList from '@/components/ProjectList';
 import { Button } from '@/components/ui/button';
-import { Plus, Filter, ArrowUpDown } from 'lucide-react';
+import { Plus, ArrowUpDown } from 'lucide-react';
 import { getProjects } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Project, getLoanAmount } from '@/types/project';
+import { Project } from '@/types/project';
 import Layout from '@/components/Layout';
 import {
   Select,
@@ -21,7 +21,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -64,7 +63,7 @@ const Projects: React.FC = () => {
     );
   }
   
-  const projectsArray = (projects || []) as Project[];
+  const projectsArray = Array.isArray(projects) ? projects as Project[] : [];
   
   const filteredProjects = statusFilter === "all" 
     ? projectsArray 
@@ -83,14 +82,13 @@ const Projects: React.FC = () => {
   }, {} as Record<string, number>);
   
   const totalLoanAmount = projectsArray.reduce((sum, project) => {
-    const amount = project.loan_types.reduce((total, loan) => total + getLoanAmount(loan), 0);
-    return sum + amount;
+    return sum + (project.loan_amount || 0);
   }, 0);
   
   const totalProjects = projectsArray.length;
   const activeProjects = projectsArray.filter(project => project.status === 'active').length;
   const totalValue = projectsArray.reduce((sum, project) => {
-    return sum + project.loan_amount;
+    return sum + (project.loan_amount || 0);
   }, 0);
   
   const formattedTotalValue = new Intl.NumberFormat('en-US', {

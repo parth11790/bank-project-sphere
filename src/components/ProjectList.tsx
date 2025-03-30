@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import ProjectCard from './ProjectCard';
 import { useNavigate } from 'react-router-dom';
-import { Project, LoanType } from '@/types/project';
+import { Project } from '@/types/project';
 
 interface ProjectListProps {
   projects: Project[];

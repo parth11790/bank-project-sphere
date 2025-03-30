@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { getUserById } from '@/lib/mockData';
 import { useNavigate } from 'react-router-dom';
-import { Project, LoanType, getLoanAmount } from '@/types/project';
+import { Project } from '@/types/project';
 
 interface ProjectCardProps {
   project: Project;
@@ -20,7 +20,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(project.loan_amount);
+  }).format(project.loan_amount || 0);
 
   // Get the user who created the project or use the provided created_by_user
   const createdBy = project.created_by_user?.name || 
