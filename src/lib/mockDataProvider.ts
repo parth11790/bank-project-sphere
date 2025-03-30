@@ -1,3 +1,4 @@
+
 import { 
   users, 
   businesses, 
@@ -9,10 +10,11 @@ import {
   individualDocumentsData,
   businessDocumentsData
 } from './mockData';
-import { Project, isProject } from '@/types/project';
+import { Project } from '@/types/project';
 import { Business, isBusiness, BusinessFinancialData } from '@/types/business';
 import { FormTemplate, Document, isFormTemplate } from '@/types/form';
 import { Participant, isParticipant, ParticipantWithDetails } from '@/types/participant';
+import { User } from '@/types/user';
 
 // Mock implementations of the service functions
 export const getProjectsData = async (): Promise<Project[]> => {
@@ -20,7 +22,21 @@ export const getProjectsData = async (): Promise<Project[]> => {
     ...project,
     // Ensure status is present in each project
     status: project.status || 'active',
-    // For list view, we just return the loan type strings
+    // Map participants to match the Project interface
+    participants: project.participants?.map(p => {
+      const user = users.find(u => u.user_id === p.userId);
+      return {
+        id: p.userId,
+        role: p.role,
+        user: {
+          user_id: user?.user_id || '',
+          name: user?.name || 'Unknown',
+          email: user?.email || '',
+          role: user?.role || ''
+        }
+      };
+    }),
+    // For list view, add created_by_user
     created_by_user: { 
       name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown',
       user_id: users.find(u => u.user_id === project.created_by)?.user_id || '',
@@ -37,6 +53,20 @@ export const getProjectByIdData = async (projectId: string): Promise<Project | n
   return {
     ...project,
     status: project.status || 'active',
+    // Map participants to match the Project interface
+    participants: project.participants?.map(p => {
+      const user = users.find(u => u.user_id === p.userId);
+      return {
+        id: p.userId,
+        role: p.role,
+        user: {
+          user_id: user?.user_id || '',
+          name: user?.name || 'Unknown',
+          email: user?.email || '',
+          role: user?.role || ''
+        }
+      };
+    }),
     created_by_user: { 
       name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown',
       user_id: users.find(u => u.user_id === project.created_by)?.user_id || '',

@@ -47,7 +47,7 @@ export const getLoanAmount = (loanType: LoanType | string): number => {
   return loanType.amount || 0;
 };
 
-// Add the missing getStatusString function
+// Add the getStatusString function
 export const getStatusString = (status: string): string => {
   switch (status) {
     case 'active':
@@ -61,7 +61,7 @@ export const getStatusString = (status: string): string => {
   }
 };
 
-// Add the missing isProject type guard
+// Add the isProject type guard
 export const isProject = (obj: any): obj is Project => {
   return (
     obj &&
