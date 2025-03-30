@@ -1,4 +1,3 @@
-
 import { Business } from './types';
 
 // Expanded businesses list with more diversified data
@@ -99,7 +98,6 @@ export const businesses: Business[] = [
       }
     }
   },
-  // First half of businesses
   {
     business_id: 'business_4',
     name: 'Riverfront Dining',
@@ -405,3 +403,4 @@ export const businesses: Business[] = [
       }
     }
   },
+];
