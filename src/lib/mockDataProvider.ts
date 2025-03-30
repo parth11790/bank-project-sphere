@@ -95,18 +95,36 @@ export const getBusinessFinancialDataData = async (businessId: string): Promise<
   const business = businesses.find(b => b.business_id === businessId);
   if (!business || !business.financial_data) return [];
   
-  return Object.entries(business.financial_data).map(([year, data]) => ({
-    data_id: `fin_${businessId}_${year}`,
-    business_id: businessId,
-    year,
-    revenue: data.revenue,
-    wages: data.wages,
-    cogs: data.cogs,
-    gross_profit: data.gross_profit,
-    other_expenses: data.other_expenses,
-    total_noi: data.total_noi,
-    nom_percentage: data.nom_percentage
-  }));
+  return Object.entries(business.financial_data).map(([year, data]) => {
+    // Create the BusinessFinancialData object with proper years field
+    const financialData: BusinessFinancialData = {
+      data_id: `fin_${businessId}_${year}`,
+      business_id: businessId,
+      year,
+      revenue: data.revenue,
+      wages: data.wages,
+      cogs: data.cogs,
+      gross_profit: data.gross_profit,
+      other_expenses: data.other_expenses,
+      total_noi: data.total_noi,
+      nom_percentage: data.nom_percentage,
+      business_name: business.name,
+      entity_type: business.entity_type,
+      years: [{
+        year,
+        revenue: data.revenue,
+        wages: data.wages,
+        cogs: data.cogs,
+        gross_profit: data.gross_profit,
+        gross_margin: data.revenue > 0 ? (data.gross_profit / data.revenue) * 100 : 0,
+        other_expenses: data.other_expenses,
+        total_noi: data.total_noi,
+        nom: data.nom_percentage,
+      }]
+    };
+    
+    return financialData;
+  });
 };
 
 // Mock form templates and documents data

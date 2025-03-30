@@ -51,23 +51,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { toast } from 'sonner';
-
-interface BusinessFinancialData {
-  business_id: string;
-  business_name: string;
-  entity_type: string;
-  years: {
-    year: string;
-    revenue: number;
-    wages: number;
-    cogs: number;
-    gross_profit: number;
-    gross_margin: number;
-    other_expenses: number;
-    total_noi: number;
-    nom: number;
-  }[];
-}
+import { BusinessFinancialData } from '@/types/business'; // Import the BusinessFinancialData type
 
 const CashFlowAnalysis: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -117,19 +101,19 @@ const CashFlowAnalysis: React.FC = () => {
     );
   }
   
-  const projectName = project?.project_name || 'Project';
+  // Cast financialData to the correct type - this is safe now since we import the same type
   const financialDataArray = financialData as BusinessFinancialData[] || [];
   
   const availableBusinesses = financialDataArray.map(business => ({
     id: business.business_id,
-    name: business.business_name
+    name: business.business_name || 'Unknown Business'
   }));
   
   // Get all available years from all businesses
   const availableYears = Array.from(
     new Set(
       financialDataArray.flatMap(business => 
-        business.years.map(yearData => yearData.year)
+        business.years ? business.years.map(yearData => yearData.year) : []
       )
     )
   ).sort();
@@ -145,9 +129,11 @@ const CashFlowAnalysis: React.FC = () => {
       const yearData: any = { year };
       
       filteredData.forEach(business => {
-        const businessYearData = business.years.find(y => y.year === year);
-        if (businessYearData) {
-          yearData[business.business_name] = businessYearData[metric];
+        if (business.years) {
+          const businessYearData = business.years.find(y => y.year === year);
+          if (businessYearData) {
+            yearData[business.business_name || 'Unknown Business'] = businessYearData[metric];
+          }
         }
       });
       
@@ -199,7 +185,7 @@ const CashFlowAnalysis: React.FC = () => {
               <h1 className="text-3xl font-bold">Cash Flow Analysis</h1>
             </div>
             <p className="text-muted-foreground">
-              Financial analysis for {projectName}
+              Financial analysis for {project?.project_name || 'Project'}
             </p>
           </div>
           
@@ -309,17 +295,17 @@ const CashFlowAnalysis: React.FC = () => {
                   </TableHeader>
                   <TableBody>
                     {filteredData.map(business => (
-                      business.years.filter(yearData => selectedYear === 'all' || yearData.year === selectedYear)
+                      business.years?.filter(yearData => selectedYear === 'all' || yearData.year === selectedYear)
                         .map((yearData, yearIndex) => (
                           <TableRow key={`${business.business_id}-${yearData.year}`}>
                             {yearIndex === 0 && (
-                              <TableCell rowSpan={selectedYear === 'all' ? business.years.length : 1} className="font-medium">
-                                {business.business_name}
+                              <TableCell rowSpan={selectedYear === 'all' ? business.years?.length || 1 : 1} className="font-medium">
+                                {business.business_name || 'Unknown'}
                               </TableCell>
                             )}
                             {yearIndex === 0 && (
-                              <TableCell rowSpan={selectedYear === 'all' ? business.years.length : 1}>
-                                {business.entity_type}
+                              <TableCell rowSpan={selectedYear === 'all' ? business.years?.length || 1 : 1}>
+                                {business.entity_type || 'Unknown'}
                               </TableCell>
                             )}
                             <TableCell>{yearData.year}</TableCell>
@@ -383,7 +369,7 @@ const CashFlowAnalysis: React.FC = () => {
                           {filteredData.map((business, index) => (
                             <Bar 
                               key={business.business_id}
-                              dataKey={business.business_name} 
+                              dataKey={business.business_name || 'Unknown'} 
                               fill={`hsl(${index * 40}, 70%, 50%)`} 
                             />
                           ))}
@@ -428,7 +414,7 @@ const CashFlowAnalysis: React.FC = () => {
                           {filteredData.map((business, index) => (
                             <Bar 
                               key={business.business_id}
-                              dataKey={business.business_name} 
+                              dataKey={business.business_name || 'Unknown'} 
                               fill={`hsl(${index * 40 + 120}, 70%, 50%)`} 
                             />
                           ))}
@@ -467,7 +453,7 @@ const CashFlowAnalysis: React.FC = () => {
                             <Line 
                               key={business.business_id}
                               type="monotone"
-                              dataKey={business.business_name} 
+                              dataKey={business.business_name || 'Unknown'} 
                               stroke={`hsl(${index * 40 + 200}, 70%, 50%)`} 
                               activeDot={{ r: 8 }}
                             />
@@ -513,7 +499,7 @@ const CashFlowAnalysis: React.FC = () => {
                           {filteredData.map((business, index) => (
                             <Bar 
                               key={business.business_id}
-                              dataKey={business.business_name} 
+                              dataKey={business.business_name || 'Unknown'} 
                               fill={`hsl(${index * 40 + 280}, 70%, 50%)`} 
                             />
                           ))}
@@ -528,6 +514,10 @@ const CashFlowAnalysis: React.FC = () => {
             {/* Summary metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {filteredData.map((business) => {
+                if (!business.years || business.years.length === 0) {
+                  return null;
+                }
+                
                 // Calculate averages across years
                 const yearCount = business.years.length;
                 const avgRevenue = business.years.reduce((sum, y) => sum + y.revenue, 0) / yearCount;
@@ -540,10 +530,10 @@ const CashFlowAnalysis: React.FC = () => {
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm font-medium flex items-center gap-2">
                         <Building className="h-4 w-4" />
-                        {business.business_name}
+                        {business.business_name || 'Unknown Business'}
                       </CardTitle>
                       <CardDescription className="text-xs">
-                        {business.entity_type}
+                        {business.entity_type || 'Unknown Type'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-2">
@@ -563,7 +553,7 @@ const CashFlowAnalysis: React.FC = () => {
                     </CardContent>
                   </Card>
                 );
-              })}
+              }).filter(Boolean)}
             </div>
           </div>
         )}
