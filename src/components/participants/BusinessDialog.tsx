@@ -52,7 +52,7 @@ const BusinessDialog: React.FC<BusinessDialogProps> = ({
   onOpenChange,
   onSave,
 }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<BusinessFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -62,7 +62,7 @@ const BusinessDialog: React.FC<BusinessDialogProps> = ({
     },
   });
 
-  function handleSubmit(values: z.infer<typeof formSchema>) {
+  function handleSubmit(values: BusinessFormData) {
     onSave(values);
     form.reset();
   }
