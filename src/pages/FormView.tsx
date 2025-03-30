@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronLeft, Upload, Save, FileText } from 'lucide-react';
+import { ChevronLeft, Upload, Save, FileText, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 
 const FormView: React.FC = () => {
@@ -43,7 +44,7 @@ const FormView: React.FC = () => {
   useEffect(() => {
     if (formName === 'Tax Returns') {
       const incomeFields = [
-        'wages', 'interest', 'alimony', 'ira', 'pensions',
+        'adjustedGrossIncome', 'wages', 'interest', 'alimony', 'ira', 'pensions',
         'socialSecurity', 'businessIncome', 'rentalIncome', 
         'farmIncome', 'partnershipDistributions', 'capitalContributions',
         'otherIncome'
@@ -70,6 +71,15 @@ const FormView: React.FC = () => {
   
   const handleSubmit = () => {
     toast("Form submitted successfully");
+  };
+
+  // Helper function to determine if a field contributes positively or negatively to net cash flow
+  const getContributionIndicator = (fieldType: 'income' | 'expense') => {
+    if (fieldType === 'income') {
+      return <Plus className="inline h-4 w-4 text-green-500" />;
+    } else {
+      return <Minus className="inline h-4 w-4 text-red-500" />;
+    }
   };
 
   return (
@@ -174,7 +184,35 @@ const FormView: React.FC = () => {
                   {formName === 'Tax Returns' && (
                     <>
                       <div>
-                        <Label htmlFor="wages">Wages, Salaries ($)</Label>
+                        <Label htmlFor="adjustedGrossIncome">
+                          {getContributionIndicator('income')} Adjusted Gross Income ($)
+                        </Label>
+                        <Input 
+                          id="adjustedGrossIncome" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.adjustedGrossIncome || ''}
+                          onChange={(e) => handleInputChange('adjustedGrossIncome', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="householdMembers">
+                          Number of Household Members
+                        </Label>
+                        <Input 
+                          id="householdMembers" 
+                          type="number" 
+                          placeholder="0"
+                          value={formValues.householdMembers || ''}
+                          onChange={(e) => handleInputChange('householdMembers', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="wages">
+                          {getContributionIndicator('income')} Wages, Salaries ($)
+                        </Label>
                         <Input 
                           id="wages" 
                           type="number" 
@@ -185,7 +223,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="interest">Interest & Dividend Income ($)</Label>
+                        <Label htmlFor="interest">
+                          {getContributionIndicator('income')} Interest & Dividend Income ($)
+                        </Label>
                         <Input 
                           id="interest" 
                           type="number" 
@@ -196,7 +236,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="alimony">Alimony Received ($)</Label>
+                        <Label htmlFor="alimony">
+                          {getContributionIndicator('income')} Alimony Received ($)
+                        </Label>
                         <Input 
                           id="alimony" 
                           type="number" 
@@ -207,7 +249,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="ira">IRA Distributions ($)</Label>
+                        <Label htmlFor="ira">
+                          {getContributionIndicator('income')} IRA Distributions ($)
+                        </Label>
                         <Input 
                           id="ira" 
                           type="number" 
@@ -218,7 +262,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="pensions">Pensions / Annuities ($)</Label>
+                        <Label htmlFor="pensions">
+                          {getContributionIndicator('income')} Pensions / Annuities ($)
+                        </Label>
                         <Input 
                           id="pensions" 
                           type="number" 
@@ -229,7 +275,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="socialSecurity">Social Security Benefits ($)</Label>
+                        <Label htmlFor="socialSecurity">
+                          {getContributionIndicator('income')} Social Security Benefits ($)
+                        </Label>
                         <Input 
                           id="socialSecurity" 
                           type="number" 
@@ -240,7 +288,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="businessIncome">Schedule C - Business Income / Loss ($)</Label>
+                        <Label htmlFor="businessIncome">
+                          {getContributionIndicator('income')} Schedule C - Business Income / Loss ($)
+                        </Label>
                         <Input 
                           id="businessIncome" 
                           type="number" 
@@ -251,7 +301,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="businessDepreciation">Schedule C - Business Depreciation / Amortization ($)</Label>
+                        <Label htmlFor="businessDepreciation">
+                          {getContributionIndicator('income')} Schedule C - Business Depreciation / Amortization ($)
+                        </Label>
                         <Input 
                           id="businessDepreciation" 
                           type="number" 
@@ -262,7 +314,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="businessInterest">Schedule C - Business Interest ($)</Label>
+                        <Label htmlFor="businessInterest">
+                          {getContributionIndicator('income')} Schedule C - Business Interest ($)
+                        </Label>
                         <Input 
                           id="businessInterest" 
                           type="number" 
@@ -273,7 +327,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="rentalIncome">Schedule E - Rental Real Estate Income / Loss ($)</Label>
+                        <Label htmlFor="rentalIncome">
+                          {getContributionIndicator('income')} Schedule E - Rental Real Estate Income / Loss ($)
+                        </Label>
                         <Input 
                           id="rentalIncome" 
                           type="number" 
@@ -284,7 +340,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="rentalInterest">Schedule E - Rental Real Estate Interest ($)</Label>
+                        <Label htmlFor="rentalInterest">
+                          {getContributionIndicator('income')} Schedule E - Rental Real Estate Interest ($)
+                        </Label>
                         <Input 
                           id="rentalInterest" 
                           type="number" 
@@ -295,7 +353,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="rentalDepreciation">Schedule E - Rental Real Estate Depreciation / Amortization ($)</Label>
+                        <Label htmlFor="rentalDepreciation">
+                          {getContributionIndicator('income')} Schedule E - Rental Real Estate Depreciation / Amortization ($)
+                        </Label>
                         <Input 
                           id="rentalDepreciation" 
                           type="number" 
@@ -306,7 +366,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="farmIncome">Schedule F - Farm Income / Loss ($)</Label>
+                        <Label htmlFor="farmIncome">
+                          {getContributionIndicator('income')} Schedule F - Farm Income / Loss ($)
+                        </Label>
                         <Input 
                           id="farmIncome" 
                           type="number" 
@@ -317,7 +379,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="farmInterest">Schedule F - Farm Interest ($)</Label>
+                        <Label htmlFor="farmInterest">
+                          {getContributionIndicator('income')} Schedule F - Farm Interest ($)
+                        </Label>
                         <Input 
                           id="farmInterest" 
                           type="number" 
@@ -328,7 +392,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="farmDepreciation">Schedule F - Farm Depreciation / Amortization ($)</Label>
+                        <Label htmlFor="farmDepreciation">
+                          {getContributionIndicator('income')} Schedule F - Farm Depreciation / Amortization ($)
+                        </Label>
                         <Input 
                           id="farmDepreciation" 
                           type="number" 
@@ -339,7 +405,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="partnershipDistributions">Partnership / S-Corp Distributions ($)</Label>
+                        <Label htmlFor="partnershipDistributions">
+                          {getContributionIndicator('income')} Partnership / S-Corp Distributions ($)
+                        </Label>
                         <Input 
                           id="partnershipDistributions" 
                           type="number" 
@@ -350,7 +418,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="capitalContributions">Capital Contributions ($)</Label>
+                        <Label htmlFor="capitalContributions">
+                          {getContributionIndicator('income')} Capital Contributions ($)
+                        </Label>
                         <Input 
                           id="capitalContributions" 
                           type="number" 
@@ -361,7 +431,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="otherIncome">Other Cash Income ($)</Label>
+                        <Label htmlFor="otherIncome">
+                          {getContributionIndicator('income')} Other Cash Income ($)
+                        </Label>
                         <Input 
                           id="otherIncome" 
                           type="number" 
@@ -372,7 +444,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div className="bg-muted p-4 rounded-md">
-                        <Label htmlFor="grossCashFlow" className="font-semibold">Gross Cash Flow ($)</Label>
+                        <Label htmlFor="grossCashFlow" className="font-semibold">
+                          {getContributionIndicator('income')} Gross Cash Flow ($)
+                        </Label>
                         <Input 
                           id="grossCashFlow" 
                           type="number" 
@@ -383,7 +457,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="taxes">Federal & State Taxes ($)</Label>
+                        <Label htmlFor="taxes">
+                          {getContributionIndicator('expense')} Federal & State Taxes ($)
+                        </Label>
                         <Input 
                           id="taxes" 
                           type="number" 
@@ -394,7 +470,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="otherExpenses">Other Expenses ($)</Label>
+                        <Label htmlFor="otherExpenses">
+                          {getContributionIndicator('expense')} Other Expenses ($)
+                        </Label>
                         <Input 
                           id="otherExpenses" 
                           type="number" 
@@ -405,7 +483,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div>
-                        <Label htmlFor="livingExpenses">Living Expenses ($)</Label>
+                        <Label htmlFor="livingExpenses">
+                          {getContributionIndicator('expense')} Living Expenses ($)
+                        </Label>
                         <Input 
                           id="livingExpenses" 
                           type="number" 
@@ -416,7 +496,9 @@ const FormView: React.FC = () => {
                       </div>
                       
                       <div className="bg-muted p-4 rounded-md">
-                        <Label htmlFor="netCashFlow" className="font-semibold">Net Cash Flow ($)</Label>
+                        <Label htmlFor="netCashFlow" className="font-semibold">
+                          Net Cash Flow ($)
+                        </Label>
                         <Input 
                           id="netCashFlow" 
                           type="number" 
