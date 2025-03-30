@@ -37,8 +37,10 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
   participantName,
   availableItems
 }) => {
-  // Change the type to be more specific based on the 'type' prop
-  const [selectedItems, setSelectedItems] = useState<FormTemplate[] | Document[]>(type === 'forms' ? [] as FormTemplate[] : [] as Document[]);
+  // Initialize with proper type assertion based on the type prop
+  const [selectedItems, setSelectedItems] = useState<FormTemplate[] | Document[]>(
+    type === 'forms' ? ([] as FormTemplate[]) : ([] as Document[])
+  );
   const [currentItemId, setCurrentItemId] = useState<string>('');
 
   const handleAddItem = () => {
@@ -57,28 +59,38 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
           ? item.document_id === itemToAdd.document_id
           : false
     )) {
-      // Use type assertion to ensure TypeScript understands the type
+      // Use type assertion with proper type guard
       if (type === 'forms' && 'form_id' in itemToAdd) {
-        setSelectedItems(prev => [...prev, itemToAdd] as FormTemplate[]);
+        setSelectedItems(prevItems => {
+          // Ensure we're dealing with FormTemplate[]
+          const prevForms = prevItems as FormTemplate[];
+          return [...prevForms, itemToAdd as FormTemplate] as FormTemplate[];
+        });
       } else if (type === 'documents' && 'document_id' in itemToAdd) {
-        setSelectedItems(prev => [...prev, itemToAdd] as Document[]);
+        setSelectedItems(prevItems => {
+          // Ensure we're dealing with Document[]
+          const prevDocs = prevItems as Document[];
+          return [...prevDocs, itemToAdd as Document] as Document[];
+        });
       }
       setCurrentItemId('');
     }
   };
 
   const handleRemoveItem = (id: string) => {
-    setSelectedItems(selectedItems.filter(item => 
-      'form_id' in item 
-        ? item.form_id !== id
-        : item.document_id !== id
-    ));
+    setSelectedItems(prevItems => {
+      return prevItems.filter(item => 
+        'form_id' in item 
+          ? item.form_id !== id
+          : item.document_id !== id
+      ) as FormTemplate[] | Document[];
+    });
   };
 
   const handleSubmit = () => {
-    // At this point, selectedItems should already be correctly typed
     onSave(selectedItems);
-    setSelectedItems(type === 'forms' ? [] as FormTemplate[] : [] as Document[]);
+    // Reset with proper type assertion
+    setSelectedItems(type === 'forms' ? ([] as FormTemplate[]) : ([] as Document[]));
   };
 
   const availableItemsFiltered = availableItems.filter(item => {
@@ -171,7 +183,7 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
             type="button" 
             variant="outline" 
             onClick={() => {
-              setSelectedItems(type === 'forms' ? [] as FormTemplate[] : [] as Document[]);
+              setSelectedItems(type === 'forms' ? ([] as FormTemplate[]) : ([] as Document[]));
               onOpenChange(false);
             }}
           >
