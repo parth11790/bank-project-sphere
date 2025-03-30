@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -29,6 +30,8 @@ export interface Business {
   business_id: string;
   name: string;
   entity_type: string;
+  title?: string;
+  ownership_percentage?: number;
   documents: Document[];
   forms: Form[];
 }
@@ -175,6 +178,18 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
                 </div>
               </AccordionTrigger>
               <AccordionContent>
+                <div className="mb-4">
+                  <div className="grid grid-cols-2 gap-2 p-2 bg-muted/30 rounded-md">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Title:</p>
+                      <p className="font-medium">{participant.business.title || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Ownership:</p>
+                      <p className="font-medium">{participant.business.ownership_percentage || '0'}%</p>
+                    </div>
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                   <div>
                     <div className="flex justify-between items-center mb-2">

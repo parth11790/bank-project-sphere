@@ -17,6 +17,8 @@ export interface Participant {
     business_id: string;
     name: string;
     entity_type: string;
+    title?: string; // Owner's title in the business
+    ownership_percentage?: number; // Ownership percentage
     documents: Array<{
       document_id: string;
       name: string;

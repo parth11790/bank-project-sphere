@@ -1,3 +1,4 @@
+
 import { users, businesses, projects } from './mockData';
 import { Project, isProject } from '@/types/project';
 import { Business, isBusiness, BusinessFinancialData } from '@/types/business';
@@ -42,6 +43,23 @@ export const getProjectParticipantsData = async (projectId: string): Promise<Par
   });
 };
 
+// Helper to get a random sample of items
+const sampleItems = <T>(array: T[], count: number): T[] => {
+  const shuffled = [...array].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+};
+
+// Helper to generate random title
+const getRandomTitle = (): string => {
+  const titles = ['CEO', 'President', 'Owner', 'Managing Partner', 'Director', 'Founder', 'Managing Member'];
+  return titles[Math.floor(Math.random() * titles.length)];
+};
+
+// Helper to generate random ownership percentage
+const getRandomOwnership = (): number => {
+  return Math.floor(Math.random() * 80) + 20; // 20-100%
+};
+
 // Mock detailed participant data for participants page
 export const getParticipantsWithDetailsData = async (projectId: string): Promise<ParticipantWithDetails[]> => {
   const project = projects.find(p => p.project_id === projectId);
@@ -74,17 +92,13 @@ export const getParticipantsWithDetailsData = async (projectId: string): Promise
         business_id: userBusinesses[0].business_id,
         name: userBusinesses[0].name,
         entity_type: userBusinesses[0].entity_type,
+        title: getRandomTitle(), // Add a random title
+        ownership_percentage: getRandomOwnership(), // Add a random ownership percentage
         documents: sampleItems(businessDocumentsData, 2),
         forms: sampleItems(businessFormsData, 3),
       } : undefined
     };
   }).filter(Boolean) as ParticipantWithDetails[];
-};
-
-// Helper to get a random sample of items
-const sampleItems = <T>(array: T[], count: number): T[] => {
-  const shuffled = [...array].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
 };
 
 export const getBusinessesByOwnerIdData = async (userId: string): Promise<Business[]> => {

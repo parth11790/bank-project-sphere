@@ -34,6 +34,8 @@ export interface Business {
   website?: string;
   founding_date?: string;
   employee_count?: number;
+  title?: string; // Owner's title in the business
+  ownership_percentage?: number; // Ownership percentage
   financial_data?: Record<string, {
     revenue: number;
     wages: number;

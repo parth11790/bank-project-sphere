@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Participant } from '@/types/participant';
 import ParticipantDialog from '@/components/ParticipantDialog';
+import BusinessDialog, { BusinessFormData } from '@/components/participants/BusinessDialog';
 import { toast } from 'sonner';
 
 interface ParticipantDialogHandlerProps {
@@ -13,11 +14,26 @@ export const useParticipantDialogHandler = ({
 }: ParticipantDialogHandlerProps) => {
   const [isParticipantDialogOpen, setIsParticipantDialogOpen] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
+  
+  // Business dialog state
+  const [isBusinessDialogOpen, setIsBusinessDialogOpen] = useState(false);
+  const [participantForBusiness, setParticipantForBusiness] = useState<Participant | null>(null);
 
   const handleAddParticipant = (participant: Omit<Participant, 'participant_id' | 'documents' | 'forms' | 'user_id'>) => {
     // In a real app, this would call an API to add the participant
     toast(`${participant.role === 'buyer' ? 'Buyer' : 'Seller'} added successfully`);
     setIsParticipantDialogOpen(false);
+    // Refetch participants to update the list
+    refetchParticipants();
+  };
+
+  const handleAddBusiness = (businessData: BusinessFormData) => {
+    if (!participantForBusiness) return;
+    
+    // In a real app, this would call an API to add the business
+    toast(`Business ${businessData.name} added to ${participantForBusiness.name}`);
+    setIsBusinessDialogOpen(false);
+    
     // Refetch participants to update the list
     refetchParticipants();
   };
@@ -47,6 +63,11 @@ export const useParticipantDialogHandler = ({
       forms: [] 
     });
   };
+  
+  const openAddBusinessDialog = (participant: Participant) => {
+    setParticipantForBusiness(participant);
+    setIsBusinessDialogOpen(true);
+  };
 
   const participantDialog = (
     <ParticipantDialog 
@@ -56,10 +77,20 @@ export const useParticipantDialogHandler = ({
       defaultType={currentParticipant?.role as "buyer" | "seller" | undefined}
     />
   );
+  
+  const businessDialog = (
+    <BusinessDialog
+      open={isBusinessDialogOpen}
+      onOpenChange={setIsBusinessDialogOpen}
+      onSave={handleAddBusiness}
+    />
+  );
 
   return {
     openAddBuyerDialog,
     openAddSellerDialog,
+    openAddBusinessDialog,
     participantDialog,
+    businessDialog,
   };
 };

@@ -53,7 +53,9 @@ const ProjectParticipants: React.FC = () => {
   const {
     openAddBuyerDialog,
     openAddSellerDialog,
-    participantDialog
+    openAddBusinessDialog,
+    participantDialog,
+    businessDialog
   } = useParticipantDialogHandler({
     refetchParticipants
   });
@@ -134,7 +136,7 @@ const ProjectParticipants: React.FC = () => {
               onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
               onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
-              onAddBusiness={() => toast('Add business functionality would be implemented here')}
+              onAddBusiness={openAddBusinessDialog}
               formTemplates={formTemplates}
             />
           </TabsContent>
@@ -150,7 +152,7 @@ const ProjectParticipants: React.FC = () => {
               onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
               onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
-              onAddBusiness={() => toast('Add business functionality would be implemented here')}
+              onAddBusiness={openAddBusinessDialog}
               formTemplates={formTemplates}
             />
           </TabsContent>
@@ -162,6 +164,7 @@ const ProjectParticipants: React.FC = () => {
       </motion.div>
 
       {participantDialog}
+      {businessDialog}
       {assignmentDialog}
     </Layout>
   );
