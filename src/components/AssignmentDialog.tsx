@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { 
@@ -36,7 +37,8 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
   participantName,
   availableItems
 }) => {
-  const [selectedItems, setSelectedItems] = useState<(FormTemplate | Document)[]>([]);
+  // Change the type to be more specific based on the 'type' prop
+  const [selectedItems, setSelectedItems] = useState<FormTemplate[] | Document[]>([]);
   const [currentItemId, setCurrentItemId] = useState<string>('');
 
   const handleAddItem = () => {
@@ -55,7 +57,12 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
           ? item.document_id === itemToAdd.document_id
           : false
     )) {
-      setSelectedItems([...selectedItems, itemToAdd]);
+      // Use type assertion to ensure TypeScript understands the type
+      if (type === 'forms' && 'form_id' in itemToAdd) {
+        setSelectedItems([...selectedItems, itemToAdd] as FormTemplate[]);
+      } else if (type === 'documents' && 'document_id' in itemToAdd) {
+        setSelectedItems([...selectedItems, itemToAdd] as Document[]);
+      }
       setCurrentItemId('');
     }
   };
@@ -69,14 +76,9 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    if (type === 'forms') {
-      const forms = selectedItems.filter(item => 'form_id' in item) as FormTemplate[];
-      onSave(forms);
-    } else {
-      const documents = selectedItems.filter(item => 'document_id' in item) as Document[];
-      onSave(documents);
-    }
-    setSelectedItems([]);
+    // At this point, selectedItems should already be correctly typed
+    onSave(selectedItems);
+    setSelectedItems([] as FormTemplate[] | Document[]);
   };
 
   const availableItemsFiltered = availableItems.filter(item => {
@@ -169,7 +171,7 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
             type="button" 
             variant="outline" 
             onClick={() => {
-              setSelectedItems([]);
+              setSelectedItems([] as FormTemplate[] | Document[]);
               onOpenChange(false);
             }}
           >
