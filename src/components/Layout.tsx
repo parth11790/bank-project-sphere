@@ -14,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <div className="min-h-screen w-full bg-background">
       {showHeader && <Header />}
-      <div className="container px-4 py-6 md:px-6">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:px-6">
         {children}
       </div>
     </div>

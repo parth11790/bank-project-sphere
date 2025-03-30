@@ -1,10 +1,7 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ProjectList from '@/components/ProjectList';
-import { Button } from '@/components/ui/button';
-import { Plus, ArrowUpDown } from 'lucide-react';
 import { getProjects } from '@/services';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,7 +10,6 @@ import Layout from '@/components/Layout';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -21,15 +17,7 @@ import {
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const Projects: React.FC = () => {
   const navigate = useNavigate();
@@ -44,17 +32,22 @@ const Projects: React.FC = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="flex flex-col gap-6">
+        <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold mb-1">Projects</h1>
-              <p className="text-muted-foreground">Manage and track all your banking projects</p>
+              <Skeleton className="h-8 w-40 mb-1" />
+              <Skeleton className="h-4 w-64" />
             </div>
             <div className="flex gap-2">
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-40" />
+              <Skeleton className="h-9 w-32" />
+              <Skeleton className="h-9 w-24" />
             </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
           </div>
           
           <Skeleton className="h-96 w-full" />
@@ -75,112 +68,69 @@ const Projects: React.FC = () => {
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
   
-  const projectCountByType = projectsArray.reduce((acc, project) => {
-    const type = project.project_type;
-    acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  
-  const totalLoanAmount = projectsArray.reduce((sum, project) => {
-    return sum + (project.loan_amount || 0);
-  }, 0);
-  
   const totalProjects = projectsArray.length;
   const activeProjects = projectsArray.filter(project => project.status === 'active').length;
-  const totalValue = projectsArray.reduce((sum, project) => {
-    return sum + (project.loan_amount || 0);
-  }, 0);
+  const pendingProjects = projectsArray.filter(project => project.status === 'pending').length;
   
   const formattedTotalValue = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(totalValue);
+  }).format(projectsArray.reduce((sum, project) => sum + (project.loan_amount || 0), 0));
   
   return (
     <Layout>
-      <div className="flex flex-col gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col gap-6"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold mb-1">Projects</h1>
-              <p className="text-muted-foreground">Manage and track all your banking projects</p>
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="all">All Projects</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <ArrowUpDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setSortOrder('desc')}>
-                    Newest First
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSortOrder('asc')}>
-                    Oldest First
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <Button 
-                onClick={() => navigate('/create-project')}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Project
-              </Button>
-            </div>
-          </div>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-medium mb-1">Projects</h1>
+          <p className="text-sm text-muted-foreground">Manage and track all your projects</p>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Card className="border-border/30">
+            <CardContent className="p-3">
+              <p className="text-xs text-muted-foreground mb-1">Total Projects</p>
+              <p className="text-lg font-medium">{totalProjects}</p>
+            </CardContent>
+          </Card>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-bold">{totalProjects}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-bold">{activeProjects}</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-2xl font-bold">{formattedTotalValue}</p>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="border-border/30">
+            <CardContent className="p-3">
+              <p className="text-xs text-muted-foreground mb-1">Active</p>
+              <p className="text-lg font-medium">{activeProjects}</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-border/30">
+            <CardContent className="p-3">
+              <p className="text-xs text-muted-foreground mb-1">Pending</p>
+              <p className="text-lg font-medium">{pendingProjects}</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-border/30">
+            <CardContent className="p-3">
+              <p className="text-xs text-muted-foreground mb-1">Total Value</p>
+              <p className="text-lg font-medium">{formattedTotalValue}</p>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="flex justify-end">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Projects</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <ProjectList projects={sortedProjects} />
-        </motion.div>
+        <ProjectList projects={sortedProjects} />
       </div>
     </Layout>
   );

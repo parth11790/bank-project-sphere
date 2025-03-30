@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getUserById } from '@/lib/mockData';
 import { useNavigate } from 'react-router-dom';
@@ -44,45 +43,42 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     : [];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.3 }}
-      className="hover-lift cursor-pointer"
+    <Card 
+      className="overflow-hidden border-border/30 hover:border-border transition-colors duration-200 cursor-pointer"
       onClick={handleCardClick}
     >
-      <Card className="h-full overflow-hidden border-border/50 hover:shadow-md transition-shadow duration-200">
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-start">
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 mb-2">
-              {project.project_type}
-            </Badge>
-          </div>
-          <CardTitle className="text-xl font-semibold leading-tight">{project.project_name}</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground mt-1">
-            <span className="font-medium text-foreground">{formattedAmount}</span> • <span className="text-foreground">{location}</span>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pb-3">
-          <div className="flex flex-col gap-2">
-            <div className="text-sm text-muted-foreground">
-              Created by {createdBy || 'Unknown'} • Updated {updatedTimeAgo}
-            </div>
-            {processedLoanTypes.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                <span className="text-xs text-muted-foreground mr-1">Loan Types:</span>
-                {processedLoanTypes.map((type, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {type}
-                  </Badge>
-                ))}
-              </div>
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between mb-1">
+          <Badge variant="secondary" className="text-xs font-normal">
+            {project.project_type}
+          </Badge>
+        </div>
+        <h3 className="text-base font-medium leading-tight">{project.project_name}</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          <span className="font-medium text-foreground">{formattedAmount}</span> • {location}
+        </p>
+      </CardHeader>
+      <CardContent className="pb-4 pt-0">
+        <div className="text-xs text-muted-foreground">
+          Created by {createdBy} • Updated {updatedTimeAgo}
+        </div>
+        
+        {processedLoanTypes.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-3">
+            {processedLoanTypes.slice(0, 2).map((type, index) => (
+              <Badge key={index} variant="outline" className="text-xs px-1.5 py-0 h-5">
+                {type}
+              </Badge>
+            ))}
+            {processedLoanTypes.length > 2 && (
+              <Badge variant="outline" className="text-xs px-1.5 py-0 h-5">
+                +{processedLoanTypes.length - 2}
+              </Badge>
             )}
           </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
