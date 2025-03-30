@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -14,7 +14,8 @@ import {
   Clock,
   UserCircle,
   Store,
-  DollarSign
+  DollarSign,
+  Edit
 } from 'lucide-react';
 import { getProjectById } from '@/services';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
@@ -35,10 +36,12 @@ import {
 } from 'recharts';
 import { Project as ProjectType, getStatusString } from '@/types/project';
 import { Participant, ParticipantWithDetails } from '@/types/participant';
+import ProjectEditDialog from '@/components/ProjectEditDialog';
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
@@ -159,10 +162,10 @@ const Project: React.FC = () => {
             </Button>
             <Button 
               variant="outline"
-              onClick={() => navigate(`/project/dashboard/${projectId}`)}
+              onClick={() => setEditDialogOpen(true)}
             >
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Dashboard
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Project
             </Button>
             <Button
               variant="default"
@@ -464,6 +467,11 @@ const Project: React.FC = () => {
           </CardFooter>
         </Card>
       </motion.div>
+      {project && <ProjectEditDialog 
+        project={projectData}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+      />}
     </Layout>
   );
 };

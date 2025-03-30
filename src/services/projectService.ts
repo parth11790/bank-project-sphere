@@ -54,3 +54,52 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
     return null;
   }
 };
+
+// Update project
+export const updateProject = async (
+  projectId: string, 
+  projectData: Partial<Project>
+): Promise<Project> => {
+  if (USE_MOCK_DATA) {
+    // For mock data, we'll simulate an API call with a delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const currentProject = getProjectByIdData(projectId);
+        if (currentProject) {
+          // Merge the current project with the updates
+          const updatedProject = {
+            ...currentProject,
+            ...projectData,
+            updated_at: new Date().toISOString()
+          };
+          // In a real implementation, we would update the mock data store
+          // Here we just return the updated project
+          resolve(updatedProject);
+        } else {
+          throw new Error('Project not found');
+        }
+      }, 500); // simulate network delay
+    });
+  }
+  
+  try {
+    // When Supabase tables are set up, replace this with proper queries
+    const { data, error } = await supabase
+      .from('test')
+      .update({
+        ...projectData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', Number(projectId))
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    return data as unknown as Project;
+  } catch (error: any) {
+    console.error(`Error updating project ${projectId}:`, error.message);
+    toast.error('Failed to update project');
+    throw error;
+  }
+};
