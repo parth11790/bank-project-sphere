@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -74,7 +73,7 @@ const FormView: React.FC = () => {
                 <CardTitle>Form Information</CardTitle>
                 <CardDescription>Please fill out all required fields</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
                 {formName === 'Tax Returns' && (
                   <TaxReturnsForm 
                     formValues={formValues}
@@ -95,9 +94,9 @@ const FormView: React.FC = () => {
                   <GenericForm />
                 )}
                 
-                <div>
+                <div className="mt-6">
                   <Label htmlFor="notes">Additional Notes</Label>
-                  <Textarea id="notes" placeholder="Enter any additional information" />
+                  <Textarea id="notes" placeholder="Enter any additional information" className="mt-2" />
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end">

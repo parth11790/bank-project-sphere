@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ContributionIndicator from './ContributionIndicator';
@@ -18,339 +17,421 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
   calculatedValues,
   onInputChange
 }) => {
+  // Calculate Adjusted Gross Income
+  const adjustedGrossIncome = React.useMemo(() => {
+    const wages = parseFloat(formValues.wages || '0');
+    const interest = parseFloat(formValues.interest || '0');
+    const businessIncome = parseFloat(formValues.businessIncome || '0');
+    const rentalIncome = parseFloat(formValues.rentalIncome || '0');
+    const farmIncome = parseFloat(formValues.farmIncome || '0');
+    
+    return wages + interest + businessIncome + rentalIncome + farmIncome;
+  }, [formValues]);
+
+  // Update the form with the calculated AGI
+  useEffect(() => {
+    onInputChange('adjustedGrossIncome', adjustedGrossIncome.toString());
+  }, [adjustedGrossIncome, onInputChange]);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="householdMembers" className="w-1/3">
-          Number of Household Members
-        </Label>
+    <div className="space-y-6">
+      {/* Adjusted Gross Income (New field at the top) */}
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="mb-2">
+          <Label htmlFor="adjustedGrossIncome" className="text-lg font-semibold">
+            <ContributionIndicator fieldType="income" /> Adjusted Gross Income ($)
+          </Label>
+        </div>
+        <Input 
+          id="adjustedGrossIncome" 
+          type="number" 
+          value={adjustedGrossIncome.toFixed(2)} 
+          readOnly
+          className="bg-muted-foreground/10"
+        />
+      </div>
+
+      {/* Household Members */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="householdMembers">
+            Number of Household Members
+          </Label>
+        </div>
         <Input 
           id="householdMembers" 
           type="number" 
           placeholder="0"
-          className="flex-1"
           value={formValues.householdMembers || ''}
           onChange={(e) => onInputChange('householdMembers', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="wages" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Wages, Salaries ($)
-        </Label>
+      {/* Wages, Salaries */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="wages">
+            <ContributionIndicator fieldType="income" /> Wages, Salaries ($)
+          </Label>
+        </div>
         <Input 
           id="wages" 
           type="number" 
           placeholder="0.00" 
-          className="flex-1"
           value={formValues.wages || ''} 
           onChange={(e) => onInputChange('wages', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="interest" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Interest & Dividend Income ($)
-        </Label>
+      {/* Interest & Dividend Income */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="interest">
+            <ContributionIndicator fieldType="income" /> Interest & Dividend Income ($)
+          </Label>
+        </div>
         <Input 
           id="interest" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.interest || ''}
           onChange={(e) => onInputChange('interest', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="alimony" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Alimony Received ($)
-        </Label>
+      {/* Alimony Received */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="alimony">
+            <ContributionIndicator fieldType="income" /> Alimony Received ($)
+          </Label>
+        </div>
         <Input 
           id="alimony" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.alimony || ''}
           onChange={(e) => onInputChange('alimony', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="ira" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> IRA Distributions ($)
-        </Label>
+      {/* IRA Distributions */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="ira">
+            <ContributionIndicator fieldType="income" /> IRA Distributions ($)
+          </Label>
+        </div>
         <Input 
           id="ira" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.ira || ''}
           onChange={(e) => onInputChange('ira', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="pensions" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Pensions / Annuities ($)
-        </Label>
+      {/* Pensions / Annuities */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="pensions">
+            <ContributionIndicator fieldType="income" /> Pensions / Annuities ($)
+          </Label>
+        </div>
         <Input 
           id="pensions" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.pensions || ''}
           onChange={(e) => onInputChange('pensions', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="socialSecurity" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Social Security Benefits ($)
-        </Label>
+      {/* Social Security Benefits */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="socialSecurity">
+            <ContributionIndicator fieldType="income" /> Social Security Benefits ($)
+          </Label>
+        </div>
         <Input 
           id="socialSecurity" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.socialSecurity || ''}
           onChange={(e) => onInputChange('socialSecurity', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="businessIncome" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule C - Business Income / Loss ($)
-        </Label>
+      {/* Business Income / Loss */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="businessIncome">
+            <ContributionIndicator fieldType="income" /> Schedule C - Business Income / Loss ($)
+          </Label>
+        </div>
         <Input 
           id="businessIncome" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.businessIncome || ''}
           onChange={(e) => onInputChange('businessIncome', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="businessDepreciation" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule C - Business Depreciation / Amortization ($)
-        </Label>
+      {/* Business Depreciation / Amortization */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="businessDepreciation">
+            <ContributionIndicator fieldType="income" /> Schedule C - Business Depreciation / Amortization ($)
+          </Label>
+        </div>
         <Input 
           id="businessDepreciation" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.businessDepreciation || ''}
           onChange={(e) => onInputChange('businessDepreciation', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="businessInterest" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule C - Business Interest ($)
-        </Label>
+      {/* Business Interest */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="businessInterest">
+            <ContributionIndicator fieldType="income" /> Schedule C - Business Interest ($)
+          </Label>
+        </div>
         <Input 
           id="businessInterest" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.businessInterest || ''}
           onChange={(e) => onInputChange('businessInterest', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="rentalIncome" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule E - Rental Real Estate Income / Loss ($)
-        </Label>
+      {/* Rental Real Estate Income / Loss */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="rentalIncome">
+            <ContributionIndicator fieldType="income" /> Schedule E - Rental Real Estate Income / Loss ($)
+          </Label>
+        </div>
         <Input 
           id="rentalIncome" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.rentalIncome || ''}
           onChange={(e) => onInputChange('rentalIncome', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="rentalInterest" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule E - Rental Real Estate Interest ($)
-        </Label>
+      {/* Rental Real Estate Interest */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="rentalInterest">
+            <ContributionIndicator fieldType="income" /> Schedule E - Rental Real Estate Interest ($)
+          </Label>
+        </div>
         <Input 
           id="rentalInterest" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.rentalInterest || ''}
           onChange={(e) => onInputChange('rentalInterest', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="rentalDepreciation" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule E - Rental Real Estate Depreciation / Amortization ($)
-        </Label>
+      {/* Rental Real Estate Depreciation / Amortization */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="rentalDepreciation">
+            <ContributionIndicator fieldType="income" /> Schedule E - Rental Real Estate Depreciation / Amortization ($)
+          </Label>
+        </div>
         <Input 
           id="rentalDepreciation" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.rentalDepreciation || ''}
           onChange={(e) => onInputChange('rentalDepreciation', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="farmIncome" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule F - Farm Income / Loss ($)
-        </Label>
+      {/* Farm Income / Loss */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="farmIncome">
+            <ContributionIndicator fieldType="income" /> Schedule F - Farm Income / Loss ($)
+          </Label>
+        </div>
         <Input 
           id="farmIncome" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.farmIncome || ''}
           onChange={(e) => onInputChange('farmIncome', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="farmInterest" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule F - Farm Interest ($)
-        </Label>
+      {/* Farm Interest */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="farmInterest">
+            <ContributionIndicator fieldType="income" /> Schedule F - Farm Interest ($)
+          </Label>
+        </div>
         <Input 
           id="farmInterest" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.farmInterest || ''}
           onChange={(e) => onInputChange('farmInterest', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="farmDepreciation" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Schedule F - Farm Depreciation / Amortization ($)
-        </Label>
+      {/* Farm Depreciation / Amortization */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="farmDepreciation">
+            <ContributionIndicator fieldType="income" /> Schedule F - Farm Depreciation / Amortization ($)
+          </Label>
+        </div>
         <Input 
           id="farmDepreciation" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.farmDepreciation || ''}
           onChange={(e) => onInputChange('farmDepreciation', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="partnershipDistributions" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Partnership / S-Corp Distributions ($)
-        </Label>
+      {/* Partnership / S-Corp Distributions */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="partnershipDistributions">
+            <ContributionIndicator fieldType="income" /> Partnership / S-Corp Distributions ($)
+          </Label>
+        </div>
         <Input 
           id="partnershipDistributions" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.partnershipDistributions || ''}
           onChange={(e) => onInputChange('partnershipDistributions', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="capitalContributions" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Capital Contributions ($)
-        </Label>
+      {/* Capital Contributions */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="capitalContributions">
+            <ContributionIndicator fieldType="income" /> Capital Contributions ($)
+          </Label>
+        </div>
         <Input 
           id="capitalContributions" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.capitalContributions || ''}
           onChange={(e) => onInputChange('capitalContributions', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="otherIncome" className="w-1/3">
-          <ContributionIndicator fieldType="income" /> Other Cash Income ($)
-        </Label>
+      {/* Other Cash Income */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="otherIncome">
+            <ContributionIndicator fieldType="income" /> Other Cash Income ($)
+          </Label>
+        </div>
         <Input 
           id="otherIncome" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.otherIncome || ''}
           onChange={(e) => onInputChange('otherIncome', e.target.value)}
         />
       </div>
 
-      <div className="col-span-full bg-muted p-4 rounded-md flex items-center space-x-4">
-        <Label htmlFor="grossCashFlow" className="w-1/3 font-semibold">
-          <ContributionIndicator fieldType="income" /> Gross Cash Flow ($)
-        </Label>
+      {/* Gross Cash Flow */}
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="mb-2">
+          <Label htmlFor="grossCashFlow" className="font-semibold">
+            <ContributionIndicator fieldType="income" /> Gross Cash Flow ($)
+          </Label>
+        </div>
         <Input 
           id="grossCashFlow" 
           type="number" 
           value={calculatedValues.grossCashFlow.toFixed(2)} 
           readOnly
-          className="flex-1 bg-muted-foreground/10"
+          className="bg-muted-foreground/10"
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="taxes" className="w-1/3">
-          <ContributionIndicator fieldType="expense" /> Federal & State Taxes ($)
-        </Label>
+      {/* Federal & State Taxes */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="taxes">
+            <ContributionIndicator fieldType="expense" /> Federal & State Taxes ($)
+          </Label>
+        </div>
         <Input 
           id="taxes" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.taxes || ''}
           onChange={(e) => onInputChange('taxes', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="otherExpenses" className="w-1/3">
-          <ContributionIndicator fieldType="expense" /> Other Expenses ($)
-        </Label>
+      {/* Other Expenses */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="otherExpenses">
+            <ContributionIndicator fieldType="expense" /> Other Expenses ($)
+          </Label>
+        </div>
         <Input 
           id="otherExpenses" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.otherExpenses || ''}
           onChange={(e) => onInputChange('otherExpenses', e.target.value)}
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <Label htmlFor="livingExpenses" className="w-1/3">
-          <ContributionIndicator fieldType="expense" /> Living Expenses ($)
-        </Label>
+      {/* Living Expenses */}
+      <div>
+        <div className="mb-2">
+          <Label htmlFor="livingExpenses">
+            <ContributionIndicator fieldType="expense" /> Living Expenses ($)
+          </Label>
+        </div>
         <Input 
           id="livingExpenses" 
           type="number" 
           placeholder="0.00"
-          className="flex-1"
           value={formValues.livingExpenses || ''}
           onChange={(e) => onInputChange('livingExpenses', e.target.value)}
         />
       </div>
 
-      <div className="col-span-full bg-muted p-4 rounded-md flex items-center space-x-4">
-        <Label htmlFor="netCashFlow" className="w-1/3 font-semibold">
-          Net Cash Flow ($)
-        </Label>
+      {/* Net Cash Flow */}
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="mb-2">
+          <Label htmlFor="netCashFlow" className="font-semibold">
+            Net Cash Flow ($)
+          </Label>
+        </div>
         <Input 
           id="netCashFlow" 
           type="number" 
           value={calculatedValues.netCashFlow.toFixed(2)} 
           readOnly
-          className="flex-1 bg-muted-foreground/10"
+          className="bg-muted-foreground/10"
         />
       </div>
     </div>

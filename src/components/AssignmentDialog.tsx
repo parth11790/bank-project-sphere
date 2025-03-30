@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { 
@@ -70,11 +69,16 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    onSave(selectedItems);
+    if (type === 'forms') {
+      const forms = selectedItems.filter(item => 'form_id' in item) as FormTemplate[];
+      onSave(forms);
+    } else {
+      const documents = selectedItems.filter(item => 'document_id' in item) as Document[];
+      onSave(documents);
+    }
     setSelectedItems([]);
   };
 
-  // Filter out items that are already selected
   const availableItemsFiltered = availableItems.filter(item => {
     const id = 'form_id' in item ? item.form_id : item.document_id;
     return !selectedItems.some(selectedItem => 
