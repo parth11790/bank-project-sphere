@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
@@ -8,49 +7,25 @@ import {
   BarChart, 
   ArrowLeft, 
   TrendingUp,
-  Users  // Add this import
+  Users
 } from 'lucide-react';
 import Header from '@/components/Header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { projects, users, getUserById } from '@/lib/mockData';
-
-interface LoanType {
-  type: string;
-  amount: number;
-  description: string;
-}
-
-interface Project {
-  project_id: string;
-  project_name: string;
-  project_type: string;
-  loan_types: LoanType[];
-  loan_amount: number;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  city?: string;
-  state?: string;
-  participants?: { userId: string; role: string }[];
-}
+import ProjectDetailsCard from '@/components/project/ProjectDetailsCard';
+import ParticipantProgressTabs from '@/components/project/ParticipantProgressTabs';
+import RecentActivityCard from '@/components/project/RecentActivityCard';
 
 const ProjectDashboard: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   
-  const project = projects.find(p => p.project_id === projectId) as Project | undefined;
+  const project = projects.find(p => p.project_id === projectId);
   
   if (!project) {
     return <Navigate to="/projects" replace />;
   }
-  
-  const totalLoanAmount = project.loan_types.reduce((total, loan) => total + loan.amount, 0);
   
   const projectData = {
     stats: {
@@ -97,14 +72,6 @@ const ProjectDashboard: React.FC = () => {
 
   const documentsProgress = (projectData.stats.documents.completed / projectData.stats.documents.total) * 100;
   const formsProgress = (projectData.stats.forms.completed / projectData.stats.forms.total) * 100;
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase();
-  };
 
   const buyerParticipants = projectData.participants.filter(p => {
     const user = getUserById(p.userId);
@@ -165,55 +132,7 @@ const ProjectDashboard: React.FC = () => {
             </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Project Details</CardTitle>
-              <CardDescription>Information about this project</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Project Type</h3>
-                  <p>{project.project_type}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium mb-1">Location</h3>
-                  <p>{project.city}, {project.state}</p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-sm font-medium mb-2">Loan Information</h3>
-                <div className="border rounded-md divide-y">
-                  {project.loan_types.map((loan, index) => (
-                    <div key={index} className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div>
-                        <span className="font-medium">{loan.type}</span>
-                        <p className="text-sm text-muted-foreground">{loan.description}</p>
-                      </div>
-                      <div className="text-right font-medium">
-                        {new Intl.NumberFormat('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                          maximumFractionDigits: 0,
-                        }).format(loan.amount)}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="p-3 flex justify-between bg-muted/50">
-                    <span className="font-bold">Total Loan Amount</span>
-                    <span className="font-bold">
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        maximumFractionDigits: 0,
-                      }).format(totalLoanAmount)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ProjectDetailsCard project={project} />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <StatCard 
@@ -239,192 +158,14 @@ const ProjectDashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Participant Progress</CardTitle>
-                <CardDescription>Document and form completion status by participant</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="buyers">
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="buyers">Buyers</TabsTrigger>
-                    <TabsTrigger value="sellers">Sellers</TabsTrigger>
-                    <TabsTrigger value="bank">Bank Personnel</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="buyers">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Participant</TableHead>
-                          <TableHead className="text-center">Documents</TableHead>
-                          <TableHead className="text-center">Forms</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {buyerParticipants.length > 0 ? (
-                          buyerParticipants.map((participant) => {
-                            const user = getUserById(participant.userId);
-                            if (!user) return null;
-                            
-                            return (
-                              <TableRow key={participant.userId}>
-                                <TableCell className="flex items-center gap-2">
-                                  <Avatar className="h-8 w-8">
-                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
-                                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                                  </Avatar>
-                                  <span>{user.name}</span>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  <div className="flex flex-col items-center">
-                                    <span>{participant.documents.completed}/{participant.documents.assigned}</span>
-                                    <Progress 
-                                      value={(participant.documents.completed / (participant.documents.assigned || 1)) * 100} 
-                                      className="h-1.5 w-24 mt-1" 
-                                    />
-                                  </div>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  <div className="flex flex-col items-center">
-                                    <span>{participant.forms.completed}/{participant.forms.assigned}</span>
-                                    <Progress 
-                                      value={(participant.forms.completed / (participant.forms.assigned || 1)) * 100} 
-                                      className="h-1.5 w-24 mt-1" 
-                                    />
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
-                              No buyers for this project
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TabsContent>
-                  
-                  <TabsContent value="sellers">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Participant</TableHead>
-                          <TableHead className="text-center">Documents</TableHead>
-                          <TableHead className="text-center">Forms</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {sellerParticipants.length > 0 ? (
-                          sellerParticipants.map((participant) => {
-                            const user = getUserById(participant.userId);
-                            if (!user) return null;
-                            
-                            return (
-                              <TableRow key={participant.userId}>
-                                <TableCell className="flex items-center gap-2">
-                                  <Avatar className="h-8 w-8">
-                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
-                                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                                  </Avatar>
-                                  <span>{user.name}</span>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  <div className="flex flex-col items-center">
-                                    <span>{participant.documents.completed}/{participant.documents.assigned}</span>
-                                    <Progress 
-                                      value={(participant.documents.completed / (participant.documents.assigned || 1)) * 100} 
-                                      className="h-1.5 w-24 mt-1" 
-                                    />
-                                  </div>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  <div className="flex flex-col items-center">
-                                    <span>{participant.forms.completed}/{participant.forms.assigned}</span>
-                                    <Progress 
-                                      value={(participant.forms.completed / (participant.forms.assigned || 1)) * 100} 
-                                      className="h-1.5 w-24 mt-1" 
-                                    />
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
-                              No sellers for this project
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TabsContent>
-                  
-                  <TabsContent value="bank">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Personnel</TableHead>
-                          <TableHead>Role</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {bankParticipants.length > 0 ? (
-                          bankParticipants.map((participant) => {
-                            const user = getUserById(participant.userId);
-                            if (!user) return null;
-                            
-                            return (
-                              <TableRow key={participant.userId}>
-                                <TableCell className="flex items-center gap-2">
-                                  <Avatar className="h-8 w-8">
-                                    <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} alt={user.name} />
-                                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                                  </Avatar>
-                                  <span>{user.name}</span>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="capitalize">
-                                    {user.role.replace('_', ' ')}
-                                  </Badge>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={2} className="text-center py-4 text-muted-foreground">
-                              No bank personnel assigned to this project
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+            <ParticipantProgressTabs 
+              buyerParticipants={buyerParticipants}
+              sellerParticipants={sellerParticipants}
+              bankParticipants={bankParticipants}
+              getUserById={getUserById}
+            />
             
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Latest updates on this project</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {projectData.recentActivity.map(activity => (
-                    <div key={activity.id} className="flex flex-col space-y-1 pb-3 border-b last:border-b-0">
-                      <p className="text-sm">{activity.text}</p>
-                      <span className="text-xs text-muted-foreground">{activity.time}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <RecentActivityCard activities={projectData.recentActivity} />
           </div>
         </motion.div>
       </main>
@@ -442,21 +183,21 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, description, icon, progress }) => {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
+        <h3 className="text-sm font-medium">{title}</h3>
         <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
           {icon}
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-6 pt-0">
         <div className="text-2xl font-bold">{value}</div>
         <p className="text-xs text-muted-foreground">{description}</p>
         {progress !== undefined && (
           <Progress value={progress} className="h-1 mt-2" />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
