@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -119,9 +120,6 @@ export default {
         'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
         'float': 'float 3s ease-in-out infinite'
       }
-    },
-    borderColor: {
-      'accent-hover': 'hsl(var(--accent))',
     }
   },
   plugins: [
