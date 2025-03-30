@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -120,7 +119,20 @@ export default {
 				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
 				'float': 'float 3s ease-in-out infinite'
 			}
+		},
+		borderColor: {
+			'accent-hover': 'hsl(var(--accent))',
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		function({ addUtilities }) {
+			const newUtilities = {
+				'.hover-accent-border': {
+					'@apply border-transparent hover:border-accent-hover hover:border-2 transition-colors duration-200': {},
+				}
+			}
+			addUtilities(newUtilities)
+		}
+	]
 } satisfies Config;
