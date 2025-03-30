@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -44,7 +43,7 @@ const FormView: React.FC = () => {
   useEffect(() => {
     if (formName === 'Tax Returns') {
       const incomeFields = [
-        'adjustedGrossIncome', 'wages', 'interest', 'alimony', 'ira', 'pensions',
+        'wages', 'interest', 'alimony', 'ira', 'pensions',
         'socialSecurity', 'businessIncome', 'rentalIncome', 
         'farmIncome', 'partnershipDistributions', 'capitalContributions',
         'otherIncome'
@@ -73,7 +72,6 @@ const FormView: React.FC = () => {
     toast("Form submitted successfully");
   };
 
-  // Helper function to determine if a field contributes positively or negatively to net cash flow
   const getContributionIndicator = (fieldType: 'income' | 'expense') => {
     if (fieldType === 'income') {
       return <Plus className="inline h-4 w-4 text-green-500" />;
@@ -183,32 +181,6 @@ const FormView: React.FC = () => {
                   
                   {formName === 'Tax Returns' && (
                     <>
-                      <div>
-                        <Label htmlFor="adjustedGrossIncome">
-                          {getContributionIndicator('income')} Adjusted Gross Income ($)
-                        </Label>
-                        <Input 
-                          id="adjustedGrossIncome" 
-                          type="number" 
-                          placeholder="0.00"
-                          value={formValues.adjustedGrossIncome || ''}
-                          onChange={(e) => handleInputChange('adjustedGrossIncome', e.target.value)}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="householdMembers">
-                          Number of Household Members
-                        </Label>
-                        <Input 
-                          id="householdMembers" 
-                          type="number" 
-                          placeholder="0"
-                          value={formValues.householdMembers || ''}
-                          onChange={(e) => handleInputChange('householdMembers', e.target.value)}
-                        />
-                      </div>
-                      
                       <div>
                         <Label htmlFor="wages">
                           {getContributionIndicator('income')} Wages, Salaries ($)
