@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
@@ -6,7 +7,8 @@ import {
   ClipboardCheck, 
   BarChart, 
   ArrowLeft, 
-  TrendingUp
+  TrendingUp,
+  Users  // Add this import
 } from 'lucide-react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
