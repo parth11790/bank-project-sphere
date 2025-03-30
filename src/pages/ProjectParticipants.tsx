@@ -1,35 +1,26 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ParticipantDialog from '@/components/ParticipantDialog';
-import AssignmentDialog from '@/components/AssignmentDialog';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  getProjectById, 
-  getFormTemplates, 
-  getDocuments
-} from '@/services';
+import { getProjectById } from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Import our new components
+// Import our components
 import ParticipantHeader from '@/components/participants/ParticipantHeader';
 import ParticipantsList from '@/components/participants/ParticipantsList';
 import BankPersonnelList from '@/components/participants/BankPersonnelList';
-import { useParticipantData, Participant } from '@/hooks/useParticipantData';
+import { useParticipantData } from '@/hooks/useParticipantData';
+import { useFormDocumentData } from '@/hooks/useFormDocumentData';
+import { useParticipantDialogHandler } from '@/components/participants/ParticipantDialogHandler';
+import { useAssignmentHandler } from '@/components/participants/AssignmentHandler';
 import { Project, isProject } from '@/types/project';
-import { FormTemplate, isFormTemplate, Document } from '@/types/form';
 
 const ProjectParticipants: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const [isParticipantDialogOpen, setIsParticipantDialogOpen] = useState(false);
-  const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
-  const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
-  const [assignmentType, setAssignmentType] = useState<'documents' | 'forms'>('documents');
-  const [entityType, setEntityType] = useState<'individual' | 'business'>('individual');
   
   // Get project details
   const { data: projectData, isLoading: projectLoading } = useQuery({
@@ -47,100 +38,44 @@ const ProjectParticipants: React.FC = () => {
     refetchParticipants
   } = useParticipantData(projectId || '');
 
-  // Load individual forms and documents
-  const { data: individualFormsData } = useQuery({
-    queryKey: ['forms', 'individual'],
-    queryFn: () => getFormTemplates('individual'),
-  });
-
-  const { data: individualDocumentsData } = useQuery({
-    queryKey: ['documents', 'individual'],
-    queryFn: () => getDocuments('individual'),
-  });
-
-  // Load business forms and documents
-  const { data: businessFormsData } = useQuery({
-    queryKey: ['forms', 'business'],
-    queryFn: () => getFormTemplates('business'),
-  });
-
-  const { data: businessDocumentsData } = useQuery({
-    queryKey: ['documents', 'business'],
-    queryFn: () => getDocuments('business'),
-  });
-
-  // Process form data to ensure it matches expected format
-  const individualForms = individualFormsData || [];
-  const businessForms = businessFormsData || [];
-  const individualDocuments = individualDocumentsData || [];
-  const businessDocuments = businessDocumentsData || [];
+  // Load forms and documents data
+  const {
+    individualForms,
+    businessForms,
+    individualDocuments,
+    businessDocuments,
+    formTemplates
+  } = useFormDocumentData();
 
   const project: Project | null = projectData && isProject(projectData) ? projectData : null;
 
-  const handleAddParticipant = (participant: Omit<Participant, 'participant_id' | 'documents' | 'forms' | 'user_id'>) => {
-    // In a real app, this would call an API to add the participant
-    toast(`${participant.role === 'buyer' ? 'Buyer' : 'Seller'} added successfully`);
-    setIsParticipantDialogOpen(false);
-    // Refetch participants to update the list
-    refetchParticipants();
-  };
+  // Handle participant dialog
+  const {
+    openAddBuyerDialog,
+    openAddSellerDialog,
+    participantDialog
+  } = useParticipantDialogHandler({
+    refetchParticipants
+  });
+
+  // Handle assignment dialog
+  const {
+    openAssignDialog,
+    assignmentDialog
+  } = useAssignmentHandler({
+    projectId: projectId || '',
+    refetchParticipants,
+    individualForms,
+    businessForms,
+    individualDocuments,
+    businessDocuments
+  });
 
   const handleRemoveParticipant = (id: string) => {
     // In a real app, this would call an API to remove the participant
     toast('Participant removed');
     // Refetch participants to update the list
     refetchParticipants();
-  };
-
-  const handleAssignItems = (items: FormTemplate[] | Document[]) => {
-    if (!currentParticipant) return;
-    
-    toast(`${assignmentType === 'documents' ? 'Documents' : 'Forms'} assigned to ${currentParticipant.name} successfully`);
-    setIsAssignmentDialogOpen(false);
-    // Refetch participants to update the list
-    refetchParticipants();
-  };
-
-  const openAssignDialog = (participant: Participant, type: 'documents' | 'forms', entity: 'individual' | 'business' = 'individual') => {
-    setCurrentParticipant(participant);
-    setAssignmentType(type);
-    setEntityType(entity);
-    setIsAssignmentDialogOpen(true);
-  };
-
-  const openAddBuyerDialog = () => {
-    setIsParticipantDialogOpen(true);
-    setCurrentParticipant({ 
-      participant_id: '', 
-      user_id: '', 
-      name: '', 
-      email: '', 
-      role: 'buyer', 
-      documents: [], 
-      forms: [] 
-    });
-  };
-
-  const openAddSellerDialog = () => {
-    setIsParticipantDialogOpen(true);
-    setCurrentParticipant({ 
-      participant_id: '', 
-      user_id: '', 
-      name: '', 
-      email: '', 
-      role: 'seller', 
-      documents: [], 
-      forms: [] 
-    });
-  };
-
-  // Get the appropriate available items for the current assignment dialog
-  const getAvailableItems = () => {
-    if (assignmentType === 'forms') {
-      return entityType === 'individual' ? individualForms : businessForms;
-    } else {
-      return entityType === 'individual' ? individualDocuments : businessDocuments;
-    }
   };
 
   if (projectLoading || participantsLoading) {
@@ -200,10 +135,7 @@ const ProjectParticipants: React.FC = () => {
               onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
               onAddBusiness={() => toast('Add business functionality would be implemented here')}
-              formTemplates={{ 
-                individual: individualForms.filter(isFormTemplate), 
-                business: businessForms.filter(isFormTemplate) 
-              }}
+              formTemplates={formTemplates}
             />
           </TabsContent>
           
@@ -219,10 +151,7 @@ const ProjectParticipants: React.FC = () => {
               onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
               onAddBusiness={() => toast('Add business functionality would be implemented here')}
-              formTemplates={{ 
-                individual: individualForms.filter(isFormTemplate), 
-                business: businessForms.filter(isFormTemplate) 
-              }}
+              formTemplates={formTemplates}
             />
           </TabsContent>
           
@@ -232,21 +161,8 @@ const ProjectParticipants: React.FC = () => {
         </Tabs>
       </motion.div>
 
-      <ParticipantDialog 
-        open={isParticipantDialogOpen}
-        onOpenChange={setIsParticipantDialogOpen}
-        onSave={handleAddParticipant}
-        defaultType={currentParticipant?.role as "buyer" | "seller" | undefined}
-      />
-
-      <AssignmentDialog
-        open={isAssignmentDialogOpen}
-        onOpenChange={setIsAssignmentDialogOpen}
-        onSave={handleAssignItems}
-        type={assignmentType}
-        participantName={currentParticipant?.name || ''}
-        availableItems={getAvailableItems()}
-      />
+      {participantDialog}
+      {assignmentDialog}
     </Layout>
   );
 };
