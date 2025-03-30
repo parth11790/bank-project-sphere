@@ -1,8 +1,7 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { BusinessFinancialData } from '@/types/business';
-import { getBusinessFinancialData } from '@/lib/mockDataProvider';
+import { getBusinessFinancialDataData } from '@/lib/mockDataProvider';
 
 // Flag to use mock data or actual supabase
 const USE_MOCK_DATA = true;
@@ -25,15 +24,23 @@ export const getBusinessById = async (businessId: string) => {
 
   try {
     // When Supabase tables are set up, replace this with proper queries
+    // Currently we only have a "test" table in Supabase, so we're using mock data instead
     const { data, error } = await supabase
-      .from('businesses')
+      .from('test')
       .select('*')
-      .eq('id', businessId)
+      .eq('id', parseInt(businessId))
       .single();
     
     if (error) throw error;
     
-    return data;
+    // This is a placeholder - in a real implementation you would map the database fields
+    // to the expected business object structure
+    return {
+      id: businessId,
+      name: 'Retrieved Business',
+      entity_type: 'LLC',
+      // ... other fields would be mapped from the data
+    };
   } catch (error: any) {
     console.error(`Error fetching business ${businessId}:`, error.message);
     toast.error('Failed to load business data');
@@ -44,11 +51,17 @@ export const getBusinessById = async (businessId: string) => {
 export const getBusinessFinancials = async (businessId: string): Promise<BusinessFinancialData[]> => {
   if (USE_MOCK_DATA) {
     // Return mock financial data
-    return getBusinessFinancialData(businessId);
+    return getBusinessFinancialDataData(businessId);
   }
   
   try {
     // When Supabase tables are set up, replace this with proper queries
+    // Since we only have a 'test' table and it doesn't match our needed structure,
+    // we're returning mock data for now
+    const mockData = getBusinessFinancialDataData(businessId);
+    return mockData;
+    
+    /* This code would be used when the proper tables exist:
     const { data, error } = await supabase
       .from('business_financials')
       .select('*')
@@ -56,7 +69,21 @@ export const getBusinessFinancials = async (businessId: string): Promise<Busines
     
     if (error) throw error;
     
-    return data as BusinessFinancialData[];
+    // Transform data to match BusinessFinancialData type
+    return data.map(item => ({
+      data_id: item.id,
+      business_id: item.business_id,
+      year: item.year,
+      revenue: item.revenue,
+      wages: item.wages,
+      cogs: item.cogs,
+      gross_profit: item.gross_profit,
+      other_expenses: item.other_expenses,
+      total_noi: item.total_noi,
+      nom_percentage: item.nom_percentage,
+      // ... other fields
+    }));
+    */
   } catch (error: any) {
     console.error(`Error fetching business financials for ${businessId}:`, error.message);
     toast.error('Failed to load business financial data');
