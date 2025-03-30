@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent, 
@@ -10,15 +10,23 @@ import {
   DialogDescription
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { FormTemplate, Document } from '@/types/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AssignmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (items: { name: string }[]) => void;
+  onSave: (items: FormTemplate[] | Document[]) => void;
   type: 'documents' | 'forms';
   participantName: string;
+  availableItems: FormTemplate[] | Document[];
 }
 
 const AssignmentDialog: React.FC<AssignmentDialogProps> = ({ 
@@ -26,33 +34,57 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
   onOpenChange,
   onSave,
   type,
-  participantName
+  participantName,
+  availableItems
 }) => {
-  const [items, setItems] = useState<{ id: string; name: string }[]>([]);
-  const [currentItem, setCurrentItem] = useState('');
+  const [selectedItems, setSelectedItems] = useState<(FormTemplate | Document)[]>([]);
+  const [currentItemId, setCurrentItemId] = useState<string>('');
 
   const handleAddItem = () => {
-    if (currentItem.trim() === '') return;
+    if (!currentItemId) return;
     
-    setItems([...items, { id: `temp-${Date.now()}`, name: currentItem.trim() }]);
-    setCurrentItem('');
+    const itemToAdd = availableItems.find(item => 
+      'form_id' in item 
+        ? item.form_id === currentItemId
+        : item.document_id === currentItemId
+    );
+    
+    if (itemToAdd && !selectedItems.some(item => 
+      'form_id' in item && 'form_id' in itemToAdd
+        ? item.form_id === itemToAdd.form_id
+        : 'document_id' in item && 'document_id' in itemToAdd
+          ? item.document_id === itemToAdd.document_id
+          : false
+    )) {
+      setSelectedItems([...selectedItems, itemToAdd]);
+      setCurrentItemId('');
+    }
   };
 
   const handleRemoveItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
+    setSelectedItems(selectedItems.filter(item => 
+      'form_id' in item 
+        ? item.form_id !== id
+        : item.document_id !== id
+    ));
   };
 
   const handleSubmit = () => {
-    onSave(items);
-    setItems([]);
+    onSave(selectedItems);
+    setSelectedItems([]);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddItem();
-    }
-  };
+  // Filter out items that are already selected
+  const availableItemsFiltered = availableItems.filter(item => {
+    const id = 'form_id' in item ? item.form_id : item.document_id;
+    return !selectedItems.some(selectedItem => 
+      'form_id' in selectedItem && 'form_id' in item
+        ? selectedItem.form_id === item.form_id
+        : 'document_id' in selectedItem && 'document_id' in item
+          ? selectedItem.document_id === item.document_id
+          : false
+    );
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,40 +103,59 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
 
         <div className="space-y-4">
           <div className="flex gap-2">
-            <Input
-              placeholder={type === 'documents' ? "Enter document name..." : "Enter form name..."}
-              value={currentItem}
-              onChange={(e) => setCurrentItem(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1"
-            />
-            <Button type="button" onClick={handleAddItem}>
-              <Plus className="h-4 w-4 mr-1" />
+            <Select
+              value={currentItemId}
+              onValueChange={setCurrentItemId}
+            >
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder={type === 'documents' ? "Select a document..." : "Select a form..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableItemsFiltered.length === 0 ? (
+                  <SelectItem value="none" disabled>
+                    No {type} available
+                  </SelectItem>
+                ) : (
+                  availableItemsFiltered.map((item) => (
+                    <SelectItem 
+                      key={'form_id' in item ? item.form_id : item.document_id} 
+                      value={'form_id' in item ? item.form_id : item.document_id}
+                    >
+                      {item.name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <Button type="button" onClick={handleAddItem} disabled={!currentItemId || currentItemId === 'none'}>
               Add
             </Button>
           </div>
           
           <div className="space-y-2">
             <h3 className="text-sm font-medium">
-              {items.length === 0 
+              {selectedItems.length === 0 
                 ? `No ${type} added yet` 
-                : `${items.length} ${type} to assign:`
+                : `${selectedItems.length} ${type} to assign:`
               }
             </h3>
             
             <div className="flex flex-wrap gap-2">
-              {items.map(item => (
-                <Badge key={item.id} className="flex items-center gap-1 py-1.5">
-                  {item.name}
-                  <button 
-                    onClick={() => handleRemoveItem(item.id)}
-                    className="ml-1 rounded-full hover:bg-primary-foreground/20 p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                    <span className="sr-only">Remove</span>
-                  </button>
-                </Badge>
-              ))}
+              {selectedItems.map(item => {
+                const id = 'form_id' in item ? item.form_id : item.document_id;
+                return (
+                  <Badge key={id} className="flex items-center gap-1 py-1.5">
+                    {item.name}
+                    <button 
+                      onClick={() => handleRemoveItem(id)}
+                      className="ml-1 rounded-full hover:bg-primary-foreground/20 p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">Remove</span>
+                    </button>
+                  </Badge>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -114,7 +165,7 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
             type="button" 
             variant="outline" 
             onClick={() => {
-              setItems([]);
+              setSelectedItems([]);
               onOpenChange(false);
             }}
           >
@@ -122,7 +173,7 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={items.length === 0}
+            disabled={selectedItems.length === 0}
           >
             Assign {type === 'documents' ? 'Documents' : 'Forms'}
           </Button>

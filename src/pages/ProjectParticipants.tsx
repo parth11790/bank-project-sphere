@@ -21,7 +21,7 @@ import ParticipantsList from '@/components/participants/ParticipantsList';
 import BankPersonnelList from '@/components/participants/BankPersonnelList';
 import { useParticipantData, Participant } from '@/hooks/useParticipantData';
 import { Project, isProject } from '@/types/project';
-import { FormTemplate, isFormTemplate } from '@/types/form';
+import { FormTemplate, isFormTemplate, Document } from '@/types/form';
 
 const ProjectParticipants: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -92,7 +92,7 @@ const ProjectParticipants: React.FC = () => {
     refetchParticipants();
   };
 
-  const handleAssignDocument = (items: { name: string }[]) => {
+  const handleAssignItems = (items: FormTemplate[] | Document[]) => {
     if (!currentParticipant) return;
     
     toast(`${assignmentType === 'documents' ? 'Documents' : 'Forms'} assigned to ${currentParticipant.name} successfully`);
@@ -132,6 +132,15 @@ const ProjectParticipants: React.FC = () => {
       documents: [], 
       forms: [] 
     });
+  };
+
+  // Get the appropriate available items for the current assignment dialog
+  const getAvailableItems = () => {
+    if (assignmentType === 'forms') {
+      return entityType === 'individual' ? individualForms : businessForms;
+    } else {
+      return entityType === 'individual' ? individualDocuments : businessDocuments;
+    }
   };
 
   if (projectLoading || participantsLoading) {
@@ -233,9 +242,10 @@ const ProjectParticipants: React.FC = () => {
       <AssignmentDialog
         open={isAssignmentDialogOpen}
         onOpenChange={setIsAssignmentDialogOpen}
-        onSave={handleAssignDocument}
+        onSave={handleAssignItems}
         type={assignmentType}
         participantName={currentParticipant?.name || ''}
+        availableItems={getAvailableItems()}
       />
     </Layout>
   );
