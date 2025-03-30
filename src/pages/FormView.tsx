@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -19,6 +19,11 @@ const FormView: React.FC = () => {
   const navigate = useNavigate();
 
   const [file, setFile] = useState<File | null>(null);
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [calculatedValues, setCalculatedValues] = useState<{
+    grossCashFlow: number;
+    netCashFlow: number;
+  }>({ grossCashFlow: 0, netCashFlow: 0 });
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -26,6 +31,42 @@ const FormView: React.FC = () => {
       toast(`File "${e.target.files[0].name}" uploaded successfully`);
     }
   };
+  
+  const handleInputChange = (field: string, value: string) => {
+    const numValue = value === '' ? '0' : value;
+    setFormValues(prev => ({
+      ...prev,
+      [field]: numValue
+    }));
+  };
+  
+  useEffect(() => {
+    if (formName === 'Tax Returns') {
+      const incomeFields = [
+        'wages', 'interest', 'alimony', 'ira', 'pensions',
+        'socialSecurity', 'businessIncome', 'rentalIncome', 
+        'farmIncome', 'partnershipDistributions', 'capitalContributions',
+        'otherIncome'
+      ];
+      
+      const expenseFields = ['taxes', 'otherExpenses', 'livingExpenses'];
+      
+      const income = incomeFields.reduce((sum, field) => {
+        const value = parseFloat(formValues[field] || '0');
+        return sum + (isNaN(value) ? 0 : value);
+      }, 0);
+      
+      const expenses = expenseFields.reduce((sum, field) => {
+        const value = parseFloat(formValues[field] || '0');
+        return sum + (isNaN(value) ? 0 : value);
+      }, 0);
+      
+      const grossCashFlow = income;
+      const netCashFlow = income - expenses;
+      
+      setCalculatedValues({ grossCashFlow, netCashFlow });
+    }
+  }, [formValues, formName]);
   
   const handleSubmit = () => {
     toast("Form submitted successfully");
@@ -106,25 +147,286 @@ const FormView: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="full-name">Full Name</Label>
-                    <Input id="full-name" placeholder="Enter your full name" />
-                  </div>
+                  {formName !== 'Tax Returns' && (
+                    <>
+                      <div>
+                        <Label htmlFor="full-name">Full Name</Label>
+                        <Input id="full-name" placeholder="Enter your full name" />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input id="email" type="email" placeholder="Enter your email" />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input id="phone" placeholder="Enter your phone number" />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="address">Address</Label>
+                        <Textarea id="address" placeholder="Enter your address" />
+                      </div>
+                    </>
+                  )}
                   
-                  <div>
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" placeholder="Enter your email" />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" placeholder="Enter your phone number" />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="address">Address</Label>
-                    <Textarea id="address" placeholder="Enter your address" />
-                  </div>
+                  {formName === 'Tax Returns' && (
+                    <>
+                      <div>
+                        <Label htmlFor="wages">Wages, Salaries ($)</Label>
+                        <Input 
+                          id="wages" 
+                          type="number" 
+                          placeholder="0.00" 
+                          value={formValues.wages || ''} 
+                          onChange={(e) => handleInputChange('wages', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="interest">Interest & Dividend Income ($)</Label>
+                        <Input 
+                          id="interest" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.interest || ''}
+                          onChange={(e) => handleInputChange('interest', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="alimony">Alimony Received ($)</Label>
+                        <Input 
+                          id="alimony" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.alimony || ''}
+                          onChange={(e) => handleInputChange('alimony', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="ira">IRA Distributions ($)</Label>
+                        <Input 
+                          id="ira" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.ira || ''}
+                          onChange={(e) => handleInputChange('ira', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="pensions">Pensions / Annuities ($)</Label>
+                        <Input 
+                          id="pensions" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.pensions || ''}
+                          onChange={(e) => handleInputChange('pensions', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="socialSecurity">Social Security Benefits ($)</Label>
+                        <Input 
+                          id="socialSecurity" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.socialSecurity || ''}
+                          onChange={(e) => handleInputChange('socialSecurity', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="businessIncome">Schedule C - Business Income / Loss ($)</Label>
+                        <Input 
+                          id="businessIncome" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.businessIncome || ''}
+                          onChange={(e) => handleInputChange('businessIncome', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="businessDepreciation">Schedule C - Business Depreciation / Amortization ($)</Label>
+                        <Input 
+                          id="businessDepreciation" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.businessDepreciation || ''}
+                          onChange={(e) => handleInputChange('businessDepreciation', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="businessInterest">Schedule C - Business Interest ($)</Label>
+                        <Input 
+                          id="businessInterest" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.businessInterest || ''}
+                          onChange={(e) => handleInputChange('businessInterest', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="rentalIncome">Schedule E - Rental Real Estate Income / Loss ($)</Label>
+                        <Input 
+                          id="rentalIncome" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.rentalIncome || ''}
+                          onChange={(e) => handleInputChange('rentalIncome', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="rentalInterest">Schedule E - Rental Real Estate Interest ($)</Label>
+                        <Input 
+                          id="rentalInterest" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.rentalInterest || ''}
+                          onChange={(e) => handleInputChange('rentalInterest', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="rentalDepreciation">Schedule E - Rental Real Estate Depreciation / Amortization ($)</Label>
+                        <Input 
+                          id="rentalDepreciation" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.rentalDepreciation || ''}
+                          onChange={(e) => handleInputChange('rentalDepreciation', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="farmIncome">Schedule F - Farm Income / Loss ($)</Label>
+                        <Input 
+                          id="farmIncome" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.farmIncome || ''}
+                          onChange={(e) => handleInputChange('farmIncome', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="farmInterest">Schedule F - Farm Interest ($)</Label>
+                        <Input 
+                          id="farmInterest" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.farmInterest || ''}
+                          onChange={(e) => handleInputChange('farmInterest', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="farmDepreciation">Schedule F - Farm Depreciation / Amortization ($)</Label>
+                        <Input 
+                          id="farmDepreciation" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.farmDepreciation || ''}
+                          onChange={(e) => handleInputChange('farmDepreciation', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="partnershipDistributions">Partnership / S-Corp Distributions ($)</Label>
+                        <Input 
+                          id="partnershipDistributions" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.partnershipDistributions || ''}
+                          onChange={(e) => handleInputChange('partnershipDistributions', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="capitalContributions">Capital Contributions ($)</Label>
+                        <Input 
+                          id="capitalContributions" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.capitalContributions || ''}
+                          onChange={(e) => handleInputChange('capitalContributions', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="otherIncome">Other Cash Income ($)</Label>
+                        <Input 
+                          id="otherIncome" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.otherIncome || ''}
+                          onChange={(e) => handleInputChange('otherIncome', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div className="bg-muted p-4 rounded-md">
+                        <Label htmlFor="grossCashFlow" className="font-semibold">Gross Cash Flow ($)</Label>
+                        <Input 
+                          id="grossCashFlow" 
+                          type="number" 
+                          value={calculatedValues.grossCashFlow.toFixed(2)} 
+                          readOnly
+                          className="bg-muted-foreground/10"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="taxes">Federal & State Taxes ($)</Label>
+                        <Input 
+                          id="taxes" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.taxes || ''}
+                          onChange={(e) => handleInputChange('taxes', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="otherExpenses">Other Expenses ($)</Label>
+                        <Input 
+                          id="otherExpenses" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.otherExpenses || ''}
+                          onChange={(e) => handleInputChange('otherExpenses', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="livingExpenses">Living Expenses ($)</Label>
+                        <Input 
+                          id="livingExpenses" 
+                          type="number" 
+                          placeholder="0.00"
+                          value={formValues.livingExpenses || ''}
+                          onChange={(e) => handleInputChange('livingExpenses', e.target.value)}
+                        />
+                      </div>
+                      
+                      <div className="bg-muted p-4 rounded-md">
+                        <Label htmlFor="netCashFlow" className="font-semibold">Net Cash Flow ($)</Label>
+                        <Input 
+                          id="netCashFlow" 
+                          type="number" 
+                          value={calculatedValues.netCashFlow.toFixed(2)} 
+                          readOnly
+                          className="bg-muted-foreground/10"
+                        />
+                      </div>
+                    </>
+                  )}
                   
                   {formName === 'Personal Financial Statement' && (
                     <>
@@ -141,25 +443,6 @@ const FormView: React.FC = () => {
                       <div>
                         <Label htmlFor="annual-income">Annual Income ($)</Label>
                         <Input id="annual-income" type="number" placeholder="Enter annual income" />
-                      </div>
-                    </>
-                  )}
-                  
-                  {formName === 'Tax Returns' && (
-                    <>
-                      <div>
-                        <Label htmlFor="tax-year">Tax Year</Label>
-                        <Input id="tax-year" placeholder="Enter tax year" />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="adjusted-gross-income">Adjusted Gross Income ($)</Label>
-                        <Input id="adjusted-gross-income" type="number" placeholder="Enter AGI" />
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="total-tax">Total Tax ($)</Label>
-                        <Input id="total-tax" type="number" placeholder="Enter total tax" />
                       </div>
                     </>
                   )}
