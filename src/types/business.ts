@@ -12,7 +12,17 @@ export interface BusinessFinancialData {
   nom_percentage: number;
   business_name?: string;
   entity_type?: string;
-  years?: string[];
+  years?: { 
+    year: string; 
+    revenue: number; 
+    wages: number; 
+    cogs: number; 
+    gross_profit: number; 
+    gross_margin: number; 
+    other_expenses: number; 
+    total_noi: number; 
+    nom: number; 
+  }[];
 }
 
 export interface Business {

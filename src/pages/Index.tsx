@@ -14,8 +14,8 @@ const Index: React.FC = () => {
     // Store the role in localStorage for future reference
     localStorage.setItem('userRole', role);
     toast.success(`Logged in as ${role === 'bank_officer' ? 'Bank User' : role === 'buyer' ? 'Buyer' : 'Seller'}`);
-    // Navigate to the dashboard
-    navigate('/dashboard');
+    // Navigate to projects instead of dashboard
+    navigate('/projects');
   };
 
   return (

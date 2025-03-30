@@ -2,11 +2,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Building2,
-  BarChart3,
   Users as UsersIcon,
   FileText,
   Home,
-  CreditCard,
   Menu
 } from 'lucide-react';
 import {
@@ -30,11 +28,6 @@ export function AppSidebar() {
   
   const mainMenuItems = [
     {
-      title: "Dashboard",
-      path: "/dashboard",
-      icon: Home,
-    },
-    {
       title: "Projects",
       path: "/projects",
       icon: Building2,
@@ -43,19 +36,6 @@ export function AppSidebar() {
       title: "Participants",
       path: "/participants",
       icon: UsersIcon,
-    },
-  ];
-  
-  const analysisMenuItems = [
-    {
-      title: "Cash Flow Analysis",
-      path: "/cash-flow-analysis",
-      icon: BarChart3,
-    },
-    {
-      title: "Use of Proceeds",
-      path: "/use-of-proceeds",
-      icon: CreditCard,
     },
     {
       title: "Forms & Documents",
@@ -79,25 +59,6 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    isActive={location.pathname === item.path}
-                    onClick={() => navigate(item.path)}
-                  >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        
-        <SidebarGroup>
-          <SidebarGroupLabel>Analysis</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {analysisMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     isActive={location.pathname === item.path}

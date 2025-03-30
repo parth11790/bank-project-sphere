@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Lazy load pages to implement code-splitting (microservices approach)
 const Index = lazy(() => import("./pages/Index"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Project = lazy(() => import("./pages/Project"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -60,7 +59,7 @@ const App = () => (
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Navigate to="/projects" replace />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/project/:projectId" element={<Project />} />
                 <Route path="/create-project" element={<CreateProject />} />
