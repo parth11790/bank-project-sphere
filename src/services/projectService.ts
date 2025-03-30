@@ -23,7 +23,7 @@ export const getProjects = async (): Promise<Project[]> => {
     
     // Filter and transform API data to match our Project type
     // Use proper type casting with unknown as intermediary
-    return data?.filter(item => isProject(item as any))
+    return data?.filter(item => isProject(item as unknown as any))
       .map(item => item as unknown as Project) || [];
   } catch (error: any) {
     console.error('Error fetching projects:', error.message);
@@ -47,7 +47,7 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
     
     if (error) throw error;
     
-    return isProject(data as any) ? (data as unknown as Project) : null;
+    return isProject(data as unknown as any) ? (data as unknown as Project) : null;
   } catch (error: any) {
     console.error(`Error fetching project ${projectId}:`, error.message);
     toast.error('Failed to load project details');

@@ -7,6 +7,7 @@ export const projects: Project[] = [
     project_id: 'project_1',
     project_name: 'Main Street Acquisition',
     project_type: 'Business Acquisition',
+    status: 'active',
     loan_types: [
       { type: 'SBA 7(a)', amount: 2000000, description: 'Standard SBA loan for business acquisition' },
       { type: 'Owner Financing', amount: 500000, description: 'Seller carry back financing' }
@@ -31,6 +32,7 @@ export const projects: Project[] = [
     project_id: 'project_2',
     project_name: 'Riverside Development',
     project_type: 'Commercial Real Estate',
+    status: 'pending',
     loan_types: [
       { type: 'SBA 504', amount: 5000000, description: 'CDC/SBA loan for real estate acquisition' },
       { type: 'Conventional', amount: 1000000, description: 'Bank loan for additional funding' }
@@ -55,6 +57,7 @@ export const projects: Project[] = [
     project_id: 'project_3',
     project_name: 'Harvest Valley Farms',
     project_type: 'Agricultural Business',
+    status: 'active',
     loan_types: [
       { type: 'USDA Farm Loan', amount: 1200000, description: 'USDA guaranteed loan for agriculture' },
       { type: 'Equipment Financing', amount: 350000, description: 'Specialized equipment financing' },
@@ -79,6 +82,7 @@ export const projects: Project[] = [
     project_id: 'project_4',
     project_name: 'Harbor View Hotel',
     project_type: 'Hospitality Acquisition',
+    status: 'completed',
     loan_types: [
       { type: 'SBA 7(a)', amount: 4500000, description: 'SBA loan for hotel acquisition' },
       { type: 'Mezzanine Financing', amount: 1000000, description: 'Additional gap financing' },
@@ -102,6 +106,7 @@ export const projects: Project[] = [
     project_id: 'project_5',
     project_name: 'Maple Street Manufacturing',
     project_type: 'Manufacturing Expansion',
+    status: 'active',
     loan_types: [
       { type: 'Industrial Development Bond', amount: 3000000, description: 'Tax-exempt bond for manufacturing' },
       { type: 'Equipment Financing', amount: 1200000, description: 'CNC machine and production line financing' },

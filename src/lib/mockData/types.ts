@@ -37,6 +37,7 @@ export interface Project {
   project_id: string;
   project_name: string;
   project_type: string;
+  status: 'active' | 'pending' | 'completed' | string;
   loan_types: LoanType[];
   loan_amount: number;
   created_by: string;

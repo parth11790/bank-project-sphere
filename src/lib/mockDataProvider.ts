@@ -1,4 +1,3 @@
-
 import { 
   users, 
   businesses, 
@@ -19,8 +18,15 @@ import { Participant, isParticipant, ParticipantWithDetails } from '@/types/part
 export const getProjectsData = async (): Promise<Project[]> => {
   return projects.map(project => ({
     ...project,
+    // Ensure status is present in each project
+    status: project.status || 'active',
     // For list view, we just return the loan type strings
-    created_by_user: { name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown' }
+    created_by_user: { 
+      name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown',
+      user_id: users.find(u => u.user_id === project.created_by)?.user_id || '',
+      email: users.find(u => u.user_id === project.created_by)?.email || '',
+      role: users.find(u => u.user_id === project.created_by)?.role || ''
+    }
   }));
 };
 
@@ -30,7 +36,13 @@ export const getProjectByIdData = async (projectId: string): Promise<Project | n
   
   return {
     ...project,
-    created_by_user: { name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown' }
+    status: project.status || 'active',
+    created_by_user: { 
+      name: users.find(u => u.user_id === project.created_by)?.name || 'Unknown',
+      user_id: users.find(u => u.user_id === project.created_by)?.user_id || '',
+      email: users.find(u => u.user_id === project.created_by)?.email || '',
+      role: users.find(u => u.user_id === project.created_by)?.role || ''
+    }
   };
 };
 
