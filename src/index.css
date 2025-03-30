@@ -25,15 +25,15 @@
     --muted: 220 15% 95%;
     --muted-foreground: 220 20% 40%;
 
-    --accent: 220 15% 95%;
-    --accent-foreground: 220 20% 30%;
+    --accent: 267 100% 62%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 15% 92%;
     --input: 220 15% 92%;
-    --ring: 220 20% 40%;
+    --ring: 267 100% 62%;
 
     --radius: 0.25rem;
     
@@ -66,15 +66,15 @@
     --muted: 220 15% 20%;
     --muted-foreground: 220 15% 65%;
 
-    --accent: 220 15% 20%;
-    --accent-foreground: 220 15% 90%;
+    --accent: 267 80% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 60% 40%;
     --destructive-foreground: 220 15% 90%;
 
     --border: 220 15% 20%;
     --input: 220 15% 20%;
-    --ring: 220 15% 60%;
+    --ring: 267 80% 65%;
     
     --sidebar-background: 220 20% 10%;
     --sidebar-foreground: 220 15% 90%;
