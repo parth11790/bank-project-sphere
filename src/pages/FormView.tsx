@@ -34,10 +34,9 @@ const FormView: React.FC = () => {
   const calculatedValues = useTaxReturnCalculations(formValues, formName);
   
   const handleInputChange = (field: string, value: string) => {
-    const numValue = value === '' ? '0' : value;
     setFormValues(prev => ({
       ...prev,
-      [field]: numValue
+      [field]: value
     }));
   };
   

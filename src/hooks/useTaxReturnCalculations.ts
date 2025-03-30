@@ -17,6 +17,7 @@ export const useTaxReturnCalculations = (
 
   useEffect(() => {
     if (formName === 'Tax Returns') {
+      // Remove adjustedGrossIncome from income fields calculation
       const incomeFields = [
         'wages', 'interest', 'alimony', 'ira', 'pensions',
         'socialSecurity', 'businessIncome', 'rentalIncome', 
