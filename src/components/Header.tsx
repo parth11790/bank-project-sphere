@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, User, Search, SidebarOpen } from 'lucide-react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Bell, User, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { Building2 } from 'lucide-react';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -29,8 +29,9 @@ const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-2 md:hidden">
-          <SidebarTrigger />
+        <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+          <Building2 className="h-6 w-6 text-primary" />
+          <span className="text-lg font-bold ml-2">Bank Project Sphere</span>
         </div>
         
         <div className="hidden md:flex items-center gap-4 md:gap-6 lg:gap-10">
