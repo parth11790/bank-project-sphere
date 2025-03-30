@@ -26,7 +26,7 @@ const ProjectParticipantsCard: React.FC<ProjectParticipantsCardProps> = ({
         {participants.slice(0, 3).map(participant => (
           <div key={participant.participant_id} className="flex items-center justify-between">
             <span className="text-sm">{participant.name}</span>
-            <Badge variant="outline">{participant.email}</Badge>
+            <Badge variant="outline">{participant.role || 'Participant'}</Badge>
           </div>
         ))}
         {participants.length > 3 && (

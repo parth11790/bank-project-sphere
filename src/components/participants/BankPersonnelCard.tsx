@@ -36,7 +36,7 @@ const BankPersonnelCard: React.FC<BankPersonnelCardProps> = ({ user }) => {
             </Avatar>
             <div>
               <CardTitle className="text-base">{user.name}</CardTitle>
-              <CardDescription>{user.email}</CardDescription>
+              <CardDescription>{user.role.replace('_', ' ')}</CardDescription>
             </div>
           </div>
         </div>

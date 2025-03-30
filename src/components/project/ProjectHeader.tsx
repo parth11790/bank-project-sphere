@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, CreditCard, Edit } from 'lucide-react';
+import { CreditCard, Edit, TrendingUp } from 'lucide-react';
 import { Project, getStatusString } from '@/types/project';
 
 interface ProjectHeaderProps {
@@ -39,24 +39,24 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       <div className="flex flex-wrap gap-2">
         <Button 
           variant="outline"
-          onClick={onViewParticipants}
-        >
-          <Users className="mr-2 h-4 w-4" />
-          Participants
-        </Button>
-        <Button 
-          variant="outline"
           onClick={onEdit}
         >
           <Edit className="mr-2 h-4 w-4" />
           Edit Project
         </Button>
         <Button
+          variant="outline"
+          onClick={onViewCashFlow}
+        >
+          <TrendingUp className="mr-2 h-4 w-4" />
+          Cash Flow Analysis
+        </Button>
+        <Button
           variant="default"
           onClick={onViewCashFlow}
         >
           <CreditCard className="mr-2 h-4 w-4" />
-          Cash Flow Analysis
+          Use of Proceeds
         </Button>
       </div>
     </div>

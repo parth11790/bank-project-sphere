@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { 
-  Users, 
   FileText, 
   ClipboardCheck, 
   BarChart, 
@@ -44,18 +42,14 @@ const ProjectDashboard: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   
-  // Find the project by ID from mockData
   const project = projects.find(p => p.project_id === projectId) as Project | undefined;
   
-  // If project doesn't exist, redirect to the projects list
   if (!project) {
     return <Navigate to="/projects" replace />;
   }
   
-  // Calculate total loan amount from individual loan types
   const totalLoanAmount = project.loan_types.reduce((total, loan) => total + loan.amount, 0);
   
-  // Mock data for the dashboard
   const projectData = {
     stats: {
       buyers: project.participants?.filter(p => {
@@ -85,7 +79,6 @@ const ProjectDashboard: React.FC = () => {
       const user = getUserById(p.userId);
       if (!user) return null;
       
-      // Generate some random numbers for document and form stats
       const docsAssigned = Math.floor(Math.random() * 8) + 3;
       const docsCompleted = Math.floor(Math.random() * docsAssigned);
       const formsAssigned = Math.floor(Math.random() * 6) + 2;
@@ -103,7 +96,6 @@ const ProjectDashboard: React.FC = () => {
   const documentsProgress = (projectData.stats.documents.completed / projectData.stats.documents.total) * 100;
   const formsProgress = (projectData.stats.forms.completed / projectData.stats.forms.total) * 100;
 
-  // Get user initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -112,7 +104,6 @@ const ProjectDashboard: React.FC = () => {
       .toUpperCase();
   };
 
-  // Group participants by role
   const buyerParticipants = projectData.participants.filter(p => {
     const user = getUserById(p.userId);
     return user && user.role === 'buyer';
@@ -154,13 +145,6 @@ const ProjectDashboard: React.FC = () => {
             </div>
             <div className="flex flex-wrap gap-2">
               <Button 
-                onClick={() => navigate(`/project/participants/${projectId}`)}
-                className="flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                <span>Participants</span>
-              </Button>
-              <Button 
                 variant="outline" 
                 onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
                 className="flex items-center gap-2"
@@ -179,7 +163,6 @@ const ProjectDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Project Details Card */}
           <Card>
             <CardHeader>
               <CardTitle>Project Details</CardTitle>
