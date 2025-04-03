@@ -52,25 +52,25 @@ const ProjectDashboard: React.FC = () => {
         id: '1', 
         text: 'John Doe uploaded Proof of Income', 
         time: '2 hours ago',
-        type: 'document' 
+        type: 'document' as const
       },
       { 
         id: '2', 
         text: 'Jane Smith completed Personal Information form', 
         time: '4 hours ago',
-        type: 'form'
+        type: 'form' as const
       },
       { 
         id: '3', 
         text: `You assigned 3 new documents to ${getUserById('user_3')?.name || 'Participant'}`,
         time: '1 day ago',
-        type: 'status'
+        type: 'status' as const
       },
       { 
         id: '4', 
         text: 'Property Deed document was rejected', 
         time: '2 days ago',
-        type: 'warning'
+        type: 'warning' as const
       }
     ],
     participants: project.participants?.map(p => {
