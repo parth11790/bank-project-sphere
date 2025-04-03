@@ -2,20 +2,14 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { User, Calendar, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
-
-interface ActivityItem {
-  id: string;
-  text: string;
-  time: string;
-  type?: 'document' | 'form' | 'status' | 'warning';
-}
+import { ActivityItem } from '@/types/dashboard';
 
 interface RecentActivityCardProps {
   activities: ActivityItem[];
 }
 
 const RecentActivityCard: React.FC<RecentActivityCardProps> = ({ activities }) => {
-  const getActivityIcon = (type?: string) => {
+  const getActivityIcon = (type: ActivityItem['type']) => {
     switch (type) {
       case 'document':
         return <FileText className="h-4 w-4 text-blue-500" />;

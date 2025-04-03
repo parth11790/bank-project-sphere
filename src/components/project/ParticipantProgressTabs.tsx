@@ -6,13 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-
-interface ParticipantProgress {
-  userId: string;
-  role: string;
-  documents: { assigned: number; completed: number };
-  forms: { assigned: number; completed: number };
-}
+import { ParticipantProgress } from '@/types/dashboard';
 
 interface ParticipantProgressTabsProps {
   buyerParticipants: ParticipantProgress[];
@@ -206,6 +200,15 @@ const ParticipantProgressTabs: React.FC<ParticipantProgressTabsProps> = ({
       </CardContent>
     </Card>
   );
+};
+
+// Add the function that we kept from the original component
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase();
 };
 
 export default ParticipantProgressTabs;
