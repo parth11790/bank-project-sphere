@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, FileText, BarChart, Edit } from 'lucide-react';
+import { FileText, BarChart, Edit, Users } from 'lucide-react';
 import { Project, getStatusString } from '@/types/project';
 
 interface ProjectHeaderProps {
@@ -39,6 +39,27 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       </div>
       
       <div className="flex flex-wrap gap-2">
+        <Button 
+          variant="outline"
+          onClick={onViewGatherInformation}
+        >
+          <Users className="mr-2 h-4 w-4" />
+          Gather Information
+        </Button>
+        <Button 
+          variant="outline"
+          onClick={onViewAnalysis}
+        >
+          <BarChart className="mr-2 h-4 w-4" />
+          Analysis
+        </Button>
+        <Button 
+          variant="outline"
+          onClick={onViewGenerateDocumentation}
+        >
+          <FileText className="mr-2 h-4 w-4" />
+          Documentation
+        </Button>
         <Button 
           variant="outline"
           onClick={onEdit}

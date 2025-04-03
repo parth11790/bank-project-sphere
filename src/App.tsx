@@ -16,7 +16,6 @@ const Project = lazy(() => import("./pages/Project"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CreateProject = lazy(() => import("./pages/CreateProject"));
 const ProjectParticipants = lazy(() => import("./pages/ProjectParticipants"));
-const ProjectDashboard = lazy(() => import("./pages/ProjectDashboard"));
 const UseOfProceeds = lazy(() => import("./pages/UseOfProceeds"));
 const CashFlowAnalysis = lazy(() => import("./pages/CashFlowAnalysis"));
 const FormView = lazy(() => import("./pages/FormView"));
@@ -66,13 +65,14 @@ const App = () => (
                 <Route path="/project/:projectId" element={<Project />} />
                 <Route path="/create-project" element={<CreateProject />} />
                 <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
-                <Route path="/project/dashboard/:projectId" element={<ProjectDashboard />} />
                 <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
                 <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />
                 <Route path="/form/:formId" element={<FormView />} />
                 {/* Add new routes for our sections */}
                 <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
                 <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
+                {/* Redirect dashboard to project detail */}
+                <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
