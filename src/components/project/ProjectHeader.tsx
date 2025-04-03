@@ -2,21 +2,23 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CreditCard, Edit, TrendingUp } from 'lucide-react';
+import { Users, FileText, BarChart, Edit } from 'lucide-react';
 import { Project, getStatusString } from '@/types/project';
 
 interface ProjectHeaderProps {
   project: Project;
   onEdit: () => void;
-  onViewParticipants: () => void;
-  onViewCashFlow: () => void;
+  onViewGatherInformation: () => void;
+  onViewAnalysis: () => void;
+  onViewGenerateDocumentation: () => void;
 }
 
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({ 
   project, 
   onEdit,
-  onViewParticipants,
-  onViewCashFlow
+  onViewGatherInformation,
+  onViewAnalysis,
+  onViewGenerateDocumentation
 }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -43,20 +45,6 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         >
           <Edit className="mr-2 h-4 w-4" />
           Edit Project
-        </Button>
-        <Button
-          variant="outline"
-          onClick={onViewCashFlow}
-        >
-          <TrendingUp className="mr-2 h-4 w-4" />
-          Cash Flow Analysis
-        </Button>
-        <Button
-          variant="default"
-          onClick={onViewCashFlow}
-        >
-          <CreditCard className="mr-2 h-4 w-4" />
-          Use of Proceeds
         </Button>
       </div>
     </div>

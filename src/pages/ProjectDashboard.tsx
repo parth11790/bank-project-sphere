@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
@@ -47,10 +48,30 @@ const ProjectDashboard: React.FC = () => {
       }
     },
     recentActivity: [
-      { id: '1', text: 'John Doe uploaded Proof of Income', time: '2 hours ago' },
-      { id: '2', text: 'Jane Smith completed Personal Information form', time: '4 hours ago' },
-      { id: '3', text: `You assigned 3 new documents to ${getUserById('user_3')?.name || 'Participant'}`, time: '1 day ago' },
-      { id: '4', text: 'Property Deed document was rejected', time: '2 days ago' }
+      { 
+        id: '1', 
+        text: 'John Doe uploaded Proof of Income', 
+        time: '2 hours ago',
+        type: 'document' 
+      },
+      { 
+        id: '2', 
+        text: 'Jane Smith completed Personal Information form', 
+        time: '4 hours ago',
+        type: 'form'
+      },
+      { 
+        id: '3', 
+        text: `You assigned 3 new documents to ${getUserById('user_3')?.name || 'Participant'}`,
+        time: '1 day ago',
+        type: 'status'
+      },
+      { 
+        id: '4', 
+        text: 'Property Deed document was rejected', 
+        time: '2 days ago',
+        type: 'warning'
+      }
     ],
     participants: project.participants?.map(p => {
       const user = getUserById(p.userId);

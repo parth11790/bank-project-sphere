@@ -3,27 +3,15 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { 
-  ChevronRight, 
-  Users, 
-  FileText, 
-  Calendar, 
-  CreditCard, 
-  BarChart3, 
-  Building,
-  Edit
-} from 'lucide-react';
+import Layout from '@/components/Layout';
 import { getProjectById } from '@/services';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
-import Layout from '@/components/Layout';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Project as ProjectType } from '@/types/project';
 import { ParticipantWithDetails } from '@/types/participant';
 import ProjectEditDialog from '@/components/ProjectEditDialog';
 import ProjectHeader from '@/components/project/ProjectHeader';
 import ProjectOverview from '@/components/project/ProjectOverview';
-import ProjectParticipantsCard from '@/components/project/ProjectParticipantsCard';
+import { ProjectSections } from '@/components/project/ProjectSections';
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 
@@ -57,11 +45,17 @@ const Project: React.FC = () => {
   const projectData = project as ProjectType;
   const participantsData = participants || [] as ParticipantWithDetails[];
   
-  const buyerParticipants = participantsData.filter(p => p.role === 'buyer');
-  const sellerParticipants = participantsData.filter(p => p.role === 'seller');
-  const bankParticipants = participantsData.filter(p => 
-    p.role === 'bank_officer' || p.role === 'loan_specialist' || p.role === 'bank_manager'
-  );
+  const handleGatherInformation = () => {
+    navigate(`/project/participants/${projectId}`);
+  };
+  
+  const handleAnalysis = () => {
+    navigate(`/project/analysis/${projectId}`);
+  };
+  
+  const handleGenerateDocumentation = () => {
+    navigate(`/project/documentation/${projectId}`);
+  };
   
   return (
     <Layout>
@@ -74,21 +68,22 @@ const Project: React.FC = () => {
         <ProjectHeader 
           project={projectData} 
           onEdit={() => setEditDialogOpen(true)}
-          onViewParticipants={() => navigate(`/project/participants/${projectId}`)}
-          onViewCashFlow={() => navigate(`/project/cash-flow/${projectId}`)}
+          onViewGatherInformation={handleGatherInformation}
+          onViewAnalysis={handleAnalysis}
+          onViewGenerateDocumentation={handleGenerateDocumentation}
         />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <ProjectSections
+          project={projectData}
+          onGatherInformation={handleGatherInformation}
+          onAnalysis={handleAnalysis}
+          onGenerateDocumentation={handleGenerateDocumentation}
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
           <ProjectOverview 
             project={projectData} 
             onViewUseOfProceeds={() => navigate(`/project/use-of-proceeds/${projectId}`)}
-          />
-          
-          <ProjectParticipantsCard 
-            buyers={buyerParticipants}
-            sellers={sellerParticipants}
-            bankPersonnel={bankParticipants}
-            onViewAllParticipants={() => navigate(`/project/participants/${projectId}`)}
           />
         </div>
         

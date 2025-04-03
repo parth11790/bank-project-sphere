@@ -20,6 +20,9 @@ const ProjectDashboard = lazy(() => import("./pages/ProjectDashboard"));
 const UseOfProceeds = lazy(() => import("./pages/UseOfProceeds"));
 const CashFlowAnalysis = lazy(() => import("./pages/CashFlowAnalysis"));
 const FormView = lazy(() => import("./pages/FormView"));
+// Add new page imports here
+const ProjectAnalysis = lazy(() => import("./pages/ProjectAnalysis"));
+const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -67,6 +70,9 @@ const App = () => (
                 <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
                 <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />
                 <Route path="/form/:formId" element={<FormView />} />
+                {/* Add new routes for our sections */}
+                <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
+                <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
