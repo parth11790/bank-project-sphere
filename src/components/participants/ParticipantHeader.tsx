@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ArrowRight } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 
 interface ParticipantHeaderProps {
   projectId: string;
@@ -29,12 +29,6 @@ const ParticipantHeader: React.FC<ParticipantHeaderProps> = ({ projectId, projec
         <h1 className="text-3xl font-bold mt-4">Project Participants</h1>
         <p className="text-muted-foreground">{projectName}</p>
       </div>
-      <Button 
-        onClick={() => navigate(`/project/dashboard/${projectId}`)}
-      >
-        View Project Dashboard
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Button>
     </div>
   );
 };

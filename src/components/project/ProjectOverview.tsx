@@ -1,18 +1,15 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { DollarSign } from 'lucide-react';
 import { Project, getStatusString } from '@/types/project';
 import { LoanDistributionChart } from './LoanDistributionChart';
 
 interface ProjectOverviewProps {
   project: Project;
-  onViewUseOfProceeds: () => void;
 }
 
-const ProjectOverview: React.FC<ProjectOverviewProps> = ({ project, onViewUseOfProceeds }) => {
+const ProjectOverview: React.FC<ProjectOverviewProps> = ({ project }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -93,13 +90,6 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({ project, onViewUseOfP
         <div className="text-xs text-muted-foreground">
           Last updated: {new Date(project.updated_at || project.created_at).toLocaleString()}
         </div>
-        <Button 
-          variant="outline"
-          onClick={onViewUseOfProceeds}
-        >
-          <DollarSign className="mr-2 h-4 w-4" />
-          Use of Proceeds
-        </Button>
       </CardFooter>
     </Card>
   );

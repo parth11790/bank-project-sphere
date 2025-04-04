@@ -84,9 +84,6 @@ const Project: React.FC = () => {
         <ProjectHeader 
           project={projectData} 
           onEdit={() => setEditDialogOpen(true)}
-          onViewGatherInformation={handleGatherInformation}
-          onViewAnalysis={handleAnalysis}
-          onViewGenerateDocumentation={handleGenerateDocumentation}
         />
         
         <ProjectSections
@@ -106,10 +103,7 @@ const Project: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <ProjectOverview 
-              project={projectData} 
-              onViewUseOfProceeds={() => navigate(`/project/use-of-proceeds/${projectId}`)}
-            />
+            <ProjectOverview project={projectData} />
           </div>
           <RecentActivityCard activities={dashboardData.recentActivity} />
         </div>

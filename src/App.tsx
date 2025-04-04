@@ -71,7 +71,7 @@ const App = () => (
                 {/* Add new routes for our sections */}
                 <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
                 <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
-                {/* Redirect dashboard to project detail */}
+                {/* Redirect project dashboard to project detail */}
                 <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
