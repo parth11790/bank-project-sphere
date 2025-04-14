@@ -1,126 +1,82 @@
+import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+// Define the user roles
+export type UserRole = 'admin' | 'buyer' | 'seller' | 'bank_officer' | 'loan_specialist' | 'bank_manager';
 
-interface AuthContextType {
-  session: Session | null;
-  user: User | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, userData: any) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
+// Define the user type
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  bank_id?: string | null;
+  otp_enabled?: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Define the auth context shape
+interface AuthContextProps {
+  user: User | null;
+  loading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  login: (user: User) => void;
+  logout: () => void;
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
+// Create the auth context
+const AuthContext = createContext<AuthContextProps>({
+  user: null,
+  loading: true,
+  setUser: () => {},
+  login: () => {},
+  logout: () => {},
+});
+
+// Create the auth provider
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+// Update the AuthProvider component to simulate a buyer or seller user
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // For mock implementation, we'll pretend to be a buyer (user_1) by default
+  // This will ensure we see projects in the My Projects section
   useEffect(() => {
-    // Check for active session on load
-    const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Error getting session:', error);
-      }
-      
-      setSession(data.session);
-      setUser(data.session?.user || null);
-      setLoading(false);
+    const mockUser = {
+      id: 'user_1',
+      name: 'John Smith',
+      email: 'john@example.com',
+      role: 'buyer' as UserRole
     };
-
-    getSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
-      console.log('Auth state changed:', event);
-      setSession(currentSession);
-      setUser(currentSession?.user || null);
-      setLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    
+    setUser(mockUser);
+    setLoading(false);
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      toast.success('Signed in successfully');
-      return { error: null };
-    } catch (error) {
-      console.error('Error during sign in:', error);
-      toast.error('Failed to sign in');
-      return { error };
-    }
+  const login = (user: User) => {
+    setUser(user);
   };
 
-  const signUp = async (email: string, password: string, userData: any) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: userData
-        }
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        return { error };
-      }
-      
-      toast.success('Signed up successfully! Please check your email for confirmation.');
-      return { error: null };
-    } catch (error) {
-      console.error('Error during sign up:', error);
-      toast.error('Failed to sign up');
-      return { error };
-    }
+  const logout = () => {
+    setUser(null);
   };
 
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast.success('Signed out successfully');
-    } catch (error) {
-      console.error('Error during sign out:', error);
-      toast.error('Failed to sign out');
-    }
+  const authValue: AuthContextProps = {
+    user,
+    loading,
+    setUser,
+    login,
+    logout,
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        loading,
-        signIn,
-        signUp,
-        signOut
-      }}
-    >
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+// Create the useAuth hook
+export const useAuth = () => useContext(AuthContext);

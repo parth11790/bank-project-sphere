@@ -7,7 +7,9 @@ import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { getProjects } from '@/services';
 import ProjectCard from '@/components/ProjectCard';
-import { Project } from '@/types/project';
+import { Building, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const MyProjects: React.FC = () => {
   const navigate = useNavigate();
@@ -20,8 +22,7 @@ const MyProjects: React.FC = () => {
   
   // Filter projects to only show ones where the user is a participant
   const myProjects = projects?.filter(project => 
-    project.participants?.some(p => p.user.user_id === user?.id && 
-      (p.role === 'buyer' || p.role === 'seller'))
+    project.participants?.some(p => p.user.user_id === user?.id)
   ) || [];
   
   return (
@@ -35,7 +36,7 @@ const MyProjects: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">My Projects</h1>
           <p className="text-muted-foreground">
-            View and manage the projects where you are a buyer or seller.
+            View and manage the projects where you are a participant.
           </p>
         </div>
         
@@ -55,10 +56,42 @@ const MyProjects: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-12 bg-muted/30 rounded-lg">
-            <h3 className="text-lg font-medium mb-2">No Projects Found</h3>
-            <p className="text-muted-foreground">
-              You are not currently assigned to any projects as a buyer or seller.
-            </p>
+            <div className="space-y-6">
+              <h3 className="text-lg font-medium mb-2">No Projects Found</h3>
+              <p className="text-muted-foreground">
+                You are not currently assigned to any projects.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Card className="w-full sm:w-64">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-sm">
+                      <Building className="mr-2 h-4 w-4" />
+                      Add Your Business
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Register your business to start the loan process
+                    </p>
+                    <Button size="sm" className="w-full" variant="outline">Add Business</Button>
+                  </CardContent>
+                </Card>
+                <Card className="w-full sm:w-64">
+                  <CardHeader>
+                    <CardTitle className="flex items-center text-sm">
+                      <FileText className="mr-2 h-4 w-4" />
+                      Complete Your Profile
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Update your profile information
+                    </p>
+                    <Button size="sm" className="w-full" variant="outline">Edit Profile</Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         )}
       </motion.div>
