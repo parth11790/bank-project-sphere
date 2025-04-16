@@ -22,9 +22,6 @@ const FormView = lazy(() => import("./pages/FormView"));
 // Add new page imports here
 const ProjectAnalysis = lazy(() => import("./pages/ProjectAnalysis"));
 const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
-// Add buyer/seller pages
-const MyProjects = lazy(() => import("./pages/MyProjects"));
-const MyProjectDetail = lazy(() => import("./pages/MyProjectDetail"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -74,11 +71,6 @@ const App = () => (
                 {/* Add new routes for our sections */}
                 <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
                 <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
-                
-                {/* Buyer/Seller routes */}
-                <Route path="/my-projects" element={<MyProjects />} />
-                <Route path="/my-project/:projectId" element={<MyProjectDetail />} />
-                
                 {/* Redirect project dashboard to project detail */}
                 <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="*" element={<NotFound />} />
