@@ -1,6 +1,11 @@
 
 // Define the category options based on the user's requirements
-export const categoryOptions = [
+export interface CategoryOption {
+  overall: string;
+  category: string;
+}
+
+export const categoryOptions: CategoryOption[] = [
   { overall: 'Purchase', category: 'BUSINESS ASSETS' },
   { overall: 'Land', category: 'LAND & BUILDING' },
   { overall: 'Construction', category: 'CONSTRUCTION' },
