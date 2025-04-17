@@ -33,6 +33,10 @@ export const AddRowDialog: React.FC<AddRowDialogProps> = ({
   const overallCategoryError = validationErrors.overallCategory;
   const categoryError = validationErrors.rowCategory;
   
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+  
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
@@ -96,6 +100,9 @@ export const AddRowDialog: React.FC<AddRowDialogProps> = ({
           </div>
         </div>
         <DialogFooter>
+          <Button variant="outline" onClick={handleClose} className="mr-2">
+            Cancel
+          </Button>
           <Button
             onClick={onAddRow}
             disabled={!selectedOverallCategory || !newRowCategory}

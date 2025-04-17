@@ -31,6 +31,10 @@ export const AddColumnDialog: React.FC<AddColumnDialogProps> = ({
     setNewColumnName(e.target.value);
   };
   
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+  
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -60,6 +64,13 @@ export const AddColumnDialog: React.FC<AddColumnDialogProps> = ({
           )}
         </div>
         <DialogFooter>
+          <Button 
+            variant="outline"
+            onClick={handleClose}
+            className="mr-2"
+          >
+            Cancel
+          </Button>
           <Button 
             onClick={onAddColumn}
             disabled={hasError || !newColumnName.trim()}

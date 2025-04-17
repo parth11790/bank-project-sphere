@@ -50,6 +50,13 @@ const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
     }
   };
 
+  const handleCancel = () => {
+    // Reset form
+    setSelectedOverallCategory('');
+    setSelectedCategory('');
+    setIsOpen(false);
+  };
+
   return (
     <dialog open={isOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6">
@@ -92,7 +99,7 @@ const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
         </div>
         
         <div className="flex justify-end gap-2 mt-6">
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
+          <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button 
