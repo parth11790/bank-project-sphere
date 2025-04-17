@@ -1,125 +1,115 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { CategoryOption } from './categoryOptions';
+import { Search } from 'lucide-react';
 
 interface AddEnhancedRowDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onAddRow: (overallCategory: string, rowName: string) => void;
   uniqueOverallCategories: string[];
-  categoryOptions: Array<{ overall: string; category: string }>;
+  categoryOptions: CategoryOption[];
 }
 
 const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
   isOpen,
   setIsOpen,
   onAddRow,
-  uniqueOverallCategories,
   categoryOptions
 }) => {
-  const [selectedOverallCategory, setSelectedOverallCategory] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [filteredCategories, setFilteredCategories] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedOption, setSelectedOption] = useState<CategoryOption | null>(null);
 
-  // Reset the form when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedOverallCategory('');
-      setSelectedCategory('');
-      setFilteredCategories([]);
+  // Filter options based on search query
+  const filteredOptions = searchQuery.trim() === '' 
+    ? categoryOptions 
+    : categoryOptions.filter(option => 
+        option.overall.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        option.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+  // Reset the form when dialog opens/closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+      setSelectedOption(null);
     }
   }, [isOpen]);
 
-  // Handle overall category change
-  useEffect(() => {
-    if (selectedOverallCategory) {
-      const filtered = categoryOptions
-        .filter(option => option.overall === selectedOverallCategory)
-        .map(option => option.category);
-      
-      setFilteredCategories(filtered);
-      if (filtered.length > 0) {
-        setSelectedCategory(filtered[0]);
-      } else {
-        setSelectedCategory('');
-      }
-    } else {
-      setFilteredCategories([]);
-      setSelectedCategory('');
-    }
-  }, [selectedOverallCategory, categoryOptions]);
-
   const handleSubmit = () => {
-    if (selectedOverallCategory && selectedCategory) {
-      onAddRow(selectedOverallCategory, selectedCategory);
-      
-      // Reset form
-      setSelectedOverallCategory('');
-      setSelectedCategory('');
+    if (selectedOption) {
+      onAddRow(selectedOption.overall, selectedOption.category);
+      setIsOpen(false);
     }
   };
 
   const handleCancel = () => {
-    // Reset form
-    setSelectedOverallCategory('');
-    setSelectedCategory('');
     setIsOpen(false);
   };
 
   return (
-    <dialog open={isOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Add New Row</h2>
-        <p className="text-sm text-muted-foreground mb-4">Select the category for the new row</p>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add New Row</DialogTitle>
+          <DialogDescription>
+            Select a row from the list below to add to the table
+          </DialogDescription>
+        </DialogHeader>
         
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium">Overall Category</label>
-            <select
-              value={selectedOverallCategory}
-              onChange={(e) => setSelectedOverallCategory(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-            >
-              <option value="">Select an overall category</option>
-              {uniqueOverallCategories.map(category => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="text-sm font-medium">Category</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
-              disabled={filteredCategories.length === 0}
-            >
-              <option value="">Select a category</option>
-              {filteredCategories.map(category => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <input
+            placeholder="Search categories..."
+            className="pl-8 w-full h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
         
-        <div className="flex justify-end gap-2 mt-6">
+        <ScrollArea className="h-72 rounded-md border">
+          <div className="p-1">
+            {filteredOptions.length === 0 ? (
+              <p className="text-center py-4 text-muted-foreground">No matching categories found</p>
+            ) : (
+              filteredOptions.map((option, index) => (
+                <div
+                  key={`${option.overall}-${option.category}-${index}`}
+                  className={`flex flex-col p-2 rounded-md cursor-pointer ${
+                    selectedOption &&
+                    selectedOption.overall === option.overall &&
+                    selectedOption.category === option.category
+                      ? 'bg-accent text-accent-foreground'
+                      : 'hover:bg-muted'
+                  }`}
+                  onClick={() => setSelectedOption(option)}
+                >
+                  <span className="font-medium">{option.category}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Category: {option.overall}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </ScrollArea>
+        
+        <DialogFooter className="flex justify-end gap-2">
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button 
             onClick={handleSubmit}
-            disabled={!selectedOverallCategory || !selectedCategory}
+            disabled={!selectedOption}
           >
             Add Row
           </Button>
-        </div>
-      </div>
-    </dialog>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

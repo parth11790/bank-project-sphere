@@ -9,6 +9,7 @@ import AddEnhancedRowDialog from './AddEnhancedRowDialog';
 import ProceedsTable from './ProceedsTable';
 import LoanSummary from './LoanSummary';
 import TableHeader from './TableHeader';
+import { categoryOptions } from './categoryOptions';
 
 // Enhanced types
 export type UseOfProceedsColumn = {
@@ -113,24 +114,13 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
         onAddColumn={handleAddColumn}
       />
       
-      {/* Row Dialog */}
+      {/* Row Dialog - Using our updated component */}
       <AddEnhancedRowDialog 
         isOpen={isAddRowDialogOpen}
         setIsOpen={setIsAddRowDialogOpen}
         onAddRow={handleAddRow}
-        uniqueOverallCategories={[...new Set(
-          ['Real Estate', 'Equipment', 'Working Capital', 'Refinance', 'Other']
-        )]}
-        categoryOptions={[
-          { overall: 'Real Estate', category: 'Land' },
-          { overall: 'Real Estate', category: 'Buildings' },
-          { overall: 'Equipment', category: 'Machinery' },
-          { overall: 'Equipment', category: 'Vehicles' },
-          { overall: 'Working Capital', category: 'Inventory' },
-          { overall: 'Working Capital', category: 'Payroll' },
-          { overall: 'Refinance', category: 'Refinance Debt' },
-          { overall: 'Other', category: 'Other Expenses' }
-        ]}
+        uniqueOverallCategories={[...new Set(categoryOptions.map(item => item.overall))]}
+        categoryOptions={categoryOptions}
       />
     </div>
   );
