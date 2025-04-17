@@ -1,17 +1,15 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { mockUseOfProceedsColumns, mockUseOfProceedsRows } from '@/lib/mockData';
-import { AddColumnDialog } from '@/components/useOfProceeds/AddColumnDialog';
-import { AddRowDialog } from '@/components/useOfProceeds/AddRowDialog';
-import { categoryOptions, uniqueOverallCategories } from '@/components/useOfProceeds/categoryOptions';
-import { useTableData, BaseUseOfProceedsColumn } from '@/hooks/useTableData';
+import { categoryOptions } from '@/components/useOfProceeds/categoryOptions';
+import { useTableData } from '@/hooks/useTableData';
 import { useUseOfProceedsForm } from '@/hooks/useUseOfProceedsForm';
 import BaseTableContent from './useOfProceeds/BaseTableContent';
 import BaseSummary from './useOfProceeds/BaseSummary';
 import BaseTableActions from './useOfProceeds/BaseTableActions';
+import { AddColumnDialog } from '@/components/useOfProceeds/AddColumnDialog';
+import { AddRowDialog } from '@/components/useOfProceeds/AddRowDialog';
 
 interface UseOfProceedsTableProps {
   projectId: string;
@@ -28,7 +26,10 @@ interface UseOfProceedsTableProps {
 }
 
 // Define types for columns and rows to match mockData structure
-export type UseOfProceedsColumn = BaseUseOfProceedsColumn;
+export type UseOfProceedsColumn = {
+  column_id: string;
+  column_name: string;
+}
 
 export type UseOfProceedsRow = {
   row_id: string;
@@ -49,6 +50,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
     newRowCategory,
     selectedOverallCategory,
     filteredCategories,
+    validationErrors,
     setIsAddColumnDialogOpen,
     setIsAddRowDialogOpen,
     setNewColumnName,
@@ -60,7 +62,9 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
     handleCancel,
     formatCurrency,
     calculateColumnTotal,
-    startEditing
+    startEditing,
+    validateColumnName,
+    validateRowCategory
   } = useUseOfProceedsForm({
     projectId,
     initialData: data,
@@ -71,7 +75,11 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
 
   // Function to add a new column
   const handleAddColumn = () => {
-    if (newColumnName.trim() === '') return;
+    const error = validateColumnName && validateColumnName(newColumnName);
+    
+    if (error || newColumnName.trim() === '') {
+      return;
+    }
     
     const newColumn: UseOfProceedsColumn = {
       column_id: `col_${Date.now()}`,
@@ -85,7 +93,11 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
 
   // Function to add a new row
   const handleAddRow = () => {
-    if (newRowCategory.trim() === '') return;
+    const error = validateRowCategory && validateRowCategory();
+    
+    if (error || newRowCategory.trim() === '') {
+      return;
+    }
     
     const newRow: UseOfProceedsRow = {
       row_id: `row_${Date.now()}`,
@@ -118,28 +130,6 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="flex justify-end p-4 gap-3">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="flex items-center gap-1"
-              onClick={() => setIsAddColumnDialogOpen(true)}
-            >
-              <Plus size={16} />
-              <span>Add Column</span>
-            </Button>
-            
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="flex items-center gap-1"
-              onClick={() => setIsAddRowDialogOpen(true)}
-            >
-              <Plus size={16} />
-              <span>Add Row</span>
-            </Button>
-          </div>
-          
           <div className="overflow-x-auto">
             <BaseTableContent 
               columns={columns}
@@ -151,6 +141,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
               calculateColumnTotal={(columnName) => calculateColumnTotal(columnName, tableData)}
               formatCurrency={formatCurrency}
               categoryOptions={categoryOptions}
+              validationErrors={validationErrors}
             />
           </div>
         </CardContent>
@@ -165,6 +156,8 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
         newColumnName={newColumnName}
         setNewColumnName={setNewColumnName}
         onAddColumn={handleAddColumn}
+        validationErrors={validationErrors}
+        validateColumnName={validateColumnName}
       />
       
       <AddRowDialog 
@@ -176,7 +169,8 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
         onOverallCategoryChange={handleOverallCategoryChange}
         setNewRowCategory={setNewRowCategory}
         onAddRow={handleAddRow}
-        uniqueOverallCategories={uniqueOverallCategories}
+        uniqueOverallCategories={categoryOptions ? [...new Set(categoryOptions.map(item => item.overall))] : []}
+        validationErrors={validationErrors}
       />
     </div>
   );

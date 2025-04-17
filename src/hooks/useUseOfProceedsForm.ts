@@ -1,7 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/UseOfProceedsTable';
 import { categoryOptions } from '@/components/useOfProceeds/categoryOptions';
+import { toast } from 'sonner';
 
 interface UseUseOfProceedsFormProps {
   projectId: string;
@@ -17,6 +18,11 @@ interface UseUseOfProceedsFormProps {
   onSaveCallback?: (updatedData: any) => void;
 }
 
+// Define validation error types
+interface ValidationErrors {
+  [key: string]: string;
+}
+
 export const useUseOfProceedsForm = ({ 
   projectId, 
   initialData, 
@@ -24,6 +30,7 @@ export const useUseOfProceedsForm = ({
 }: UseUseOfProceedsFormProps) => {
   const [editMode, setEditMode] = useState(false);
   const [editedData, setEditedData] = useState<{ [key: string]: number }>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   
   // Dialogs state
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
@@ -40,9 +47,55 @@ export const useUseOfProceedsForm = ({
   // Enter edit mode
   const startEditing = () => setEditMode(true);
   
+  // Validation utilities
+  const validateValue = (value: string, rowName: string, columnName: string): string | null => {
+    const key = `${rowName}-${columnName}`;
+    
+    // Check if value is a valid number
+    if (value === '') {
+      return null; // Empty is valid (will be converted to 0)
+    }
+    
+    const numValue = Number(value);
+    
+    if (isNaN(numValue)) {
+      return "Please enter a valid number";
+    }
+    
+    if (numValue < 0) {
+      return "Value cannot be negative";
+    }
+    
+    // Additional validation for specific categories could be added here
+    // For example, if certain categories have maximum values
+    
+    return null; // No validation error
+  };
+  
+  // Clear validation errors for a specific field
+  const clearValidationError = (key: string) => {
+    if (validationErrors[key]) {
+      const newErrors = { ...validationErrors };
+      delete newErrors[key];
+      setValidationErrors(newErrors);
+    }
+  };
+  
   // Handle value change when editing
   const handleValueChange = (rowName: string, columnName: string, value: string) => {
     const key = `${rowName}-${columnName}`;
+    const validationError = validateValue(value, rowName, columnName);
+    
+    if (validationError) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [key]: validationError
+      }));
+      return;
+    } else {
+      clearValidationError(key);
+    }
+    
     const numericValue = value === '' ? 0 : Number(value);
     
     setEditedData(prev => ({
@@ -78,8 +131,47 @@ export const useUseOfProceedsForm = ({
     }
   };
 
+  // Validate new column name
+  const validateColumnName = (name: string): string | null => {
+    if (!name.trim()) {
+      return "Column name cannot be empty";
+    }
+    
+    if (name.length > 30) {
+      return "Column name must be 30 characters or less";
+    }
+    
+    return null;
+  };
+  
+  // Validate all data before saving
+  const validateAllData = (): boolean => {
+    const errors: ValidationErrors = {};
+    let isValid = true;
+    
+    // Validate all edited data
+    Object.entries(editedData).forEach(([key, value]) => {
+      const [rowName, columnName] = key.split('-');
+      const error = validateValue(String(value), rowName, columnName);
+      
+      if (error) {
+        errors[key] = error;
+        isValid = false;
+      }
+    });
+    
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   // Handle save
-  const handleSave = (rows: UseOfProceedsRow[], columns: UseOfProceedsColumn[]) => {
+  const handleSave = useCallback((rows: UseOfProceedsRow[], columns: UseOfProceedsColumn[]) => {
+    // First validate all data
+    if (!validateAllData()) {
+      toast.error("Please fix validation errors before saving");
+      return;
+    }
+    
     // Create updated data in the original format
     const updatedData = [...initialData];
     
@@ -119,13 +211,15 @@ export const useUseOfProceedsForm = ({
     
     setEditMode(false);
     setEditedData({});
-  };
+    setValidationErrors({});
+  }, [editedData, initialData, projectId, onSaveCallback]);
 
   // Handle cancel
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setEditMode(false);
     setEditedData({});
-  };
+    setValidationErrors({});
+  }, []);
 
   // Format a value as currency
   const formatCurrency = (value: number) => {
@@ -147,9 +241,38 @@ export const useUseOfProceedsForm = ({
     return total;
   };
 
+  // Validate new row category
+  const validateRowCategory = (): string | null => {
+    if (!newRowCategory.trim()) {
+      return "Category name cannot be empty";
+    }
+    
+    if (!newRowOverallCategory.trim()) {
+      return "Overall category must be selected";
+    }
+    
+    return null;
+  };
+
+  // Handle column name change with validation
+  const handleColumnNameChange = (value: string) => {
+    setNewColumnName(value);
+    const error = validateColumnName(value);
+    
+    if (error) {
+      setValidationErrors(prev => ({
+        ...prev,
+        newColumnName: error
+      }));
+    } else {
+      clearValidationError('newColumnName');
+    }
+  };
+
   return {
     editMode,
     editedData,
+    validationErrors,
     isAddColumnDialogOpen,
     isAddRowDialogOpen,
     newColumnName,
@@ -161,7 +284,7 @@ export const useUseOfProceedsForm = ({
     startEditing,
     setIsAddColumnDialogOpen,
     setIsAddRowDialogOpen,
-    setNewColumnName,
+    setNewColumnName: handleColumnNameChange,
     setNewRowCategory,
     setNewRowOverallCategory,
     handleOverallCategoryChange,
@@ -170,6 +293,9 @@ export const useUseOfProceedsForm = ({
     handleSave,
     handleCancel,
     formatCurrency,
-    calculateColumnTotal
+    calculateColumnTotal,
+    validateColumnName,
+    validateRowCategory,
+    validateValue
   };
 };

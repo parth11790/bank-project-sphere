@@ -12,6 +12,8 @@ interface AddColumnDialogProps {
   newColumnName: string;
   setNewColumnName: (name: string) => void;
   onAddColumn: () => void;
+  validationErrors?: { [key: string]: string };
+  validateColumnName?: (name: string) => string | null;
 }
 
 export const AddColumnDialog: React.FC<AddColumnDialogProps> = ({
@@ -19,8 +21,16 @@ export const AddColumnDialog: React.FC<AddColumnDialogProps> = ({
   setIsOpen,
   newColumnName,
   setNewColumnName,
-  onAddColumn
+  onAddColumn,
+  validationErrors = {},
+  validateColumnName
 }) => {
+  const hasError = !!validationErrors.newColumnName;
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewColumnName(e.target.value);
+  };
+  
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -41,13 +51,21 @@ export const AddColumnDialog: React.FC<AddColumnDialogProps> = ({
           <Input
             id="columnName"
             value={newColumnName}
-            onChange={(e) => setNewColumnName(e.target.value)}
+            onChange={handleInputChange}
             placeholder="e.g. Phase 1"
-            className="mt-2"
+            className={`mt-2 ${hasError ? 'border-destructive' : ''}`}
           />
+          {hasError && (
+            <p className="text-sm text-destructive mt-1">{validationErrors.newColumnName}</p>
+          )}
         </div>
         <DialogFooter>
-          <Button onClick={onAddColumn}>Add Column</Button>
+          <Button 
+            onClick={onAddColumn}
+            disabled={hasError || !newColumnName.trim()}
+          >
+            Add Column
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

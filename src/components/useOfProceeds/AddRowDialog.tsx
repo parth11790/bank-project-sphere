@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus } from 'lucide-react';
 
 interface AddRowDialogProps {
   isOpen: boolean;
@@ -13,9 +12,10 @@ interface AddRowDialogProps {
   newRowCategory: string;
   filteredCategories: string[];
   onOverallCategoryChange: (value: string) => void;
-  setNewRowCategory: (category: string) => void;
+  setNewRowCategory: (value: string) => void;
   onAddRow: () => void;
   uniqueOverallCategories: string[];
+  validationErrors?: { [key: string]: string };
 }
 
 export const AddRowDialog: React.FC<AddRowDialogProps> = ({
@@ -27,65 +27,81 @@ export const AddRowDialog: React.FC<AddRowDialogProps> = ({
   onOverallCategoryChange,
   setNewRowCategory,
   onAddRow,
-  uniqueOverallCategories
+  uniqueOverallCategories,
+  validationErrors = {}
 }) => {
+  const overallCategoryError = validationErrors.overallCategory;
+  const categoryError = validationErrors.rowCategory;
+  
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="flex items-center gap-1">
-          <Plus size={16} />
-          <span>Add Row</span>
-        </Button>
-      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Category</DialogTitle>
+          <DialogTitle>Add New Row</DialogTitle>
           <DialogDescription>
-            Select an overall category and category for the new row
+            Select a category for the new row
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
           <div>
-            <Label htmlFor="overallCategory">Overall Category</Label>
-            <Select
-              value={selectedOverallCategory}
-              onValueChange={onOverallCategoryChange}
-            >
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select an overall category" />
+            <Label htmlFor="overallCategory" className={overallCategoryError ? 'text-destructive' : ''}>
+              Overall Category
+            </Label>
+            <Select value={selectedOverallCategory} onValueChange={onOverallCategoryChange}>
+              <SelectTrigger
+                id="overallCategory"
+                className={`mt-2 ${overallCategoryError ? 'border-destructive' : ''}`}
+              >
+                <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {uniqueOverallCategories.map(category => (
+                {uniqueOverallCategories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {overallCategoryError && (
+              <p className="text-sm text-destructive mt-1">{overallCategoryError}</p>
+            )}
           </div>
           
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="rowCategory" className={categoryError ? 'text-destructive' : ''}>
+              Row Category
+            </Label>
             <Select
               value={newRowCategory}
               onValueChange={setNewRowCategory}
-              disabled={filteredCategories.length === 0}
+              disabled={!selectedOverallCategory || filteredCategories.length === 0}
             >
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select a category" />
+              <SelectTrigger
+                id="rowCategory"
+                className={`mt-2 ${categoryError ? 'border-destructive' : ''}`}
+              >
+                <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                {filteredCategories.map(category => (
+                {filteredCategories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {categoryError && (
+              <p className="text-sm text-destructive mt-1">{categoryError}</p>
+            )}
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={onAddRow}>Add Row</Button>
+          <Button
+            onClick={onAddRow}
+            disabled={!selectedOverallCategory || !newRowCategory}
+          >
+            Add Row
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
