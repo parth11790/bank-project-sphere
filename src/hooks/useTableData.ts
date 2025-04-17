@@ -8,60 +8,120 @@ export type BaseUseOfProceedsColumn = {
   [key: string]: any; // Allow for additional properties like is_loan
 };
 
-interface UseTableDataProps {
-  data: Array<{
-    id?: number;
-    proceeds_id?: string;
-    project_id?: string;
-    column_name?: string;
-    row_name: string;
+// Types for the data structure
+export type TableDataItem = {
+  id?: number;
+  proceeds_id?: string;
+  project_id?: string;
+  column_name?: string;
+  row_name: string;
+  overall_category?: string;
+  value: number;
+};
+
+// Type for the formatted table data
+export type FormattedTableData = {
+  [rowName: string]: {
     overall_category?: string;
-    value: number;
-  }>;
+    [columnName: string]: any;
+  };
+};
+
+interface UseTableDataProps {
+  data: TableDataItem[];
   rows: UseOfProceedsRow[];
   columns: BaseUseOfProceedsColumn[]; // Use the more generic type
 }
 
 export const useTableData = ({ data, rows, columns }: UseTableDataProps) => {
-  // Format the data for display in the table
-  const formatData = () => {
-    const tableData: { [key: string]: { overall_category?: string, [key: string]: any } } = {};
+  // Extract overall categories from data
+  const extractOverallCategories = (
+    rows: UseOfProceedsRow[],
+    data: TableDataItem[]
+  ): Record<string, string> => {
+    const categories: Record<string, string> = {};
     
-    // Initialize the table data with empty values
+    // First prioritize data from the rows
     rows.forEach(row => {
-      const categoryOption = data.find(item => item.row_name === row.row_name);
-      const overallCategory = row.overall_category || (categoryOption ? categoryOption.overall_category : '');
+      if (row.overall_category) {
+        categories[row.row_name] = row.overall_category;
+      }
+    });
+    
+    // Then check the data items and fill in any missing categories
+    data.forEach(item => {
+      if (item.overall_category && !categories[item.row_name]) {
+        categories[item.row_name] = item.overall_category;
+      }
+    });
+    
+    return categories;
+  };
+
+  // Initialize empty table data structure
+  const initializeTableData = (
+    rows: UseOfProceedsRow[],
+    columns: BaseUseOfProceedsColumn[],
+    overallCategories: Record<string, string>
+  ): FormattedTableData => {
+    const tableData: FormattedTableData = {};
+    
+    rows.forEach(row => {
+      tableData[row.row_name] = { 
+        overall_category: overallCategories[row.row_name] || '' 
+      };
       
-      tableData[row.row_name] = { overall_category: overallCategory };
       columns.forEach(column => {
         tableData[row.row_name][column.column_name] = 0;
       });
     });
     
-    // Fill in the values from the data
+    return tableData;
+  };
+
+  // Fill table data with values from data array
+  const populateTableData = (
+    tableData: FormattedTableData,
+    data: TableDataItem[]
+  ): FormattedTableData => {
+    const populatedData = { ...tableData };
+    
     data.forEach(item => {
-      if (tableData[item.row_name] && item.column_name) {
-        tableData[item.row_name][item.column_name] = item.value;
-        
-        // Add overall category if it exists in the data
-        if (item.overall_category) {
-          tableData[item.row_name].overall_category = item.overall_category;
+      if (populatedData[item.row_name]) {
+        // If column name is provided, use it
+        if (item.column_name) {
+          populatedData[item.row_name][item.column_name] = item.value;
+        } else if (columns.length > 0) {
+          // For mock data which might not have column_name, use the first column
+          populatedData[item.row_name][columns[0].column_name] = item.value;
         }
-      } else if (tableData[item.row_name]) {
-        // For mock data which might not have column_name, use the first column
-        if (columns.length > 0) {
-          tableData[item.row_name][columns[0].column_name] = item.value;
+        
+        // Add or update overall category if it exists in the data
+        if (item.overall_category) {
+          populatedData[item.row_name].overall_category = item.overall_category;
         }
       }
     });
     
-    return tableData;
+    return populatedData;
   };
 
+  // Format the data for display in the table
+  const formatData = (): FormattedTableData => {
+    const overallCategories = extractOverallCategories(rows, data);
+    const emptyTableData = initializeTableData(rows, columns, overallCategories);
+    return populateTableData(emptyTableData, data);
+  };
+
+  // Generate the formatted table data
   const tableData = formatData();
 
   return {
     tableData,
-    formatData
+    formatData,
+    // Export utility functions for external use if needed
+    extractOverallCategories,
+    initializeTableData,
+    populateTableData
   };
 };

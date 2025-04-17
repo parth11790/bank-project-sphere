@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 import { useUseOfProceedsFormatting } from '@/hooks/useUseOfProceedsFormatting';
+import { useTableCalculations } from '@/hooks/useTableCalculations';
+import { FormattedTableData } from '@/hooks/useTableData';
 
 interface UseUseOfProceedsEditDataProps {
   initialData: Array<{
@@ -16,7 +18,7 @@ interface UseUseOfProceedsEditDataProps {
   projectId: string;
   rows: UseOfProceedsRow[];
   columns: UseOfProceedsColumn[];
-  tableData: { [key: string]: { [key: string]: any } };
+  tableData: FormattedTableData;
   onSave?: (updatedData: any) => void;
 }
 
@@ -52,24 +54,18 @@ export const useUseOfProceedsEditData = ({
     return tableData[rowName]?.[columnName] || 0;
   };
 
-  // Calculate totals for each column
-  const calculateColumnTotal = (columnName: string) => {
-    let total = 0;
-    Object.keys(tableData).forEach(rowName => {
-      if (rowName !== 'TOTAL') {
-        total += getCellValue(rowName, columnName);
-      }
-    });
-    return total;
-  };
+  // Use the new table calculations hook
+  const {
+    calculateColumnTotal,
+    calculateRowTotal: calculateRowTotalByColumns
+  } = useTableCalculations({
+    tableData,
+    getCellValue
+  });
 
-  // Calculate totals for each row
+  // Calculate totals for each row (wrapper for compatibility)
   const calculateRowTotal = (rowName: string) => {
-    let total = 0;
-    columns.forEach(column => {
-      total += getCellValue(rowName, column.column_name);
-    });
-    return total;
+    return calculateRowTotalByColumns(rowName, columns.map(col => col.column_name));
   };
 
   // Handle save
