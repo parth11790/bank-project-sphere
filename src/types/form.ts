@@ -23,12 +23,23 @@ export interface ApiResponse {
   [key: string]: any;
 }
 
-// Type guard to check if an object is a Form
+export interface AnalysisData {
+  buyerIncome: {
+    netWorth: number;
+    requiredSalary: number;
+    availableCashForDebt: number;
+  };
+  businessCashFlow: {
+    averageCashFlow: number;
+    debtServiceRatioBeforeOC: number;
+    debtServiceRatioAfterOC: number;
+  };
+}
+
 export function isForm(obj: any): obj is Form {
   return 'form_id' in obj && 'name' in obj;
 }
 
-// Type guard to check if an object is a FormTemplate
 export function isFormTemplate(obj: any): obj is FormTemplate {
   return 'form_id' in obj && 'name' in obj && 'entity_type' in obj;
 }

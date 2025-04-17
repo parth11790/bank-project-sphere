@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, FileText, BarChart3, Calculator } from 'lucide-react';
+import { ChevronLeft, Calculator, BarChart3, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,6 +10,32 @@ import Layout from '@/components/Layout';
 import { getProjectById } from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+
+// Mock analysis data (in a real app, this would come from an API)
+const mockAnalysisData = {
+  buyerIncome: {
+    netWorth: 750000,
+    requiredSalary: 120000,
+    availableCashForDebt: 45000
+  },
+  businessCashFlow: {
+    averageCashFlow: 280000,
+    debtServiceRatioBeforeOC: 1.85,
+    debtServiceRatioAfterOC: 1.45
+  }
+};
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+const formatRatio = (ratio: number) => {
+  return ratio.toFixed(2);
+};
 
 const ProjectAnalysis: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -77,64 +102,66 @@ const ProjectAnalysis: React.FC = () => {
           </TabsList>
           
           <TabsContent value="summary" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Analysis Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">This section will show a summary of all financial analyses for the project.</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Calculator className="h-4 w-4" /> Buyer Income Analysis
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Summary of buyer income statements and financial stability.</p>
-                      <Button 
-                        variant="link" 
-                        className="p-0 mt-2" 
-                        onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
-                      >
-                        View details
-                      </Button>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <BarChart3 className="h-4 w-4" /> Business Cash Flow
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Analysis of business cash flow and financial projections.</p>
-                      <Button 
-                        variant="link" 
-                        className="p-0 mt-2" 
-                        onClick={() => navigate(`/project/cash-flow/${projectId}`)}
-                      >
-                        View details
-                      </Button>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-4 w-4" /> Debt Service Coverage
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p>Pre-OC and Post-OC debt service coverage calculations.</p>
-                      <Button variant="link" className="p-0 mt-2">View details</Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Analysis Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Calculator className="h-4 w-4" />
+                          Buyer Income Analysis
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Net Worth</span>
+                            <span className="font-medium">{formatCurrency(mockAnalysisData.buyerIncome.netWorth)}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Required Salary</span>
+                            <span className="font-medium">{formatCurrency(mockAnalysisData.buyerIncome.requiredSalary)}/year</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Available Cash for Debt</span>
+                            <span className="font-medium">{formatCurrency(mockAnalysisData.buyerIncome.availableCashForDebt)}/month</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4" />
+                          Business Cash Flow Analysis
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Average Cash Flow</span>
+                            <span className="font-medium">{formatCurrency(mockAnalysisData.businessCashFlow.averageCashFlow)}/year</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">DSR (Before OC)</span>
+                            <span className="font-medium">{formatRatio(mockAnalysisData.businessCashFlow.debtServiceRatioBeforeOC)}x</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">DSR (After OC)</span>
+                            <span className="font-medium">{formatRatio(mockAnalysisData.businessCashFlow.debtServiceRatioAfterOC)}x</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
           
           <TabsContent value="cash-flow" className="mt-6">
