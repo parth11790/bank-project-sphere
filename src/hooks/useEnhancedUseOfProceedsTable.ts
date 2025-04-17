@@ -39,9 +39,9 @@ export const useEnhancedUseOfProceedsTable = ({
     { row_id: 'row_5', row_name: 'TOTAL', overall_category: '' }
   ];
   
-  // State for dialogs - Initialize both to false to prevent auto-opening
-  const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
-  const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false);
+  // State for dialogs - Explicitly initialize both to false to prevent auto-opening
+  const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState<boolean>(false);
+  const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState<boolean>(false);
   
   // Use our custom hooks
   const { rows, handleAddRow, handleAddMultipleRows, handleDeleteRow } = useUseOfProceedsRows({

@@ -55,6 +55,11 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
     setIsOpen(false);
   };
 
+  // If the dialog is not open, don't render anything
+  if (!isOpen) {
+    return null;
+  }
+
   return (
     <dialog open={isOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6">
