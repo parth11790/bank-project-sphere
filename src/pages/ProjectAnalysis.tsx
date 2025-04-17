@@ -2,16 +2,16 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, Calculator, BarChart3, FileText } from 'lucide-react';
+import { ChevronLeft, Calculator, BarChart3, FileText, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Layout from '@/components/Layout';
 import { getProjectById } from '@/services';
+import { getUseOfProceedsForProject } from '@/lib/mockData/utilities';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 
-// Mock analysis data (in a real app, this would come from an API)
 const mockAnalysisData = {
   buyerIncome: {
     netWorth: 750000,
@@ -66,6 +66,40 @@ const ProjectAnalysis: React.FC = () => {
     navigate('/projects');
     return null;
   }
+
+  const proceedsData = getUseOfProceedsForProject(projectId || '');
+  
+  const calculateTotalsByCategory = () => {
+    const totals = {
+      borrower: 0,
+      seller: 0,
+      loanType1: 0,
+      loanType2: 0,
+      overall: 0
+    };
+    
+    proceedsData.forEach(item => {
+      const value = item.value || 0;
+      totals.overall += value;
+      
+      if (item.overall_category?.toLowerCase().includes('land') || 
+          item.overall_category?.toLowerCase().includes('construction')) {
+        totals.seller += value;
+      } else {
+        totals.borrower += value;
+      }
+      
+      if (item.overall_category?.toLowerCase().includes('construction')) {
+        totals.loanType1 += value;
+      } else if (item.overall_category?.toLowerCase().includes('working capital')) {
+        totals.loanType2 += value;
+      }
+    });
+    
+    return totals;
+  };
+  
+  const proceedsTotals = calculateTotalsByCategory();
 
   return (
     <Layout>
