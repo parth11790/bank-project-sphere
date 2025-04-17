@@ -1,20 +1,19 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { categoryOptions } from './categoryOptions';
+import { Table, TableBody, TableCell, TableHeader, TableHead, TableRow, TableFooter } from '@/components/ui/table';
+import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/UseOfProceedsTable';
+import { CategoryOption } from './categoryOptions';
 
 interface BaseTableContentProps {
-  columns: Array<{ column_id: string; column_name: string }>;
-  rows: Array<{ row_id: string; row_name: string; overall_category?: string }>;
+  columns: UseOfProceedsColumn[];
+  rows: UseOfProceedsRow[];
   editMode: boolean;
-  tableData: any;
+  tableData: { [key: string]: { [key: string]: any } };
   getCellValue: (rowName: string, columnName: string) => number;
   handleValueChange: (rowName: string, columnName: string, value: string) => void;
   calculateColumnTotal: (columnName: string) => number;
   formatCurrency: (value: number) => string;
-  categoryOptions: Array<{ overall: string; category: string }>;
+  categoryOptions: CategoryOption[];
 }
 
 const BaseTableContent: React.FC<BaseTableContentProps> = ({
@@ -28,67 +27,66 @@ const BaseTableContent: React.FC<BaseTableContentProps> = ({
   formatCurrency,
   categoryOptions
 }) => {
+  // Get the overall category for a row
+  const getOverallCategory = (rowName: string) => {
+    if (tableData[rowName]?.overall_category) {
+      return tableData[rowName].overall_category;
+    }
+    
+    const category = categoryOptions.find(option => option.category === rowName);
+    return category ? category.overall : '';
+  };
+
   return (
-    <Table>
-      <TableHeader>
+    <Table className="border-b">
+      <TableHeader className="bg-muted/50">
         <TableRow>
-          <TableHead className="w-[150px] bg-muted/30 font-medium sticky left-0 z-10">Overall Category</TableHead>
-          <TableHead className="w-[180px] bg-muted/30 font-medium sticky left-[150px] z-10">Category</TableHead>
+          <TableHead className="w-[200px]">Category</TableHead>
           {columns.map(column => (
-            <TableHead key={column.column_id} className="bg-muted/30 font-medium text-right">
+            <TableHead key={column.column_id} className="text-right">
               {column.column_name}
             </TableHead>
           ))}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map(row => {
-          // Get overall category from the formatted data or from categoryOptions
-          const overallCategory = tableData[row.row_name]?.overall_category || 
-            row.overall_category ||
-            categoryOptions.find(opt => opt.category === row.row_name)?.overall || 
-            'Other';
-          
-          return (
-            <TableRow key={row.row_id} className={row.row_name === 'TOTAL' ? 'bg-muted/20 font-semibold' : ''}>
-              <TableCell className="font-medium sticky left-0 z-10 bg-white">
-                {row.row_name === 'TOTAL' ? '' : overallCategory}
+        {rows.map(row => (
+          <TableRow key={row.row_id}>
+            <TableCell className="font-medium">
+              <div className="flex flex-col">
+                <span>{row.row_name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {getOverallCategory(row.row_name)}
+                </span>
+              </div>
+            </TableCell>
+            {columns.map(column => (
+              <TableCell key={`${row.row_id}-${column.column_id}`} className="text-right">
+                {editMode ? (
+                  <input
+                    type="number"
+                    value={getCellValue(row.row_name, column.column_name)}
+                    onChange={(e) => handleValueChange(row.row_name, column.column_name, e.target.value)}
+                    className="w-full text-right p-1 border rounded"
+                  />
+                ) : (
+                  formatCurrency(getCellValue(row.row_name, column.column_name))
+                )}
               </TableCell>
-              <TableCell className="font-medium sticky left-[150px] z-10 bg-white">{row.row_name}</TableCell>
-              {columns.map(column => (
-                <TableCell key={column.column_id} className="text-right">
-                  {editMode && row.row_name !== 'TOTAL' ? (
-                    <Input
-                      type="number"
-                      className="w-full text-right h-8"
-                      value={getCellValue(row.row_name, column.column_name)}
-                      onChange={(e) => handleValueChange(row.row_name, column.column_name, e.target.value)}
-                    />
-                  ) : row.row_name === 'TOTAL' ? (
-                    <motion.div
-                      key={`total-${column.column_name}-${calculateColumnTotal(column.column_name)}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {formatCurrency(calculateColumnTotal(column.column_name))}
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key={`${row.row_name}-${column.column_name}-${getCellValue(row.row_name, column.column_name)}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {formatCurrency(getCellValue(row.row_name, column.column_name))}
-                    </motion.div>
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          );
-        })}
+            ))}
+          </TableRow>
+        ))}
       </TableBody>
+      <TableFooter className="bg-muted/20">
+        <TableRow>
+          <TableCell className="font-bold">TOTAL</TableCell>
+          {columns.map(column => (
+            <TableCell key={`total-${column.column_id}`} className="text-right font-bold">
+              {formatCurrency(calculateColumnTotal(column.column_name))}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 };
