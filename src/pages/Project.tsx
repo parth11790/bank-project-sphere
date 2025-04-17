@@ -8,19 +8,14 @@ import { getProjectById } from '@/services';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { Project as ProjectType } from '@/types/project';
 import { ParticipantWithDetails } from '@/types/participant';
-import { getUserById } from '@/lib/mockData';
 import { generateProjectDashboardData } from '@/types/dashboard';
 
 import ProjectEditDialog from '@/components/ProjectEditDialog';
 import ProjectHeader from '@/components/project/ProjectHeader';
-import ProjectOverview from '@/components/project/ProjectOverview';
 import { ProjectSections } from '@/components/project/ProjectSections';
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
-import ProjectDetailsCard from '@/components/project/ProjectDetailsCard';
-import ParticipantProgressTabs from '@/components/project/ParticipantProgressTabs';
-import RecentActivityCard from '@/components/project/RecentActivityCard';
-import DashboardStats from '@/components/project/DashboardStats';
+import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
 
 const Project: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -51,15 +46,7 @@ const Project: React.FC = () => {
   
   const projectData = project as ProjectType;
   const participantsData = participants || [] as ParticipantWithDetails[];
-
-  // Calculate dashboard data
   const dashboardData = generateProjectDashboardData(participantsData);
-  
-  const buyerParticipants = dashboardData.participants.filter(p => p.role === 'buyer');
-  const sellerParticipants = dashboardData.participants.filter(p => p.role === 'seller');
-  const bankParticipants = dashboardData.participants.filter(p => 
-    p.role === 'bank_officer' || p.role === 'loan_specialist' || p.role === 'bank_manager'
-  );
   
   const handleGatherInformation = () => {
     navigate(`/project/participants/${projectId}`);
@@ -94,31 +81,12 @@ const Project: React.FC = () => {
             onGenerateDocumentation={handleGenerateDocumentation}
           />
         </div>
-        
-        {/* Dashboard Stats */}
-        <DashboardStats 
-          buyersCount={dashboardData.stats.buyers}
-          sellersCount={dashboardData.stats.sellers}
-          documents={dashboardData.stats.documents}
-          forms={dashboardData.stats.forms}
+
+        <ProjectOverviewEnhanced 
+          project={projectData}
+          dashboardData={dashboardData}
+          participants={participantsData}
         />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <ProjectOverview project={projectData} />
-          </div>
-          <RecentActivityCard activities={dashboardData.recentActivity} />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <ParticipantProgressTabs 
-            buyerParticipants={buyerParticipants}
-            sellerParticipants={sellerParticipants}
-            bankParticipants={bankParticipants}
-            getUserById={getUserById}
-          />          
-          <ProjectDetailsCard project={projectData} />
-        </div>
         
         {editDialogOpen && (
           <ProjectEditDialog
