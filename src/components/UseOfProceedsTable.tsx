@@ -1,17 +1,16 @@
+
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Edit, Save, X, Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { mockUseOfProceedsColumns, mockUseOfProceedsRows } from '@/lib/mockData';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AddColumnDialog } from '@/components/useOfProceeds/AddColumnDialog';
 import { AddRowDialog } from '@/components/useOfProceeds/AddRowDialog';
 import { categoryOptions, uniqueOverallCategories } from '@/components/useOfProceeds/categoryOptions';
 import { useTableData, BaseUseOfProceedsColumn } from '@/hooks/useTableData';
+import BaseTableContent from './useOfProceeds/BaseTableContent';
+import BaseSummary from './useOfProceeds/BaseSummary';
+import BaseTableActions from './useOfProceeds/BaseTableActions';
 
 interface UseOfProceedsTableProps {
   projectId: string;
@@ -201,52 +200,41 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
               <CardTitle className="text-xl font-semibold">Use of Proceeds</CardTitle>
               <CardDescription>Financial breakdown for the project</CardDescription>
             </div>
-            <div className="flex gap-2">
-              {editMode ? (
-                <>
-                  <Button size="sm" variant="outline" onClick={handleCancel} className="flex items-center gap-1">
-                    <X size={16} />
-                    <span>Cancel</span>
-                  </Button>
-                  <Button size="sm" onClick={handleSave} className="flex items-center gap-1">
-                    <Save size={16} />
-                    <span>Save</span>
-                  </Button>
-                </>
-              ) : (
-                <Button size="sm" variant="outline" onClick={() => setEditMode(true)} className="flex items-center gap-1">
-                  <Edit size={16} />
-                  <span>Edit</span>
-                </Button>
-              )}
-            </div>
+            <BaseTableActions 
+              editMode={editMode}
+              onEdit={() => setEditMode(true)}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onAddColumn={() => setIsAddColumnDialogOpen(true)}
+              onAddRow={() => setIsAddRowDialogOpen(true)}
+            />
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="flex justify-end p-4 gap-3">
-            <AddColumnDialog 
-              isOpen={isAddColumnDialogOpen}
-              setIsOpen={setIsAddColumnDialogOpen}
-              newColumnName={newColumnName}
-              setNewColumnName={setNewColumnName}
-              onAddColumn={handleAddColumn}
-            />
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex items-center gap-1"
+              onClick={() => setIsAddColumnDialogOpen(true)}
+            >
+              <Plus size={16} />
+              <span>Add Column</span>
+            </Button>
             
-            <AddRowDialog 
-              isOpen={isAddRowDialogOpen}
-              setIsOpen={setIsAddRowDialogOpen}
-              selectedOverallCategory={selectedOverallCategory}
-              newRowCategory={newRowCategory}
-              filteredCategories={filteredCategories}
-              onOverallCategoryChange={handleOverallCategoryChange}
-              setNewRowCategory={setNewRowCategory}
-              onAddRow={handleAddRow}
-              uniqueOverallCategories={uniqueOverallCategories}
-            />
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex items-center gap-1"
+              onClick={() => setIsAddRowDialogOpen(true)}
+            >
+              <Plus size={16} />
+              <span>Add Row</span>
+            </Button>
           </div>
           
           <div className="overflow-x-auto">
-            <TableContent 
+            <BaseTableContent 
               columns={columns}
               rows={rows}
               editMode={editMode}
@@ -261,100 +249,29 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
         </CardContent>
       </Card>
       
-      <Alert>
-        <AlertDescription>
-          Loan types are determined by the Use of Proceeds allocation. Changes made here will update the project's loan types.
-        </AlertDescription>
-      </Alert>
+      <BaseSummary message="Loan types are determined by the Use of Proceeds allocation. Changes made here will update the project's loan types." />
+      
+      {/* Dialogs */}
+      <AddColumnDialog 
+        isOpen={isAddColumnDialogOpen}
+        setIsOpen={setIsAddColumnDialogOpen}
+        newColumnName={newColumnName}
+        setNewColumnName={setNewColumnName}
+        onAddColumn={handleAddColumn}
+      />
+      
+      <AddRowDialog 
+        isOpen={isAddRowDialogOpen}
+        setIsOpen={setIsAddRowDialogOpen}
+        selectedOverallCategory={selectedOverallCategory}
+        newRowCategory={newRowCategory}
+        filteredCategories={filteredCategories}
+        onOverallCategoryChange={handleOverallCategoryChange}
+        setNewRowCategory={setNewRowCategory}
+        onAddRow={handleAddRow}
+        uniqueOverallCategories={uniqueOverallCategories}
+      />
     </div>
-  );
-};
-
-interface TableContentProps {
-  columns: UseOfProceedsColumn[];
-  rows: UseOfProceedsRow[];
-  editMode: boolean;
-  tableData: any;
-  getCellValue: (rowName: string, columnName: string) => number;
-  handleValueChange: (rowName: string, columnName: string, value: string) => void;
-  calculateColumnTotal: (columnName: string) => number;
-  formatCurrency: (value: number) => string;
-  categoryOptions: Array<{ overall: string; category: string }>;
-}
-
-const TableContent: React.FC<TableContentProps> = ({
-  columns,
-  rows,
-  editMode,
-  tableData,
-  getCellValue,
-  handleValueChange,
-  calculateColumnTotal,
-  formatCurrency,
-  categoryOptions
-}) => {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[150px] bg-muted/30 font-medium sticky left-0 z-10">Overall Category</TableHead>
-          <TableHead className="w-[180px] bg-muted/30 font-medium sticky left-[150px] z-10">Category</TableHead>
-          {columns.map(column => (
-            <TableHead key={column.column_id} className="bg-muted/30 font-medium text-right">
-              {column.column_name}
-            </TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map(row => {
-          // Get overall category from the formatted data or from categoryOptions
-          const overallCategory = tableData[row.row_name]?.overall_category || 
-            row.overall_category ||
-            categoryOptions.find(opt => opt.category === row.row_name)?.overall || 
-            'Other';
-          
-          return (
-            <TableRow key={row.row_id} className={row.row_name === 'TOTAL' ? 'bg-muted/20 font-semibold' : ''}>
-              <TableCell className="font-medium sticky left-0 z-10 bg-white">
-                {row.row_name === 'TOTAL' ? '' : overallCategory}
-              </TableCell>
-              <TableCell className="font-medium sticky left-[150px] z-10 bg-white">{row.row_name}</TableCell>
-              {columns.map(column => (
-                <TableCell key={column.column_id} className="text-right">
-                  {editMode && row.row_name !== 'TOTAL' ? (
-                    <Input
-                      type="number"
-                      className="w-full text-right h-8"
-                      value={getCellValue(row.row_name, column.column_name)}
-                      onChange={(e) => handleValueChange(row.row_name, column.column_name, e.target.value)}
-                    />
-                  ) : row.row_name === 'TOTAL' ? (
-                    <motion.div
-                      key={`total-${column.column_name}-${calculateColumnTotal(column.column_name)}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {formatCurrency(calculateColumnTotal(column.column_name))}
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key={`${row.row_name}-${column.column_name}-${getCellValue(row.row_name, column.column_name)}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {formatCurrency(getCellValue(row.row_name, column.column_name))}
-                    </motion.div>
-                  )}
-                </TableCell>
-              ))}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
   );
 };
 
