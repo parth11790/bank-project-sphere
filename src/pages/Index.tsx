@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, UserCircle, Store } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
@@ -15,49 +16,69 @@ const Index: React.FC = () => {
     navigate('/projects');
   };
 
+  const roleOptions = [
+    {
+      id: 'bank_officer',
+      title: 'Bank User',
+      icon: Building2,
+      description: 'Manage loan projects and underwriting'
+    },
+    {
+      id: 'buyer',
+      title: 'Buyer',
+      icon: UserCircle,
+      description: 'Access and manage your loan applications'
+    },
+    {
+      id: 'seller',
+      title: 'Seller',
+      icon: Store,
+      description: 'Manage property sales and documentation'
+    }
+  ];
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md">
+      <motion.div 
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-medium mb-2">Project Sphere</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            Project <span className="text-primary">Sphere</span>
+          </h1>
           <p className="text-sm text-muted-foreground">Select your role to continue</p>
         </div>
         
-        <Card className="border-border/30">
-          <CardContent className="p-6 space-y-4">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start h-12 text-base"
-              onClick={() => handleRoleSelection('bank_officer')}
-            >
-              <Building2 className="h-5 w-5 mr-3" />
-              <span>Bank User</span>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="w-full justify-start h-12 text-base"
-              onClick={() => handleRoleSelection('buyer')}
-            >
-              <UserCircle className="h-5 w-5 mr-3" />
-              <span>Buyer</span>
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="w-full justify-start h-12 text-base"
-              onClick={() => handleRoleSelection('seller')}
-            >
-              <Store className="h-5 w-5 mr-3" />
-              <span>Seller</span>
-            </Button>
+        <Card className="border-border/30 overflow-hidden">
+          <CardContent className="p-0">
+            {roleOptions.map((role, index) => (
+              <Button 
+                key={role.id}
+                variant="ghost" 
+                className={`w-full justify-start h-auto py-4 px-6 text-left rounded-none ${index !== roleOptions.length - 1 ? 'border-b border-border/20' : ''}`}
+                onClick={() => handleRoleSelection(role.id)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="bg-primary/10 p-2 rounded-full">
+                    <role.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{role.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{role.description}</p>
+                  </div>
+                </div>
+              </Button>
+            ))}
           </CardContent>
         </Card>
         
         <p className="text-center text-xs text-muted-foreground mt-8">
           © {new Date().getFullYear()} Project Sphere. All rights reserved.
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };

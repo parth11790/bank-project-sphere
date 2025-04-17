@@ -22,7 +22,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
 }) => {
   return (
     <CardHeader className="pb-3">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <CardTitle className="text-xl font-semibold">Use of Proceeds</CardTitle>
           <CardDescription>Financial breakdown for the project</CardDescription>
@@ -36,6 +36,14 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           onAddRow={onAddRow}
         />
       </div>
+      
+      {editMode && (
+        <div className="mt-4 p-3 bg-muted/40 rounded-md border border-border/30 text-sm">
+          <p className="text-muted-foreground">
+            <strong>Editing Mode:</strong> Make changes to the table structure and values. Add columns for funding sources or rows for expense categories.
+          </p>
+        </div>
+      )}
     </CardHeader>
   );
 };

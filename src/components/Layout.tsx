@@ -1,23 +1,32 @@
 
 import React from 'react';
 import Header from './Header';
+import { AppSidebar } from './AppSidebar';
+import { SidebarProvider } from './ui/sidebar';
 
 interface LayoutProps {
   children: React.ReactNode;
   showHeader?: boolean;
+  showSidebar?: boolean;
 }
 
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
-  showHeader = true 
+  showHeader = true,
+  showSidebar = true
 }) => {
   return (
-    <div className="min-h-screen w-full bg-background">
-      {showHeader && <Header />}
-      <div className="max-w-7xl mx-auto px-4 py-8 md:px-6">
-        {children}
+    <SidebarProvider>
+      <div className="min-h-screen w-full bg-background flex">
+        {showSidebar && <AppSidebar />}
+        <div className="flex-1 flex flex-col">
+          {showHeader && <Header />}
+          <div className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+            {children}
+          </div>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
