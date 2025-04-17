@@ -44,7 +44,7 @@ export const useEnhancedUseOfProceedsTable = ({
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false);
   
   // Use our custom hooks
-  const { rows, handleAddRow, handleDeleteRow } = useUseOfProceedsRows({
+  const { rows, handleAddRow, handleAddMultipleRows, handleDeleteRow } = useUseOfProceedsRows({
     initialRows
   });
   
@@ -89,6 +89,7 @@ export const useEnhancedUseOfProceedsTable = ({
     handleAddColumn,
     handleDeleteColumn,
     handleAddRow,
+    handleAddMultipleRows,
     handleDeleteRow,
     handleSave,
     handleCancel,

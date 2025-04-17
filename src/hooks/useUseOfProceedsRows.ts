@@ -33,6 +33,29 @@ export const useUseOfProceedsRows = ({
     }
   };
 
+  // Add multiple rows at once
+  const handleAddMultipleRows = (selectedOptions: Array<{overall: string, category: string}>) => {
+    if (!selectedOptions.length) return;
+    
+    const newRows = [...rows];
+    const totalRowIndex = newRows.findIndex(row => row.row_name === 'TOTAL');
+    
+    // Create new row objects from selected options
+    const rowsToAdd = selectedOptions.map(option => ({
+      row_id: `row_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      row_name: option.category,
+      overall_category: option.overall
+    }));
+    
+    // Insert new rows before TOTAL row if it exists
+    if (totalRowIndex !== -1) {
+      newRows.splice(totalRowIndex, 0, ...rowsToAdd);
+      setRows(newRows);
+    } else {
+      setRows([...rows, ...rowsToAdd]);
+    }
+  };
+
   // Delete a row
   const handleDeleteRow = (rowId: string) => {
     // Don't allow deleting the TOTAL row
@@ -46,6 +69,7 @@ export const useUseOfProceedsRows = ({
     rows,
     setRows,
     handleAddRow,
+    handleAddMultipleRows,
     handleDeleteRow
   };
 };

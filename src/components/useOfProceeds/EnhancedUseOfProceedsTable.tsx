@@ -63,6 +63,7 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
     handleAddColumn,
     handleDeleteColumn,
     handleAddRow,
+    handleAddMultipleRows,
     handleDeleteRow,
     handleSave,
     handleCancel,
@@ -114,11 +115,12 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
         onAddColumn={handleAddColumn}
       />
       
-      {/* Row Dialog - Using our updated component */}
+      {/* Row Dialog - Using our updated component with multiple selection */}
       <AddEnhancedRowDialog 
         isOpen={isAddRowDialogOpen}
         setIsOpen={setIsAddRowDialogOpen}
         onAddRow={handleAddRow}
+        onAddMultipleRows={handleAddMultipleRows}
         uniqueOverallCategories={[...new Set(categoryOptions.map(item => item.overall))]}
         categoryOptions={categoryOptions}
       />
