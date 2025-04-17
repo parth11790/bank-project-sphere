@@ -1,5 +1,12 @@
 
-import { UseOfProceedsColumn, UseOfProceedsRow } from "@/components/useOfProceeds/EnhancedUseOfProceedsTable";
+import { UseOfProceedsColumn as EnhancedColumn, UseOfProceedsRow } from "@/components/useOfProceeds/EnhancedUseOfProceedsTable";
+
+// Create a more generic column type that can work with both the original and enhanced versions
+export type BaseUseOfProceedsColumn = {
+  column_id: string;
+  column_name: string;
+  [key: string]: any; // Allow for additional properties like is_loan
+};
 
 interface UseTableDataProps {
   data: Array<{
@@ -12,7 +19,7 @@ interface UseTableDataProps {
     value: number;
   }>;
   rows: UseOfProceedsRow[];
-  columns: UseOfProceedsColumn[];
+  columns: BaseUseOfProceedsColumn[]; // Use the more generic type
 }
 
 export const useTableData = ({ data, rows, columns }: UseTableDataProps) => {

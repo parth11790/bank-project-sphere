@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AddColumnDialog } from '@/components/useOfProceeds/AddColumnDialog';
 import { AddRowDialog } from '@/components/useOfProceeds/AddRowDialog';
 import { categoryOptions, uniqueOverallCategories } from '@/components/useOfProceeds/categoryOptions';
-import { useTableData } from '@/hooks/useTableData';
+import { useTableData, BaseUseOfProceedsColumn } from '@/hooks/useTableData';
 
 interface UseOfProceedsTableProps {
   projectId: string;
@@ -29,10 +28,7 @@ interface UseOfProceedsTableProps {
 }
 
 // Define types for columns and rows to match mockData structure
-export type UseOfProceedsColumn = {
-  column_id: string;
-  column_name: string;
-}
+export type UseOfProceedsColumn = BaseUseOfProceedsColumn;
 
 export type UseOfProceedsRow = {
   row_id: string;
