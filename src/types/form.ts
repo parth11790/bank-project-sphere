@@ -1,3 +1,4 @@
+
 export interface Form {
   form_id: string;
   name: string;
@@ -8,6 +9,7 @@ export interface FormTemplate {
   form_id: string;
   name: string;
   entity_type: string;
+  status?: 'submitted' | 'pending';
 }
 
 export interface Document {
