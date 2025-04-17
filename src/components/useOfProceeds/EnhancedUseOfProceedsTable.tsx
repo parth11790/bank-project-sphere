@@ -61,7 +61,7 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
   const [columns, setColumns] = useState<UseOfProceedsColumn[]>(convertedColumns);
   const [rows, setRows] = useState<UseOfProceedsRow[]>(mockUseOfProceedsRows);
   
-  // State for dialogs
+  // State for dialogs - set both to false by default to prevent auto-opening
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false);
   
@@ -70,7 +70,11 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
 
   // Calculate loan payments whenever columns change
   useEffect(() => {
-    const updatedColumns = columns.map(column => {
+    // Create a copy to avoid direct mutation
+    const updatedColumns = [...columns];
+    let hasChanges = false;
+
+    columns.forEach((column, index) => {
       if (column.is_loan && column.interest_rate && column.term_years && column.amortization_months) {
         // Calculate the total amount for this loan column
         let totalLoanAmount = 0;
@@ -87,17 +91,26 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
           column.amortization_months
         );
 
-        return {
-          ...column,
-          monthly_payment: monthlyPayment,
-          annual_payment: monthlyPayment * 12
-        };
+        // Only update if the values actually changed
+        if (
+          updatedColumns[index].monthly_payment !== monthlyPayment ||
+          updatedColumns[index].annual_payment !== monthlyPayment * 12
+        ) {
+          updatedColumns[index] = {
+            ...column,
+            monthly_payment: monthlyPayment,
+            annual_payment: monthlyPayment * 12
+          };
+          hasChanges = true;
+        }
       }
-      return column;
     });
 
-    setColumns(updatedColumns);
-  }, [tableData, columns, calculateLoanPayment]);
+    // Only update state if there were actual changes
+    if (hasChanges) {
+      setColumns(updatedColumns);
+    }
+  }, [tableData, calculateLoanPayment]);
 
   // Handle value change when editing
   const handleValueChange = (rowName: string, columnName: string, value: string) => {

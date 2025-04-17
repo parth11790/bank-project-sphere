@@ -43,7 +43,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
   const [columns, setColumns] = useState<UseOfProceedsColumn[]>(mockUseOfProceedsColumns);
   const [rows, setRows] = useState<UseOfProceedsRow[]>(mockUseOfProceedsRows);
   
-  // State for dialogs
+  // State for dialogs - set both to false by default to prevent auto-opening
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false);
   const [newColumnName, setNewColumnName] = useState('');
