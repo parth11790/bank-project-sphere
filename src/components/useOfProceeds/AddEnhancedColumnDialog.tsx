@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UseOfProceedsColumn } from './EnhancedUseOfProceedsTable';
@@ -21,6 +21,17 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
   const [termYears, setTermYears] = useState<number | undefined>(undefined);
   const [amortizationMonths, setAmortizationMonths] = useState<number | undefined>(undefined);
 
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setColumnName('');
+      setIsLoan(false);
+      setInterestRate(undefined);
+      setTermYears(undefined);
+      setAmortizationMonths(undefined);
+    }
+  }, [isOpen]);
+
   const handleSubmit = () => {
     onAddColumn({
       column_name: columnName,
@@ -30,12 +41,17 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
       amortization_months: amortizationMonths,
     });
     
-    // Reset form
+    // Dialog will be closed by the parent
+  };
+
+  const handleCancel = () => {
+    // Reset form and close dialog
     setColumnName('');
     setIsLoan(false);
     setInterestRate(undefined);
     setTermYears(undefined);
     setAmortizationMonths(undefined);
+    setIsOpen(false);
   };
 
   return (
@@ -111,7 +127,7 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
         </div>
         
         <div className="flex justify-end gap-2 mt-6">
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
+          <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button 

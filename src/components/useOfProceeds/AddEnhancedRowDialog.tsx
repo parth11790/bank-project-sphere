@@ -21,6 +21,15 @@ const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filteredCategories, setFilteredCategories] = useState<string[]>([]);
 
+  // Reset the form when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedOverallCategory('');
+      setSelectedCategory('');
+      setFilteredCategories([]);
+    }
+  }, [isOpen]);
+
   // Handle overall category change
   useEffect(() => {
     if (selectedOverallCategory) {
