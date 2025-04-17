@@ -3,25 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import UseOfProceedsTable from '@/components/UseOfProceedsTable';
+import EnhancedUseOfProceedsTable from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { projects, getUseOfProceedsForProject, getProjectById } from '@/lib/mockData';
+import { getProjectById } from '@/lib/mockData';
+import { getUseOfProceedsForProject } from '@/lib/mockData/utilities';
 import { toast } from 'sonner';
 import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 
-// Define an interface that includes city and state properties and proper loan types
-interface LoanType {
-  type: string;
-  amount: number;
-  description: string;
-}
-
+// Define Project interface
 interface Project {
   project_id: string;
   project_name: string;
   project_type: string;
-  loan_types: LoanType[];
   loan_amount: number;
   created_by: string;
   created_at: string;
@@ -33,7 +27,6 @@ interface Project {
 const UseOfProceeds: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId || '');
-  // Use as any to avoid type errors during the transition
   const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
   const proceedsData = getUseOfProceedsForProject(selectedProjectId);
 
@@ -46,8 +39,6 @@ const UseOfProceeds: React.FC = () => {
 
   const handleSave = (updatedData: any) => {
     // Determine loan types based on Use of Proceeds data
-    // This is simplified example logic - in a real app, 
-    // this would be more sophisticated based on business rules
     const hasConstruction = updatedData.some((item: any) => 
       item.overall_category === 'Construction' && item.value > 0
     );
@@ -80,12 +71,10 @@ const UseOfProceeds: React.FC = () => {
       determinedLoanTypes.push('Conventional');
     }
     
-    // Use the toast correctly
     toast(`Data Saved - Loan types: ${determinedLoanTypes.join(', ')} (Demo only)`);
   };
 
   const handleExport = () => {
-    // Use the toast correctly
     toast("Exporting data to spreadsheet (Demo only)");
   };
 
@@ -105,7 +94,7 @@ const UseOfProceeds: React.FC = () => {
           
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" asChild>
-              <Link to={`/project/dashboard/${projectId}`} className="flex items-center gap-1">
+              <Link to={`/project/${projectId}`} className="flex items-center gap-1">
                 <ChevronLeft className="h-4 w-4" />
                 <span>Back to Project</span>
               </Link>
@@ -158,15 +147,15 @@ const UseOfProceeds: React.FC = () => {
           </Card>
         </motion.div>
 
-        {selectedProjectId && proceedsData.length > 0 ? (
+        {selectedProjectId ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <UseOfProceedsTable 
+            <EnhancedUseOfProceedsTable 
               projectId={selectedProjectId} 
-              data={proceedsData}
+              initialData={proceedsData}
               onSave={handleSave} 
             />
           </motion.div>

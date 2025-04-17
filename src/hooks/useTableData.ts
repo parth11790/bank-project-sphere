@@ -1,5 +1,5 @@
 
-import { UseOfProceedsColumn, UseOfProceedsRow } from "@/components/UseOfProceedsTable";
+import { UseOfProceedsColumn, UseOfProceedsRow } from "@/components/useOfProceeds/EnhancedUseOfProceedsTable";
 
 interface UseTableDataProps {
   data: Array<{
@@ -42,7 +42,9 @@ export const useTableData = ({ data, rows, columns }: UseTableDataProps) => {
         }
       } else if (tableData[item.row_name]) {
         // For mock data which might not have column_name, use the first column
-        tableData[item.row_name][columns[0].column_name] = item.value;
+        if (columns.length > 0) {
+          tableData[item.row_name][columns[0].column_name] = item.value;
+        }
       }
     });
     
