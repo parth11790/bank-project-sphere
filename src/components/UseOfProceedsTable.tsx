@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
@@ -8,6 +7,7 @@ import { AddColumnDialog } from '@/components/useOfProceeds/AddColumnDialog';
 import { AddRowDialog } from '@/components/useOfProceeds/AddRowDialog';
 import { categoryOptions, uniqueOverallCategories } from '@/components/useOfProceeds/categoryOptions';
 import { useTableData, BaseUseOfProceedsColumn } from '@/hooks/useTableData';
+import { useUseOfProceedsForm } from '@/hooks/useUseOfProceedsForm';
 import BaseTableContent from './useOfProceeds/BaseTableContent';
 import BaseSummary from './useOfProceeds/BaseSummary';
 import BaseTableActions from './useOfProceeds/BaseTableActions';
@@ -36,41 +36,37 @@ export type UseOfProceedsRow = {
 }
 
 const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data, onSave }) => {
-  const [editMode, setEditMode] = useState(false);
-  const [editedData, setEditedData] = useState<{ [key: string]: number }>({});
-  
   // State for managing custom columns and rows
   const [columns, setColumns] = useState<UseOfProceedsColumn[]>(mockUseOfProceedsColumns);
   const [rows, setRows] = useState<UseOfProceedsRow[]>(mockUseOfProceedsRows);
   
-  // State for dialogs - set both to false by default to prevent auto-opening
-  const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
-  const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false);
-  const [newColumnName, setNewColumnName] = useState('');
-  const [newRowCategory, setNewRowCategory] = useState('');
-  const [newRowOverallCategory, setNewRowOverallCategory] = useState('');
-  const [selectedOverallCategory, setSelectedOverallCategory] = useState('');
-  const [filteredCategories, setFilteredCategories] = useState<string[]>([]);
+  const {
+    editMode,
+    isAddColumnDialogOpen,
+    isAddRowDialogOpen,
+    newColumnName,
+    newRowCategory,
+    selectedOverallCategory,
+    filteredCategories,
+    setIsAddColumnDialogOpen,
+    setIsAddRowDialogOpen,
+    setNewColumnName,
+    setNewRowCategory,
+    handleOverallCategoryChange,
+    handleValueChange,
+    getCellValue,
+    handleSave,
+    handleCancel,
+    formatCurrency,
+    calculateColumnTotal,
+    startEditing
+  } = useUseOfProceedsForm({
+    projectId,
+    initialData: data,
+    onSaveCallback: onSave
+  });
 
-  // Handle overall category change in add row dialog
-  const handleOverallCategoryChange = (value: string) => {
-    setSelectedOverallCategory(value);
-    setNewRowOverallCategory(value);
-    
-    // Filter categories based on selected overall category
-    const filtered = categoryOptions
-      .filter(option => option.overall === value)
-      .map(option => option.category);
-    
-    setFilteredCategories(filtered);
-    if (filtered.length > 0) {
-      setNewRowCategory(filtered[0]);
-    } else {
-      setNewRowCategory('');
-    }
-  };
-
-  const { tableData, formatData } = useTableData({ data, rows, columns });
+  const { tableData } = useTableData({ data, rows, columns });
 
   // Function to add a new column
   const handleAddColumn = () => {
@@ -93,102 +89,12 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
     const newRow: UseOfProceedsRow = {
       row_id: `row_${Date.now()}`,
       row_name: newRowCategory,
-      overall_category: newRowOverallCategory
+      overall_category: selectedOverallCategory
     };
     
     setRows([...rows, newRow]);
     setNewRowCategory('');
-    setNewRowOverallCategory('');
     setIsAddRowDialogOpen(false);
-  };
-
-  // Handle value change when editing
-  const handleValueChange = (rowName: string, columnName: string, value: string) => {
-    const key = `${rowName}-${columnName}`;
-    const numericValue = value === '' ? 0 : Number(value);
-    
-    setEditedData(prev => ({
-      ...prev,
-      [key]: numericValue
-    }));
-  };
-
-  // Get display value for a cell (either edited or original)
-  const getCellValue = (rowName: string, columnName: string) => {
-    const key = `${rowName}-${columnName}`;
-    if (editMode && key in editedData) {
-      return editedData[key];
-    }
-    return tableData[rowName]?.[columnName] || 0;
-  };
-
-  // Format a value as currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(value);
-  };
-
-  // Calculate totals for each column
-  const calculateColumnTotal = (columnName: string) => {
-    let total = 0;
-    Object.keys(tableData).forEach(rowName => {
-      if (rowName !== 'TOTAL') {
-        total += getCellValue(rowName, columnName);
-      }
-    });
-    return total;
-  };
-
-  // Handle save
-  const handleSave = () => {
-    // Create updated data in the original format
-    const updatedData = [...data];
-    
-    Object.entries(editedData).forEach(([key, value]) => {
-      const [rowName, columnName] = key.split('-');
-      const itemIndex = updatedData.findIndex(
-        item => item.row_name === rowName && item.column_name === columnName
-      );
-      
-      // Find the overall category for this row
-      const row = rows.find(r => r.row_name === rowName);
-      const overallCategory = row?.overall_category || 
-        categoryOptions.find(opt => opt.category === rowName)?.overall || '';
-      
-      if (itemIndex >= 0) {
-        updatedData[itemIndex] = {
-          ...updatedData[itemIndex],
-          value,
-          overall_category: overallCategory
-        };
-      } else {
-        // Add a new item if it doesn't exist
-        updatedData.push({
-          proceeds_id: `proc_new_${Date.now()}`,
-          project_id: projectId,
-          column_name: columnName,
-          row_name: rowName,
-          overall_category: overallCategory,
-          value
-        });
-      }
-    });
-    
-    if (onSave) {
-      onSave(updatedData);
-    }
-    
-    setEditMode(false);
-    setEditedData({});
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    setEditMode(false);
-    setEditedData({});
   };
 
   return (
@@ -202,8 +108,8 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
             </div>
             <BaseTableActions 
               editMode={editMode}
-              onEdit={() => setEditMode(true)}
-              onSave={handleSave}
+              onEdit={startEditing}
+              onSave={() => handleSave(rows, columns)}
               onCancel={handleCancel}
               onAddColumn={() => setIsAddColumnDialogOpen(true)}
               onAddRow={() => setIsAddRowDialogOpen(true)}
@@ -239,9 +145,9 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
               rows={rows}
               editMode={editMode}
               tableData={tableData}
-              getCellValue={getCellValue}
+              getCellValue={(rowName, columnName) => getCellValue(rowName, columnName, tableData)}
               handleValueChange={handleValueChange}
-              calculateColumnTotal={calculateColumnTotal}
+              calculateColumnTotal={(columnName) => calculateColumnTotal(columnName, tableData)}
               formatCurrency={formatCurrency}
               categoryOptions={categoryOptions}
             />
