@@ -1,11 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ClipboardCheck, Plus, ArrowRight } from 'lucide-react';
+import { ClipboardCheck, Plus, ArrowRight, Clock } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface Form {
   form_id: string;
   name: string;
+  status?: 'submitted' | 'pending';
 }
 
 interface FormsListProps {
@@ -37,16 +40,36 @@ const FormsList: React.FC<FormsListProps> = ({
           {forms.map(form => (
             <div 
               key={form.form_id} 
-              className="flex items-center justify-between p-2 bg-muted rounded-md cursor-pointer hover:bg-muted/80"
+              className={cn(
+                "flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-muted/80",
+                form.status === 'submitted' ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted'
+              )}
               onClick={() => onFormClick(form.form_id, form.name)}
             >
               <div className="flex items-center">
-                <ClipboardCheck className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+                {form.status === 'submitted' ? (
+                  <ClipboardCheck className="h-3.5 w-3.5 mr-2 text-green-600 dark:text-green-500" />
+                ) : (
+                  <Clock className="h-3.5 w-3.5 mr-2 text-orange-500" />
+                )}
                 <span className="text-sm">{form.name}</span>
               </div>
-              <Button size="sm" variant="ghost" className="h-7 px-2">
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <Badge 
+                  variant="outline" 
+                  className={cn(
+                    "text-xs",
+                    form.status === 'submitted' 
+                      ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950/50 dark:text-green-400' 
+                      : 'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-400'
+                  )}
+                >
+                  {form.status === 'submitted' ? 'Submitted' : 'Pending'}
+                </Badge>
+                <Button size="sm" variant="ghost" className="h-7 px-2">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>

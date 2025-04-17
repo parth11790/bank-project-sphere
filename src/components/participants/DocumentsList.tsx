@@ -2,11 +2,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Plus } from 'lucide-react';
+import { FileText, Plus, FileCheck, Clock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Document {
   document_id: string;
   name: string;
+  status?: 'submitted' | 'pending';
 }
 
 interface DocumentsListProps {
@@ -34,12 +36,32 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
       ) : (
         <div className="grid gap-2">
           {documents.map(doc => (
-            <div key={doc.document_id} className="flex items-center justify-between p-2 bg-muted rounded-md">
+            <div 
+              key={doc.document_id} 
+              className={cn(
+                "flex items-center justify-between p-2 rounded-md",
+                doc.status === 'submitted' ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted'
+              )}
+            >
               <div className="flex items-center">
-                <FileText className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+                {doc.status === 'submitted' ? (
+                  <FileCheck className="h-3.5 w-3.5 mr-2 text-green-600 dark:text-green-500" />
+                ) : (
+                  <Clock className="h-3.5 w-3.5 mr-2 text-orange-500" />
+                )}
                 <span className="text-sm">{doc.name}</span>
               </div>
-              <Badge variant="outline" className="text-xs">Required</Badge>
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "text-xs",
+                  doc.status === 'submitted' 
+                    ? 'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950/50 dark:text-green-400' 
+                    : 'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-400'
+                )}
+              >
+                {doc.status === 'submitted' ? 'Submitted' : 'Pending'}
+              </Badge>
             </div>
           ))}
         </div>
