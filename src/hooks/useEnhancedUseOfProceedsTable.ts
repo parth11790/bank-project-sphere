@@ -39,7 +39,7 @@ export const useEnhancedUseOfProceedsTable = ({
     { row_id: 'row_5', row_name: 'TOTAL', overall_category: '' }
   ];
   
-  // State for dialogs
+  // State for dialogs - Initialize both to false to prevent auto-opening
   const [isAddColumnDialogOpen, setIsAddColumnDialogOpen] = useState(false);
   const [isAddRowDialogOpen, setIsAddRowDialogOpen] = useState(false);
   

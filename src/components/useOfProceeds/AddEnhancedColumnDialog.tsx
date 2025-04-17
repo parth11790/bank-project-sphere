@@ -41,7 +41,8 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
       amortization_months: amortizationMonths,
     });
     
-    // Dialog will be closed by the parent
+    // Close dialog after submission
+    setIsOpen(false);
   };
 
   const handleCancel = () => {
