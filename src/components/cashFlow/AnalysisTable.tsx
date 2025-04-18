@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -14,9 +13,10 @@ interface Period {
 interface AnalysisTableProps {
   periods: Period[];
   formatCurrency: (amount: number) => string;
+  mockData: Record<string, number[]>;
 }
 
-const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency }) => {
+const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, mockData }) => {
   const rows = [
     { label: 'Gross Revenue', group: 'revenue' },
     { label: 'Growth', group: 'revenue' },
@@ -94,30 +94,37 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency }
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.map((row, index) => (
-                <TableRow 
-                  key={index} 
-                  className={cn(
-                    getGroupStyle(row.group),
-                    row.bold && 'font-semibold'
-                  )}
-                >
-                  <TableCell className="font-medium">
-                    {row.label}
-                  </TableCell>
-                  {periods.map((_, periodIndex) => (
-                    <TableCell 
-                      key={periodIndex} 
-                      className={cn(
-                        "text-right",
-                        row.negative && "text-red-600 dark:text-red-400"
-                      )}
-                    >
-                      {formatCurrency(0)}
+              {rows.map((row, index) => {
+                const data = mockData[row.label.toLowerCase().replace(/\s+/g, '')];
+                const isTotal = row.bold;
+                
+                return (
+                  <TableRow 
+                    key={index} 
+                    className={cn(
+                      getGroupStyle(row.group),
+                      row.bold && 'font-semibold'
+                    )}
+                  >
+                    <TableCell className="font-medium">
+                      {row.label}
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+                    {periods.map((_, periodIndex) => (
+                      <TableCell 
+                        key={periodIndex} 
+                        className={cn(
+                          "text-right",
+                          row.negative && "text-red-600 dark:text-red-400"
+                        )}
+                      >
+                        {row.label === 'Growth' || row.label === 'Gross Margin' || row.label === 'NOM'
+                          ? `${data[periodIndex].toFixed(1)}%`
+                          : formatCurrency(data[periodIndex])}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
