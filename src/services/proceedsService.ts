@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getCategoriesByOverallType, getOverallTypeForCategory } from '@/components/useOfProceeds/categoryOptions';
 
 // Flag to use mock data or actual supabase
 const USE_MOCK_DATA = true;
@@ -24,5 +25,21 @@ export const getUseOfProceeds = async (projectId: string) => {
     console.error(`Error fetching use of proceeds for project ${projectId}:`, error.message);
     toast.error('Failed to load use of proceeds data');
     return [];
+  }
+};
+
+// New utility functions that leverage the category organization
+export const getCategoriesForLoanType = (loanType: string) => {
+  // Map loan types to relevant overall categories
+  switch (loanType) {
+    case '7(a)':
+      return getCategoriesByOverallType('workingCapital');
+    case '504':
+      return [
+        ...getCategoriesByOverallType('land'),
+        ...getCategoriesByOverallType('construction')
+      ];
+    default:
+      return [];
   }
 };
