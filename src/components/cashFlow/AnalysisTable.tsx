@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -17,34 +18,35 @@ interface AnalysisTableProps {
 }
 
 const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, mockData }) => {
+  // Define the rows with a consistent key that maps to mockData
   const rows = [
-    { label: 'Gross Revenue', group: 'revenue' },
-    { label: 'Growth', group: 'revenue' },
-    { label: 'Wages', group: 'expenses' },
-    { label: 'COGS', group: 'expenses' },
-    { label: 'Gross Profit', group: 'profit', bold: true },
-    { label: 'Gross Margin', group: 'profit' },
-    { label: 'Depreciation', group: 'adjustments' },
-    { label: 'Amortization', group: 'adjustments' },
-    { label: 'Interest', group: 'adjustments' },
-    { label: 'Existing Borrower OC', group: 'adjustments' },
-    { label: 'Rent Addback', group: 'adjustments' },
-    { label: 'Dep. Adj. M-1', group: 'adjustments' },
-    { label: 'Adjustments', group: 'adjustments' },
-    { label: 'M-1 Book Income', group: 'income', bold: true },
-    { label: 'NOI', group: 'income' },
-    { label: 'NOM', group: 'income' },
-    { label: 'Proposed SBA Loan #1', group: 'loans' },
-    { label: 'Proposed SBA Loan #2', group: 'loans' },
-    { label: 'Proposed SBA Loan #3', group: 'loans' },
-    { label: 'Proposed SBA Loan #4', group: 'loans' },
-    { label: 'Seller Carry Debt', group: 'debt' },
-    { label: 'Existing Business Debt', group: 'debt' },
-    { label: 'Other Debt', group: 'debt' },
-    { label: 'Debt Service', group: 'summary', bold: true },
-    { label: 'Available CF', group: 'summary', bold: true },
-    { label: 'Required Officer Comp', group: 'summary' },
-    { label: 'Excess CF', group: 'summary', negative: true, bold: true }
+    { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
+    { label: 'Growth', key: 'growth', group: 'revenue' },
+    { label: 'Wages', key: 'wages', group: 'expenses' },
+    { label: 'COGS', key: 'cogs', group: 'expenses' },
+    { label: 'Gross Profit', key: 'grossProfit', group: 'profit', bold: true },
+    { label: 'Gross Margin', key: 'grossMargin', group: 'profit' },
+    { label: 'Depreciation', key: 'depreciation', group: 'adjustments' },
+    { label: 'Amortization', key: 'amortization', group: 'adjustments' },
+    { label: 'Interest', key: 'interest', group: 'adjustments' },
+    { label: 'Existing Borrower OC', key: 'borrowerOC', group: 'adjustments' },
+    { label: 'Rent Addback', key: 'rentAddback', group: 'adjustments' },
+    { label: 'Dep. Adj. M-1', key: 'depAdjM1', group: 'adjustments' },
+    { label: 'Adjustments', key: 'adjustments', group: 'adjustments' },
+    { label: 'M-1 Book Income', key: 'bookIncome', group: 'income', bold: true },
+    { label: 'NOI', key: 'noi', group: 'income' },
+    { label: 'NOM', key: 'nom', group: 'income' },
+    { label: 'Proposed SBA Loan #1', key: 'proposedLoan1', group: 'loans' },
+    { label: 'Proposed SBA Loan #2', key: 'proposedLoan2', group: 'loans' },
+    { label: 'Proposed SBA Loan #3', key: 'proposedLoan3', group: 'loans' },
+    { label: 'Proposed SBA Loan #4', key: 'proposedLoan4', group: 'loans' },
+    { label: 'Seller Carry Debt', key: 'sellerCarryDebt', group: 'debt' },
+    { label: 'Existing Business Debt', key: 'existingDebt', group: 'debt' },
+    { label: 'Other Debt', key: 'otherDebt', group: 'debt' },
+    { label: 'Debt Service', key: 'debtService', group: 'summary', bold: true },
+    { label: 'Available CF', key: 'availableCF', group: 'summary', bold: true },
+    { label: 'Required Officer Comp', key: 'requiredOfficerComp', group: 'summary' },
+    { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true }
   ];
 
   const getGroupStyle = (group: string) => {
@@ -68,6 +70,15 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
       default:
         return '';
     }
+  };
+
+  // Helper function to safely get data with fallback
+  const getDataSafely = (key: string, periodIndex: number): number => {
+    if (!mockData[key] || !Array.isArray(mockData[key])) {
+      return 0; // Return 0 as fallback if data doesn't exist
+    }
+    
+    return mockData[key][periodIndex] || 0;
   };
 
   return (
@@ -95,7 +106,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
             </TableHeader>
             <TableBody>
               {rows.map((row, index) => {
-                const data = mockData[row.label.toLowerCase().replace(/\s+/g, '')];
                 const isTotal = row.bold;
                 
                 return (
@@ -109,19 +119,23 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                     <TableCell className="font-medium">
                       {row.label}
                     </TableCell>
-                    {periods.map((_, periodIndex) => (
-                      <TableCell 
-                        key={periodIndex} 
-                        className={cn(
-                          "text-right",
-                          row.negative && "text-red-600 dark:text-red-400"
-                        )}
-                      >
-                        {row.label === 'Growth' || row.label === 'Gross Margin' || row.label === 'NOM'
-                          ? `${data[periodIndex].toFixed(1)}%`
-                          : formatCurrency(data[periodIndex])}
-                      </TableCell>
-                    ))}
+                    {periods.map((_, periodIndex) => {
+                      const value = getDataSafely(row.key, periodIndex);
+                      
+                      return (
+                        <TableCell 
+                          key={periodIndex} 
+                          className={cn(
+                            "text-right",
+                            row.negative && "text-red-600 dark:text-red-400"
+                          )}
+                        >
+                          {row.label === 'Growth' || row.label === 'Gross Margin' || row.label === 'NOM'
+                            ? `${value.toFixed(1)}%`
+                            : formatCurrency(value)}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 );
               })}
