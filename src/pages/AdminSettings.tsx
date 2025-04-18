@@ -3,7 +3,6 @@ import React from 'react';
 import Layout from '@/components/Layout';
 import { DropdownManager } from '@/components/admin/DropdownManager';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -13,7 +12,7 @@ const AdminSettings = () => {
   
   return (
     <Layout>
-      <div className="container mx-auto py-6 space-y-6">
+      <div className="container mx-auto py-6 space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -29,7 +28,13 @@ const AdminSettings = () => {
         
         <Separator className="my-6" />
         
-        <div className="grid gap-6">
+        <div className="space-y-6">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-semibold">Dropdown Values Management</h2>
+            <p className="text-muted-foreground">
+              Manage the values available in various dropdown menus throughout the application
+            </p>
+          </div>
           <DropdownManager />
         </div>
       </div>

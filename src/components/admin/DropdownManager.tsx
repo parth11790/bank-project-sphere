@@ -1,7 +1,6 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownValueEditor } from './DropdownValueEditor';
 
 export type DropdownType = 'entityTypes' | 'loanTypes' | 'projectStatus';
@@ -28,37 +27,23 @@ const dropdownConfigs = [
 ];
 
 export function DropdownManager() {
-  const [activeTab, setActiveTab] = useState<DropdownType>('entityTypes');
-  
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Dropdown Values Management</CardTitle>
-        <CardDescription>
-          Manage the values available in various dropdown menus throughout the application
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as DropdownType)}>
-          <TabsList className="grid grid-cols-3 w-full">
-            {dropdownConfigs.map((config) => (
-              <TabsTrigger key={config.id} value={config.id}>
-                {config.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          
-          {dropdownConfigs.map((config) => (
-            <TabsContent key={config.id} value={config.id}>
-              <DropdownValueEditor
-                title={config.label}
-                description={config.description}
-                initialValues={config.initialValues}
-              />
-            </TabsContent>
-          ))}
-        </Tabs>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {dropdownConfigs.map((config) => (
+        <Card key={config.id} className="w-full">
+          <CardHeader>
+            <CardTitle>{config.label}</CardTitle>
+            <CardDescription>{config.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DropdownValueEditor
+              title={config.label}
+              description={config.description}
+              initialValues={config.initialValues}
+            />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
