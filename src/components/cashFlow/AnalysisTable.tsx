@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -114,7 +115,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
           type="text"
           value={formatCurrency(value)}
           onChange={(e) => handleValueChange(row.key, periodIndex, e.target.value)}
-          className="w-32 text-right bg-transparent"
+          className="h-8 w-full text-right bg-transparent border-0 focus:ring-1"
         />
       );
     }
@@ -168,7 +169,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                         className={cn(
                           "text-right",
                           row.negative && "text-red-600 dark:text-red-400",
-                          editableRows.includes(row.key) && "p-0"
+                          editableRows.includes(row.key) ? "p-0 align-middle h-[52px]" : "py-4"
                         )}
                       >
                         {renderCell(row, periodIndex)}
