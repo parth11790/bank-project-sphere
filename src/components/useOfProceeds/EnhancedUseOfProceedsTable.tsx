@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEnhancedUseOfProceedsTable } from '@/hooks/useEnhancedUseOfProceedsTable';
@@ -76,6 +75,9 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
     onSave
   });
 
+  // Get the existing row names
+  const existingRows = rows.map(row => row.row_name);
+
   return (
     <div className="space-y-4">
       <Card className="w-full overflow-hidden border-border/50">
@@ -123,6 +125,7 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
         onAddMultipleRows={handleAddMultipleRows}
         uniqueOverallCategories={[...new Set(categoryOptions.map(item => item.overall))]}
         categoryOptions={categoryOptions}
+        existingRows={existingRows}
       />
     </div>
   );

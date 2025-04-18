@@ -14,6 +14,7 @@ interface AddEnhancedRowDialogProps {
   onAddMultipleRows?: (selectedOptions: Array<{overall: string, category: string}>) => void;
   uniqueOverallCategories: string[];
   categoryOptions: CategoryOption[];
+  existingRows?: string[]; // New prop to track existing rows
 }
 
 const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
@@ -21,15 +22,20 @@ const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
   setIsOpen,
   onAddRow,
   onAddMultipleRows,
-  categoryOptions
+  categoryOptions,
+  existingRows = [] // Default to empty array if not provided
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOptions, setSelectedOptions] = useState<CategoryOption[]>([]);
 
-  // Filter options based on search query
+  // Filter out existing rows and then apply search query
+  const availableOptions = categoryOptions.filter(option => 
+    !existingRows.includes(option.category)
+  );
+
   const filteredOptions = searchQuery.trim() === '' 
-    ? categoryOptions 
-    : categoryOptions.filter(option => 
+    ? availableOptions
+    : availableOptions.filter(option => 
         option.overall.toLowerCase().includes(searchQuery.toLowerCase()) ||
         option.category.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -84,7 +90,7 @@ const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Add New Rows</DialogTitle>
           <DialogDescription>
-            Select one or more rows from the list below to add to the table
+            Select rows to add from {availableOptions.length} available categories
           </DialogDescription>
         </DialogHeader>
         
@@ -129,7 +135,12 @@ const AddEnhancedRowDialog: React.FC<AddEnhancedRowDialogProps> = ({
         <ScrollArea className="h-72 rounded-md border">
           <div className="p-1">
             {filteredOptions.length === 0 ? (
-              <p className="text-center py-4 text-muted-foreground">No matching categories found</p>
+              <p className="text-center py-4 text-muted-foreground">
+                {availableOptions.length === 0 
+                  ? 'All categories have been added'
+                  : 'No matching categories found'
+                }
+              </p>
             ) : (
               filteredOptions.map((option, index) => (
                 <div
