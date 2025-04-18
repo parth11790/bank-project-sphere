@@ -64,7 +64,7 @@ const UseOfProceeds: React.FC = () => {
   };
 
   return (
-    <Layout collapseSidebar={true}>
+    <Layout>
       <div className="flex flex-col gap-6">
         <UseOfProceedsHeader 
           projectName={selectedProject?.project_name}
