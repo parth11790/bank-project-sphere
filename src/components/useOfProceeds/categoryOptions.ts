@@ -1,39 +1,39 @@
 
-// Define the category options based on the user's requirements
 export interface CategoryOption {
   overall: string;
   category: string;
 }
 
 export const categoryOptions: CategoryOption[] = [
-  { overall: 'Purchase', category: 'BUSINESS ASSETS' },
-  { overall: 'Land', category: 'LAND & BUILDING' },
-  { overall: 'Construction', category: 'CONSTRUCTION' },
-  { overall: 'Construction', category: 'PLANS AND PERMITS' },
-  { overall: 'Construction', category: 'ARCH. & ENG.' },
-  { overall: 'Construction', category: 'CONTINGENCY' },
-  { overall: 'Construction', category: 'SUPERVISION FEE' },
-  { overall: 'Construction', category: 'CONSTRUCTION SOFT COSTS' },
-  { overall: 'Construction', category: 'INTEREST RESERVE' },
-  { overall: 'INVentory', category: 'INVENTORY' },
-  { overall: 'Furniture Fixtures and Equipment', category: 'EQUIPMENT' },
-  { overall: 'Other', category: 'COMPLETION COMMITMENT' },
-  { overall: 'Other', category: 'REFINANCE' },
-  { overall: 'Soft Costs', category: 'APPRAISALS' },
-  { overall: 'Soft Costs', category: 'EPA' },
-  { overall: 'Soft Costs', category: 'ASBESTOS INSPECTION' },
-  { overall: 'Soft Costs', category: 'BUSINESS VALUATION' },
-  { overall: 'Soft Costs', category: 'LEGAL FEES' },
-  { overall: 'Soft Costs', category: 'SBA LOAN PACKAGING FEE' },
-  { overall: 'Soft Costs', category: 'TITLE' },
-  { overall: 'Soft Costs', category: 'SURVEY/UCC SEARCHES' },
-  { overall: 'Soft Costs', category: 'VEHICLE TITLE FEES' },
-  { overall: 'Soft Costs', category: 'SBA GUARANTY FEE' },
-  { overall: 'Soft Costs', category: 'ORIGINATION FEE' },
-  { overall: 'Soft Costs', category: 'SOFT COSTS' },
-  { overall: 'Working Capital', category: 'WORKING CAPITAL' },
-  { overall: 'Conscessions', category: 'CONCESSIONS' },
+  { overall: 'purchase', category: 'businessAssets' },
+  { overall: 'land', category: 'landAndBuilding' },
+  { overall: 'construction', category: 'construction' },
+  { overall: 'construction', category: 'plansAndPermits' },
+  { overall: 'construction', category: 'archAndEng' },
+  { overall: 'construction', category: 'contingency' },
+  { overall: 'construction', category: 'supervisionFee' },
+  { overall: 'construction', category: 'constructionSoftCosts' },
+  { overall: 'construction', category: 'interestReserve' },
+  { overall: 'inventory', category: 'inventory' },
+  { overall: 'furnitureFixturesAndEquipment', category: 'equipment' },
+  { overall: 'other', category: 'completionCommitment' },
+  { overall: 'other', category: 'refinance' },
+  { overall: 'softCosts', category: 'appraisals' },
+  { overall: 'softCosts', category: 'epa' },
+  { overall: 'softCosts', category: 'asbestosInspection' },
+  { overall: 'softCosts', category: 'businessValuation' },
+  { overall: 'softCosts', category: 'legalFees' },
+  { overall: 'softCosts', category: 'sbaLoanPackagingFee' },
+  { overall: 'softCosts', category: 'title' },
+  { overall: 'softCosts', category: 'surveyUccSearches' },
+  { overall: 'softCosts', category: 'vehicleTitleFees' },
+  { overall: 'softCosts', category: 'sbaGuarantyFee' },
+  { overall: 'softCosts', category: 'originationFee' },
+  { overall: 'softCosts', category: 'softCosts' },
+  { overall: 'workingCapital', category: 'workingCapital' },
+  { overall: 'concessions', category: 'concessions' },
 ];
 
 // Get unique overall categories
 export const uniqueOverallCategories = [...new Set(categoryOptions.map(item => item.overall))];
+
