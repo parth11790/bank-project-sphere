@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
@@ -23,14 +23,40 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
   onChange,
   formatCurrency
 }) => {
+  // Track if this cell is being edited
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Re-focus the input after a render if this cell was focused
+  useEffect(() => {
+    if (editMode && isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [editMode, isFocused, value]);
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(rowName, columnName, e.target.value);
+  };
+
   return (
     <TableCell className={`text-right py-1 text-[10px] ${isTotal ? 'bg-accent/5' : ''}`}>
       {editMode && !isTotal ? (
         <Input
+          ref={inputRef}
           type="number"
           className="w-full text-right h-6 text-xs"
           value={value === 0 ? '' : value}
-          onChange={(e) => onChange?.(rowName, columnName, e.target.value)}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           min="0"
           step="1"
         />

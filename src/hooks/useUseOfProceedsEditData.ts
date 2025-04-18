@@ -55,10 +55,14 @@ export const useUseOfProceedsEditData = ({
       }
     }
     
-    setEditedData(prev => ({
-      ...prev,
-      [key]: numericValue
-    }));
+    // Update the edited data without causing unnecessary re-renders
+    setEditedData(prev => {
+      const updatedData = {
+        ...prev,
+        [key]: numericValue
+      };
+      return updatedData;
+    });
   };
 
   // Get display value for a cell (either edited or original)
