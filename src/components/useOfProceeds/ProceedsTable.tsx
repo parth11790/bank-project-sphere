@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
-import { Maximize2 } from 'lucide-react';
 import { UseOfProceedsColumn, UseOfProceedsRow } from './EnhancedUseOfProceedsTable';
+import ScrollableTableWrapper from './table/ScrollableTableWrapper';
+import FullscreenButton from './table/FullscreenButton';
 import TableContent from './table/TableContent';
 import FullscreenDialog from './table/FullscreenDialog';
 
@@ -36,55 +35,38 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const tableContent = (
+    <TableContent 
+      columns={columns}
+      rows={rows}
+      tableData={tableData}
+      editMode={editMode}
+      getCellValue={getCellValue}
+      handleValueChange={handleValueChange}
+      calculateColumnTotal={calculateColumnTotal}
+      calculateRowTotal={calculateRowTotal}
+      formatCurrency={formatCurrency}
+      handleDeleteColumn={handleDeleteColumn}
+      handleDeleteRow={handleDeleteRow}
+    />
+  );
+
   return (
     <div className="relative">
       <div className="overflow-x-auto">
-        {/* Set max-height to ensure the table is fully visible without scrolling initially */}
-        <ScrollArea className="max-h-[800px]">
-          <TableContent 
-            columns={columns}
-            rows={rows}
-            tableData={tableData}
-            editMode={editMode}
-            getCellValue={getCellValue}
-            handleValueChange={handleValueChange}
-            calculateColumnTotal={calculateColumnTotal}
-            calculateRowTotal={calculateRowTotal}
-            formatCurrency={formatCurrency}
-            handleDeleteColumn={handleDeleteColumn}
-            handleDeleteRow={handleDeleteRow}
-          />
-        </ScrollArea>
+        <ScrollableTableWrapper>
+          {tableContent}
+        </ScrollableTableWrapper>
       </div>
 
-      <Button
-        variant="outline"
-        size="sm"
-        className="absolute right-0 -top-10 z-20"
-        onClick={() => setIsFullscreen(true)}
-      >
-        <Maximize2 className="h-4 w-4" />
-        <span className="ml-2">Full Screen</span>
-      </Button>
+      <FullscreenButton onClick={() => setIsFullscreen(true)} />
 
       <FullscreenDialog
         isOpen={isFullscreen}
         onClose={() => setIsFullscreen(false)}
         title="Use of Proceeds Table"
       >
-        <TableContent 
-          columns={columns}
-          rows={rows}
-          tableData={tableData}
-          editMode={editMode}
-          getCellValue={getCellValue}
-          handleValueChange={handleValueChange}
-          calculateColumnTotal={calculateColumnTotal}
-          calculateRowTotal={calculateRowTotal}
-          formatCurrency={formatCurrency}
-          handleDeleteColumn={handleDeleteColumn}
-          handleDeleteRow={handleDeleteRow}
-        />
+        {tableContent}
       </FullscreenDialog>
     </div>
   );
