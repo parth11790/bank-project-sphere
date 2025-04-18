@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 import { useUseOfProceedsFormatting } from '@/hooks/useUseOfProceedsFormatting';
@@ -43,17 +42,21 @@ export const useUseOfProceedsEditData = ({
     // Parse the value, ensuring it's either a valid number or 0
     let numericValue: number;
     
-    if (value === '') {
+    if (value === '' || value === null || value === undefined) {
       numericValue = 0;
     } else {
-      // Remove commas, spaces, and any other non-numeric characters except the decimal point
-      const sanitizedValue = value.replace(/[^0-9.]/g, '');
+      // Remove non-numeric characters except for the first decimal point
+      let sanitizedValue = value.replace(/[^0-9.]/g, '');
       
-      // Prevent multiple decimal points
-      const parts = sanitizedValue.split('.');
-      const cleanValue = parts[0] + (parts.length > 1 ? '.' + parts[1] : '');
+      // Handle multiple decimal points - keep only the first one
+      const decimalPointIndex = sanitizedValue.indexOf('.');
+      if (decimalPointIndex !== -1) {
+        const beforeDecimal = sanitizedValue.substring(0, decimalPointIndex + 1);
+        const afterDecimal = sanitizedValue.substring(decimalPointIndex + 1).replace(/\./g, '');
+        sanitizedValue = beforeDecimal + afterDecimal;
+      }
       
-      numericValue = parseFloat(cleanValue);
+      numericValue = parseFloat(sanitizedValue);
       
       // If parsing results in NaN, default to 0
       if (isNaN(numericValue)) {
@@ -61,7 +64,7 @@ export const useUseOfProceedsEditData = ({
       }
     }
     
-    // Update the edited data without causing unnecessary re-renders
+    // Update the edited data
     setEditedData(prev => ({
       ...prev,
       [key]: numericValue
@@ -71,13 +74,13 @@ export const useUseOfProceedsEditData = ({
   // Get display value for a cell (either edited or original)
   const getCellValue = (rowName: string, columnName: string) => {
     const key = `${rowName}-${columnName}`;
-    if (editMode && key in editedData) {
+    if (key in editedData) {
       return editedData[key];
     }
     return tableData[rowName]?.[columnName] || 0;
   };
 
-  // Use the new table calculations hook
+  // Use the table calculations hook
   const {
     calculateColumnTotal,
     calculateRowTotal: calculateRowTotalByColumns

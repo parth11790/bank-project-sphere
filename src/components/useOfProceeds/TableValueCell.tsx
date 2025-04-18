@@ -23,26 +23,27 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
   onChange,
   formatCurrency
 }) => {
+  // Create local state for the input value
+  const [inputValue, setInputValue] = useState<string>('');
   // Track if this cell is being edited
   const [isFocused, setIsFocused] = useState(false);
-  const [localValue, setLocalValue] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Initialize local value when external value changes or on first render
+  // Update local input value only when component mounts or value prop changes
   useEffect(() => {
-    setLocalValue(value === 0 ? '' : value.toString());
+    setInputValue(value === 0 ? '' : value.toString());
   }, [value]);
   
-  // Re-focus the input after a render if this cell was focused
+  // When focused, ensure the input remains focused and cursor is at the right position
   useEffect(() => {
     if (editMode && isFocused && inputRef.current) {
       inputRef.current.focus();
       
-      // Place cursor at the end of input text
-      const len = localValue.length;
-      inputRef.current.setSelectionRange(len, len);
+      // Place cursor at the end of the input text
+      const length = inputValue.length;
+      inputRef.current.setSelectionRange(length, length);
     }
-  }, [editMode, isFocused, localValue]);
+  }, [editMode, isFocused]);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -53,17 +54,25 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
     
     // When losing focus, make sure the parent component gets the final value
     if (onChange) {
-      onChange(rowName, columnName, localValue);
+      onChange(rowName, columnName, inputValue);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setLocalValue(newValue);
-    
-    // Also update parent component
-    if (onChange) {
-      onChange(rowName, columnName, newValue);
+    // Update local state immediately without involving parent component
+    setInputValue(e.target.value);
+  };
+
+  // Only notify parent when blur happens or when user presses Enter
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (onChange) {
+        onChange(rowName, columnName, inputValue);
+      }
+      
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
     }
   };
 
@@ -72,16 +81,16 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
       {editMode && !isTotal ? (
         <Input
           ref={inputRef}
-          type="text" // Changed from "number" to allow more control
+          type="text"
           className="w-full text-right h-6 text-xs"
-          value={localValue}
+          value={inputValue}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           min="0"
-          step="1"
-          inputMode="numeric" // Better for mobile
-          pattern="[0-9]*" // Ensures only numbers
+          inputMode="numeric"
+          pattern="[0-9]*"
         />
       ) : (
         <motion.div
