@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -125,8 +124,8 @@ const ProjectAnalysis: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <BuyerIncomeCard {...mockAnalysisData.buyerIncome} />
-                <BusinessCashFlowCard {...mockAnalysisData.businessCashFlow} />
+                <BuyerIncomeCard {...mockAnalysisData.buyerIncome} projectId={projectId} />
+                <BusinessCashFlowCard {...mockAnalysisData.businessCashFlow} projectId={projectId} />
                 <UseOfProceedsCard 
                   projectId={projectId || ''}
                   proceedsTotals={proceedsTotals}
@@ -141,4 +140,3 @@ const ProjectAnalysis: React.FC = () => {
 };
 
 export default ProjectAnalysis;
-

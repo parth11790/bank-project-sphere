@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 interface UseOfProceedsCardProps {
@@ -31,7 +29,10 @@ const UseOfProceedsCard: React.FC<UseOfProceedsCardProps> = ({
   const navigate = useNavigate();
 
   return (
-    <Card>
+    <Card 
+      className="cursor-pointer transition-shadow hover:shadow-md"
+      onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
+    >
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <FileText className="h-4 w-4" />

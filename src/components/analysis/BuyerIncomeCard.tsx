@@ -1,12 +1,13 @@
-
 import React from 'react';
 import { Calculator } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 
 interface BuyerIncomeCardProps {
   netWorth: number;
   requiredSalary: number;
   availableCashForDebt: number;
+  projectId?: string;
 }
 
 const formatCurrency = (amount: number) => {
@@ -21,9 +22,15 @@ const BuyerIncomeCard: React.FC<BuyerIncomeCardProps> = ({
   netWorth,
   requiredSalary,
   availableCashForDebt,
+  projectId,
 }) => {
+  const navigate = useNavigate();
+
   return (
-    <Card>
+    <Card 
+      className="cursor-pointer transition-shadow hover:shadow-md"
+      onClick={() => projectId && navigate(`/project/buyer-analysis/${projectId}`)}
+    >
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Calculator className="h-4 w-4" />

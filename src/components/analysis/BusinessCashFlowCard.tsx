@@ -1,12 +1,13 @@
-
 import React from 'react';
 import { BarChart3 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 
 interface BusinessCashFlowCardProps {
   averageCashFlow: number;
   debtServiceRatioBeforeOC: number;
   debtServiceRatioAfterOC: number;
+  projectId?: string;
 }
 
 const formatCurrency = (amount: number) => {
@@ -25,9 +26,15 @@ const BusinessCashFlowCard: React.FC<BusinessCashFlowCardProps> = ({
   averageCashFlow,
   debtServiceRatioBeforeOC,
   debtServiceRatioAfterOC,
+  projectId,
 }) => {
+  const navigate = useNavigate();
+
   return (
-    <Card>
+    <Card 
+      className="cursor-pointer transition-shadow hover:shadow-md"
+      onClick={() => projectId && navigate(`/project/cash-flow/${projectId}`)}
+    >
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <BarChart3 className="h-4 w-4" />
