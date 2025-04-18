@@ -24,6 +24,39 @@ export type Database = {
         }
         Relationships: []
       }
+      use_of_proceeds: {
+        Row: {
+          column_name: string
+          created_at: string | null
+          id: string
+          overall_category: string
+          project_id: string
+          row_name: string
+          updated_at: string | null
+          value: number
+        }
+        Insert: {
+          column_name: string
+          created_at?: string | null
+          id?: string
+          overall_category: string
+          project_id: string
+          row_name: string
+          updated_at?: string | null
+          value?: number
+        }
+        Update: {
+          column_name?: string
+          created_at?: string | null
+          id?: string
+          overall_category?: string
+          project_id?: string
+          row_name?: string
+          updated_at?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
