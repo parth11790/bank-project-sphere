@@ -34,9 +34,7 @@ const Header: React.FC = () => {
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <a onClick={() => navigate('/')}>Home</a>
-            </BreadcrumbLink>
+            <BreadcrumbLink onClick={() => navigate('/')}>Home</BreadcrumbLink>
           </BreadcrumbItem>
           
           {paths.map((path, index) => {
@@ -65,8 +63,8 @@ const Header: React.FC = () => {
               <React.Fragment key={path}>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <a onClick={() => navigate(fullPath)}>{formattedPath}</a>
+                  <BreadcrumbLink onClick={() => navigate(fullPath)}>
+                    {formattedPath}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </React.Fragment>
