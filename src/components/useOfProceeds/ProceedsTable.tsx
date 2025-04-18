@@ -74,7 +74,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map(row => {
+        {rows.map((row, rowIndex) => {
           const overallCategory = tableData[row.row_name]?.overall_category || 
             row.overall_category ||
             categoryOptions.find(opt => opt.category === row.row_name)?.overall || 
@@ -86,17 +86,21 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
               className={`text-xs ${
                 row.row_name === 'TOTAL' 
                   ? 'bg-accent/5 font-semibold border-t border-t-border/50' 
-                  : ''
+                  : rowIndex % 2 === 0 ? 'bg-muted/5' : ''
               }`}
             >
-              <TableCell className={`font-medium sticky left-0 z-10 bg-white text-xs py-2 ${
-                row.row_name === 'TOTAL' ? 'bg-accent/5' : ''
-              }`}>
+              <TableCell className={`font-medium sticky left-0 z-10 ${
+                row.row_name === 'TOTAL' 
+                  ? 'bg-accent/5' 
+                  : rowIndex % 2 === 0 ? 'bg-muted/5' : 'bg-white'
+              } text-xs py-2`}>
                 {row.row_name === 'TOTAL' ? '' : overallCategory}
               </TableCell>
-              <TableCell className={`font-medium sticky left-[120px] z-10 bg-white text-xs py-2 ${
-                row.row_name === 'TOTAL' ? 'bg-accent/5' : ''
-              }`}>
+              <TableCell className={`font-medium sticky left-[120px] z-10 ${
+                row.row_name === 'TOTAL' 
+                  ? 'bg-accent/5' 
+                  : rowIndex % 2 === 0 ? 'bg-muted/5' : 'bg-white'
+              } text-xs py-2`}>
                 <div className="flex justify-between items-center">
                   <span>{row.row_name}</span>
                   {editMode && row.row_name !== 'TOTAL' && (
@@ -162,6 +166,12 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
 
   return (
     <div className="relative">
+      <div className="overflow-x-auto">
+        <ScrollArea className="h-[600px]">
+          <TableContent />
+        </ScrollArea>
+      </div>
+
       <Button
         variant="outline"
         size="sm"
@@ -171,12 +181,6 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
         <Maximize2 className="h-4 w-4" />
         <span className="ml-2">Full Screen</span>
       </Button>
-
-      <div className="overflow-x-auto">
-        <ScrollArea className="h-[600px]">
-          <TableContent />
-        </ScrollArea>
-      </div>
 
       <Dialog.Root open={isFullscreen} onOpenChange={setIsFullscreen}>
         <Dialog.Portal>

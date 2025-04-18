@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CardHeader } from '@/components/ui/card';
 import TableActions from './TableActions';
 
 interface TableHeaderProps {
@@ -22,21 +22,6 @@ const TableHeader: React.FC<TableHeaderProps> = ({
 }) => {
   return (
     <CardHeader className="pb-3">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <CardTitle className="text-xl font-semibold">Use of Proceeds</CardTitle>
-          <CardDescription>Financial breakdown for the project</CardDescription>
-        </div>
-        <TableActions 
-          editMode={editMode}
-          onEdit={onEdit}
-          onSave={onSave}
-          onCancel={onCancel}
-          onAddColumn={onAddColumn}
-          onAddRow={onAddRow}
-        />
-      </div>
-      
       {editMode && (
         <div className="mt-4 p-3 bg-muted/40 rounded-md border border-border/30 text-sm">
           <p className="text-muted-foreground">
@@ -44,6 +29,14 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           </p>
         </div>
       )}
+      <TableActions 
+        editMode={editMode}
+        onEdit={onEdit}
+        onSave={onSave}
+        onCancel={onCancel}
+        onAddColumn={onAddColumn}
+        onAddRow={onAddRow}
+      />
     </CardHeader>
   );
 };
