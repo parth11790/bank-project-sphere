@@ -1,24 +1,34 @@
 
 import React from 'react';
-import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
+import { TableHeader as UITableHeader, TableRow, TableHead } from '@/components/ui/table';
 import TableHeaderCell from './TableHeaderCell';
-import { UseOfProceedsColumn } from '@/components/UseOfProceedsTable';
+import { UseOfProceedsColumn } from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 
 interface TableHeaderProps {
   columns: UseOfProceedsColumn[];
   editMode: boolean;
   formatCurrency: (value: number) => string;
   handleDeleteColumn: (columnId: string) => void;
+  onEdit?: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
+  onAddColumn?: () => void;
+  onAddRow?: () => void;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
   columns,
   editMode,
   formatCurrency,
-  handleDeleteColumn
+  handleDeleteColumn,
+  onEdit,
+  onSave,
+  onCancel,
+  onAddColumn,
+  onAddRow
 }) => {
   return (
-    <TableHeader>
+    <UITableHeader>
       <TableRow className="text-xs">
         <TableHead className="w-[120px] bg-muted/30 font-medium sticky left-0 z-10 text-[10px]">
           Overall Category
@@ -42,7 +52,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
         ))}
         <TableHead className="bg-accent/10 font-medium text-right text-[10px] border-l">Total</TableHead>
       </TableRow>
-    </TableHeader>
+    </UITableHeader>
   );
 };
 

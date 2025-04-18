@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEnhancedUseOfProceedsTable } from '@/hooks/useEnhancedUseOfProceedsTable';
@@ -7,14 +8,15 @@ import AddEnhancedColumnDialog from './AddEnhancedColumnDialog';
 import AddEnhancedRowDialog from './AddEnhancedRowDialog';
 import ProceedsTable from './ProceedsTable';
 import LoanSummary from './LoanSummary';
-import TableHeader from './TableHeader';
+import { TableHeader } from '@/components/ui/table';
+import TableActions from './TableActions';
 import { categoryOptions } from './categoryOptions';
 
 // Enhanced types
 export type UseOfProceedsColumn = {
   column_id: string;
   column_name: string;
-  is_loan: boolean;
+  is_loan?: boolean;
   interest_rate?: number;
   term_years?: number;
   amortization_months?: number;
@@ -81,14 +83,17 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
   return (
     <div className="space-y-4">
       <Card className="w-full overflow-hidden border-border/50">
-        <TableHeader 
-          editMode={editMode}
-          onEdit={() => setEditMode(true)}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          onAddColumn={() => setIsAddColumnDialogOpen(true)}
-          onAddRow={() => setIsAddRowDialogOpen(true)}
-        />
+        <div className="p-4 flex justify-between items-center">
+          <h3 className="text-lg font-medium">Use of Proceeds</h3>
+          <TableActions 
+            editMode={editMode}
+            onEdit={() => setEditMode(true)}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            onAddColumn={() => setIsAddColumnDialogOpen(true)}
+            onAddRow={() => setIsAddRowDialogOpen(true)}
+          />
+        </div>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <ProceedsTable 
