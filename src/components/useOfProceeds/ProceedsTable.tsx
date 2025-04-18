@@ -167,7 +167,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
   return (
     <div className="relative">
       <div className="overflow-x-auto">
-        <ScrollArea className="h-[600px]">
+        <ScrollArea className="max-h-[800px]">
           <TableContent />
         </ScrollArea>
       </div>

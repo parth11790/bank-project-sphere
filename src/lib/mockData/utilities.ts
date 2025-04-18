@@ -46,12 +46,18 @@ export const getBankById = (bankId: string) => {
 
 // Mock function for use of proceeds data
 export const getUseOfProceedsForProject = (projectId: string) => {
-  // Just return some sample data for demonstration
   return [
-    { id: 1, overall_category: 'Land', row_name: 'LAND & BUILDING', value: 500000 },
-    { id: 2, overall_category: 'Construction', row_name: 'CONSTRUCTION', value: 1000000 },
-    { id: 3, overall_category: 'Furniture Fixtures and Equipment', row_name: 'EQUIPMENT', value: 300000 },
-    { id: 4, overall_category: 'Working Capital', row_name: 'WORKING CAPITAL', value: 200000 }
+    { id: 1, overall_category: 'Land', row_name: 'LAND & BUILDING', value: 1250000 },
+    { id: 2, overall_category: 'Land', row_name: 'LAND IMPROVEMENTS', value: 450000 },
+    { id: 3, overall_category: 'Construction', row_name: 'NEW CONSTRUCTION', value: 2500000 },
+    { id: 4, overall_category: 'Construction', row_name: 'RENOVATION', value: 750000 },
+    { id: 5, overall_category: 'Construction', row_name: 'TENANT IMPROVEMENTS', value: 350000 },
+    { id: 6, overall_category: 'Furniture Fixtures and Equipment', row_name: 'EQUIPMENT', value: 850000 },
+    { id: 7, overall_category: 'Furniture Fixtures and Equipment', row_name: 'FURNITURE', value: 225000 },
+    { id: 8, overall_category: 'Working Capital', row_name: 'WORKING CAPITAL', value: 500000 },
+    { id: 9, overall_category: 'Working Capital', row_name: 'INVENTORY', value: 350000 },
+    { id: 10, overall_category: 'Other', row_name: 'CLOSING COSTS', value: 175000 },
+    { id: 11, overall_category: 'Other', row_name: 'CONTINGENCY', value: 250000 }
   ];
 };
 
