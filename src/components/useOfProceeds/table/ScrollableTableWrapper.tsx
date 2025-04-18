@@ -8,7 +8,7 @@ interface ScrollableTableWrapperProps {
 
 const ScrollableTableWrapper: React.FC<ScrollableTableWrapperProps> = ({ children }) => {
   return (
-    <ScrollArea className="max-h-[800px]">
+    <ScrollArea className="max-h-[calc(100vh-200px)]">
       {children}
     </ScrollArea>
   );
