@@ -17,7 +17,7 @@ import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
 
-const Project: React.FC = () => {
+const Project = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
