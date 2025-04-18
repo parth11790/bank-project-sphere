@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, User } from 'lucide-react';
@@ -109,6 +108,9 @@ const Header: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/settings')}>
                 Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/admin-settings')}>
+                Admin Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate('/')}>
