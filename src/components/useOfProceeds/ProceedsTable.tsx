@@ -52,12 +52,10 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
   );
 
   return (
-    <div className="relative">
-      <div className="overflow-x-auto">
-        <ScrollableTableWrapper>
-          {tableContent}
-        </ScrollableTableWrapper>
-      </div>
+    <div className="relative w-full">
+      <ScrollableTableWrapper>
+        {tableContent}
+      </ScrollableTableWrapper>
 
       <FullscreenButton onClick={() => setIsFullscreen(true)} />
 

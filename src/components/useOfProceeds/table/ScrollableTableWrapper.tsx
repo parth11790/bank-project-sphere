@@ -8,9 +8,13 @@ interface ScrollableTableWrapperProps {
 
 const ScrollableTableWrapper: React.FC<ScrollableTableWrapperProps> = ({ children }) => {
   return (
-    <ScrollArea className="h-auto max-h-[calc(100vh-200px)] overflow-y-auto">
-      {children}
-    </ScrollArea>
+    <div className="w-full overflow-x-auto">
+      <ScrollArea className="h-auto max-h-[calc(100vh-200px)]">
+        <div className="min-w-max">
+          {children}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 
