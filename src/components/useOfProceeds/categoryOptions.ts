@@ -10,7 +10,7 @@ const purchaseCategories: CategoryOption[] = [
 
 // Land related categories
 const landCategories: CategoryOption[] = [
-  { overall: 'land', category: 'landAndBuilding' },
+  { overall: 'landAndBuilding', category: 'landAndBuilding' },
 ];
 
 // Construction related categories
@@ -43,12 +43,12 @@ const otherCategories: CategoryOption[] = [
 // Soft costs related categories
 const softCostsCategories: CategoryOption[] = [
   { overall: 'softCosts', category: 'appraisals' },
-  { overall: 'softCosts', category: 'epa' },
+  { overall: 'softCosts', category: 'epaReport' },
   { overall: 'softCosts', category: 'asbestosInspection' },
   { overall: 'softCosts', category: 'businessValuation' },
   { overall: 'softCosts', category: 'legalFees' },
   { overall: 'softCosts', category: 'sbaLoanPackagingFee' },
-  { overall: 'softCosts', category: 'title' },
+  { overall: 'softCosts', category: 'titleFees' },
   { overall: 'softCosts', category: 'surveyUccSearches' },
   { overall: 'softCosts', category: 'vehicleTitleFees' },
   { overall: 'softCosts', category: 'sbaGuarantyFee' },
