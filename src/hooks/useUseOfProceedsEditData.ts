@@ -39,7 +39,21 @@ export const useUseOfProceedsEditData = ({
   // Handle value change when editing
   const handleValueChange = (rowName: string, columnName: string, value: string) => {
     const key = `${rowName}-${columnName}`;
-    const numericValue = value === '' ? 0 : Number(value);
+    
+    // Parse the value, ensuring it's either a valid number or 0
+    let numericValue: number;
+    if (value === '') {
+      numericValue = 0;
+    } else {
+      // Remove commas, spaces, and any other non-numeric characters except the decimal point
+      const sanitizedValue = value.replace(/[^0-9.]/g, '');
+      numericValue = parseFloat(sanitizedValue);
+      
+      // If parsing results in NaN, default to 0
+      if (isNaN(numericValue)) {
+        numericValue = 0;
+      }
+    }
     
     setEditedData(prev => ({
       ...prev,

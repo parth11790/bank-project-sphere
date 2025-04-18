@@ -29,8 +29,10 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
         <Input
           type="number"
           className="w-full text-right h-6 text-xs"
-          value={value}
+          value={value === 0 ? '' : value}
           onChange={(e) => onChange?.(rowName, columnName, e.target.value)}
+          min="0"
+          step="1"
         />
       ) : (
         <motion.div
