@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getCategoriesByOverallType, getOverallTypeForCategory } from '@/components/useOfProceeds/categoryOptions';
@@ -27,23 +28,31 @@ export const getUseOfProceeds = async (projectId: string) => {
   }
 };
 
-export const saveUseOfProceeds = async (projectId: string, rowData: {
+export const saveUseOfProceeds = async (projectId: string, proceedsData: Array<{
   row_name: string;
   column_name: string;
   value: number;
-  overall_category: string;
-}) => {
+  overall_category?: string;
+}>) => {
   try {
+    // Format the data for upsert
+    const formattedData = proceedsData.map(item => ({
+      project_id: projectId,
+      row_name: item.row_name,
+      column_name: item.column_name,
+      value: item.value,
+      overall_category: item.overall_category || ''
+    }));
+    
     const { data, error } = await supabase
       .from('use_of_proceeds')
-      .upsert({
-        project_id: projectId,
-        ...rowData
-      }, {
+      .upsert(formattedData, {
         onConflict: 'project_id,row_name,column_name'
       });
-
+    
     if (error) throw error;
+    
+    toast.success('Use of proceeds data saved successfully');
     return data;
   } catch (error: any) {
     console.error('Error saving use of proceeds:', error.message);

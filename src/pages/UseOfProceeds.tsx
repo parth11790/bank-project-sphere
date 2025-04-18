@@ -5,11 +5,10 @@ import { useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import EnhancedUseOfProceedsTable from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 import { getProjectById } from '@/lib/mockData';
-import { getUseOfProceedsForProject } from '@/lib/mockData/utilities';
 import { toast } from 'sonner';
 import UseOfProceedsHeader from '@/components/useOfProceeds/UseOfProceedsHeader';
 import EmptyState from '@/components/useOfProceeds/EmptyState';
-import { useUseOfProceedsLoanTypes } from '@/hooks/useUseOfProceedsLoanTypes';
+import { getUseOfProceeds, saveUseOfProceeds } from '@/services/proceedsService';
 
 interface Project {
   project_id: string;
@@ -26,15 +25,39 @@ interface Project {
 const UseOfProceeds: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId || '');
+  const [proceedsData, setProceedsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
-  const proceedsData = getUseOfProceedsForProject(selectedProjectId);
-  const { handleSave } = useUseOfProceedsLoanTypes();
 
   useEffect(() => {
     if (projectId) {
       setSelectedProjectId(projectId);
+      fetchProceedsData(projectId);
     }
   }, [projectId]);
+
+  const fetchProceedsData = async (id: string) => {
+    setLoading(true);
+    try {
+      const data = await getUseOfProceeds(id);
+      setProceedsData(data);
+    } catch (error) {
+      console.error("Error fetching proceeds data:", error);
+      toast.error("Failed to load use of proceeds data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (updatedData: any) => {
+    try {
+      await saveUseOfProceeds(selectedProjectId, updatedData);
+      // Refresh data after save
+      fetchProceedsData(selectedProjectId);
+    } catch (error) {
+      console.error("Error saving proceeds data:", error);
+    }
+  };
 
   const handleExport = () => {
     toast("Exporting data to spreadsheet (Demo only)");
@@ -55,11 +78,17 @@ const UseOfProceeds: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <EnhancedUseOfProceedsTable 
-              projectId={selectedProjectId} 
-              initialData={proceedsData}
-              onSave={handleSave} 
-            />
+            {loading ? (
+              <div className="flex justify-center p-8">
+                <div className="animate-pulse">Loading use of proceeds data...</div>
+              </div>
+            ) : (
+              <EnhancedUseOfProceedsTable 
+                projectId={selectedProjectId} 
+                initialData={proceedsData}
+                onSave={handleSave} 
+              />
+            )}
           </motion.div>
         ) : (
           <EmptyState />

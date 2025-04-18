@@ -4,6 +4,7 @@ import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/useOfProceed
 import { useUseOfProceedsFormatting } from '@/hooks/useUseOfProceedsFormatting';
 import { useTableCalculations } from '@/hooks/useTableCalculations';
 import { FormattedTableData } from '@/hooks/useTableData';
+import { toast } from 'sonner';
 
 interface UseUseOfProceedsEditDataProps {
   initialData: Array<{
@@ -32,6 +33,7 @@ export const useUseOfProceedsEditData = ({
 }: UseUseOfProceedsEditDataProps) => {
   const [editMode, setEditMode] = useState(false);
   const [editedData, setEditedData] = useState<{ [key: string]: number }>({});
+  const [isSaving, setIsSaving] = useState(false);
   const { formatCurrency } = useUseOfProceedsFormatting();
 
   // Handle value change when editing
@@ -69,45 +71,57 @@ export const useUseOfProceedsEditData = ({
   };
 
   // Handle save
-  const handleSave = () => {
-    // Create updated data in the original format
-    const updatedData = [...initialData];
+  const handleSave = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
     
-    Object.entries(editedData).forEach(([key, value]) => {
-      const [rowName, columnName] = key.split('-');
-      const itemIndex = updatedData.findIndex(
-        item => item.row_name === rowName && item.column_name === columnName
-      );
+    try {
+      // Create updated data in the original format
+      const updatedData = [...initialData];
       
-      // Find the overall category for this row
-      const row = rows.find(r => r.row_name === rowName);
-      const overallCategory = row?.overall_category || '';
+      Object.entries(editedData).forEach(([key, value]) => {
+        const [rowName, columnName] = key.split('-');
+        const itemIndex = updatedData.findIndex(
+          item => item.row_name === rowName && item.column_name === columnName
+        );
+        
+        // Find the overall category for this row
+        const row = rows.find(r => r.row_name === rowName);
+        const overallCategory = row?.overall_category || '';
+        
+        if (itemIndex >= 0) {
+          updatedData[itemIndex] = {
+            ...updatedData[itemIndex],
+            value,
+            overall_category: overallCategory
+          };
+        } else {
+          // Add a new item if it doesn't exist
+          updatedData.push({
+            project_id: projectId,
+            column_name: columnName,
+            row_name: rowName,
+            overall_category: overallCategory,
+            value
+          });
+        }
+      });
       
-      if (itemIndex >= 0) {
-        updatedData[itemIndex] = {
-          ...updatedData[itemIndex],
-          value,
-          overall_category: overallCategory
-        };
+      if (onSave) {
+        await onSave(updatedData);
+        toast.success("Data saved successfully");
       } else {
-        // Add a new item if it doesn't exist
-        updatedData.push({
-          proceeds_id: `proc_new_${Date.now()}`,
-          project_id: projectId,
-          column_name: columnName,
-          row_name: rowName,
-          overall_category: overallCategory,
-          value
-        });
+        toast.error("Save function not provided");
       }
-    });
-    
-    if (onSave) {
-      onSave(updatedData);
+      
+      setEditMode(false);
+      setEditedData({});
+    } catch (error) {
+      console.error("Error saving data:", error);
+      toast.error("Failed to save data");
+    } finally {
+      setIsSaving(false);
     }
-    
-    setEditMode(false);
-    setEditedData({});
   };
 
   // Handle cancel
@@ -125,6 +139,7 @@ export const useUseOfProceedsEditData = ({
     calculateRowTotal,
     formatCurrency,
     handleSave,
-    handleCancel
+    handleCancel,
+    isSaving
   };
 };
