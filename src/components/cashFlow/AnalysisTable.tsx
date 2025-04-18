@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -150,7 +151,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     
     if (editableRows.includes(row.key)) {
       return (
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end space-x-2 py-1">
           <Input
             type="text"
             value={formatCurrency(value)}
@@ -167,7 +168,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     }
 
     return (
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end space-x-2 py-1">
         {formatCurrency(value)}
         {showChangeIndicator(row.key) && renderChangeIndicator(row.key, periodIndex)}
       </div>
