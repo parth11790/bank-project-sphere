@@ -1,17 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import EnhancedUseOfProceedsTable from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getProjectById } from '@/lib/mockData';
 import { getUseOfProceedsForProject } from '@/lib/mockData/utilities';
 import { toast } from 'sonner';
 import { ChevronLeft, Download, FileSpreadsheet } from 'lucide-react';
 
-// Define Project interface
 interface Project {
   project_id: string;
   project_name: string;
@@ -30,7 +27,6 @@ const UseOfProceeds: React.FC = () => {
   const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
   const proceedsData = getUseOfProceedsForProject(selectedProjectId);
 
-  // Update the selectedProjectId if the URL param changes
   useEffect(() => {
     if (projectId) {
       setSelectedProjectId(projectId);
@@ -38,7 +34,6 @@ const UseOfProceeds: React.FC = () => {
   }, [projectId]);
 
   const handleSave = (updatedData: any) => {
-    // Determine loan types based on Use of Proceeds data
     const hasConstruction = updatedData.some((item: any) => 
       item.overall_category === 'Construction' && item.value > 0
     );
@@ -51,7 +46,6 @@ const UseOfProceeds: React.FC = () => {
       item.overall_category === 'Working Capital' && item.value > 0
     );
     
-    // Determine appropriate loan types based on the proceeds data
     const determinedLoanTypes = [];
     
     if (hasConstruction) {
@@ -66,7 +60,6 @@ const UseOfProceeds: React.FC = () => {
       determinedLoanTypes.push('Express');
     }
     
-    // If no specific types determined, default to Conventional
     if (determinedLoanTypes.length === 0) {
       determinedLoanTypes.push('Conventional');
     }
@@ -89,7 +82,9 @@ const UseOfProceeds: React.FC = () => {
         >
           <div>
             <h1 className="text-3xl font-bold mb-1">Use of Proceeds</h1>
-            <p className="text-muted-foreground">Track and manage project financial allocations</p>
+            {selectedProject && (
+              <p className="text-muted-foreground">{selectedProject.project_name}</p>
+            )}
           </div>
           
           <div className="flex items-center gap-3">
@@ -105,46 +100,6 @@ const UseOfProceeds: React.FC = () => {
               <span>Export</span>
             </Button>
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-6"
-        >
-          <Card className="border-border/50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-xl">Project Information</CardTitle>
-              <CardDescription>Financial data for this project</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {selectedProject && (
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm">
-                  <div className="font-semibold">{selectedProject.project_name}</div>
-                  <span className="hidden sm:inline text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">Project Type:</span>
-                  <span className="font-medium">{selectedProject.project_type}</span>
-                  <span className="hidden sm:inline text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">Loan Amount:</span>
-                  <span className="font-medium">
-                    {new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      maximumFractionDigits: 0,
-                    }).format(selectedProject.loan_amount)}
-                  </span>
-                  {selectedProject.city && selectedProject.state && (
-                    <>
-                      <span className="hidden sm:inline text-muted-foreground">•</span>
-                      <span className="text-muted-foreground">Location:</span>
-                      <span className="font-medium">{selectedProject.city}, {selectedProject.state}</span>
-                    </>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </motion.div>
 
         {selectedProjectId ? (
