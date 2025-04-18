@@ -112,12 +112,12 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
 
   return (
     <div className="space-y-4">
-      <Card className="w-full overflow-hidden border-border/50">
+      <Card className="w-full overflow-hidden border-border/50 text-[10px]">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-xl font-semibold">Use of Proceeds</CardTitle>
-              <CardDescription>Financial breakdown for the project</CardDescription>
+              <CardTitle className="text-base font-semibold">Use of Proceeds</CardTitle>
+              <CardDescription className="text-[10px]">Financial breakdown for the project</CardDescription>
             </div>
             <BaseTableActions 
               editMode={editMode}
@@ -142,6 +142,7 @@ const UseOfProceedsTable: React.FC<UseOfProceedsTableProps> = ({ projectId, data
               formatCurrency={formatCurrency}
               categoryOptions={categoryOptions}
               validationErrors={validationErrors}
+              className="text-[10px]"
             />
           </div>
         </CardContent>

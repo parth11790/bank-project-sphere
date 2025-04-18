@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -8,7 +7,7 @@ import { UseOfProceedsColumn, UseOfProceedsRow } from './EnhancedUseOfProceedsTa
 import { Trash2, Maximize2, Minimize2 } from 'lucide-react';
 import { categoryOptions } from './categoryOptions';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Dialog from '@radix-ui/react/dialog';
 
 interface ProceedsTableProps {
   columns: UseOfProceedsColumn[];
@@ -43,12 +42,12 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow className="text-xs">
-          <TableHead className="w-[120px] bg-muted/30 font-medium sticky left-0 z-10 text-xs">Overall Category</TableHead>
-          <TableHead className="w-[150px] bg-muted/30 font-medium sticky left-[120px] z-10 text-xs">Category</TableHead>
+          <TableHead className="w-[120px] bg-muted/30 font-medium sticky left-0 z-10 text-[10px]">Overall Category</TableHead>
+          <TableHead className="w-[150px] bg-muted/30 font-medium sticky left-[120px] z-10 text-[10px]">Category</TableHead>
           {columns.map(column => (
-            <TableHead key={column.column_id} className="bg-muted/30 font-medium text-right text-xs">
+            <TableHead key={column.column_id} className="bg-muted/30 font-medium text-right text-[10px]">
               <div className="flex flex-col">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center text-[10px]">
                   <span>{column.column_name}</span>
                   {editMode && column.column_id !== 'col_1' && (
                     <Button 
@@ -62,7 +61,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
                   )}
                 </div>
                 {column.is_loan && (
-                  <div className="text-[10px] text-muted-foreground font-normal mt-0.5">
+                  <div className="text-[8px] text-muted-foreground font-normal mt-0.5">
                     <div>Rate: {column.interest_rate}% - Term: {column.term_years}yr</div>
                     <div>Monthly: {formatCurrency(column.monthly_payment || 0)}</div>
                   </div>
@@ -70,7 +69,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
               </div>
             </TableHead>
           ))}
-          <TableHead className="bg-accent/10 font-medium text-right text-xs border-l">Total</TableHead>
+          <TableHead className="bg-accent/10 font-medium text-right text-[10px] border-l">Total</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -83,7 +82,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
           return (
             <TableRow 
               key={row.row_id} 
-              className={`text-xs ${
+              className={`text-[10px] ${
                 row.row_name === 'TOTAL' 
                   ? 'bg-accent/5 font-semibold border-t border-t-border/50' 
                   : rowIndex % 2 === 0 ? 'bg-muted/5' : ''
@@ -93,14 +92,14 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
                 row.row_name === 'TOTAL' 
                   ? 'bg-accent/5' 
                   : rowIndex % 2 === 0 ? 'bg-muted/5' : 'bg-white'
-              } text-xs py-2`}>
+              } text-[10px] py-1`}>
                 {row.row_name === 'TOTAL' ? '' : overallCategory}
               </TableCell>
               <TableCell className={`font-medium sticky left-[120px] z-10 ${
                 row.row_name === 'TOTAL' 
                   ? 'bg-accent/5' 
                   : rowIndex % 2 === 0 ? 'bg-muted/5' : 'bg-white'
-              } text-xs py-2`}>
+              } text-[10px] py-1`}>
                 <div className="flex justify-between items-center">
                   <span>{row.row_name}</span>
                   {editMode && row.row_name !== 'TOTAL' && (
@@ -118,7 +117,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
               {columns.map((column, colIndex) => (
                 <TableCell 
                   key={column.column_id} 
-                  className={`text-right py-2 ${
+                  className={`text-right py-1 text-[10px] ${
                     colIndex === columns.length - 1 ? 'border-l' : ''
                   } ${row.row_name === 'TOTAL' ? 'bg-accent/5' : ''}`}
                 >
@@ -152,7 +151,7 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
                   )}
                 </TableCell>
               ))}
-              <TableCell className={`font-medium text-right text-xs py-2 border-l ${
+              <TableCell className={`font-medium text-right text-xs py-1 border-l ${
                 row.row_name === 'TOTAL' ? 'bg-accent/5 font-semibold' : ''
               }`}>
                 {formatCurrency(calculateRowTotal(row.row_name))}
