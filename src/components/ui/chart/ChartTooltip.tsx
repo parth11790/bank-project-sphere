@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 import { cn } from "@/lib/utils";
@@ -5,12 +6,21 @@ import { useChart } from "./ChartContext";
 
 export const ChartTooltip = RechartsPrimitive.Tooltip;
 
-interface ChartTooltipContentProps extends React.ComponentProps<"div">, React.ComponentProps<typeof RechartsPrimitive.Tooltip> {
+interface ChartTooltipContentProps extends Omit<React.ComponentProps<"div">, "content"> {
+  // Recharts tooltip props we want to support
+  active?: boolean;
+  payload?: Array<any>;
+  label?: any;
+  labelFormatter?: (label: any, payload: any[]) => React.ReactNode;
+  labelClassName?: string;
+  formatter?: (value: any, name: string, props: any, index: number, payload: any) => React.ReactNode;
+  // Custom props
+  color?: string;
+  nameKey?: string;
+  labelKey?: string;
   hideLabel?: boolean;
   hideIndicator?: boolean;
   indicator?: "line" | "dot" | "dashed";
-  nameKey?: string;
-  labelKey?: string;
 }
 
 export const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContentProps>(
