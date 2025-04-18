@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import IncomeStatementAnalysis from './IncomeStatementAnalysis';
 
 interface Period {
@@ -106,17 +106,59 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     return tableData[key][periodIndex] || 0;
   };
 
+  const calculateYearlyChange = (rowKey: string, periodIndex: number): number | null => {
+    if (periodIndex === 0) return null;
+    const currentValue = getDataSafely(rowKey, periodIndex);
+    const previousValue = getDataSafely(rowKey, periodIndex - 1);
+    
+    if (previousValue === 0) return null;
+    return ((currentValue - previousValue) / previousValue) * 100;
+  };
+
+  const showChangeIndicator = (rowKey: string): boolean => {
+    const indicatorRows = [
+      'grossRevenue',
+      'wages',
+      'cogs',
+      'noi',
+      'availableCF',
+      'excessCF'
+    ];
+    return indicatorRows.includes(rowKey);
+  };
+
+  const renderChangeIndicator = (rowKey: string, periodIndex: number) => {
+    const change = calculateYearlyChange(rowKey, periodIndex);
+    if (change === null) return null;
+
+    const isPositive = change > 0;
+    const IconComponent = isPositive ? ArrowUp : ArrowDown;
+    const colorClass = isPositive ? 'text-emerald-500' : 'text-red-500';
+
+    return (
+      <div className="inline-flex items-center gap-1 ml-2">
+        <IconComponent className={cn('h-4 w-4', colorClass)} />
+        <span className={cn('text-xs', colorClass)}>
+          {Math.abs(change).toFixed(1)}%
+        </span>
+      </div>
+    );
+  };
+
   const renderCell = (row: { key: string; label: string }, periodIndex: number) => {
     const value = getDataSafely(row.key, periodIndex);
     
     if (editableRows.includes(row.key)) {
       return (
-        <Input
-          type="text"
-          value={formatCurrency(value)}
-          onChange={(e) => handleValueChange(row.key, periodIndex, e.target.value)}
-          className="h-8 w-full text-right bg-transparent border-0 focus:ring-1"
-        />
+        <div className="flex items-center justify-end">
+          <Input
+            type="text"
+            value={formatCurrency(value)}
+            onChange={(e) => handleValueChange(row.key, periodIndex, e.target.value)}
+            className="h-8 w-full text-right bg-transparent border-0 focus:ring-1"
+          />
+          {showChangeIndicator(row.key) && renderChangeIndicator(row.key, periodIndex)}
+        </div>
       );
     }
 
@@ -124,7 +166,12 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
       return `${value.toFixed(1)}%`;
     }
 
-    return formatCurrency(value);
+    return (
+      <div className="flex items-center justify-end">
+        {formatCurrency(value)}
+        {showChangeIndicator(row.key) && renderChangeIndicator(row.key, periodIndex)}
+      </div>
+    );
   };
 
   return (
