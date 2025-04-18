@@ -7,7 +7,7 @@ import { UseOfProceedsColumn, UseOfProceedsRow } from './EnhancedUseOfProceedsTa
 import { Trash2, Maximize2, Minimize2 } from 'lucide-react';
 import { categoryOptions } from './categoryOptions';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import * as Dialog from '@radix-ui/react/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface ProceedsTableProps {
   columns: UseOfProceedsColumn[];
@@ -184,23 +184,16 @@ const ProceedsTable: React.FC<ProceedsTableProps> = ({
       <Dialog.Root open={isFullscreen} onOpenChange={setIsFullscreen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
-          <Dialog.Content className="fixed inset-4 z-50 bg-background rounded-lg shadow-lg overflow-hidden flex flex-col">
-            <div className="p-4 border-b flex justify-between items-center">
-              <Dialog.Title className="text-lg font-semibold">Use of Proceeds Table</Dialog.Title>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsFullscreen(false)}
-              >
-                <Minimize2 className="h-4 w-4" />
-              </Button>
-            </div>
+          <DialogContent className="fixed inset-4 z-50 bg-background rounded-lg shadow-lg overflow-hidden flex flex-col">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold">Use of Proceeds Table</DialogTitle>
+            </DialogHeader>
             <div className="flex-1 overflow-auto p-4">
               <ScrollArea className="h-full">
                 <TableContent />
               </ScrollArea>
             </div>
-          </Dialog.Content>
+          </DialogContent>
         </Dialog.Portal>
       </Dialog.Root>
     </div>

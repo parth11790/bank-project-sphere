@@ -16,6 +16,7 @@ interface BaseTableContentProps {
   formatCurrency: (value: number) => string;
   categoryOptions?: CategoryOption[];
   validationErrors?: { [key: string]: string };
+  className?: string; // Added className prop to fix the type error
 }
 
 const BaseTableContent: React.FC<BaseTableContentProps> = ({
@@ -28,10 +29,11 @@ const BaseTableContent: React.FC<BaseTableContentProps> = ({
   calculateColumnTotal,
   formatCurrency,
   categoryOptions,
-  validationErrors = {}
+  validationErrors = {},
+  className
 }) => {
   return (
-    <Table className="border-t">
+    <Table className={`border-t ${className || ''}`}>
       <TableHeader className="bg-muted/50">
         <TableRow>
           <TableHead className="w-[250px] font-medium">Category</TableHead>
