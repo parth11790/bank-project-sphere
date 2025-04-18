@@ -30,11 +30,25 @@ const UseOfProceeds: React.FC = () => {
   const proceedsData = getUseOfProceedsForProject(selectedProjectId);
   const { handleSave } = useUseOfProceedsLoanTypes();
 
+  // Virtualization optimization could be added here for extremely large datasets
+  const [dataLoaded, setDataLoaded] = useState(false);
+
   useEffect(() => {
     if (projectId) {
       setSelectedProjectId(projectId);
     }
   }, [projectId]);
+
+  useEffect(() => {
+    // Simulate data loading
+    setDataLoaded(false);
+    if (selectedProjectId) {
+      // This would be a real API call in a production app
+      setTimeout(() => {
+        setDataLoaded(true);
+      }, 300);
+    }
+  }, [selectedProjectId]);
 
   const handleExport = () => {
     toast("Exporting data to spreadsheet (Demo only)");
@@ -54,6 +68,7 @@ const UseOfProceeds: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            className="w-full overflow-hidden"
           >
             <EnhancedUseOfProceedsTable 
               projectId={selectedProjectId} 

@@ -44,15 +44,58 @@ export const getBankById = (bankId: string) => {
   };
 };
 
-// Mock function for use of proceeds data
+// Helper function to generate dynamic data for a specific overall category
+const generateCategoryData = (overall_category: string, baseAmount: number, varianceFactor = 0.3) => {
+  const categoryData = [];
+  // Generate 3-8 items per category
+  const itemCount = Math.floor(Math.random() * 6) + 3;
+  
+  const categoryWords: Record<string, string[]> = {
+    'Land': ['Land Acquisition', 'Property Purchase', 'Site Preparation', 'Land Survey', 'Environmental Assessment', 'Lot Development', 'Zoning Fees'],
+    'Construction': ['General Construction', 'Framing', 'Electrical', 'Plumbing', 'HVAC', 'Roofing', 'Flooring', 'Foundation', 'Insulation', 'Windows & Doors'],
+    'Furniture Fixtures and Equipment': ['Office Furniture', 'Machinery', 'IT Equipment', 'Computer Hardware', 'Production Equipment', 'Software Licenses', 'Vehicles', 'Specialized Tools'],
+    'Working Capital': ['Inventory', 'Payroll', 'Marketing', 'Operating Expenses', 'Insurance', 'Utilities', 'Lease Payments', 'Professional Fees', 'Training'],
+    'Other': ['Contingency', 'Miscellaneous', 'Closing Costs', 'Legal Fees', 'Permit Fees', 'Design Costs', 'Consulting']
+  };
+  
+  // Get random unique items for this category
+  const categoryItems = categoryWords[overall_category] || categoryWords['Other'];
+  const selectedItems = [...categoryItems].sort(() => 0.5 - Math.random()).slice(0, itemCount);
+  
+  // Create data for each item
+  selectedItems.forEach((item, index) => {
+    // Calculate a value with some randomness
+    const variance = (Math.random() * varianceFactor * 2) - varianceFactor;
+    const value = Math.round(baseAmount * (1 + variance) / itemCount);
+    
+    categoryData.push({
+      id: index + 1,
+      overall_category,
+      row_name: item,
+      value
+    });
+  });
+  
+  return categoryData;
+};
+
+// Enhanced mock function for use of proceeds data
 export const getUseOfProceedsForProject = (projectId: string) => {
-  // Just return some sample data for demonstration
-  return [
-    { id: 1, overall_category: 'Land', row_name: 'LAND & BUILDING', value: 500000 },
-    { id: 2, overall_category: 'Construction', row_name: 'CONSTRUCTION', value: 1000000 },
-    { id: 3, overall_category: 'Furniture Fixtures and Equipment', row_name: 'EQUIPMENT', value: 300000 },
-    { id: 4, overall_category: 'Working Capital', row_name: 'WORKING CAPITAL', value: 200000 }
-  ];
+  // Generate random but somewhat realistic data
+  const landValue = Math.round(Math.random() * 800000) + 400000; // $400k-$1.2M
+  const constructionValue = Math.round(Math.random() * 1500000) + 800000; // $800k-$2.3M
+  const equipmentValue = Math.round(Math.random() * 400000) + 200000; // $200k-$600k
+  const workingCapitalValue = Math.round(Math.random() * 300000) + 100000; // $100k-$400k
+  
+  // Generate data for each category
+  const landData = generateCategoryData('Land', landValue);
+  const constructionData = generateCategoryData('Construction', constructionValue);
+  const equipmentData = generateCategoryData('Furniture Fixtures and Equipment', equipmentValue);
+  const workingCapitalData = generateCategoryData('Working Capital', workingCapitalValue);
+  const otherData = generateCategoryData('Other', Math.round(Math.random() * 200000) + 50000);
+  
+  // Combine all data
+  return [...landData, ...constructionData, ...equipmentData, ...workingCapitalData, ...otherData];
 };
 
 // Helper to simulate seasonal variations in cash flow
