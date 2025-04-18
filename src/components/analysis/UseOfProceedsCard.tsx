@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -62,16 +63,10 @@ const UseOfProceedsCard: React.FC<UseOfProceedsCardProps> = ({
             <span>{formatCurrency(proceedsTotals.overall)}</span>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          className="w-full mt-4"
-          onClick={() => navigate(`/project/use-of-proceeds/${projectId}`)}
-        >
-          View Full Details
-        </Button>
       </CardContent>
     </Card>
   );
 };
 
 export default UseOfProceedsCard;
+
