@@ -1,43 +1,48 @@
 
 import React from 'react';
-import { CardHeader } from '@/components/ui/card';
-import TableActions from './TableActions';
+import { TableHeader, TableRow, TableHead } from '@/components/ui/table';
+import TableHeaderCell from './TableHeaderCell';
+import { UseOfProceedsColumn } from '@/components/UseOfProceedsTable';
 
 interface TableHeaderProps {
+  columns: UseOfProceedsColumn[];
   editMode: boolean;
-  onEdit: () => void;
-  onSave: () => void;
-  onCancel: () => void;
-  onAddColumn: () => void;
-  onAddRow: () => void;
+  formatCurrency: (value: number) => string;
+  handleDeleteColumn: (columnId: string) => void;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
+  columns,
   editMode,
-  onEdit,
-  onSave,
-  onCancel,
-  onAddColumn,
-  onAddRow
+  formatCurrency,
+  handleDeleteColumn
 }) => {
   return (
-    <CardHeader className="pb-3">
-      {editMode && (
-        <div className="mt-4 p-3 bg-muted/40 rounded-md border border-border/30 text-sm">
-          <p className="text-muted-foreground">
-            <strong>Editing Mode:</strong> Make changes to the table structure and values. Add columns for funding sources or rows for expense categories.
-          </p>
-        </div>
-      )}
-      <TableActions 
-        editMode={editMode}
-        onEdit={onEdit}
-        onSave={onSave}
-        onCancel={onCancel}
-        onAddColumn={onAddColumn}
-        onAddRow={onAddRow}
-      />
-    </CardHeader>
+    <TableHeader>
+      <TableRow className="text-xs">
+        <TableHead className="w-[120px] bg-muted/30 font-medium sticky left-0 z-10 text-[10px]">
+          Overall Category
+        </TableHead>
+        <TableHead className="w-[150px] bg-muted/30 font-medium sticky left-[120px] z-10 text-[10px]">
+          Category
+        </TableHead>
+        {columns.map(column => (
+          <TableHeaderCell
+            key={column.column_id}
+            columnName={column.column_name}
+            isLoan={column.is_loan}
+            interestRate={column.interest_rate}
+            termYears={column.term_years}
+            monthlyPayment={column.monthly_payment}
+            editMode={editMode}
+            columnId={column.column_id}
+            onDelete={handleDeleteColumn}
+            formatCurrency={formatCurrency}
+          />
+        ))}
+        <TableHead className="bg-accent/10 font-medium text-right text-[10px] border-l">Total</TableHead>
+      </TableRow>
+    </TableHeader>
   );
 };
 
