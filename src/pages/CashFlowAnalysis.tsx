@@ -44,7 +44,7 @@ const CashFlowAnalysis: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col gap-6"
+        className="max-w-[1400px] mx-auto space-y-6"
       >
         <CashFlowHeader 
           projectName={project?.project_name || ''} 
