@@ -42,12 +42,18 @@ export const useUseOfProceedsEditData = ({
     
     // Parse the value, ensuring it's either a valid number or 0
     let numericValue: number;
+    
     if (value === '') {
       numericValue = 0;
     } else {
       // Remove commas, spaces, and any other non-numeric characters except the decimal point
       const sanitizedValue = value.replace(/[^0-9.]/g, '');
-      numericValue = parseFloat(sanitizedValue);
+      
+      // Prevent multiple decimal points
+      const parts = sanitizedValue.split('.');
+      const cleanValue = parts[0] + (parts.length > 1 ? '.' + parts[1] : '');
+      
+      numericValue = parseFloat(cleanValue);
       
       // If parsing results in NaN, default to 0
       if (isNaN(numericValue)) {
@@ -56,13 +62,10 @@ export const useUseOfProceedsEditData = ({
     }
     
     // Update the edited data without causing unnecessary re-renders
-    setEditedData(prev => {
-      const updatedData = {
-        ...prev,
-        [key]: numericValue
-      };
-      return updatedData;
-    });
+    setEditedData(prev => ({
+      ...prev,
+      [key]: numericValue
+    }));
   };
 
   // Get display value for a cell (either edited or original)

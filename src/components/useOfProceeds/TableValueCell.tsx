@@ -25,14 +25,24 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
 }) => {
   // Track if this cell is being edited
   const [isFocused, setIsFocused] = useState(false);
+  const [localValue, setLocalValue] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Initialize local value when external value changes or on first render
+  useEffect(() => {
+    setLocalValue(value === 0 ? '' : value.toString());
+  }, [value]);
   
   // Re-focus the input after a render if this cell was focused
   useEffect(() => {
     if (editMode && isFocused && inputRef.current) {
       inputRef.current.focus();
+      
+      // Place cursor at the end of input text
+      const len = localValue.length;
+      inputRef.current.setSelectionRange(len, len);
     }
-  }, [editMode, isFocused, value]);
+  }, [editMode, isFocused, localValue]);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -40,10 +50,21 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
 
   const handleBlur = () => {
     setIsFocused(false);
+    
+    // When losing focus, make sure the parent component gets the final value
+    if (onChange) {
+      onChange(rowName, columnName, localValue);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange?.(rowName, columnName, e.target.value);
+    const newValue = e.target.value;
+    setLocalValue(newValue);
+    
+    // Also update parent component
+    if (onChange) {
+      onChange(rowName, columnName, newValue);
+    }
   };
 
   return (
@@ -51,14 +72,16 @@ const TableValueCell: React.FC<TableValueCellProps> = ({
       {editMode && !isTotal ? (
         <Input
           ref={inputRef}
-          type="number"
+          type="text" // Changed from "number" to allow more control
           className="w-full text-right h-6 text-xs"
-          value={value === 0 ? '' : value}
+          value={localValue}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
           min="0"
           step="1"
+          inputMode="numeric" // Better for mobile
+          pattern="[0-9]*" // Ensures only numbers
         />
       ) : (
         <motion.div
