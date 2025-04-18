@@ -5,6 +5,7 @@ import { useTableData } from '@/hooks/useTableData';
 import { useUseOfProceedsColumns } from '@/hooks/useUseOfProceedsColumns';
 import { useUseOfProceedsRows } from '@/hooks/useUseOfProceedsRows';
 import { useUseOfProceedsEditData } from '@/hooks/useUseOfProceedsEditData';
+import { categoryOptions } from '@/components/useOfProceeds/categoryOptions';
 
 interface UseEnhancedUseOfProceedsTableProps {
   projectId: string;
@@ -25,18 +26,27 @@ export const useEnhancedUseOfProceedsTable = ({
   initialData,
   onSave
 }: UseEnhancedUseOfProceedsTableProps) => {
-  // Convert the mock columns to our enhanced format
-  const initialColumns = [
-    { column_id: 'col_1', column_name: 'Value', is_loan: false },
-    { column_id: 'col_2', column_name: 'Percent', is_loan: false }
+  // Initialize with all default columns
+  const initialColumns: UseOfProceedsColumn[] = [
+    { column_id: 'col_1', column_name: 'Borrower Equity', is_loan: false },
+    { column_id: 'col_2', column_name: 'Borrower Contribution', is_loan: false },
+    { column_id: 'col_3', column_name: 'Seller or Participant', is_loan: true, interest_rate: 5, term_years: 10, amortization_months: 120 },
+    { column_id: 'col_4', column_name: 'Seller (Standby)', is_loan: true, interest_rate: 5, term_years: 10, amortization_months: 120 },
+    { column_id: 'col_5', column_name: '7(a)', is_loan: true, interest_rate: 6, term_years: 25, amortization_months: 300 },
+    { column_id: 'col_6', column_name: '504', is_loan: true, interest_rate: 5.5, term_years: 25, amortization_months: 300 },
+    { column_id: 'col_7', column_name: 'Express', is_loan: true, interest_rate: 7, term_years: 10, amortization_months: 120 },
+    { column_id: 'col_8', column_name: 'Loan 4', is_loan: true, interest_rate: 6, term_years: 15, amortization_months: 180 }
   ];
 
-  const initialRows = [
-    { row_id: 'row_1', row_name: 'Land', overall_category: 'Real Estate' },
-    { row_id: 'row_2', row_name: 'Buildings', overall_category: 'Real Estate' },
-    { row_id: 'row_3', row_name: 'Equipment', overall_category: 'Equipment' },
-    { row_id: 'row_4', row_name: 'Working Capital', overall_category: 'Working Capital' },
-    { row_id: 'row_5', row_name: 'TOTAL', overall_category: '' }
+  // Initialize with all category options as rows
+  const initialRows: UseOfProceedsRow[] = [
+    ...categoryOptions.map((option, index) => ({
+      row_id: `row_${index}`,
+      row_name: option.category,
+      overall_category: option.overall
+    })),
+    // Add TOTAL row at the end
+    { row_id: 'row_total', row_name: 'TOTAL', overall_category: '' }
   ];
   
   // State for dialogs - Explicitly initialize both to false to prevent auto-opening
