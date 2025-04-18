@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
@@ -10,6 +9,7 @@ import { toast } from 'sonner';
 import UseOfProceedsHeader from '@/components/useOfProceeds/UseOfProceedsHeader';
 import EmptyState from '@/components/useOfProceeds/EmptyState';
 import { useUseOfProceedsLoanTypes } from '@/hooks/useUseOfProceedsLoanTypes';
+import { useSidebar } from '@/components/ui/sidebar';
 
 interface Project {
   project_id: string;
@@ -29,6 +29,11 @@ const UseOfProceeds: React.FC = () => {
   const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
   const proceedsData = getUseOfProceedsForProject(selectedProjectId);
   const { handleSave } = useUseOfProceedsLoanTypes();
+  const { setOpen } = useSidebar();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [setOpen]);
 
   useEffect(() => {
     if (projectId) {
