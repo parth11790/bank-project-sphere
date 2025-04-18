@@ -1,4 +1,3 @@
-
 import { users } from './users';
 import { businesses } from './businesses';
 import { businesses2 } from './businesses2';
@@ -46,7 +45,17 @@ export const getBankById = (bankId: string) => {
 
 // Mock function for use of proceeds data
 export const getUseOfProceedsForProject = (projectId: string) => {
-  // Just return some sample data for demonstration
+  // For project_5, we'll update the mock data as requested
+  if (projectId === 'project_5') {
+    return [
+      { id: 1, overall_category: '7(a)', row_name: 'LAND & BUILDING', value: 500000 },
+      { id: 2, overall_category: '7(a)', row_name: 'CONSTRUCTION', value: 1000000 },
+      { id: 3, overall_category: '504', row_name: 'EQUIPMENT', value: 300000 },
+      { id: 4, overall_category: '504', row_name: 'WORKING CAPITAL', value: 1400000 }
+    ];
+  }
+  
+  // Keep existing implementation for other projects
   return [
     { id: 1, overall_category: 'Land', row_name: 'LAND & BUILDING', value: 500000 },
     { id: 2, overall_category: 'Construction', row_name: 'CONSTRUCTION', value: 1000000 },
