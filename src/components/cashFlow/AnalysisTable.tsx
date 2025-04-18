@@ -1,7 +1,7 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import IncomeStatementAnalysis from './IncomeStatementAnalysis';
 
@@ -18,6 +18,23 @@ interface AnalysisTableProps {
 }
 
 const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, mockData }) => {
+  const [tableData, setTableData] = useState(mockData);
+
+  // Define which rows are editable
+  const editableRows = [
+    'grossRevenue',
+    'wages',
+    'cogs',
+    'depreciation',
+    'amortization',
+    'interest',
+    'borrowerOC',
+    'rentAddback',
+    'depAdjM1',
+    'adjustments',
+    'bookIncome'
+  ];
+
   // Define the rows with a consistent key that maps to mockData
   const rows = [
     { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
@@ -72,13 +89,41 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     }
   };
 
+  const handleValueChange = (rowKey: string, periodIndex: number, value: string) => {
+    const numericValue = parseFloat(value.replace(/[^0-9.-]+/g, '')) || 0;
+    setTableData(prev => ({
+      ...prev,
+      [rowKey]: prev[rowKey].map((val, idx) => idx === periodIndex ? numericValue : val)
+    }));
+  };
+
   // Helper function to safely get data with fallback
   const getDataSafely = (key: string, periodIndex: number): number => {
-    if (!mockData[key] || !Array.isArray(mockData[key])) {
-      return 0; // Return 0 as fallback if data doesn't exist
+    if (!tableData[key] || !Array.isArray(tableData[key])) {
+      return 0;
     }
+    return tableData[key][periodIndex] || 0;
+  };
+
+  const renderCell = (row: { key: string; label: string }, periodIndex: number) => {
+    const value = getDataSafely(row.key, periodIndex);
     
-    return mockData[key][periodIndex] || 0;
+    if (editableRows.includes(row.key)) {
+      return (
+        <Input
+          type="text"
+          value={formatCurrency(value)}
+          onChange={(e) => handleValueChange(row.key, periodIndex, e.target.value)}
+          className="w-32 text-right bg-transparent"
+        />
+      );
+    }
+
+    if (row.label === 'Growth' || row.label === 'Gross Margin' || row.label === 'NOM') {
+      return `${value.toFixed(1)}%`;
+    }
+
+    return formatCurrency(value);
   };
 
   return (
@@ -106,8 +151,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
             </TableHeader>
             <TableBody>
               {rows.map((row, index) => {
-                const isTotal = row.bold;
-                
                 return (
                   <TableRow 
                     key={index} 
@@ -119,23 +162,18 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                     <TableCell className="font-medium">
                       {row.label}
                     </TableCell>
-                    {periods.map((_, periodIndex) => {
-                      const value = getDataSafely(row.key, periodIndex);
-                      
-                      return (
-                        <TableCell 
-                          key={periodIndex} 
-                          className={cn(
-                            "text-right",
-                            row.negative && "text-red-600 dark:text-red-400"
-                          )}
-                        >
-                          {row.label === 'Growth' || row.label === 'Gross Margin' || row.label === 'NOM'
-                            ? `${value.toFixed(1)}%`
-                            : formatCurrency(value)}
-                        </TableCell>
-                      );
-                    })}
+                    {periods.map((_, periodIndex) => (
+                      <TableCell 
+                        key={periodIndex} 
+                        className={cn(
+                          "text-right",
+                          row.negative && "text-red-600 dark:text-red-400",
+                          editableRows.includes(row.key) && "p-0"
+                        )}
+                      >
+                        {renderCell(row, periodIndex)}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 );
               })}
