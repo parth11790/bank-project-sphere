@@ -5,6 +5,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/UseOfProceedsTable';
 import { CategoryOption } from '@/components/useOfProceeds/categoryOptions';
 
+// Utility function to convert camelCase or PascalCase to regular text
+const convertToRegularText = (text: string): string => {
+  if (!text) return text;
+  
+  // Replace camelCase or PascalCase with spaces
+  return text
+    .replace(/([A-Z])/g, ' $1')  // Insert space before capital letters
+    .replace(/^./, function(str){ return str.toUpperCase(); })  // Capitalize first letter
+    .trim();
+};
+
 interface BaseTableContentProps {
   columns: UseOfProceedsColumn[];
   rows: UseOfProceedsRow[];
@@ -36,10 +47,15 @@ const BaseTableContent: React.FC<BaseTableContentProps> = ({
     <Table className={`border-t ${className || ''}`}>
       <TableHeader className="bg-muted/50">
         <TableRow>
-          <TableHead className="w-[250px] font-medium">Category</TableHead>
+          <TableHead className="w-[250px] font-medium">
+            Overall Category
+          </TableHead>
+          <TableHead className="w-[250px] font-medium">
+            Category
+          </TableHead>
           {columns.map(col => (
             <TableHead key={col.column_id} className="font-medium text-right min-w-[120px]">
-              {col.column_name}
+              {convertToRegularText(col.column_name)}
             </TableHead>
           ))}
           <TableHead className="font-medium text-right min-w-[120px]">TOTAL</TableHead>
@@ -58,10 +74,13 @@ const BaseTableContent: React.FC<BaseTableContentProps> = ({
           return (
             <TableRow key={row.row_id} className={row.row_name === 'TOTAL' ? 'border-t-2' : ''}>
               <TableCell className={`font-medium ${cellClass}`}>
-                {row.row_name}
+                {convertToRegularText(row.overall_category || '')}
+              </TableCell>
+              <TableCell className={`font-medium ${cellClass}`}>
+                {convertToRegularText(row.row_name)}
                 {row.overall_category && row.row_name !== 'TOTAL' && (
                   <span className="block text-xs text-muted-foreground">
-                    {row.overall_category}
+                    {convertToRegularText(row.overall_category)}
                   </span>
                 )}
               </TableCell>
@@ -104,3 +123,4 @@ const BaseTableContent: React.FC<BaseTableContentProps> = ({
 };
 
 export default BaseTableContent;
+
