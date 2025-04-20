@@ -1,11 +1,10 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { ArrowUp, ArrowDown } from 'lucide-react';
 import IncomeStatementAnalysis from './IncomeStatementAnalysis';
+import CashFlowTableCell from './CashFlowTableCell';
+import { useCashFlowCalculations } from '@/hooks/useCashFlowCalculations';
 
 interface Period {
   date: string;
@@ -20,24 +19,31 @@ interface AnalysisTableProps {
 }
 
 const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, mockData }) => {
-  const [tableData, setTableData] = useState(mockData);
+  const { tableData, getDataSafely, calculateYearlyChange, handleValueChange } = useCashFlowCalculations(mockData);
 
-  // Define which rows are editable
   const editableRows = [
-    'grossRevenue',
-    'wages',
-    'cogs',
-    'depreciation',
-    'amortization',
-    'interest',
-    'borrowerOC',
-    'rentAddback',
-    'depAdjM1',
-    'adjustments',
-    'bookIncome'
+    'grossRevenue', 'wages', 'cogs', 'depreciation', 'amortization',
+    'interest', 'borrowerOC', 'rentAddback', 'depAdjM1', 'adjustments', 'bookIncome'
   ];
 
-  // Define the rows with a consistent key that maps to mockData
+  const showChangeIndicator = (rowKey: string): boolean => {
+    return ['grossRevenue', 'wages', 'cogs', 'noi', 'availableCF', 'excessCF'].includes(rowKey);
+  };
+
+  const getGroupStyle = (group: string) => {
+    const styles = {
+      revenue: 'bg-emerald-50/50 dark:bg-emerald-950/20',
+      expenses: 'bg-red-50/50 dark:bg-red-950/20',
+      profit: 'bg-blue-50/50 dark:bg-blue-950/20',
+      adjustments: 'bg-gray-50/50 dark:bg-gray-950/20',
+      income: 'bg-purple-50/50 dark:bg-purple-950/20',
+      loans: 'bg-amber-50/50 dark:bg-amber-950/20',
+      debt: 'bg-orange-50/50 dark:bg-orange-950/20',
+      summary: 'bg-cyan-50/50 dark:bg-cyan-950/20'
+    };
+    return styles[group as keyof typeof styles] || '';
+  };
+
   const rows = [
     { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
     { label: 'Growth', key: 'growth', group: 'revenue' },
@@ -68,113 +74,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true }
   ];
 
-  const getGroupStyle = (group: string) => {
-    switch (group) {
-      case 'revenue':
-        return 'bg-emerald-50/50 dark:bg-emerald-950/20';
-      case 'expenses':
-        return 'bg-red-50/50 dark:bg-red-950/20';
-      case 'profit':
-        return 'bg-blue-50/50 dark:bg-blue-950/20';
-      case 'adjustments':
-        return 'bg-gray-50/50 dark:bg-gray-950/20';
-      case 'income':
-        return 'bg-purple-50/50 dark:bg-purple-950/20';
-      case 'loans':
-        return 'bg-amber-50/50 dark:bg-amber-950/20';
-      case 'debt':
-        return 'bg-orange-50/50 dark:bg-orange-950/20';
-      case 'summary':
-        return 'bg-cyan-50/50 dark:bg-cyan-950/20';
-      default:
-        return '';
-    }
-  };
-
-  const handleValueChange = (rowKey: string, periodIndex: number, value: string) => {
-    const numericValue = parseFloat(value.replace(/[^0-9.-]+/g, '')) || 0;
-    setTableData(prev => ({
-      ...prev,
-      [rowKey]: prev[rowKey].map((val, idx) => idx === periodIndex ? numericValue : val)
-    }));
-  };
-
-  // Helper function to safely get data with fallback
-  const getDataSafely = (key: string, periodIndex: number): number => {
-    if (!tableData[key] || !Array.isArray(tableData[key])) {
-      return 0;
-    }
-    return tableData[key][periodIndex] || 0;
-  };
-
-  const calculateYearlyChange = (rowKey: string, periodIndex: number): number | null => {
-    if (periodIndex === 0) return null;
-    const currentValue = getDataSafely(rowKey, periodIndex);
-    const previousValue = getDataSafely(rowKey, periodIndex - 1);
-    
-    if (previousValue === 0) return null;
-    return ((currentValue - previousValue) / previousValue) * 100;
-  };
-
-  const showChangeIndicator = (rowKey: string): boolean => {
-    const indicatorRows = [
-      'grossRevenue',
-      'wages',
-      'cogs',
-      'noi',
-      'availableCF',
-      'excessCF'
-    ];
-    return indicatorRows.includes(rowKey);
-  };
-
-  const renderChangeIndicator = (rowKey: string, periodIndex: number) => {
-    const change = calculateYearlyChange(rowKey, periodIndex);
-    if (change === null) return null;
-
-    const isPositive = change > 0;
-    const IconComponent = isPositive ? ArrowUp : ArrowDown;
-    const colorClass = isPositive ? 'text-emerald-500' : 'text-red-500';
-
-    return (
-      <div className="inline-flex items-center gap-1 ml-2">
-        <IconComponent className={cn('h-4 w-4', colorClass)} />
-        <span className={cn('text-xs', colorClass)}>
-          {Math.abs(change).toFixed(1)}%
-        </span>
-      </div>
-    );
-  };
-
-  const renderCell = (row: { key: string; label: string }, periodIndex: number) => {
-    const value = getDataSafely(row.key, periodIndex);
-    
-    if (editableRows.includes(row.key)) {
-      return (
-        <div className="flex items-center justify-end space-x-2 py-1">
-          <Input
-            type="text"
-            value={formatCurrency(value)}
-            onChange={(e) => handleValueChange(row.key, periodIndex, e.target.value)}
-            className="h-8 w-full text-right bg-transparent border-0 focus:ring-1"
-          />
-          {showChangeIndicator(row.key) && renderChangeIndicator(row.key, periodIndex)}
-        </div>
-      );
-    }
-
-    if (row.label === 'Growth' || row.label === 'Gross Margin' || row.label === 'NOM') {
-      return `${value.toFixed(1)}%`;
-    }
-
-    return (
-      <div className="flex items-center justify-end space-x-2 py-1">
-        {formatCurrency(value)}
-        {showChangeIndicator(row.key) && renderChangeIndicator(row.key, periodIndex)}
-      </div>
-    );
-  };
-
   return (
     <Card className="shadow-md">
       <CardHeader className="pb-3">
@@ -199,33 +98,32 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.map((row, index) => {
-                return (
-                  <TableRow 
-                    key={index} 
-                    className={cn(
-                      getGroupStyle(row.group),
-                      row.bold && 'font-semibold'
-                    )}
-                  >
-                    <TableCell className="font-medium">
-                      {row.label}
-                    </TableCell>
-                    {periods.map((_, periodIndex) => (
-                      <TableCell 
-                        key={periodIndex} 
-                        className={cn(
-                          "text-right",
-                          row.negative && "text-red-600 dark:text-red-400",
-                          editableRows.includes(row.key) ? "p-0 align-middle h-[52px]" : "py-4"
-                        )}
-                      >
-                        {renderCell(row, periodIndex)}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                );
-              })}
+              {rows.map((row) => (
+                <TableRow 
+                  key={row.key} 
+                  className={cn(
+                    getGroupStyle(row.group),
+                    row.bold && 'font-semibold'
+                  )}
+                >
+                  <TableCell className="font-medium">
+                    {row.label}
+                  </TableCell>
+                  {periods.map((_, periodIndex) => (
+                    <CashFlowTableCell
+                      key={periodIndex}
+                      rowKey={row.key}
+                      periodIndex={periodIndex}
+                      value={getDataSafely(row.key, periodIndex)}
+                      isEditable={editableRows.includes(row.key)}
+                      showChangeIndicator={showChangeIndicator(row.key)}
+                      formatCurrency={formatCurrency}
+                      onChange={handleValueChange}
+                      calculateYearlyChange={calculateYearlyChange}
+                    />
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
