@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +31,6 @@ const CashFlowAnalysis: React.FC = () => {
 
   const mockData = {
     grossRevenue: [5200000, 5850000, 6300000, 6800000, 7200000],
-    growth: [0, 12.5, 7.7, 7.9, 5.9],
     wages: [1560000, 1755000, 1890000, 2040000, 2160000],
     cogs: [2080000, 2340000, 2520000, 2720000, 2880000],
     grossProfit: [1560000, 1755000, 1890000, 2040000, 2160000],

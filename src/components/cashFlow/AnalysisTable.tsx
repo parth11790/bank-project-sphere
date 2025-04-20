@@ -64,7 +64,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
 
   const rows = [
     { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
-    { label: 'Growth', key: 'growth', group: 'revenue' },
     { label: 'Wages', key: 'wages', group: 'expenses' },
     { label: 'COGS', key: 'cogs', group: 'expenses' },
     { label: 'Gross Profit', key: 'grossProfit', group: 'profit', bold: true },
