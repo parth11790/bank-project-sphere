@@ -49,6 +49,19 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     return styles[group as keyof typeof styles] || '';
   };
 
+  const calculateDSCPreOC = (periodIndex: number): number => {
+    const noi = getDataSafely('noi', periodIndex);
+    const debtService = getDataSafely('debtService', periodIndex);
+    return debtService !== 0 ? Number((noi / debtService).toFixed(2)) : 0;
+  };
+
+  const calculateDSCPostOC = (periodIndex: number): number => {
+    const noi = getDataSafely('noi', periodIndex);
+    const requiredOC = getDataSafely('requiredOfficerComp', periodIndex);
+    const debtService = getDataSafely('debtService', periodIndex);
+    return debtService !== 0 ? Number(((noi - requiredOC) / debtService).toFixed(2)) : 0;
+  };
+
   const rows = [
     { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
     { label: 'Growth', key: 'growth', group: 'revenue' },
@@ -77,18 +90,14 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     { label: 'Available CF', key: 'availableCF', group: 'summary', bold: true },
     { label: 'Required Officer Comp', key: 'requiredOfficerComp', group: 'summary' },
     { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true },
-    { label: 'DSC (Pre OC)', key: 'dscPreOc', group: 'summary', bold: true }
+    { label: 'DSC (Pre OC)', key: 'dscPreOc', group: 'summary', bold: true },
+    { label: 'DSC (Post OC)', key: 'dscPostOc', group: 'summary', bold: true }
   ].filter(row => showPercentages || !percentageOnlyRows.includes(row.key));
-
-  const calculateDSCPreOC = (periodIndex: number): number => {
-    const noi = getDataSafely('noi', periodIndex);
-    const debtService = getDataSafely('debtService', periodIndex);
-    return debtService !== 0 ? Number((noi / debtService).toFixed(2)) : 0;
-  };
 
   const tableDataWithDSC = {
     ...tableData,
-    dscPreOc: periods.map((_, index) => calculateDSCPreOC(index))
+    dscPreOc: periods.map((_, index) => calculateDSCPreOC(index)),
+    dscPostOc: periods.map((_, index) => calculateDSCPostOC(index))
   };
 
   return (

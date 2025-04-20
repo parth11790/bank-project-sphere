@@ -28,7 +28,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   showPercentages = true
 }) => {
   const percentageOnlyRows = ['growth', 'grossMargin', 'nom'];
-  const ratioOnlyRows = ['dscPreOc'];
+  const ratioOnlyRows = ['dscPreOc', 'dscPostOc'];
   const isPercentageOnly = percentageOnlyRows.includes(rowKey);
   const isRatioOnly = ratioOnlyRows.includes(rowKey);
 
