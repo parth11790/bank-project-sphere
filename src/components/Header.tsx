@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
