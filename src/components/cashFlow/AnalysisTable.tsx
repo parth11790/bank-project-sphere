@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -90,9 +91,15 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                 <TableHead className="w-[250px] font-semibold">Statement Date</TableHead>
                 {periods.map((period, index) => (
                   <TableHead key={index} className="text-right">
-                    <div className="font-semibold">{period.type}</div>
-                    <div className="text-muted-foreground">{period.date}</div>
-                    <div className="text-xs text-muted-foreground">{period.months} months</div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 pr-2 text-right">
+                        <div className="font-semibold">{period.type}</div>
+                        <div className="text-muted-foreground">{period.date}</div>
+                        <div className="text-xs text-muted-foreground">{period.months} months</div>
+                      </div>
+                      {/* Spacer for alignment with percentage column */}
+                      <div className="w-16 invisible">-</div>
+                    </div>
                   </TableHead>
                 ))}
               </TableRow>

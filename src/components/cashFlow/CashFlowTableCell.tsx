@@ -44,6 +44,9 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
               />
             </div>
           )}
+          {!showChangeIndicator && (
+            <div className="w-16 invisible">-</div>
+          )}
         </div>
       </TableCell>
     );
@@ -61,6 +64,9 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
               change={calculateYearlyChange(rowKey, periodIndex)}
             />
           </div>
+        )}
+        {!showChangeIndicator && (
+          <div className="w-16 invisible">-</div>
         )}
       </div>
     </TableCell>
