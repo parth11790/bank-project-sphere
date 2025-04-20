@@ -76,8 +76,20 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     { label: 'Debt Service', key: 'debtService', group: 'summary', bold: true },
     { label: 'Available CF', key: 'availableCF', group: 'summary', bold: true },
     { label: 'Required Officer Comp', key: 'requiredOfficerComp', group: 'summary' },
-    { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true }
+    { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true },
+    { label: 'DSC (Pre OC)', key: 'dscPreOc', group: 'summary', bold: true }
   ].filter(row => showPercentages || !percentageOnlyRows.includes(row.key));
+
+  const calculateDSCPreOC = (periodIndex: number): number => {
+    const noi = getDataSafely('noi', periodIndex);
+    const debtService = getDataSafely('debtService', periodIndex);
+    return debtService !== 0 ? Number((noi / debtService).toFixed(2)) : 0;
+  };
+
+  const tableDataWithDSC = {
+    ...tableData,
+    dscPreOc: periods.map((_, index) => calculateDSCPreOC(index))
+  };
 
   return (
     <Card className="shadow-md">
@@ -141,7 +153,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                       key={periodIndex}
                       rowKey={row.key}
                       periodIndex={periodIndex}
-                      value={getDataSafely(row.key, periodIndex)}
+                      value={row.key === 'dscPreOc' ? calculateDSCPreOC(periodIndex) : getDataSafely(row.key, periodIndex)}
                       isEditable={editableRows.includes(row.key)}
                       showChangeIndicator={showChangeIndicator(row.key)}
                       formatCurrency={formatCurrency}
