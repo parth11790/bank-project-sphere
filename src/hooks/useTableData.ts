@@ -1,3 +1,4 @@
+
 import { UseOfProceedsColumn as EnhancedColumn, UseOfProceedsRow } from "@/components/useOfProceeds/EnhancedUseOfProceedsTable";
 
 // Create a more generic column type that can work with both the original and enhanced versions
@@ -95,8 +96,6 @@ export const useTableData = ({ data, rows, columns }: UseTableDataProps) => {
         // Otherwise, if we don't have a column name, distribute to the first column
         // This is particularly helpful for mock data that might not specify columns
         else if (columns.length > 0) {
-          // Distribute the value to the most appropriate column
-          // For project_5, we'll put the values in consistent columns based on category
           const category = item.overall_category?.toLowerCase() || '';
           
           if (category.includes('land') || category.includes('construction')) {
@@ -107,17 +106,40 @@ export const useTableData = ({ data, rows, columns }: UseTableDataProps) => {
             } else {
               populatedData[item.row_name][columns[0].column_name] = item.value;
             }
+          } else if (category.includes('furniture') || category.includes('equipment')) {
+            // Put FF&E items in the Express column if it exists
+            const colExpress = columns.find(col => col.column_name === 'Express');
+            if (colExpress) {
+              populatedData[item.row_name][colExpress.column_name] = item.value;
+            } else {
+              populatedData[item.row_name][columns[1 % columns.length].column_name] = item.value;
+            }
           } else if (category.includes('working capital')) {
             // Put working capital items in the 7(a) column if it exists
             const col7a = columns.find(col => col.column_name === '7(a)');
             if (col7a) {
               populatedData[item.row_name][col7a.column_name] = item.value;
             } else {
-              populatedData[item.row_name][columns[0].column_name] = item.value;
+              populatedData[item.row_name][columns[2 % columns.length].column_name] = item.value;
+            }
+          } else if (category.includes('professional') || category.includes('fee')) {
+            // Put professional fees in Borrower Equity
+            const colBorrowerEquity = columns.find(col => col.column_name === 'Borrower Equity');
+            if (colBorrowerEquity) {
+              populatedData[item.row_name][colBorrowerEquity.column_name] = item.value;
+            } else {
+              populatedData[item.row_name][columns[3 % columns.length].column_name] = item.value;
+            }
+          } else if (category.includes('contingency')) {
+            // Put contingency in Borrower Contribution
+            const colBorrowerContribution = columns.find(col => col.column_name === 'Borrower Contribution');
+            if (colBorrowerContribution) {
+              populatedData[item.row_name][colBorrowerContribution.column_name] = item.value;
+            } else {
+              populatedData[item.row_name][columns[4 % columns.length].column_name] = item.value;
             }
           } else {
-            // Distribute other items across available columns in a alternating pattern
-            // This is just to make the data look more realistic
+            // Distribute other items across available columns in an alternating pattern
             const columnIndex = (item.id || 0) % columns.length;
             populatedData[item.row_name][columns[columnIndex].column_name] = item.value;
           }
