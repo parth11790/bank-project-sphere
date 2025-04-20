@@ -2,7 +2,9 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { TableCell } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ChangeIndicator from './ChangeIndicator';
+import { Calculator } from 'lucide-react';
 
 interface CashFlowTableCellProps {
   rowKey: string;
@@ -27,7 +29,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   calculateYearlyChange,
   showPercentages = true
 }) => {
-  const percentageOnlyRows = ['growth', 'grossMargin', 'nom'];
+  const percentageOnlyRows = ['grossMargin', 'nom'];
   const ratioOnlyRows = ['dscPreOc', 'dscPostOc'];
   const isPercentageOnly = percentageOnlyRows.includes(rowKey);
   const isRatioOnly = ratioOnlyRows.includes(rowKey);
@@ -43,6 +45,37 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
       return val.toFixed(2);
     }
     return formatCurrency(val);
+  };
+
+  const renderCalculationTooltip = () => {
+    if (rowKey === 'grossProfit') {
+      const grossRevenue = document.querySelector(`[data-row-key="grossRevenue"][data-period-index="${periodIndex}"]`)?.textContent;
+      const cogs = document.querySelector(`[data-row-key="cogs"][data-period-index="${periodIndex}"]`)?.textContent;
+      
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 cursor-help">
+                <span>{formatValue(value)}</span>
+                <Calculator className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="p-4 max-w-sm">
+              <p className="font-medium mb-2">Gross Profit Calculation</p>
+              <div className="space-y-1 text-sm">
+                <p>Gross Revenue: {grossRevenue}</p>
+                <p>- COGS: {cogs}</p>
+                <div className="border-t mt-2 pt-2">
+                  <p>= Gross Profit: {formatValue(value)}</p>
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return formatValue(value);
   };
 
   if (isEditable) {
@@ -74,10 +107,10 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   }
 
   return (
-    <TableCell className="p-2 h-12">
+    <TableCell className="p-2 h-12" data-row-key={rowKey} data-period-index={periodIndex}>
       <div className="flex items-center">
-        <div className="flex-1 pr-2">
-          <span className="block text-right font-mono tabular-nums">{formatValue(value)}</span>
+        <div className="flex-1 pr-2 text-right">
+          {renderCalculationTooltip()}
         </div>
         {showChangeIndicator && calculateYearlyChange && (
           <div className="w-16 text-right border-l pl-2">
@@ -96,3 +129,4 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
 };
 
 export default CashFlowTableCell;
+
