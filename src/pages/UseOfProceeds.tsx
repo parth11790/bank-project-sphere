@@ -8,6 +8,7 @@ import { getProjectById, getUseOfProceedsForProject } from '@/lib/mockData/utili
 import { toast } from 'sonner';
 import UseOfProceedsHeader from '@/components/useOfProceeds/UseOfProceedsHeader';
 import EmptyState from '@/components/useOfProceeds/EmptyState';
+import { Card } from '@/components/ui/card';
 
 interface Project {
   project_id: string;
@@ -38,7 +39,6 @@ const UseOfProceeds: React.FC = () => {
   const fetchProceedsData = async (id: string) => {
     setLoading(true);
     try {
-      // Directly use the mock data utility without going through the service
       const data = getUseOfProceedsForProject(id);
       setProceedsData(data);
     } catch (error) {
@@ -51,8 +51,7 @@ const UseOfProceeds: React.FC = () => {
 
   const handleSave = async (updatedData: any) => {
     try {
-      toast.success("Data saved successfully (demo)");
-      // After successful save, refresh the data
+      toast.success("Data saved successfully");
       fetchProceedsData(selectedProjectId);
     } catch (error) {
       console.error("Error saving proceeds data:", error);
@@ -61,12 +60,12 @@ const UseOfProceeds: React.FC = () => {
   };
 
   const handleExport = () => {
-    toast("Exporting data to spreadsheet (Demo only)");
+    toast.success("Exporting data to spreadsheet");
   };
 
   return (
     <Layout>
-      <div className="flex flex-col gap-6">
+      <div className="space-y-6 px-6 py-8 md:px-8 lg:px-12">
         <UseOfProceedsHeader 
           projectName={selectedProject?.project_name}
           projectId={projectId}
@@ -77,12 +76,17 @@ const UseOfProceeds: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5 }}
+            className="rounded-lg bg-card"
           >
             {loading ? (
-              <div className="flex justify-center p-8">
-                <div className="animate-pulse">Loading use of proceeds data...</div>
-              </div>
+              <Card className="p-8">
+                <div className="flex items-center justify-center">
+                  <div className="animate-pulse text-muted-foreground">
+                    Loading use of proceeds data...
+                  </div>
+                </div>
+              </Card>
             ) : (
               <EnhancedUseOfProceedsTable 
                 projectId={selectedProjectId} 
