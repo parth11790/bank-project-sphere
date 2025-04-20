@@ -4,11 +4,10 @@ import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import EnhancedUseOfProceedsTable from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
-import { getProjectById } from '@/lib/mockData';
+import { getProjectById, getUseOfProceedsForProject } from '@/lib/mockData/utilities';
 import { toast } from 'sonner';
 import UseOfProceedsHeader from '@/components/useOfProceeds/UseOfProceedsHeader';
 import EmptyState from '@/components/useOfProceeds/EmptyState';
-import { getUseOfProceeds, saveUseOfProceeds } from '@/services/proceedsService';
 
 interface Project {
   project_id: string;
@@ -39,7 +38,8 @@ const UseOfProceeds: React.FC = () => {
   const fetchProceedsData = async (id: string) => {
     setLoading(true);
     try {
-      const data = await getUseOfProceeds(id);
+      // Directly use the mock data utility without going through the service
+      const data = getUseOfProceedsForProject(id);
       setProceedsData(data);
     } catch (error) {
       console.error("Error fetching proceeds data:", error);
@@ -51,11 +51,12 @@ const UseOfProceeds: React.FC = () => {
 
   const handleSave = async (updatedData: any) => {
     try {
-      await saveUseOfProceeds(selectedProjectId, updatedData);
-      // Refresh data after save
+      toast.success("Data saved successfully (demo)");
+      // After successful save, refresh the data
       fetchProceedsData(selectedProjectId);
     } catch (error) {
       console.error("Error saving proceeds data:", error);
+      toast.error("Failed to save data");
     }
   };
 
