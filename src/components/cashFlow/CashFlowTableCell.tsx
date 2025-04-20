@@ -25,6 +25,17 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   onChange,
   calculateYearlyChange
 }) => {
+  // Array of rows that should display only percentages
+  const percentageOnlyRows = ['growth', 'grossMargin', 'nom'];
+  const isPercentageOnly = percentageOnlyRows.includes(rowKey);
+
+  const formatValue = (val: number) => {
+    if (isPercentageOnly) {
+      return `${val.toFixed(1)}%`;
+    }
+    return formatCurrency(val);
+  };
+
   if (isEditable) {
     return (
       <TableCell className="p-2 h-12">
@@ -32,7 +43,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
           <div className="flex-1 pr-2">
             <Input
               type="text"
-              value={formatCurrency(value)}
+              value={formatValue(value)}
               onChange={(e) => onChange?.(rowKey, periodIndex, e.target.value)}
               className="h-8 text-right bg-transparent border-0 focus:ring-1 font-mono tabular-nums"
             />
@@ -56,7 +67,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
     <TableCell className="p-2 h-12">
       <div className="flex items-center">
         <div className="flex-1 pr-2">
-          <span className="block text-right font-mono tabular-nums">{formatCurrency(value)}</span>
+          <span className="block text-right font-mono tabular-nums">{formatValue(value)}</span>
         </div>
         {showChangeIndicator && calculateYearlyChange && (
           <div className="w-16 text-right border-l pl-2">
