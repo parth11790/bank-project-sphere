@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import EnhancedUseOfProceedsTable from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
@@ -9,6 +8,7 @@ import { toast } from 'sonner';
 import UseOfProceedsHeader from '@/components/useOfProceeds/UseOfProceedsHeader';
 import EmptyState from '@/components/useOfProceeds/EmptyState';
 import { Card } from '@/components/ui/card';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface Project {
   project_id: string;
@@ -65,40 +65,64 @@ const UseOfProceeds: React.FC = () => {
 
   return (
     <Layout>
-      <div className="space-y-6 px-6 py-8 md:px-8 lg:px-12">
+      <motion.div 
+        className="space-y-6 px-6 py-8 md:px-8 lg:px-12"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <UseOfProceedsHeader 
           projectName={selectedProject?.project_name}
           projectId={projectId}
           onExport={handleExport}
         />
 
-        {selectedProjectId ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="rounded-lg bg-card"
-          >
-            {loading ? (
-              <Card className="p-8">
-                <div className="flex items-center justify-center">
-                  <div className="animate-pulse text-muted-foreground">
-                    Loading use of proceeds data...
+        <AnimatePresence mode="wait">
+          {selectedProjectId ? (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="rounded-lg bg-card"
+            >
+              {loading ? (
+                <Card className="p-8">
+                  <div className="flex flex-col items-center justify-center gap-4">
+                    <LoadingSpinner className="h-8 w-8 text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Loading use of proceeds data...
+                    </p>
                   </div>
-                </div>
-              </Card>
-            ) : (
-              <EnhancedUseOfProceedsTable 
-                projectId={selectedProjectId} 
-                initialData={proceedsData}
-                onSave={handleSave} 
-              />
-            )}
-          </motion.div>
-        ) : (
-          <EmptyState />
-        )}
-      </div>
+                </Card>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <EnhancedUseOfProceedsTable 
+                    projectId={selectedProjectId} 
+                    initialData={proceedsData}
+                    onSave={handleSave} 
+                  />
+                </motion.div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <EmptyState />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </Layout>
   );
 };
