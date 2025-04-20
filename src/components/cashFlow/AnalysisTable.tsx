@@ -33,6 +33,8 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     return ['grossRevenue', 'wages', 'cogs', 'noi', 'availableCF', 'excessCF'].includes(rowKey);
   };
 
+  const percentageOnlyRows = ['growth', 'grossMargin', 'nom'];
+
   const getGroupStyle = (group: string) => {
     const styles = {
       revenue: 'bg-emerald-50/50 dark:bg-emerald-950/20',
@@ -75,7 +77,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     { label: 'Available CF', key: 'availableCF', group: 'summary', bold: true },
     { label: 'Required Officer Comp', key: 'requiredOfficerComp', group: 'summary' },
     { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true }
-  ];
+  ].filter(row => showPercentages || !percentageOnlyRows.includes(row.key));
 
   return (
     <Card className="shadow-md">

@@ -56,6 +56,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
             <div className="w-16 text-right border-l pl-2">
               <ChangeIndicator 
                 change={calculateYearlyChange(rowKey, periodIndex)}
+                showPercentages={showPercentages}
               />
             </div>
           )}
@@ -77,6 +78,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
           <div className="w-16 text-right border-l pl-2">
             <ChangeIndicator 
               change={calculateYearlyChange(rowKey, periodIndex)}
+              showPercentages={showPercentages}
             />
           </div>
         )}
