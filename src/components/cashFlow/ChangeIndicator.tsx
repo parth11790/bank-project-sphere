@@ -5,9 +5,10 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 
 interface ChangeIndicatorProps {
   change: number | null;
+  className?: string;
 }
 
-const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ change }) => {
+const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ change, className }) => {
   if (change === null) return null;
 
   const isPositive = change > 0;
@@ -15,7 +16,7 @@ const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ change }) => {
   const colorClass = isPositive ? 'text-emerald-500' : 'text-red-500';
 
   return (
-    <div className="inline-flex items-center gap-1 ml-2">
+    <div className={cn("inline-flex items-center gap-1", className)}>
       <IconComponent className={cn('h-4 w-4', colorClass)} />
       <span className={cn('text-xs', colorClass)}>
         {Math.abs(change).toFixed(1)}%

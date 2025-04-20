@@ -27,19 +27,20 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
 }) => {
   if (isEditable) {
     return (
-      <TableCell className="p-2 align-middle h-12">
-        <div className="flex items-center justify-end space-x-2 h-full">
+      <TableCell className="p-2 h-12 relative">
+        <div className="grid grid-cols-[1fr,auto] gap-2 items-center h-full">
           <Input
             type="text"
             value={formatCurrency(value)}
             onChange={(e) => onChange?.(rowKey, periodIndex, e.target.value)}
-            className="h-8 w-full text-right bg-transparent border-0 focus:ring-1 self-center"
+            className="h-8 text-right bg-transparent border-0 focus:ring-1"
           />
           {showChangeIndicator && calculateYearlyChange && (
-            <ChangeIndicator 
-              change={calculateYearlyChange(rowKey, periodIndex)} 
-              className="self-center"
-            />
+            <div className="min-w-[60px]">
+              <ChangeIndicator 
+                change={calculateYearlyChange(rowKey, periodIndex)}
+              />
+            </div>
           )}
         </div>
       </TableCell>
@@ -47,14 +48,15 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   }
 
   return (
-    <TableCell className="p-2 text-right h-12">
-      <div className="flex items-center justify-end space-x-2 h-full">
-        <span className="self-center">{formatCurrency(value)}</span>
+    <TableCell className="p-2 h-12 relative">
+      <div className="grid grid-cols-[1fr,auto] gap-2 items-center h-full">
+        <span className="text-right">{formatCurrency(value)}</span>
         {showChangeIndicator && calculateYearlyChange && (
-          <ChangeIndicator 
-            change={calculateYearlyChange(rowKey, periodIndex)} 
-            className="self-center"
-          />
+          <div className="min-w-[60px]">
+            <ChangeIndicator 
+              change={calculateYearlyChange(rowKey, periodIndex)}
+            />
+          </div>
         )}
       </div>
     </TableCell>
