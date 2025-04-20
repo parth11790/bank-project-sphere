@@ -13,6 +13,7 @@ interface CashFlowTableCellProps {
   formatCurrency: (amount: number) => string;
   onChange?: (rowKey: string, periodIndex: number, value: string) => void;
   calculateYearlyChange?: (rowKey: string, periodIndex: number) => number | null;
+  showPercentages?: boolean;
 }
 
 const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
@@ -23,14 +24,17 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   showChangeIndicator,
   formatCurrency,
   onChange,
-  calculateYearlyChange
+  calculateYearlyChange,
+  showPercentages = true
 }) => {
-  // Array of rows that should display only percentages
   const percentageOnlyRows = ['growth', 'grossMargin', 'nom'];
   const isPercentageOnly = percentageOnlyRows.includes(rowKey);
 
   const formatValue = (val: number) => {
     if (isPercentageOnly) {
+      if (!showPercentages) {
+        return '-';
+      }
       return `${val.toFixed(1)}%`;
     }
     return formatCurrency(val);

@@ -6,10 +6,11 @@ import { ArrowUp, ArrowDown } from 'lucide-react';
 interface ChangeIndicatorProps {
   change: number | null;
   className?: string;
+  showPercentages?: boolean;
 }
 
-const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ change, className }) => {
-  if (change === null) return null;
+const ChangeIndicator: React.FC<ChangeIndicatorProps> = ({ change, className, showPercentages = true }) => {
+  if (change === null || !showPercentages) return null;
 
   const isPositive = change > 0;
   const IconComponent = isPositive ? ArrowUp : ArrowDown;

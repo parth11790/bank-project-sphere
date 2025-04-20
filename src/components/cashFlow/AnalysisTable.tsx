@@ -1,8 +1,9 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Toggle } from '@/components/ui/toggle';
 import { cn } from '@/lib/utils';
+import { Eye, EyeOff } from 'lucide-react';
 import IncomeStatementAnalysis from './IncomeStatementAnalysis';
 import CashFlowTableCell from './CashFlowTableCell';
 import { useCashFlowCalculations } from '@/hooks/useCashFlowCalculations';
@@ -21,6 +22,7 @@ interface AnalysisTableProps {
 
 const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, mockData }) => {
   const { tableData, getDataSafely, calculateYearlyChange, handleValueChange } = useCashFlowCalculations(mockData);
+  const [showPercentages, setShowPercentages] = useState(true);
 
   const editableRows = [
     'grossRevenue', 'wages', 'cogs', 'depreciation', 'amortization',
@@ -78,10 +80,27 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
   return (
     <Card className="shadow-md">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-xl">
-          Company Name #1
-        </CardTitle>
-        <CardDescription>Cash Flow Analysis</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              Company Name #1
+            </CardTitle>
+            <CardDescription>Cash Flow Analysis</CardDescription>
+          </div>
+          <Toggle
+            pressed={showPercentages}
+            onPressedChange={setShowPercentages}
+            aria-label="Toggle percentages"
+            className="flex items-center gap-2"
+          >
+            {showPercentages ? (
+              <Eye className="h-4 w-4" />
+            ) : (
+              <EyeOff className="h-4 w-4" />
+            )}
+            <span className="text-sm">Percentages</span>
+          </Toggle>
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
@@ -97,7 +116,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                         <div className="text-muted-foreground">{period.date}</div>
                         <div className="text-xs text-muted-foreground">{period.months} months</div>
                       </div>
-                      {/* Spacer for alignment with percentage column */}
                       <div className="w-16 invisible">-</div>
                     </div>
                   </TableHead>
@@ -127,6 +145,7 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                       formatCurrency={formatCurrency}
                       onChange={handleValueChange}
                       calculateYearlyChange={calculateYearlyChange}
+                      showPercentages={showPercentages}
                     />
                   ))}
                 </TableRow>
