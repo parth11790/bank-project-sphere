@@ -27,16 +27,19 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
 }) => {
   if (isEditable) {
     return (
-      <TableCell className="p-0 align-middle h-[52px]">
-        <div className="flex items-center justify-end space-x-2 py-1">
+      <TableCell className="p-2 align-middle h-12">
+        <div className="flex items-center justify-end space-x-2 h-full">
           <Input
             type="text"
             value={formatCurrency(value)}
             onChange={(e) => onChange?.(rowKey, periodIndex, e.target.value)}
-            className="h-8 w-full text-right bg-transparent border-0 focus:ring-1"
+            className="h-8 w-full text-right bg-transparent border-0 focus:ring-1 self-center"
           />
           {showChangeIndicator && calculateYearlyChange && (
-            <ChangeIndicator change={calculateYearlyChange(rowKey, periodIndex)} />
+            <ChangeIndicator 
+              change={calculateYearlyChange(rowKey, periodIndex)} 
+              className="self-center"
+            />
           )}
         </div>
       </TableCell>
@@ -44,11 +47,14 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
   }
 
   return (
-    <TableCell className="text-right py-4">
-      <div className="flex items-center justify-end space-x-2 py-1">
-        {formatCurrency(value)}
+    <TableCell className="p-2 text-right h-12">
+      <div className="flex items-center justify-end space-x-2 h-full">
+        <span className="self-center">{formatCurrency(value)}</span>
         {showChangeIndicator && calculateYearlyChange && (
-          <ChangeIndicator change={calculateYearlyChange(rowKey, periodIndex)} />
+          <ChangeIndicator 
+            change={calculateYearlyChange(rowKey, periodIndex)} 
+            className="self-center"
+          />
         )}
       </div>
     </TableCell>
