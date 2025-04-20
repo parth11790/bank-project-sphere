@@ -1,3 +1,4 @@
+
 import { users } from './users';
 import { businesses } from './businesses';
 import { businesses2 } from './businesses2';
@@ -45,24 +46,24 @@ export const getBankById = (bankId: string) => {
 
 // Mock function for use of proceeds data
 export const getUseOfProceedsForProject = (projectId: string) => {
-  // For project_5, return comprehensive mock data
+  // For project_5, return comprehensive mock data with column allocation
   if (projectId === 'project_5') {
     return [
-      { id: 1, overall_category: 'Land', row_name: 'Land Purchase', value: 2500000 },
-      { id: 2, overall_category: 'Land', row_name: 'Land Improvements', value: 350000 },
-      { id: 3, overall_category: 'Construction', row_name: 'Building Shell', value: 1800000 },
-      { id: 4, overall_category: 'Construction', row_name: 'Interior Build-out', value: 950000 },
-      { id: 5, overall_category: 'Construction', row_name: 'Site Work', value: 420000 },
-      { id: 6, overall_category: 'Furniture Fixtures and Equipment', row_name: 'Manufacturing Equipment', value: 1200000 },
-      { id: 7, overall_category: 'Furniture Fixtures and Equipment', row_name: 'Office Furniture', value: 175000 },
-      { id: 8, overall_category: 'Furniture Fixtures and Equipment', row_name: 'Computer Systems', value: 85000 },
-      { id: 9, overall_category: 'Working Capital', row_name: 'Inventory', value: 450000 },
-      { id: 10, overall_category: 'Working Capital', row_name: 'Operating Expenses', value: 350000 },
-      { id: 11, overall_category: 'Professional Fees', row_name: 'Architectural Fees', value: 120000 },
-      { id: 12, overall_category: 'Professional Fees', row_name: 'Engineering Fees', value: 95000 },
-      { id: 13, overall_category: 'Professional Fees', row_name: 'Legal Fees', value: 55000 },
-      { id: 14, overall_category: 'Contingency', row_name: 'Construction Contingency', value: 250000 },
-      { id: 15, overall_category: 'Contingency', row_name: 'Project Contingency', value: 200000 }
+      { id: 1, overall_category: 'Land', row_name: 'Land Purchase', column_name: '504', value: 2500000 },
+      { id: 2, overall_category: 'Land', row_name: 'Land Improvements', column_name: '504', value: 350000 },
+      { id: 3, overall_category: 'Construction', row_name: 'Building Shell', column_name: '504', value: 1800000 },
+      { id: 4, overall_category: 'Construction', row_name: 'Interior Build-out', column_name: '504', value: 950000 },
+      { id: 5, overall_category: 'Construction', row_name: 'Site Work', column_name: '504', value: 420000 },
+      { id: 6, overall_category: 'Furniture Fixtures and Equipment', row_name: 'Manufacturing Equipment', column_name: 'Express', value: 1200000 },
+      { id: 7, overall_category: 'Furniture Fixtures and Equipment', row_name: 'Office Furniture', column_name: 'Express', value: 175000 },
+      { id: 8, overall_category: 'Furniture Fixtures and Equipment', row_name: 'Computer Systems', column_name: 'Express', value: 85000 },
+      { id: 9, overall_category: 'Working Capital', row_name: 'Inventory', column_name: '7(a)', value: 450000 },
+      { id: 10, overall_category: 'Working Capital', row_name: 'Operating Expenses', column_name: '7(a)', value: 350000 },
+      { id: 11, overall_category: 'Professional Fees', row_name: 'Architectural Fees', column_name: 'Borrower Equity', value: 120000 },
+      { id: 12, overall_category: 'Professional Fees', row_name: 'Engineering Fees', column_name: 'Borrower Equity', value: 95000 },
+      { id: 13, overall_category: 'Professional Fees', row_name: 'Legal Fees', column_name: 'Borrower Contribution', value: 55000 },
+      { id: 14, overall_category: 'Contingency', row_name: 'Construction Contingency', column_name: 'Borrower Contribution', value: 250000 },
+      { id: 15, overall_category: 'Contingency', row_name: 'Project Contingency', column_name: 'Borrower Contribution', value: 200000 }
     ];
   }
   
