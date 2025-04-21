@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { TableCell } from '@/components/ui/table';
@@ -76,12 +75,13 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
         const requiredOC = document.querySelector(`[data-row-key="requiredOfficerComp"][data-period-index="${periodIndex}"]`)?.textContent;
         const debtService = document.querySelector(`[data-row-key="debtService"][data-period-index="${periodIndex}"]`)?.textContent;
         return {
-          title: `${rowKey === 'dscPreOc' ? 'DSC Pre OC' : 'DSC Post OC'} Calculation`,
+          title: 'DSC Post OC Calculation',
           formula: [
             { label: 'NOI', value: noi },
-            ...(rowKey === 'dscPostOc' ? [{ label: 'Required Officer Comp', value: requiredOC, operator: '-' }] : []),
+            { label: 'Required Officer Comp', value: requiredOC, operator: '-' },
+            { label: 'Subtotal', value: formatCurrency(Number(noi?.replace(/[^0-9.-]+/g, '')) - Number(requiredOC?.replace(/[^0-9.-]+/g, ''))) },
             { label: 'Debt Service', value: debtService, operator: '÷' },
-            { label: rowKey === 'dscPreOc' ? 'DSC Pre OC' : 'DSC Post OC', value: formatValue(value), final: true }
+            { label: 'DSC Post OC', value: formatValue(value), final: true }
           ]
         };
       default:
@@ -169,4 +169,3 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
 };
 
 export default CashFlowTableCell;
-
