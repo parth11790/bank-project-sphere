@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ChangeIndicator from './ChangeIndicator';
-import { Calculator } from 'lucide-react';
 
 interface CashFlowTableCellProps {
   rowKey: string;
@@ -47,35 +46,76 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
     return formatCurrency(val);
   };
 
-  const renderCalculationTooltip = () => {
-    if (rowKey === 'grossProfit') {
-      const grossRevenue = document.querySelector(`[data-row-key="grossRevenue"][data-period-index="${periodIndex}"]`)?.textContent;
-      const cogs = document.querySelector(`[data-row-key="cogs"][data-period-index="${periodIndex}"]`)?.textContent;
-      
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 cursor-help">
-                <span>{formatValue(value)}</span>
-                <Calculator className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="p-4 max-w-sm">
-              <p className="font-medium mb-2">Gross Profit Calculation</p>
-              <div className="space-y-1 text-sm">
-                <p>Gross Revenue: {grossRevenue}</p>
-                <p>- COGS: {cogs}</p>
-                <div className="border-t mt-2 pt-2">
-                  <p>= Gross Profit: {formatValue(value)}</p>
-                </div>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
+  const getCalculationDetails = () => {
+    switch (rowKey) {
+      case 'grossProfit':
+        const grossRevenue = document.querySelector(`[data-row-key="grossRevenue"][data-period-index="${periodIndex}"]`)?.textContent;
+        const cogs = document.querySelector(`[data-row-key="cogs"][data-period-index="${periodIndex}"]`)?.textContent;
+        return {
+          title: 'Gross Profit Calculation',
+          formula: [
+            { label: 'Gross Revenue', value: grossRevenue },
+            { label: 'COGS', value: cogs, operator: '-' },
+            { label: 'Gross Profit', value: formatValue(value), final: true }
+          ]
+        };
+      case 'grossMargin':
+        const profit = document.querySelector(`[data-row-key="grossProfit"][data-period-index="${periodIndex}"]`)?.textContent;
+        const revenue = document.querySelector(`[data-row-key="grossRevenue"][data-period-index="${periodIndex}"]`)?.textContent;
+        return {
+          title: 'Gross Margin Calculation',
+          formula: [
+            { label: 'Gross Profit', value: profit },
+            { label: 'Gross Revenue', value: revenue, operator: '÷' },
+            { label: 'Gross Margin', value: formatValue(value), final: true }
+          ]
+        };
+      case 'dscPreOc':
+      case 'dscPostOc':
+        const noi = document.querySelector(`[data-row-key="noi"][data-period-index="${periodIndex}"]`)?.textContent;
+        const requiredOC = document.querySelector(`[data-row-key="requiredOfficerComp"][data-period-index="${periodIndex}"]`)?.textContent;
+        const debtService = document.querySelector(`[data-row-key="debtService"][data-period-index="${periodIndex}"]`)?.textContent;
+        return {
+          title: `${rowKey === 'dscPreOc' ? 'DSC Pre OC' : 'DSC Post OC'} Calculation`,
+          formula: [
+            { label: 'NOI', value: noi },
+            ...(rowKey === 'dscPostOc' ? [{ label: 'Required Officer Comp', value: requiredOC, operator: '-' }] : []),
+            { label: 'Debt Service', value: debtService, operator: '÷' },
+            { label: rowKey === 'dscPreOc' ? 'DSC Pre OC' : 'DSC Post OC', value: formatValue(value), final: true }
+          ]
+        };
+      default:
+        return null;
     }
-    return formatValue(value);
+  };
+
+  const renderCalculatedValue = () => {
+    const calculationDetails = getCalculationDetails();
+    
+    if (!calculationDetails) {
+      return <span>{formatValue(value)}</span>;
+    }
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="cursor-help">{formatValue(value)}</span>
+          </TooltipTrigger>
+          <TooltipContent className="p-4 max-w-sm">
+            <p className="font-medium mb-2">{calculationDetails.title}</p>
+            <div className="space-y-1 text-sm">
+              {calculationDetails.formula.map((item, index) => (
+                <p key={index} className={item.final ? 'border-t mt-2 pt-2' : ''}>
+                  {item.operator && <span className="mr-1">{item.operator}</span>}
+                  {item.label}: {item.value}
+                </p>
+              ))}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
   };
 
   if (isEditable) {
@@ -110,7 +150,7 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
     <TableCell className="p-2 h-12" data-row-key={rowKey} data-period-index={periodIndex}>
       <div className="flex items-center">
         <div className="flex-1 pr-2 text-right">
-          {renderCalculationTooltip()}
+          {renderCalculatedValue()}
         </div>
         {showChangeIndicator && calculateYearlyChange && (
           <div className="w-16 text-right border-l pl-2">
