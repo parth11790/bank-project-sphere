@@ -70,16 +70,31 @@ const CashFlowTableCell: React.FC<CashFlowTableCellProps> = ({
           ]
         };
       case 'dscPreOc':
+        const noiPre = document.querySelector(`[data-row-key="noi"][data-period-index="${periodIndex}"]`)?.textContent;
+        const debtServicePre = document.querySelector(`[data-row-key="debtService"][data-period-index="${periodIndex}"]`)?.textContent;
+        return {
+          title: 'DSC Pre OC Calculation',
+          formula: [
+            { label: 'NOI', value: noiPre },
+            { label: 'Debt Service', value: debtServicePre, operator: '÷' },
+            { label: 'DSC Pre OC', value: formatValue(value), final: true }
+          ]
+        };
       case 'dscPostOc':
         const noi = document.querySelector(`[data-row-key="noi"][data-period-index="${periodIndex}"]`)?.textContent;
         const requiredOC = document.querySelector(`[data-row-key="requiredOfficerComp"][data-period-index="${periodIndex}"]`)?.textContent;
         const debtService = document.querySelector(`[data-row-key="debtService"][data-period-index="${periodIndex}"]`)?.textContent;
+        
+        const noiValue = Number(noi?.replace(/[^0-9.-]+/g, '')) || 0;
+        const requiredOCValue = Number(requiredOC?.replace(/[^0-9.-]+/g, '')) || 0;
+        const subtotal = noiValue - requiredOCValue;
+        
         return {
           title: 'DSC Post OC Calculation',
           formula: [
             { label: 'NOI', value: noi },
             { label: 'Required Officer Comp', value: requiredOC, operator: '-' },
-            { label: 'Subtotal', value: formatCurrency(Number(noi?.replace(/[^0-9.-]+/g, '')) - Number(requiredOC?.replace(/[^0-9.-]+/g, ''))) },
+            { label: 'Subtotal', value: formatCurrency(subtotal) },
             { label: 'Debt Service', value: debtService, operator: '÷' },
             { label: 'DSC Post OC', value: formatValue(value), final: true }
           ]

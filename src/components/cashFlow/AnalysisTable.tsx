@@ -59,7 +59,10 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     const noi = getDataSafely('noi', periodIndex);
     const requiredOC = getDataSafely('requiredOfficerComp', periodIndex);
     const debtService = getDataSafely('debtService', periodIndex);
-    return debtService !== 0 ? Number(((noi - requiredOC) / debtService).toFixed(2)) : 0;
+    
+    if (debtService === 0) return 0;
+    
+    return Number(((noi - requiredOC) / debtService).toFixed(2));
   };
 
   const rows = [
@@ -93,10 +96,13 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     { label: 'DSC (Post OC)', key: 'dscPostOc', group: 'summary', bold: true }
   ].filter(row => showPercentages || !percentageOnlyRows.includes(row.key));
 
+  const dscPreOcValues = periods.map((_, index) => calculateDSCPreOC(index));
+  const dscPostOcValues = periods.map((_, index) => calculateDSCPostOC(index));
+
   const tableDataWithDSC = {
     ...tableData,
-    dscPreOc: periods.map((_, index) => calculateDSCPreOC(index)),
-    dscPostOc: periods.map((_, index) => calculateDSCPostOC(index))
+    dscPreOc: dscPreOcValues,
+    dscPostOc: dscPostOcValues
   };
 
   return (
@@ -161,7 +167,13 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
                       key={periodIndex}
                       rowKey={row.key}
                       periodIndex={periodIndex}
-                      value={row.key === 'dscPreOc' ? calculateDSCPreOC(periodIndex) : getDataSafely(row.key, periodIndex)}
+                      value={
+                        row.key === 'dscPreOc' 
+                          ? dscPreOcValues[periodIndex] 
+                          : row.key === 'dscPostOc'
+                            ? dscPostOcValues[periodIndex]
+                            : getDataSafely(row.key, periodIndex)
+                      }
                       isEditable={editableRows.includes(row.key)}
                       showChangeIndicator={showChangeIndicator(row.key)}
                       formatCurrency={formatCurrency}
