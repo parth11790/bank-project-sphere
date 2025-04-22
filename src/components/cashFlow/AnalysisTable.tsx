@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Toggle } from '@/components/ui/toggle';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
-import { Eye, EyeOff, ChevronRight } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import IncomeStatementAnalysis from './IncomeStatementAnalysis';
 import CashFlowTableCell from './CashFlowTableCell';
 import { useCashFlowCalculations } from '@/hooks/useCashFlowCalculations';
@@ -66,48 +65,36 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     return Number(((noi - requiredOC) / debtService).toFixed(2));
   };
 
-  const rowGroups = {
-    revenue: [
-      { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
-    ],
-    profit: [
-      { label: 'Wages', key: 'wages', group: 'expenses' },
-      { label: 'COGS', key: 'cogs', group: 'expenses' },
-      { label: 'Gross Profit', key: 'grossProfit', group: 'profit', bold: true },
-      { label: 'Gross Margin', key: 'grossMargin', group: 'profit' },
-    ],
-    adjustments: [
-      { label: 'Depreciation', key: 'depreciation', group: 'adjustments' },
-      { label: 'Amortization', key: 'amortization', group: 'adjustments' },
-      { label: 'Interest', key: 'interest', group: 'adjustments' },
-      { label: 'Existing Borrower OC', key: 'borrowerOC', group: 'adjustments' },
-      { label: 'Rent Addback', key: 'rentAddback', group: 'adjustments' },
-      { label: 'Dep. Adj. M-1', key: 'depAdjM1', group: 'adjustments' },
-      { label: 'Adjustments', key: 'adjustments', group: 'adjustments' },
-    ],
-    noi: [
-      { label: 'M-1 Book Income', key: 'bookIncome', group: 'income', bold: true },
-      { label: 'NOI', key: 'noi', group: 'income' },
-      { label: 'NOM', key: 'nom', group: 'income' },
-    ],
-    debtService: [
-      { label: 'Proposed SBA Loan #1', key: 'proposedLoan1', group: 'loans' },
-      { label: 'Proposed SBA Loan #2', key: 'proposedLoan2', group: 'loans' },
-      { label: 'Proposed SBA Loan #3', key: 'proposedLoan3', group: 'loans' },
-      { label: 'Proposed SBA Loan #4', key: 'proposedLoan4', group: 'loans' },
-      { label: 'Seller Carry Debt', key: 'sellerCarryDebt', group: 'debt' },
-      { label: 'Existing Business Debt', key: 'existingDebt', group: 'debt' },
-      { label: 'Other Debt', key: 'otherDebt', group: 'debt' },
-      { label: 'Debt Service', key: 'debtService', group: 'summary', bold: true },
-    ],
-    summary: [
-      { label: 'Available CF', key: 'availableCF', group: 'summary', bold: true },
-      { label: 'Required Officer Comp', key: 'requiredOfficerComp', group: 'summary' },
-      { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true },
-      { label: 'DSC (Pre OC)', key: 'dscPreOc', group: 'summary', bold: true },
-      { label: 'DSC (Post OC)', key: 'dscPostOc', group: 'summary', bold: true }
-    ]
-  };
+  const rows = [
+    { label: 'Gross Revenue', key: 'grossRevenue', group: 'revenue' },
+    { label: 'Wages', key: 'wages', group: 'expenses' },
+    { label: 'COGS', key: 'cogs', group: 'expenses' },
+    { label: 'Gross Profit', key: 'grossProfit', group: 'profit', bold: true },
+    { label: 'Gross Margin', key: 'grossMargin', group: 'profit' },
+    { label: 'Depreciation', key: 'depreciation', group: 'adjustments' },
+    { label: 'Amortization', key: 'amortization', group: 'adjustments' },
+    { label: 'Interest', key: 'interest', group: 'adjustments' },
+    { label: 'Existing Borrower OC', key: 'borrowerOC', group: 'adjustments' },
+    { label: 'Rent Addback', key: 'rentAddback', group: 'adjustments' },
+    { label: 'Dep. Adj. M-1', key: 'depAdjM1', group: 'adjustments' },
+    { label: 'Adjustments', key: 'adjustments', group: 'adjustments' },
+    { label: 'M-1 Book Income', key: 'bookIncome', group: 'income', bold: true },
+    { label: 'NOI', key: 'noi', group: 'income' },
+    { label: 'NOM', key: 'nom', group: 'income' },
+    { label: 'Proposed SBA Loan #1', key: 'proposedLoan1', group: 'loans' },
+    { label: 'Proposed SBA Loan #2', key: 'proposedLoan2', group: 'loans' },
+    { label: 'Proposed SBA Loan #3', key: 'proposedLoan3', group: 'loans' },
+    { label: 'Proposed SBA Loan #4', key: 'proposedLoan4', group: 'loans' },
+    { label: 'Seller Carry Debt', key: 'sellerCarryDebt', group: 'debt' },
+    { label: 'Existing Business Debt', key: 'existingDebt', group: 'debt' },
+    { label: 'Other Debt', key: 'otherDebt', group: 'debt' },
+    { label: 'Debt Service', key: 'debtService', group: 'summary', bold: true },
+    { label: 'Available CF', key: 'availableCF', group: 'summary', bold: true },
+    { label: 'Required Officer Comp', key: 'requiredOfficerComp', group: 'summary' },
+    { label: 'Excess CF', key: 'excessCF', group: 'summary', negative: true, bold: true },
+    { label: 'DSC (Pre OC)', key: 'dscPreOc', group: 'summary', bold: true },
+    { label: 'DSC (Post OC)', key: 'dscPostOc', group: 'summary', bold: true }
+  ].filter(row => showPercentages || !percentageOnlyRows.includes(row.key));
 
   const dscPreOcValues = periods.map((_, index) => calculateDSCPreOC(index));
   const dscPostOcValues = periods.map((_, index) => calculateDSCPostOC(index));
@@ -116,42 +103,6 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
     ...tableData,
     dscPreOc: dscPreOcValues,
     dscPostOc: dscPostOcValues
-  };
-
-  const renderTableRows = (rows: typeof rowGroups['revenue']) => {
-    return rows.map((row) => (
-      <TableRow 
-        key={row.key} 
-        className={cn(
-          getGroupStyle(row.group),
-          row.bold && 'font-semibold'
-        )}
-      >
-        <TableCell className="font-medium">
-          {row.label}
-        </TableCell>
-        {periods.map((_, periodIndex) => (
-          <CashFlowTableCell
-            key={periodIndex}
-            rowKey={row.key}
-            periodIndex={periodIndex}
-            value={
-              row.key === 'dscPreOc' 
-                ? dscPreOcValues[periodIndex] 
-                : row.key === 'dscPostOc'
-                  ? dscPostOcValues[periodIndex]
-                  : getDataSafely(row.key, periodIndex)
-            }
-            isEditable={editableRows.includes(row.key)}
-            showChangeIndicator={showChangeIndicator(row.key)}
-            formatCurrency={formatCurrency}
-            onChange={handleValueChange}
-            calculateYearlyChange={calculateYearlyChange}
-            showPercentages={showPercentages}
-          />
-        ))}
-      </TableRow>
-    ));
   };
 
   return (
@@ -200,44 +151,39 @@ const AnalysisTable: React.FC<AnalysisTableProps> = ({ periods, formatCurrency, 
               </TableRow>
             </TableHeader>
             <TableBody>
-              <Accordion type="multiple" className="w-full" defaultValue={["revenue"]}>
-                <AccordionItem value="revenue" className="border-none">
-                  <AccordionTrigger className="py-2 hover:no-underline hover:bg-muted/50">
-                    <span className="text-sm font-semibold">Gross Revenue</span>
-                  </AccordionTrigger>
-                  <AccordionContent>{renderTableRows(rowGroups.revenue)}</AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="profit" className="border-none">
-                  <AccordionTrigger className="py-2 hover:no-underline hover:bg-muted/50">
-                    <span className="text-sm font-semibold">Gross Profit</span>
-                  </AccordionTrigger>
-                  <AccordionContent>{renderTableRows(rowGroups.profit)}</AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="adjustments" className="border-none">
-                  <AccordionTrigger className="py-2 hover:no-underline hover:bg-muted/50">
-                    <span className="text-sm font-semibold">Adjustments</span>
-                  </AccordionTrigger>
-                  <AccordionContent>{renderTableRows(rowGroups.adjustments)}</AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="noi" className="border-none">
-                  <AccordionTrigger className="py-2 hover:no-underline hover:bg-muted/50">
-                    <span className="text-sm font-semibold">NOI</span>
-                  </AccordionTrigger>
-                  <AccordionContent>{renderTableRows(rowGroups.noi)}</AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="debtService" className="border-none">
-                  <AccordionTrigger className="py-2 hover:no-underline hover:bg-muted/50">
-                    <span className="text-sm font-semibold">Debt Service</span>
-                  </AccordionTrigger>
-                  <AccordionContent>{renderTableRows(rowGroups.debtService)}</AccordionContent>
-                </AccordionItem>
-
-                {renderTableRows(rowGroups.summary)}
-              </Accordion>
+              {rows.map((row) => (
+                <TableRow 
+                  key={row.key} 
+                  className={cn(
+                    getGroupStyle(row.group),
+                    row.bold && 'font-semibold'
+                  )}
+                >
+                  <TableCell className="font-medium">
+                    {row.label}
+                  </TableCell>
+                  {periods.map((_, periodIndex) => (
+                    <CashFlowTableCell
+                      key={periodIndex}
+                      rowKey={row.key}
+                      periodIndex={periodIndex}
+                      value={
+                        row.key === 'dscPreOc' 
+                          ? dscPreOcValues[periodIndex] 
+                          : row.key === 'dscPostOc'
+                            ? dscPostOcValues[periodIndex]
+                            : getDataSafely(row.key, periodIndex)
+                      }
+                      isEditable={editableRows.includes(row.key)}
+                      showChangeIndicator={showChangeIndicator(row.key)}
+                      formatCurrency={formatCurrency}
+                      onChange={handleValueChange}
+                      calculateYearlyChange={calculateYearlyChange}
+                      showPercentages={showPercentages}
+                    />
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
