@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, User } from 'lucide-react';
+import { Search, User, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -89,6 +89,27 @@ const Header: React.FC = () => {
             />
           </div>
           
+          {/* Add Settings buttons */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="hidden md:flex items-center gap-2"
+            onClick={() => navigate('/admin-settings')}
+          >
+            <Settings className="h-4 w-4" />
+            <span>Application Settings</span>
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="hidden md:flex items-center gap-2"
+            onClick={() => navigate('/lender-settings')}
+          >
+            <Settings className="h-4 w-4" />
+            <span>Lender Settings</span>
+          </Button>
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
@@ -117,7 +138,10 @@ const Header: React.FC = () => {
                 Settings
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/admin-settings')}>
-                Admin Settings
+                Application Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/lender-settings')}>
+                Lender Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem 

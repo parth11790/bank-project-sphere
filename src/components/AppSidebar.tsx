@@ -9,7 +9,8 @@ import {
   Menu,
   LayoutDashboard,
   FilePlus,
-  UserCircle
+  UserCircle,
+  Settings
 } from 'lucide-react';
 import {
   Sidebar,
@@ -112,6 +113,37 @@ export function AppSidebar() {
                   >
                     <FileText className="h-5 w-5" />
                     <span>Templates</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {userRole === 'bank_officer' && (
+          <SidebarGroup>
+            <SidebarGroupLabel>System Settings</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    onClick={() => navigate('/admin-settings')}
+                    isActive={isActivePath('/admin-settings')}
+                    tooltip="Application Settings"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Application Settings</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    onClick={() => navigate('/lender-settings')}
+                    isActive={isActivePath('/lender-settings')}
+                    tooltip="Lender Settings"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Lender Settings</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
