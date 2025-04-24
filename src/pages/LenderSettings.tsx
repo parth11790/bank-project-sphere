@@ -472,7 +472,7 @@ const LenderSettings = () => {
                       <li>Application Review by Loan Officer</li>
                       <li>Credit Underwriting</li>
                       <li>Compliance Review</li>
-                      <li>Manager Approval for loans > $250,000</li>
+                      <li>Manager Approval for loans {"> "}$250,000</li>
                       <li>Final Documentation Generation</li>
                     </ol>
                     <Button className="mt-4" variant="outline">Edit Workflow</Button>
@@ -516,3 +516,4 @@ const LenderSettings = () => {
 };
 
 export default LenderSettings;
+
