@@ -23,8 +23,8 @@ import {
 interface DocumentRequirementsFormProps {
   newFormRequirement: {
     loanType: string;
-    amountMin: number;
-    amountMax: number;
+    loanAmountMin: number;
+    loanAmountMax: number;
     participantType: string;
     formName: string;
     description?: string;
@@ -53,17 +53,15 @@ const DocumentRequirementsForm = ({
   const [accordionValue, setAccordionValue] = useState<string>("");
   
   const handleDocGenTypeChange = (type: string) => {
-    const currentTypes = [...newFormRequirement.documentGenerationTypes];
+    const currentTypes = [...(newFormRequirement.documentGenerationTypes || [])];
     const exists = currentTypes.includes(type);
     
     if (exists) {
       onFormChange({
-        ...newFormRequirement,
         documentGenerationTypes: currentTypes.filter(t => t !== type)
       });
     } else {
       onFormChange({
-        ...newFormRequirement,
         documentGenerationTypes: [...currentTypes, type]
       });
     }
@@ -81,7 +79,7 @@ const DocumentRequirementsForm = ({
           <Label htmlFor="reqLoanType">Loan Type</Label>
           <Select
             value={newFormRequirement.loanType}
-            onValueChange={(value) => onFormChange({...newFormRequirement, loanType: value})}
+            onValueChange={(value) => onFormChange({loanType: value})}
           >
             <SelectTrigger id="reqLoanType">
               <SelectValue placeholder="Select Loan Type" />
@@ -100,8 +98,8 @@ const DocumentRequirementsForm = ({
             <Input 
               id="reqAmountMin"
               type="number"
-              value={newFormRequirement.amountMin}
-              onChange={(e) => onFormChange({...newFormRequirement, amountMin: Number(e.target.value)})}
+              value={newFormRequirement.loanAmountMin}
+              onChange={(e) => onFormChange({loanAmountMin: Number(e.target.value)})}
             />
           </div>
           <div className="space-y-2">
@@ -109,8 +107,8 @@ const DocumentRequirementsForm = ({
             <Input 
               id="reqAmountMax"
               type="number"
-              value={newFormRequirement.amountMax}
-              onChange={(e) => onFormChange({...newFormRequirement, amountMax: Number(e.target.value)})}
+              value={newFormRequirement.loanAmountMax}
+              onChange={(e) => onFormChange({loanAmountMax: Number(e.target.value)})}
             />
           </div>
         </div>
@@ -119,7 +117,7 @@ const DocumentRequirementsForm = ({
           <Label htmlFor="participantType">Participant Type</Label>
           <Select
             value={newFormRequirement.participantType}
-            onValueChange={(value) => onFormChange({...newFormRequirement, participantType: value})}
+            onValueChange={(value) => onFormChange({participantType: value})}
           >
             <SelectTrigger id="participantType">
               <SelectValue placeholder="Select Participant Type" />
@@ -138,7 +136,7 @@ const DocumentRequirementsForm = ({
           <Input 
             id="formName"
             value={newFormRequirement.formName}
-            onChange={(e) => onFormChange({...newFormRequirement, formName: e.target.value})}
+            onChange={(e) => onFormChange({formName: e.target.value})}
             placeholder="e.g. Personal Financial Statement"
           />
         </div>
@@ -148,7 +146,7 @@ const DocumentRequirementsForm = ({
             id="isRequired" 
             checked={newFormRequirement.isRequired}
             onCheckedChange={(checked) => 
-              onFormChange({...newFormRequirement, isRequired: !!checked})
+              onFormChange({isRequired: !!checked})
             }
           />
           <label
@@ -176,7 +174,7 @@ const DocumentRequirementsForm = ({
                     id="description"
                     placeholder="Add a description for this form requirement"
                     value={newFormRequirement.description || ''}
-                    onChange={(e) => onFormChange({...newFormRequirement, description: e.target.value})}
+                    onChange={(e) => onFormChange({description: e.target.value})}
                     className="min-h-[80px]"
                   />
                 </div>
@@ -191,7 +189,7 @@ const DocumentRequirementsForm = ({
                       <div key={type} className="flex items-center space-x-2">
                         <Checkbox
                           id={`docgen-${type}`}
-                          checked={newFormRequirement.documentGenerationTypes.includes(type)}
+                          checked={newFormRequirement.documentGenerationTypes?.includes(type)}
                           onCheckedChange={() => handleDocGenTypeChange(type)}
                         />
                         <label
