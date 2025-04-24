@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
@@ -22,15 +21,8 @@ import {
 
 import FormHeader from './documentRequirements/FormHeader';
 import LoanRangeInputs from './documentRequirements/LoanRangeInputs';
-import DocumentTypeSelector from './documentRequirements/DocumentTypeSelector';
-
-const documentGenerationTypes = [
-  "Credit Check",
-  "Background Check",
-  "Bankruptcy Report",
-  "Underwriting Documents",
-  "Closing Documents"
-];
+import ParticipantSelector from './documentRequirements/ParticipantSelector';
+import AdvancedSettings from './documentRequirements/AdvancedSettings';
 
 interface DocumentRequirementsFormProps {
   newFormRequirement: {
@@ -95,23 +87,10 @@ const DocumentRequirementsForm = ({
           onMaxChange={(value) => onFormChange({loanAmountMax: value})}
         />
 
-        <div className="space-y-2">
-          <Label htmlFor="participantType">Participant Type</Label>
-          <Select
-            value={newFormRequirement.participantType}
-            onValueChange={(value) => onFormChange({participantType: value})}
-          >
-            <SelectTrigger id="participantType">
-              <SelectValue placeholder="Select Participant Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Borrower">Borrower</SelectItem>
-              <SelectItem value="Buyer">Buyer</SelectItem>
-              <SelectItem value="Seller">Seller</SelectItem>
-              <SelectItem value="Guarantor">Guarantor</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <ParticipantSelector
+          participantType={newFormRequirement.participantType}
+          onParticipantChange={(value) => onFormChange({participantType: value})}
+        />
 
         <div className="space-y-2">
           <Label htmlFor="formName">Form Name</Label>
@@ -149,30 +128,13 @@ const DocumentRequirementsForm = ({
           <AccordionItem value="advanced-settings">
             <AccordionTrigger className="px-4">Advanced Settings</AccordionTrigger>
             <AccordionContent className="px-4 pb-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Add a description for this form requirement"
-                    value={newFormRequirement.description || ''}
-                    onChange={(e) => onFormChange({description: e.target.value})}
-                    className="min-h-[80px]"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Document Generation Types</Label>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    Select document types this form will be used to generate
-                  </p>
-                  <DocumentTypeSelector 
-                    selectedTypes={newFormRequirement.documentGenerationTypes || []}
-                    onTypeChange={handleDocGenTypeChange}
-                    documentGenerationTypes={documentGenerationTypes}
-                  />
-                </div>
-              </div>
+              <AdvancedSettings
+                description={newFormRequirement.description}
+                documentGenerationTypes={documentGenerationTypes}
+                onDescriptionChange={(value) => onFormChange({description: value})}
+                onDocTypeChange={handleDocGenTypeChange}
+                selectedTypes={newFormRequirement.documentGenerationTypes || []}
+              />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
