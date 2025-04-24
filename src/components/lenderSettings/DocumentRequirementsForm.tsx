@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, FileCheck } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -19,6 +19,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+import FormHeader from './documentRequirements/FormHeader';
+import LoanRangeInputs from './documentRequirements/LoanRangeInputs';
+import DocumentTypeSelector from './documentRequirements/DocumentTypeSelector';
+
+const documentGenerationTypes = [
+  "Credit Check",
+  "Background Check",
+  "Bankruptcy Report",
+  "Underwriting Documents",
+  "Closing Documents"
+];
 
 interface DocumentRequirementsFormProps {
   newFormRequirement: {
@@ -36,14 +48,6 @@ interface DocumentRequirementsFormProps {
   onAddForm: () => void;
 }
 
-const documentGenerationTypes = [
-  "Credit Check",
-  "Background Check",
-  "Bankruptcy Report",
-  "Underwriting Documents",
-  "Closing Documents"
-];
-
 const DocumentRequirementsForm = ({
   newFormRequirement,
   loanTypes,
@@ -56,24 +60,16 @@ const DocumentRequirementsForm = ({
     const currentTypes = [...(newFormRequirement.documentGenerationTypes || [])];
     const exists = currentTypes.includes(type);
     
-    if (exists) {
-      onFormChange({
-        documentGenerationTypes: currentTypes.filter(t => t !== type)
-      });
-    } else {
-      onFormChange({
-        documentGenerationTypes: [...currentTypes, type]
-      });
-    }
+    onFormChange({
+      documentGenerationTypes: exists 
+        ? currentTypes.filter(t => t !== type)
+        : [...currentTypes, type]
+    });
   };
 
   return (
     <div>
-      <h3 className="text-lg font-medium">Add Required Document</h3>
-      <p className="text-sm text-muted-foreground mb-4">
-        Specify which forms are required for different participants based on loan type and amount.
-      </p>
-
+      <FormHeader />
       <div className="grid grid-cols-1 gap-4">
         <div className="space-y-2">
           <Label htmlFor="reqLoanType">Loan Type</Label>
@@ -92,26 +88,12 @@ const DocumentRequirementsForm = ({
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="reqAmountMin">Min Amount ($)</Label>
-            <Input 
-              id="reqAmountMin"
-              type="number"
-              value={newFormRequirement.loanAmountMin}
-              onChange={(e) => onFormChange({loanAmountMin: Number(e.target.value)})}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="reqAmountMax">Max Amount ($)</Label>
-            <Input 
-              id="reqAmountMax"
-              type="number"
-              value={newFormRequirement.loanAmountMax}
-              onChange={(e) => onFormChange({loanAmountMax: Number(e.target.value)})}
-            />
-          </div>
-        </div>
+        <LoanRangeInputs 
+          minAmount={newFormRequirement.loanAmountMin}
+          maxAmount={newFormRequirement.loanAmountMax}
+          onMinChange={(value) => onFormChange({loanAmountMin: value})}
+          onMaxChange={(value) => onFormChange({loanAmountMax: value})}
+        />
 
         <div className="space-y-2">
           <Label htmlFor="participantType">Participant Type</Label>
@@ -184,24 +166,11 @@ const DocumentRequirementsForm = ({
                   <p className="text-xs text-muted-foreground mb-2">
                     Select document types this form will be used to generate
                   </p>
-                  <div className="space-y-2">
-                    {documentGenerationTypes.map((type) => (
-                      <div key={type} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`docgen-${type}`}
-                          checked={newFormRequirement.documentGenerationTypes?.includes(type)}
-                          onCheckedChange={() => handleDocGenTypeChange(type)}
-                        />
-                        <label
-                          htmlFor={`docgen-${type}`}
-                          className="text-sm font-medium leading-none flex items-center"
-                        >
-                          <FileCheck className="h-3 w-3 mr-1" />
-                          {type}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                  <DocumentTypeSelector 
+                    selectedTypes={newFormRequirement.documentGenerationTypes || []}
+                    onTypeChange={handleDocGenTypeChange}
+                    documentGenerationTypes={documentGenerationTypes}
+                  />
                 </div>
               </div>
             </AccordionContent>
