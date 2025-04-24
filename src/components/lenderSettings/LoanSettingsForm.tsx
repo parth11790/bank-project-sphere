@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -11,6 +12,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface LoanSettingsFormProps {
   newSetting: {
@@ -21,6 +28,13 @@ interface LoanSettingsFormProps {
     term: number;
     amortization: number;
     softCostPercentage: number;
+    requiredDocuments: {
+      creditCheck: boolean;
+      backgroundCheck: boolean;
+      bankruptcyReport: boolean;
+      underwritingDocuments: boolean;
+      closingReport: boolean;
+    };
   };
   loanTypes: string[];
   onSettingChange: (setting: any) => void;
@@ -33,6 +47,18 @@ const LoanSettingsForm = ({
   onSettingChange, 
   onAddSetting 
 }: LoanSettingsFormProps) => {
+  const [accordionValue, setAccordionValue] = useState<string>("");
+  
+  const handleDocRequirementChange = (key: string, checked: boolean) => {
+    onSettingChange({
+      ...newSetting,
+      requiredDocuments: {
+        ...newSetting.requiredDocuments,
+        [key]: checked
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium">Add New Loan Setting</h3>
@@ -121,6 +147,66 @@ const LoanSettingsForm = ({
             onChange={(e) => onSettingChange({...newSetting, softCostPercentage: Number(e.target.value)})}
           />
         </div>
+
+        <Accordion 
+          type="single" 
+          collapsible
+          value={accordionValue}
+          onValueChange={setAccordionValue}
+          className="border rounded-md"
+        >
+          <AccordionItem value="document-requirements">
+            <AccordionTrigger className="px-4">Required Document Generation</AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="creditCheck" 
+                    checked={newSetting.requiredDocuments.creditCheck}
+                    onCheckedChange={(checked) => handleDocRequirementChange('creditCheck', !!checked)}
+                  />
+                  <Label htmlFor="creditCheck">Credit Check</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="backgroundCheck" 
+                    checked={newSetting.requiredDocuments.backgroundCheck}
+                    onCheckedChange={(checked) => handleDocRequirementChange('backgroundCheck', !!checked)}
+                  />
+                  <Label htmlFor="backgroundCheck">Background Check</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="bankruptcyReport" 
+                    checked={newSetting.requiredDocuments.bankruptcyReport}
+                    onCheckedChange={(checked) => handleDocRequirementChange('bankruptcyReport', !!checked)}
+                  />
+                  <Label htmlFor="bankruptcyReport">Bankruptcy Report</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="underwritingDocuments" 
+                    checked={newSetting.requiredDocuments.underwritingDocuments}
+                    onCheckedChange={(checked) => handleDocRequirementChange('underwritingDocuments', !!checked)}
+                  />
+                  <Label htmlFor="underwritingDocuments">Underwriting Documents</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="closingReport" 
+                    checked={newSetting.requiredDocuments.closingReport}
+                    onCheckedChange={(checked) => handleDocRequirementChange('closingReport', !!checked)}
+                  />
+                  <Label htmlFor="closingReport">Closing Report</Label>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         <Button onClick={onAddSetting} className="mt-2">
           <Plus className="mr-2 h-4 w-4" /> Add Setting

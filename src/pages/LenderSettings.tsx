@@ -7,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import LoanSettingsForm from '@/components/lenderSettings/LoanSettingsForm';
 import LoanSettingsList from '@/components/lenderSettings/LoanSettingsList';
 import DocumentRequirementsForm from '@/components/lenderSettings/DocumentRequirementsForm';
 import DocumentRequirementsList from '@/components/lenderSettings/DocumentRequirementsList';
 import ApprovalWorkflows from '@/components/lenderSettings/ApprovalWorkflows';
+import { LoanSetting, DocumentRequirement } from '@/types/lenderSettings';
 
 // Mock data for loan types
 const loanTypes = [
@@ -25,7 +27,7 @@ const loanTypes = [
 ];
 
 // Mock data for loan settings and required forms
-const initialLoanSettings = [
+const initialLoanSettings: LoanSetting[] = [
   {
     id: "1",
     loanType: "SBA 7(a)",
@@ -34,7 +36,16 @@ const initialLoanSettings = [
     interestRate: 7.5,
     term: 10,
     amortization: 120,
-    softCostPercentage: 3.5
+    softCostPercentage: 3.5,
+    requiredForms: {
+      borrower: ["Personal Financial Statement", "Business Financial Statement"],
+      seller: ["Business Sale Agreement"],
+    },
+    requiredDocuments: {
+      creditCheck: true,
+      backgroundCheck: true,
+      underwritingDocuments: true
+    }
   },
   {
     id: "2",
@@ -44,7 +55,19 @@ const initialLoanSettings = [
     interestRate: 6.75,
     term: 25,
     amortization: 300,
-    softCostPercentage: 3.0
+    softCostPercentage: 3.0,
+    requiredForms: {
+      borrower: ["Personal Financial Statement", "Business Financial Statement", "Tax Returns (3 years)"],
+      seller: ["Business Sale Agreement", "Financial Documentation"],
+      guarantor: ["Personal Guarantee"]
+    },
+    requiredDocuments: {
+      creditCheck: true,
+      backgroundCheck: true,
+      bankruptcyReport: true,
+      underwritingDocuments: true,
+      closingReport: true
+    }
   },
   {
     id: "3",
@@ -54,92 +77,138 @@ const initialLoanSettings = [
     interestRate: 5.25,
     term: 20,
     amortization: 240,
-    softCostPercentage: 2.75
+    softCostPercentage: 2.75,
+    requiredForms: {
+      borrower: ["SBA Form 1244", "Personal Financial Statement", "Business Plan"],
+    },
+    requiredDocuments: {
+      creditCheck: true,
+      underwritingDocuments: true,
+      closingReport: true
+    }
   }
 ];
 
-const initialRequiredForms = [
+const initialRequiredForms: DocumentRequirement[] = [
   {
     id: "1",
     loanType: "SBA 7(a)",
-    amountMin: 0,
-    amountMax: 5000000,
+    loanAmountMin: 0,
+    loanAmountMax: 5000000,
     participantType: "Borrower",
-    formName: "Personal Financial Statement"
+    formName: "Personal Financial Statement",
+    isRequired: true,
+    documentGenerationType: ["Credit Check", "Underwriting Documents"]
   },
   {
     id: "2",
     loanType: "SBA 7(a)",
-    amountMin: 0,
-    amountMax: 5000000,
+    loanAmountMin: 0,
+    loanAmountMax: 5000000,
     participantType: "Borrower",
-    formName: "Business Financial Statement"
+    formName: "Business Financial Statement",
+    isRequired: true,
+    documentGenerationType: ["Underwriting Documents"]
   },
   {
     id: "3",
     loanType: "SBA 504",
-    amountMin: 0,
-    amountMax: 5000000,
+    loanAmountMin: 0,
+    loanAmountMax: 5000000,
     participantType: "Seller",
-    formName: "Business Sale Agreement"
+    formName: "Business Sale Agreement",
+    isRequired: true,
+    documentGenerationType: ["Closing Report"]
   }
 ];
 
 const LenderSettings = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("loan-settings");
-  const [loanSettings, setLoanSettings] = useState(initialLoanSettings);
-  const [requiredForms, setRequiredForms] = useState(initialRequiredForms);
+  const [loanSettings, setLoanSettings] = useState<LoanSetting[]>(initialLoanSettings);
+  const [requiredForms, setRequiredForms] = useState<DocumentRequirement[]>(initialRequiredForms);
   
   // New setting form state
-  const [newSetting, setNewSetting] = useState({
+  const [newSetting, setNewSetting] = useState<LoanSetting>({
+    id: "",
     loanType: loanTypes[0],
     amountMin: 0,
     amountMax: 1000000,
     interestRate: 6.0,
     term: 10,
     amortization: 120,
-    softCostPercentage: 3.0
+    softCostPercentage: 3.0,
+    requiredDocuments: {
+      creditCheck: false,
+      backgroundCheck: false,
+      bankruptcyReport: false,
+      underwritingDocuments: false,
+      closingReport: false
+    }
   });
 
   // New form requirement state
-  const [newFormRequirement, setNewFormRequirement] = useState({
+  const [newFormRequirement, setNewFormRequirement] = useState<Omit<DocumentRequirement, "id"> & {
+    documentGenerationTypes: string[];
+    isRequired: boolean;
+  }>({
     loanType: loanTypes[0],
     amountMin: 0,
     amountMax: 1000000,
     participantType: "Borrower",
-    formName: ""
+    formName: "",
+    isRequired: true,
+    documentGenerationTypes: []
   });
 
   const handleAddLoanSetting = () => {
+    const newId = Date.now().toString();
     setLoanSettings([...loanSettings, { 
-      id: Date.now().toString(), 
-      ...newSetting 
+      ...newSetting, 
+      id: newId
     }]);
     
+    toast.success("Loan setting added successfully");
+    
     setNewSetting({
+      id: "",
       loanType: loanTypes[0],
       amountMin: 0,
       amountMax: 1000000,
       interestRate: 6.0,
       term: 10,
       amortization: 120,
-      softCostPercentage: 3.0
+      softCostPercentage: 3.0,
+      requiredDocuments: {
+        creditCheck: false,
+        backgroundCheck: false,
+        bankruptcyReport: false,
+        underwritingDocuments: false,
+        closingReport: false
+      }
     });
   };
 
   const handleAddFormRequirement = () => {
+    const newId = Date.now().toString();
+    const { documentGenerationTypes, ...rest } = newFormRequirement;
+    
     setRequiredForms([...requiredForms, { 
-      id: Date.now().toString(),
-      ...newFormRequirement 
+      ...rest,
+      id: newId,
+      documentGenerationType: documentGenerationTypes
     }]);
+    
+    toast.success("Document requirement added successfully");
     
     setNewFormRequirement({
       loanType: loanTypes[0],
       amountMin: 0,
       amountMax: 1000000,
       participantType: "Borrower",
-      formName: ""
+      formName: "",
+      isRequired: true,
+      documentGenerationTypes: []
     });
   };
 
@@ -183,7 +252,10 @@ const LenderSettings = () => {
                   />
                   <LoanSettingsList
                     settings={loanSettings}
-                    onDeleteSetting={(id) => setLoanSettings(loanSettings.filter(s => s.id !== id))}
+                    onDeleteSetting={(id) => {
+                      setLoanSettings(loanSettings.filter(s => s.id !== id));
+                      toast.success("Loan setting deleted");
+                    }}
                   />
                 </div>
               </CardContent>
@@ -205,7 +277,10 @@ const LenderSettings = () => {
                   />
                   <DocumentRequirementsList
                     requirements={requiredForms}
-                    onDeleteRequirement={(id) => setRequiredForms(requiredForms.filter(f => f.id !== id))}
+                    onDeleteRequirement={(id) => {
+                      setRequiredForms(requiredForms.filter(f => f.id !== id));
+                      toast.success("Document requirement deleted");
+                    }}
                   />
                 </div>
               </CardContent>
