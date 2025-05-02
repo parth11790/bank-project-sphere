@@ -185,7 +185,7 @@ export function DropdownManager() {
                   <div className="flex justify-between items-start">
                     <CardTitle>{config.label}</CardTitle>
                     {'customizationLevel' in config && 
-                      renderCustomizationLevelBadge(config.customizationLevel)
+                      renderCustomizationLevelBadge(config.customizationLevel as CustomizationLevel)
                     }
                   </div>
                   <CardDescription className="mt-1">{config.description}</CardDescription>
