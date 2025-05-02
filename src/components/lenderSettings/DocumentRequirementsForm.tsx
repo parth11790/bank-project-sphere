@@ -24,6 +24,15 @@ import LoanRangeInputs from './documentRequirements/LoanRangeInputs';
 import ParticipantSelector from './documentRequirements/ParticipantSelector';
 import AdvancedSettings from './documentRequirements/AdvancedSettings';
 
+// Define document generation types
+const documentGenerationTypes = [
+  "Credit Check",
+  "Underwriting Documents",
+  "Closing Report",
+  "Background Check",
+  "Bankruptcy Report"
+];
+
 interface DocumentRequirementsFormProps {
   newFormRequirement: {
     loanType: string;
