@@ -126,7 +126,7 @@ export function DropdownManager() {
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select
             value={filterLevel}
-            onValueChange={(value: string) => setFilterLevel(value as CustomizationLevel | 'All')}
+            onValueChange={(value) => setFilterLevel(value as CustomizationLevel | 'All')}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by level" />

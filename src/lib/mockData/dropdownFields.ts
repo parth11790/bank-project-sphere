@@ -166,6 +166,98 @@ export const sbaDropdownFields: DropdownField[] = [
     ]
   },
   
+  // New fields requested by user
+  {
+    id: 'useOfProceedsCategory',
+    label: 'Use of Proceeds Category',
+    description: 'Categories for classifying loan proceeds usage (Based on SOP & Project Cost Worksheet)',
+    customizationLevel: 'SBA Influenced',
+    module: 'Application Processing & Underwriting',
+    initialValues: [
+      'Land Purchase',
+      'Building Purchase',
+      'New Building Construction',
+      'Building Improvements/Renovations',
+      'Leasehold Improvements',
+      'Equipment Purchase',
+      'Inventory Purchase',
+      'Working Capital',
+      'Business Acquisition - Goodwill',
+      'Business Acquisition - Tangible Assets',
+      'Debt Refinance - Business CC',
+      'Debt Refinance - HELOC (Business Use)',
+      'Debt Refinance - Term Loan',
+      'Debt Refinance - Line of Credit',
+      'Debt Refinance - SBA Loan',
+      'Debt Refinance - Other',
+      'Soft Costs - SBA Guarantee Fee',
+      'Soft Costs - Lender Fees',
+      'Soft Costs - Closing Costs (3rd Party)',
+      'Franchise Fee',
+      'Other (Specify)'
+    ]
+  },
+  {
+    id: 'environmentalReviewType',
+    label: 'Environmental Review Type',
+    description: 'Types of environmental reviews required for commercial real estate (Based on SOP 50 10 8, Section A, Ch 5, E)',
+    customizationLevel: 'SBA Defined',
+    module: 'Application Processing & Underwriting',
+    initialValues: [
+      'Environmental Questionnaire (EQ)',
+      'Records Search w/ Risk Assessment (RSRA)',
+      'Transaction Screen Assessment (TSA)',
+      'Phase I ESA',
+      'Phase II ESA',
+      'Remediation Plan Review',
+      'No Review Required'
+    ]
+  },
+  {
+    id: 'environmentalReviewStatus',
+    label: 'Environmental Review Status',
+    description: 'Current status of environmental review process',
+    customizationLevel: 'Lender Customizable',
+    module: 'Application Processing & Underwriting',
+    initialValues: [
+      'Pending Determination',
+      'EQ Completed - OK',
+      'RSRA Completed - Low Risk',
+      'RSRA Completed - Elevated/High Risk (Phase I Req\'d)',
+      'TSA Completed - OK',
+      'TSA Completed - Further Action Req\'d',
+      'Phase I Completed - OK',
+      'Phase I Completed - Phase II Req\'d',
+      'Phase II Completed - OK',
+      'Phase II Completed - Remediation Req\'d',
+      'Remediation Plan Submitted to SBA',
+      'Remediation Ongoing',
+      'Remediation Complete - NFA Received',
+      'SBA Concurrence Pending',
+      'SBA Concurrence Received'
+    ]
+  },
+  {
+    id: 'sourceFundsCategory',
+    label: 'Source of Funds Category',
+    description: 'Categories for classifying funding sources (Based on Project Structure & Funding Plan)',
+    customizationLevel: 'SBA Influenced',
+    module: 'Application Processing & Underwriting',
+    initialValues: [
+      'Borrower Equity - Cash',
+      'Borrower Equity - Assets',
+      'Seller Note - Standby',
+      'Seller Note - Non-Standby',
+      'SBA 7(a) Loan',
+      'SBA 504 Debenture',
+      'Third Party Loan (504)',
+      'Conventional Loan (Lender)',
+      'Conventional Loan (Other FI)',
+      'Grant',
+      'Other (Specify)'
+    ]
+  },
+  
   // Module 3: Documentation & Closing
   {
     id: 'documentStatus',
