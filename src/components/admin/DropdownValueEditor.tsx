@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -12,16 +12,23 @@ interface DropdownValueEditorProps {
   description: string;
   initialValues: string[];
   isRestricted?: boolean;
+  onSave?: (values: string[]) => void;
 }
 
 export function DropdownValueEditor({
   title,
   description,
   initialValues,
-  isRestricted = false
+  isRestricted = false,
+  onSave
 }: DropdownValueEditorProps) {
   const [values, setValues] = useState<string[]>(initialValues);
   const [newValue, setNewValue] = useState('');
+  
+  // Update values when initialValues change (for when reset occurs)
+  useEffect(() => {
+    setValues(initialValues);
+  }, [initialValues]);
 
   const handleAdd = () => {
     if (isRestricted) {
@@ -60,8 +67,13 @@ export function DropdownValueEditor({
       return;
     }
     
-    // Here you would typically save to your backend
-    toast.success('Changes saved successfully');
+    // If onSave is provided, call it with the current values
+    if (onSave) {
+      onSave(values);
+    } else {
+      // Default behavior for admin settings
+      toast.success('Changes saved successfully');
+    }
   };
 
   return (

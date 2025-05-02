@@ -15,6 +15,7 @@ import DocumentRequirementsList from '@/components/lenderSettings/DocumentRequir
 import ApprovalWorkflows from '@/components/lenderSettings/ApprovalWorkflows';
 import { loanTypes } from '@/lib/mockData/lenderSettings';
 import { useLenderSettings } from '@/hooks/useLenderSettings';
+import { LenderDropdownManager } from '@/components/lenderSettings/LenderDropdownManager';
 
 const LenderSettings = () => {
   const navigate = useNavigate();
@@ -51,9 +52,10 @@ const LenderSettings = () => {
         <Separator className="my-6" />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 w-full max-w-xl">
+          <TabsList className="grid grid-cols-4 w-full max-w-2xl">
             <TabsTrigger value="loan-settings">Loan Settings</TabsTrigger>
             <TabsTrigger value="document-requirements">Document Requirements</TabsTrigger>
+            <TabsTrigger value="dropdown-values">Dropdown Values</TabsTrigger>
             <TabsTrigger value="approval-workflows">Approval Workflows</TabsTrigger>
           </TabsList>
 
@@ -97,6 +99,17 @@ const LenderSettings = () => {
                     onDeleteRequirement={handleDeleteRequirement}
                   />
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="dropdown-values" className="space-y-6 mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Dropdown Values Configuration</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LenderDropdownManager />
               </CardContent>
             </Card>
           </TabsContent>
