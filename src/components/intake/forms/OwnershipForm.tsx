@@ -1,443 +1,208 @@
-import React from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { 
-  Form, FormControl, FormField, FormItem, 
-  FormLabel, FormMessage, FormDescription 
-} from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { 
-  Select, SelectContent, SelectItem, 
-  SelectTrigger, SelectValue 
-} from '@/components/ui/select';
-import { DatePicker } from '@/components/ui/date-picker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { AlertTriangle, Plus, Trash2 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { sbaDropdownFields } from '@/lib/mockData/dropdownFields';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Trash2 } from 'lucide-react';
 import { FormComponentProps } from '../types/intakeTypes';
-import { useMemo } from 'react';
 
-// Define schemas for the form that match our expected types
-const currentOwnerSchema = z.object({
-  name: z.string().min(2, "Owner name is required"),
-  tax_id: z.string().min(4, "Tax ID is required"),
-  address: z.string().min(5, "Address is required"),
-  ownership_percentage: z.coerce.number()
-    .min(0.01, "Percentage must be greater than 0")
-    .max(100, "Percentage cannot exceed 100"),
-  citizenship_status: z.string({
-    required_error: "Citizenship status is required",
-  }),
+// Create expected types for current and former owners to fix type errors
+const ownerSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  tax_id: z.string().min(1, "Tax ID is required"),
+  address: z.string().min(1, "Address is required"),
+  ownership_percentage: z.coerce.number().min(0).max(100),
+  citizenship_status: z.string().min(1, "Citizenship status is required"),
 });
 
-const formerOwnerSchema = z.object({
-  name: z.string().min(2, "Former owner name is required"),
-  tax_id: z.string().min(4, "Tax ID is required"),
-  address: z.string().min(5, "Address is required"),
-  former_ownership_percentage: z.coerce.number()
-    .min(0.01, "Percentage must be greater than 0")
-    .max(100, "Percentage cannot exceed 100"),
-  citizenship_status: z.string({
-    required_error: "Citizenship status is required",
-  }),
-  date_ownership_ceased: z.date({
-    required_error: "Date is required",
-  }),
-  is_still_associate: z.boolean({
-    required_error: "This field is required",
-  }),
-  is_still_employed: z.boolean({
-    required_error: "This field is required",
-  }),
+const formerOwnerSchema = ownerSchema.extend({
+  date_ownership_ceased: z.date(),
+  former_ownership_percentage: z.coerce.number().min(0).max(100),
+  is_still_associate: z.boolean(),
+  is_still_employed: z.boolean(),
 });
 
+// Define form schema
 const ownershipSchema = z.object({
-  current_owners: z.array(currentOwnerSchema)
-    .min(1, "At least one current owner is required"),
-  former_owners: z.array(formerOwnerSchema).optional(),
+  current_owners: z.array(ownerSchema),
+  former_owners: z.array(formerOwnerSchema),
 });
 
-const OwnershipForm: React.FC<FormComponentProps> = ({ formData, updateFormData }) => {
-  // Get citizenship status options from SBA dropdown fields
-  const citizenshipOptions = useMemo(() => {
-    const field = sbaDropdownFields.find(field => field.id === 'citizenshipStatus');
-    return field?.initialValues || [];
-  }, []);
-  
-  const form = useForm<z.infer<typeof ownershipSchema>>({
+type OwnershipFormValues = z.infer<typeof ownershipSchema>;
+type Owner = z.infer<typeof ownerSchema>;
+type FormerOwner = z.infer<typeof formerOwnerSchema>;
+
+interface OwnershipFormProps extends FormComponentProps {}
+
+// When creating new owners, ensure non-optional fields are included:
+const createEmptyCurrentOwner = () => ({
+  name: "",
+  tax_id: "",
+  address: "",
+  ownership_percentage: 0,
+  citizenship_status: "",
+});
+
+const createEmptyFormerOwner = () => ({
+  name: "",
+  tax_id: "",
+  address: "",
+  former_ownership_percentage: 0,
+  citizenship_status: "",
+  date_ownership_ceased: new Date(),
+  is_still_associate: false,
+  is_still_employed: false,
+});
+
+const OwnershipForm: React.FC<OwnershipFormProps> = ({ formData, updateFormData }) => {
+  const form = useForm<OwnershipFormValues>({
     resolver: zodResolver(ownershipSchema),
     defaultValues: {
-      current_owners: formData.current_owners?.length > 0 
-        ? formData.current_owners 
-        : [{ name: '', tax_id: '', address: '', ownership_percentage: 100, citizenship_status: '' }],
-      former_owners: formData.former_owners?.map(owner => ({
-        ...owner,
-        // Ensure date_ownership_ceased is a Date object
-        date_ownership_ceased: owner.date_ownership_ceased instanceof Date 
-          ? owner.date_ownership_ceased 
-          : new Date(owner.date_ownership_ceased)
-      })) || [],
+      current_owners: formData.current_owners.length ? formData.current_owners : [createEmptyCurrentOwner()],
+      former_owners: formData.former_owners.length ? formData.former_owners : [createEmptyFormerOwner()],
     },
   });
-  
-  const { fields: currentOwnersFields, append: appendCurrentOwner, remove: removeCurrentOwner } = 
-    useFieldArray({
-      control: form.control,
-      name: "current_owners",
-    });
-    
-  const { fields: formerOwnersFields, append: appendFormerOwner, remove: removeFormerOwner } = 
-    useFieldArray({
-      control: form.control,
-      name: "former_owners",
-    });
-  
-  const hasRiskyOwner = useMemo(() => {
-    const currentOwners = form.watch('current_owners') || [];
-    const formerOwners = form.watch('former_owners') || [];
-    
-    const currentOwnerRisk = currentOwners.some(
-      owner => owner.citizenship_status === 'Other/Ineligible Person'
-    );
-    
-    const formerOwnerRisk = formerOwners.some(
-      owner => {
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        
-        const ceaseDate = owner.date_ownership_ceased;
-        const isWithinLookback = ceaseDate && new Date(ceaseDate) > sixMonthsAgo;
-        
-        return isWithinLookback && 
-               owner.citizenship_status === 'Other/Ineligible Person' && 
-               (owner.is_still_associate || owner.is_still_employed);
-      }
-    );
-    
-    return currentOwnerRisk || formerOwnerRisk;
-  }, [form.watch]);
-  
-  const totalCurrentOwnership = useMemo(() => {
-    const currentOwners = form.watch('current_owners') || [];
-    return currentOwners.reduce((sum, owner) => sum + (owner.ownership_percentage || 0), 0);
-  }, [form.watch]);
-  
-  const onSubmit = (values: z.infer<typeof ownershipSchema>) => {
-    // Convert date objects to ISO strings for former owners
-    const formerOwners = values.former_owners?.map(owner => ({
-      ...owner,
-      // Convert Date to Date object for IntakeFormData
-      date_ownership_ceased: owner.date_ownership_ceased
-    })) || [];
-    
+
+  const [currentOwners, setCurrentOwners] = useState<Owner[]>(form.getValues().current_owners);
+  const [formerOwners, setFormerOwners] = useState<FormerOwner[]>(form.getValues().former_owners);
+
+  // Update form values when currentOwners or formerOwners change
+  React.useEffect(() => {
+    form.setValue("current_owners", currentOwners);
+  }, [currentOwners, form]);
+
+  React.useEffect(() => {
+    form.setValue("former_owners", formerOwners);
+  }, [formerOwners, form]);
+
+  const onSubmit = (values: OwnershipFormValues) => {
     updateFormData({
       current_owners: values.current_owners,
-      former_owners: formerOwners,
+      former_owners: values.former_owners,
     });
   };
-  
-  React.useEffect(() => {
-    const subscription = form.watch((value) => {
-      if (value.current_owners || value.former_owners) {
-        // Convert date objects for former owners to match IntakeFormData type
-        const formerOwners = value.former_owners?.map(owner => {
-          if (!owner.date_ownership_ceased) return owner;
-          
-          return {
-            ...owner,
-            // Keep date as Date object
-            date_ownership_ceased: owner.date_ownership_ceased
-          };
-        });
-        
-        updateFormData({
-          current_owners: value.current_owners as typeof formData.current_owners,
-          former_owners: formerOwners as typeof formData.former_owners,
-        });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form, updateFormData]);
-  
+
+  const addCurrentOwner = () => {
+    setCurrentOwners([...currentOwners, createEmptyCurrentOwner()]);
+  };
+
+  const addFormerOwner = () => {
+    setFormerOwners([...formerOwners, createEmptyFormerOwner()]);
+  };
+
+  const removeCurrentOwner = (index: number) => {
+    const updatedOwners = [...currentOwners];
+    updatedOwners.splice(index, 1);
+    setCurrentOwners(updatedOwners);
+  };
+
+  const removeFormerOwner = (index: number) => {
+    const updatedOwners = [...formerOwners];
+    updatedOwners.splice(index, 1);
+    setFormerOwners(updatedOwners);
+  };
+
+  const updateCurrentOwner = (index: number, updatedOwner: Owner) => {
+    const updatedOwners = [...currentOwners];
+    updatedOwners[index] = updatedOwner;
+    setCurrentOwners(updatedOwners);
+  };
+
+  const updateFormerOwner = (index: number, updatedOwner: FormerOwner) => {
+    const updatedOwners = [...formerOwners];
+    updatedOwners[index] = updatedOwner;
+    setFormerOwners(updatedOwners);
+  };
+
+  const citizenshipStatuses = ["U.S. Citizen", "Lawful Permanent Resident (LPR)", "U.S. National", "Other/Ineligible Person"];
+
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-medium">Ownership Information</h3>
         <p className="text-sm text-muted-foreground">
-          Enter details about current and former owners (within the last 6 months)
+          Enter information about the current and former owners of the business.
         </p>
       </div>
-      
-      {hasRiskyOwner && (
-        <Alert variant="destructive" className="bg-red-50">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            <span className="font-bold">Eligibility Warning:</span> One or more ineligible persons identified in ownership.
-            Additional review required per SOP 6-month lookback rule.
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {totalCurrentOwnership !== 100 && currentOwnersFields.length > 0 && (
-        <Alert className="bg-amber-50 border-amber-200">
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
-          <AlertDescription>
-            <span className="font-medium">Note:</span> Total ownership percentage is {totalCurrentOwnership}%. 
-            It should equal 100%.
-          </AlertDescription>
-        </Alert>
-      )}
-      
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-medium">Current Owners</h4>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendCurrentOwner({
-                  name: '',
-                  tax_id: '',
-                  address: '',
-                  ownership_percentage: 0,
-                  citizenship_status: ''
-                })}
-              >
-                <Plus className="h-4 w-4 mr-2" /> Add Owner
-              </Button>
-            </div>
-            
-            {currentOwnersFields.map((field, index) => (
-              <Card key={field.id} className="mb-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-md flex items-center justify-between">
-                    <span>Owner {index + 1}</span>
-                    {currentOwnersFields.length > 1 && (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => removeCurrentOwner(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
-                      </Button>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name={`current_owners.${index}.name`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name*</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Legal full name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name={`current_owners.${index}.tax_id`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>SSN/EIN*</FormLabel>
-                          <FormControl>
-                            <Input placeholder="XXX-XX-XXXX or XX-XXXXXXX" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name={`current_owners.${index}.address`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Current Address*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Main St, City, State, ZIP" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name={`current_owners.${index}.ownership_percentage`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Ownership Percentage*</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              placeholder="50"
-                              min={0}
-                              max={100}
-                              step={0.01}
-                              {...field}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                field.onChange(value === '' ? 0 : parseFloat(value));
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name={`current_owners.${index}.citizenship_status`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Citizenship Status*</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {citizenshipOptions.map((status) => (
-                                <SelectItem key={status} value={status}>
-                                  {status}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-medium">Former Owners (Last 6 Months)</h4>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendFormerOwner({
-                  name: '',
-                  tax_id: '',
-                  address: '',
-                  former_ownership_percentage: 0,
-                  citizenship_status: '',
-                  date_ownership_ceased: new Date(),
-                  is_still_associate: false,
-                  is_still_employed: false,
-                })}
-              >
-                <Plus className="h-4 w-4 mr-2" /> Add Former Owner
-              </Button>
-            </div>
-            
-            {formerOwnersFields.length === 0 && (
-              <div className="text-sm text-muted-foreground italic">
-                No former owners entered. Add former owners only if ownership changed within the last 6 months.
-              </div>
-            )}
-            
-            {formerOwnersFields.map((field, index) => (
-              <Card key={field.id} className="mb-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-md flex items-center justify-between">
-                    <span>Former Owner {index + 1}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => removeFormerOwner(index)}
-                    >
-                      <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive" />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <Tabs defaultValue="current" className="w-full">
+            <TabsList>
+              <TabsTrigger value="current">Current Owners</TabsTrigger>
+              <TabsTrigger value="former">Former Owners</TabsTrigger>
+            </TabsList>
+            <TabsContent value="current" className="space-y-4">
+              {currentOwners.map((owner, index) => (
+                <Card key={`current-${index}`} className="border">
+                  <CardHeader className="flex items-center justify-between">
+                    <CardTitle>Current Owner #{index + 1}</CardTitle>
+                    <Button variant="destructive" size="icon" onClick={() => removeCurrentOwner(index)}>
+                      <Trash2 className="h-4 w-4" />
                     </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
                     <FormField
                       control={form.control}
-                      name={`former_owners.${index}.name`}
+                      name={`current_owners.${index}.name` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name*</FormLabel>
+                          <FormLabel>Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Legal full name" {...field} />
+                            <Input placeholder="Owner's Full Name" {...field} value={owner.name} onChange={(e) => updateCurrentOwner(index, { ...owner, name: e.target.value })} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
                     <FormField
                       control={form.control}
-                      name={`former_owners.${index}.tax_id`}
+                      name={`current_owners.${index}.tax_id` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>SSN/EIN*</FormLabel>
+                          <FormLabel>Tax ID</FormLabel>
                           <FormControl>
-                            <Input placeholder="XXX-XX-XXXX or XX-XXXXXXX" {...field} />
+                            <Input placeholder="EIN or SSN" {...field} value={owner.tax_id} onChange={(e) => updateCurrentOwner(index, { ...owner, tax_id: e.target.value })} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name={`former_owners.${index}.address`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address*</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123 Main St, City, State, ZIP" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name={`former_owners.${index}.former_ownership_percentage`}
+                      name={`current_owners.${index}.address` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Former Ownership Percentage*</FormLabel>
+                          <FormLabel>Address</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input placeholder="Owner's Address" {...field} value={owner.address} onChange={(e) => updateCurrentOwner(index, { ...owner, address: e.target.value })} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`current_owners.${index}.ownership_percentage` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ownership Percentage</FormLabel>
+                          <FormControl>
+                            <Input
                               type="number"
-                              placeholder="50"
-                              min={0}
-                              max={100}
-                              step={0.01}
+                              placeholder="0-100"
                               {...field}
+                              value={owner.ownership_percentage}
                               onChange={(e) => {
-                                const value = e.target.value;
-                                field.onChange(value === '' ? 0 : parseFloat(value));
+                                const value = parseFloat(e.target.value);
+                                updateCurrentOwner(index, { ...owner, ownership_percentage: isNaN(value) ? 0 : value });
                               }}
                             />
                           </FormControl>
@@ -445,24 +210,23 @@ const OwnershipForm: React.FC<FormComponentProps> = ({ formData, updateFormData 
                         </FormItem>
                       )}
                     />
-                    
                     <FormField
                       control={form.control}
-                      name={`former_owners.${index}.citizenship_status`}
+                      name={`current_owners.${index}.citizenship_status` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Citizenship Status*</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
+                          <FormLabel>Citizenship Status</FormLabel>
+                          <Select
+                            onValueChange={(value) => updateCurrentOwner(index, { ...owner, citizenship_status: value })}
+                            defaultValue={owner.citizenship_status}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select status" />
+                                <SelectValue placeholder="Select citizenship status" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {citizenshipOptions.map((status) => (
+                              {citizenshipStatuses.map((status) => (
                                 <SelectItem key={status} value={status}>
                                   {status}
                                 </SelectItem>
@@ -473,84 +237,183 @@ const OwnershipForm: React.FC<FormComponentProps> = ({ formData, updateFormData 
                         </FormItem>
                       )}
                     />
-                  </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name={`former_owners.${index}.date_ownership_ceased`}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Date Ownership Ceased*</FormLabel>
-                        <DatePicker
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date > new Date() || date < new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
-                        />
-                        <FormDescription>
-                          Must be within the past 6 months for lookback requirement
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name={`former_owners.${index}.is_still_associate`}
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Is this person still an officer, director, or key employee?*</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={(value) => field.onChange(value === "true")}
-                            defaultValue={field.value !== undefined ? String(field.value) : undefined}
-                            className="flex items-center gap-6"
+                  </CardContent>
+                </Card>
+              ))}
+              <Button type="button" variant="outline" size="sm" onClick={addCurrentOwner}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Current Owner
+              </Button>
+            </TabsContent>
+
+            <TabsContent value="former" className="space-y-4">
+              {formerOwners.map((owner, index) => (
+                <Card key={`former-${index}`} className="border">
+                  <CardHeader className="flex items-center justify-between">
+                    <CardTitle>Former Owner #{index + 1}</CardTitle>
+                    <Button variant="destructive" size="icon" onClick={() => removeFormerOwner(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`former_owners.${index}.name` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Former Owner's Full Name" {...field} value={owner.name} onChange={(e) => updateFormerOwner(index, { ...owner, name: e.target.value })} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`former_owners.${index}.tax_id` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tax ID</FormLabel>
+                          <FormControl>
+                            <Input placeholder="EIN or SSN" {...field} value={owner.tax_id} onChange={(e) => updateFormerOwner(index, { ...owner, tax_id: e.target.value })} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`former_owners.${index}.address` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Former Owner's Address" {...field} value={owner.address} onChange={(e) => updateFormerOwner(index, { ...owner, address: e.target.value })} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`former_owners.${index}.former_ownership_percentage` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Former Ownership Percentage</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0-100"
+                              {...field}
+                              value={owner.former_ownership_percentage}
+                              onChange={(e) => {
+                                const value = parseFloat(e.target.value);
+                                updateFormerOwner(index, { ...owner, former_ownership_percentage: isNaN(value) ? 0 : value });
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`former_owners.${index}.citizenship_status` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Citizenship Status</FormLabel>
+                          <Select
+                            onValueChange={(value) => updateFormerOwner(index, { ...owner, citizenship_status: value })}
+                            defaultValue={owner.citizenship_status}
                           >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="true" id={`associate-yes-${index}`} />
-                              <label htmlFor={`associate-yes-${index}`}>Yes</label>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select citizenship status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {citizenshipStatuses.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                  {status}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`former_owners.${index}.date_ownership_ceased` as const}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date Ownership Ceased</FormLabel>
+                          <FormControl>
+                            <DatePicker
+                              onSelect={(date) => {
+                                if (date) {
+                                  updateFormerOwner(index, { ...owner, date_ownership_ceased: date });
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`former_owners.${index}.is_still_associate` as const}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">Still Associate?</FormLabel>
+                              <FormDescription>
+                                Is the former owner still associated with the business?
+                              </FormDescription>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="false" id={`associate-no-${index}`} />
-                              <label htmlFor={`associate-no-${index}`}>No</label>
+                            <FormControl>
+                              <Switch
+                                checked={owner.is_still_associate}
+                                onCheckedChange={(checked) => updateFormerOwner(index, { ...owner, is_still_associate: checked })}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`former_owners.${index}.is_still_employed` as const}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-base">Still Employed?</FormLabel>
+                              <FormDescription>
+                                Is the former owner still employed by the business?
+                              </FormDescription>
                             </div>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name={`former_owners.${index}.is_still_employed`}
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Is this person still employed by the business?*</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={(value) => field.onChange(value === "true")}
-                            defaultValue={field.value !== undefined ? String(field.value) : undefined}
-                            className="flex items-center gap-6"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="true" id={`employed-yes-${index}`} />
-                              <label htmlFor={`employed-yes-${index}`}>Yes</label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="false" id={`employed-no-${index}`} />
-                              <label htmlFor={`employed-no-${index}`}>No</label>
-                            </div>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                            <FormControl>
+                              <Switch
+                                checked={owner.is_still_employed}
+                                onCheckedChange={(checked) => updateFormerOwner(index, { ...owner, is_still_employed: checked })}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button type="button" variant="outline" size="sm" onClick={addFormerOwner}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Former Owner
+              </Button>
+            </TabsContent>
+          </Tabs>
         </form>
       </Form>
     </div>
