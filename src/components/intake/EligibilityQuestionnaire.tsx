@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -17,7 +16,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
 import { sbaDropdownFields } from '@/lib/mockData/dropdownFields';
-import { IntakeFormData } from './IntakeMultiStepForm';
+import { IntakeFormData } from './types/intakeTypes';
+import { useAlertManager } from '@/components/alerts';
 
 const eligibilitySchema = z.object({
   is_operating_business: z.boolean({

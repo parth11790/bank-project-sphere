@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AlertTriangle, Plus, Trash2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { sbaDropdownFields } from '@/lib/mockData/dropdownFields';
-import { IntakeFormData } from './IntakeMultiStepForm';
+import { IntakeFormData } from './types/intakeTypes';
 import { useMemo } from 'react';
 
 const ownershipSchema = z.object({

@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { sbaDropdownFields } from '@/lib/mockData/dropdownFields';
 import { useLenderDropdowns } from '@/hooks/useLenderDropdowns';
-import { IntakeFormData } from './IntakeMultiStepForm';
+import { IntakeFormData } from './types/intakeTypes';
 import { format } from 'date-fns';
 
 const newLeadSchema = z.object({
