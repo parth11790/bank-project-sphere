@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import PageTransition from './PageTransition';
+import { AlertProvider } from './alerts';
+import { AlertManager } from './alerts';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,15 +29,18 @@ const Layout: React.FC<LayoutProps> = ({
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen w-full bg-background flex flex-col">
-      {showHeader && <Header />}
-      <div className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-        {children}
+    <AlertProvider>
+      <div className="min-h-screen w-full bg-background flex flex-col">
+        {showHeader && <Header />}
+        <div className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+          {children}
+        </div>
+        <AnimatePresence>
+          {isTransitioning && <PageTransition />}
+        </AnimatePresence>
+        <AlertManager position="top" alignment="center" />
       </div>
-      <AnimatePresence>
-        {isTransitioning && <PageTransition />}
-      </AnimatePresence>
-    </div>
+    </AlertProvider>
   );
 };
 

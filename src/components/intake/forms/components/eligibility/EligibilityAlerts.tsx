@@ -4,14 +4,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, InfoIcon, XOctagon, CheckCircle } from 'lucide-react';
 
 // Define specific alert types with detailed messages
-interface AlertItem {
+export interface AlertItem {
   id: string;
   title: string;
   description: string;
   severity: 'error' | 'warning' | 'info' | 'success';
 }
 
-interface EligibilityAlertsProps {
+export interface EligibilityAlertsProps {
   hasIneligibleTypes: boolean;
   hasPrincipalStatusIssues: boolean;
   hasPriorDebt: boolean;

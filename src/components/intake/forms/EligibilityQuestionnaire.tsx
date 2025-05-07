@@ -11,8 +11,11 @@ import { PrincipalStatusSection } from './components/eligibility/PrincipalStatus
 import { AdditionalRequirementsSection } from './components/eligibility/AdditionalRequirementsSection';
 import { EligibilityAlerts } from './components/eligibility/EligibilityAlerts';
 import { ScreeningStatusSection } from './components/eligibility/ScreeningStatusSection';
+import { useAlertManager } from '@/components/alerts';
 
 const EligibilityQuestionnaire: React.FC<FormComponentProps> = ({ formData, updateFormData }) => {
+  const alertManager = useAlertManager();
+  
   // Get ineligible business types from mock data
   const ineligibleBusinessTypes = [
     "Lending/Investment (Primary Activity)",
@@ -72,7 +75,19 @@ const EligibilityQuestionnaire: React.FC<FormComponentProps> = ({ formData, upda
   const onSubmit = (values: EligibilityFormValues) => {
     updateFormData({
       ...values,
+      // Make sure principal_status properties are properly set
+      principal_status: {
+        is_incarcerated: values.principal_status?.is_incarcerated ?? null,
+        is_on_parole: values.principal_status?.is_on_parole ?? null,
+        is_indicted: values.principal_status?.is_indicted ?? null,
+      },
     });
+    
+    // Show a success message
+    alertManager.showSuccess(
+      "Form Saved", 
+      "Eligibility information has been successfully saved."
+    );
   };
 
   // Update form data when values change
