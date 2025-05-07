@@ -60,7 +60,8 @@ const EligibilityQuestionnaire: React.FC<FormComponentProps> = ({ formData, upda
   });
 
   // Watch form values for alerts
-  const hasIneligibleTypes = (form.watch('ineligible_business_types') || []).length > 0;
+  const watchedIneligibleTypes = form.watch('ineligible_business_types') || [];
+  const hasIneligibleTypes = watchedIneligibleTypes.length > 0;
   const principalStatus = form.watch('principal_status');
   const hasPrincipalStatusIssues = principalStatus?.is_incarcerated === true || 
                                   principalStatus?.is_on_parole === true || 
@@ -77,17 +78,20 @@ const EligibilityQuestionnaire: React.FC<FormComponentProps> = ({ formData, upda
   // Update form data when values change
   React.useEffect(() => {
     const subscription = form.watch((value) => {
+      // Make sure principal_status is properly defined to avoid TypeScript errors
+      const principal_status = {
+        is_incarcerated: value.principal_status?.is_incarcerated ?? null,
+        is_on_parole: value.principal_status?.is_on_parole ?? null,
+        is_indicted: value.principal_status?.is_indicted ?? null,
+      };
+      
       // Convert the schema-based form values to the app's IntakeFormData format
       updateFormData({
         is_operating_business: value.is_operating_business,
         is_for_profit: value.is_for_profit,
         is_us_location: value.is_us_location,
         ineligible_business_types: value.ineligible_business_types || [],
-        principal_status: {
-          is_incarcerated: value.principal_status?.is_incarcerated || null,
-          is_on_parole: value.principal_status?.is_on_parole || null,
-          is_indicted: value.principal_status?.is_indicted || null,
-        },
+        principal_status,
         has_prior_government_debt: value.has_prior_government_debt,
         has_robs_esop_involvement: value.has_robs_esop_involvement,
         pre_screening_status: value.pre_screening_status || '',
@@ -117,6 +121,12 @@ const EligibilityQuestionnaire: React.FC<FormComponentProps> = ({ formData, upda
             hasIneligibleTypes={hasIneligibleTypes}
             hasPrincipalStatusIssues={hasPrincipalStatusIssues}
             hasPriorDebt={hasPriorDebt}
+            ineligibleBusinessTypes={watchedIneligibleTypes}
+            principalIssues={{
+              isIncarcerated: !!principalStatus?.is_incarcerated,
+              isOnParole: !!principalStatus?.is_on_parole,
+              isIndicted: !!principalStatus?.is_indicted
+            }}
           />
           
           <ScreeningStatusSection form={form} screeningStatusOptions={screeningStatusOptions} />

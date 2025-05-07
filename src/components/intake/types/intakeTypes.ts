@@ -46,6 +46,7 @@ export interface IntakeFormData {
     name: string;
     tax_id: string;
     address: string;
+    ownership_percentage: number;
     former_ownership_percentage: number;
     citizenship_status: string;
     date_ownership_ceased: Date;
