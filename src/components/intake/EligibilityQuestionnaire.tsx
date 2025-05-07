@@ -112,7 +112,25 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
 
   React.useEffect(() => {
     const subscription = form.watch((value) => {
-      updateFormData(value as Partial<IntakeFormData>);
+      // Explicitly ensure principal_status is properly defined with non-optional properties
+      const principal_status = {
+        is_incarcerated: value.principal_status?.is_incarcerated ?? null,
+        is_on_parole: value.principal_status?.is_on_parole ?? null,
+        is_indicted: value.principal_status?.is_indicted ?? null,
+      };
+      
+      // Convert the schema-based form values to the app's IntakeFormData format
+      updateFormData({
+        is_operating_business: value.is_operating_business === undefined ? null : value.is_operating_business,
+        is_for_profit: value.is_for_profit === undefined ? null : value.is_for_profit,
+        is_us_location: value.is_us_location === undefined ? null : value.is_us_location,
+        ineligible_business_types: value.ineligible_business_types || [],
+        principal_status,
+        has_prior_government_debt: value.has_prior_government_debt === undefined ? null : value.has_prior_government_debt,
+        has_robs_esop_involvement: value.has_robs_esop_involvement === undefined ? null : value.has_robs_esop_involvement,
+        pre_screening_status: value.pre_screening_status || '',
+        eligibility_notes: value.eligibility_notes || '',
+      });
     });
     return () => subscription.unsubscribe();
   }, [form, updateFormData]);

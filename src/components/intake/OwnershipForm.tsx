@@ -1,11 +1,11 @@
-
 import React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { 
-  Form, FormControl, FormField, FormItem, 
-  FormLabel, FormMessage, FormDescription 
+  Form, FormControl, FormField, 
+  FormItem, FormLabel, FormMessage, 
+  FormDescription 
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -135,9 +135,30 @@ const OwnershipForm: React.FC<OwnershipFormProps> = ({ formData, updateFormData 
   React.useEffect(() => {
     const subscription = form.watch((value) => {
       if (value.current_owners || value.former_owners) {
+        // Make sure we have complete objects for all required properties
+        const current_owners = (value.current_owners || []).map(owner => ({
+          name: owner.name || '',
+          tax_id: owner.tax_id || '',
+          address: owner.address || '',
+          ownership_percentage: owner.ownership_percentage || 0,
+          citizenship_status: owner.citizenship_status || ''
+        }));
+        
+        const former_owners = (value.former_owners || []).map(owner => ({
+          name: owner.name || '',
+          tax_id: owner.tax_id || '',
+          address: owner.address || '',
+          ownership_percentage: 0, // Add required field
+          former_ownership_percentage: owner.former_ownership_percentage || 0,
+          citizenship_status: owner.citizenship_status || '',
+          date_ownership_ceased: owner.date_ownership_ceased || new Date(),
+          is_still_associate: owner.is_still_associate || false,
+          is_still_employed: owner.is_still_employed || false
+        }));
+        
         updateFormData({
-          current_owners: value.current_owners as IntakeFormData['current_owners'],
-          former_owners: value.former_owners as IntakeFormData['former_owners'],
+          current_owners,
+          former_owners
         });
       }
     });
