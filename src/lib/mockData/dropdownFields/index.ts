@@ -17,5 +17,5 @@ export const sbaDropdownFields: DropdownField[] = [
   ...administrationDropdownFields
 ];
 
-// Re-export the types from the types file
-export { CustomizationLevel, DropdownField } from '../dropdownTypes';
+// Re-export the types from the types file - using export type for isolatedModules
+export type { CustomizationLevel, DropdownField } from '../dropdownTypes';

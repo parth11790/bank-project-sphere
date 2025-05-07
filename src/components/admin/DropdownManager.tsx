@@ -3,13 +3,21 @@ import React, { useState, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { sbaDropdownFields, CustomizationLevel } from '@/lib/mockData/dropdownFields';
+import { sbaDropdownFields, CustomizationLevel, DropdownField } from '@/lib/mockData/dropdownFields';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownCard } from './DropdownCard';
 import { AddDropdownForm } from './AddDropdownForm';
 import { DropdownFilters } from './DropdownFilters';
 
 export type DropdownType = 'entityTypes' | 'loanTypes' | 'projectStatus' | string;
+
+// Type for our extended dropdown config that includes both SBA fields and custom ones
+type DropdownConfig = DropdownField | {
+  id: string;
+  label: string;
+  description: string;
+  initialValues: string[];
+};
 
 const initialDropdownConfigs = [
   {
@@ -33,7 +41,7 @@ const initialDropdownConfigs = [
 ];
 
 export function DropdownManager() {
-  const [dropdownConfigs, setDropdownConfigs] = useState([...initialDropdownConfigs, ...sbaDropdownFields]);
+  const [dropdownConfigs, setDropdownConfigs] = useState<DropdownConfig[]>([...initialDropdownConfigs, ...sbaDropdownFields]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [filterLevel, setFilterLevel] = useState<CustomizationLevel | 'All'>('All');
@@ -64,7 +72,7 @@ export function DropdownManager() {
       return;
     }
 
-    const newDropdown = {
+    const newDropdown: DropdownConfig = {
       id,
       label,
       description,
@@ -119,7 +127,7 @@ export function DropdownManager() {
                 label={config.label}
                 description={config.description}
                 initialValues={config.initialValues}
-                customizationLevel={'customizationLevel' in config ? config.customizationLevel as CustomizationLevel : undefined}
+                customizationLevel={'customizationLevel' in config ? config.customizationLevel : undefined}
                 module={'module' in config ? config.module : undefined}
               />
             ))}
