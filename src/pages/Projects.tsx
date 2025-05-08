@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -11,10 +12,13 @@ import { Plus, SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
+import ProjectStatusCards from '@/components/dashboard/ProjectStatusCards';
+
 const Projects: React.FC = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
   const {
     data: projects,
     isLoading
@@ -22,6 +26,7 @@ const Projects: React.FC = () => {
     queryKey: ['projects'],
     queryFn: getProjects
   });
+
   if (isLoading) {
     return <Layout>
         <div className="space-y-6">
@@ -44,31 +49,33 @@ const Projects: React.FC = () => {
         </div>
       </Layout>;
   }
+
   const projectsArray = Array.isArray(projects) ? projects as Project[] : [];
-  const filteredProjects = statusFilter === "all" ? projectsArray : projectsArray.filter(project => project.status === statusFilter);
+  
+  const filteredProjects = statusFilter === "all" 
+    ? projectsArray 
+    : projectsArray.filter(project => project.status === statusFilter);
+  
   const sortedProjects = [...filteredProjects].sort((a, b) => {
     const dateA = new Date(a.created_at).getTime();
     const dateB = new Date(b.created_at).getTime();
     return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
   });
+
+  // Project statistics for dashboard cards
   const totalProjects = projectsArray.length;
   const activeProjects = projectsArray.filter(project => project.status === 'active').length;
   const pendingProjects = projectsArray.filter(project => project.status === 'pending').length;
-  const formattedTotalValue = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0
-  }).format(projectsArray.reduce((sum, project) => sum + (project.loan_amount || 0), 0));
-  return <Layout>
-      <motion.div className="space-y-6" initial={{
-      opacity: 0,
-      y: 10
-    }} animate={{
-      opacity: 1,
-      y: 0
-    }} transition={{
-      duration: 0.3
-    }}>
+  const totalValue = projectsArray.reduce((sum, project) => sum + (project.loan_amount || 0), 0);
+
+  return (
+    <Layout>
+      <motion.div 
+        className="space-y-6" 
+        initial={{ opacity: 0, y: 10 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.3 }}
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold mb-1">Projects</h1>
@@ -80,12 +87,41 @@ const Projects: React.FC = () => {
           </Button>
         </div>
         
-        
-        
-        
+        <ProjectStatusCards 
+          totalProjects={totalProjects} 
+          activeProjects={activeProjects} 
+          pendingProjects={pendingProjects} 
+          totalValue={totalValue} 
+        />
+
+        <div className="flex items-center justify-between mb-4">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Projects</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as 'asc' | 'desc')}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by date" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc">Newest First</SelectItem>
+              <SelectItem value="asc">Oldest First</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         <ProjectList projects={sortedProjects} />
       </motion.div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default Projects;
