@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -152,8 +153,8 @@ const OwnershipForm: React.FC<OwnershipFormProps> = ({ formData, updateFormData 
           former_ownership_percentage: owner.former_ownership_percentage || 0,
           citizenship_status: owner.citizenship_status || '',
           date_ownership_ceased: owner.date_ownership_ceased || new Date(),
-          is_still_associate: owner.is_still_associate || false,
-          is_still_employed: owner.is_still_employed || false
+          is_still_associate: owner.is_still_associate ?? false,
+          is_still_employed: owner.is_still_employed ?? false
         }));
         
         updateFormData({

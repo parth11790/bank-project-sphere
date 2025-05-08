@@ -128,7 +128,12 @@ const EligibilityQuestionnaire: React.FC<FormComponentProps> = ({ formData, upda
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <BasicEligibilitySection form={form} />
-          <BusinessTypeSection form={form} ineligibleBusinessTypes={ineligibleBusinessTypes} />
+          <BusinessTypeSection 
+            form={form} 
+            ineligibleBusinessTypes={ineligibleBusinessTypes} 
+            hasIneligibleTypes={hasIneligibleTypes}
+            watchedIneligibleTypes={watchedIneligibleTypes}
+          />
           <PrincipalStatusSection form={form} />
           <AdditionalRequirementsSection form={form} />
           

@@ -5,8 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { eligibilitySchema } from '../../schemas/eligibilitySchema';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { XOctagon } from 'lucide-react';
+import { InlineAlert } from './InlineAlert';
 
 type FormData = z.infer<typeof eligibilitySchema>;
 
@@ -57,19 +56,22 @@ export const BusinessTypeSection: React.FC<BusinessTypeSectionProps> = ({
             <FormMessage />
             
             {hasIneligibleTypes && (
-              <Alert variant="destructive" className="bg-red-50 mt-2">
-                <XOctagon className="h-4 w-4" />
-                <AlertDescription>
-                  <span className="font-bold">Ineligible Business Type:</span> The selected business type(s) may not be eligible for SBA financing.
-                  {watchedIneligibleTypes.length > 0 && (
-                    <ul className="list-disc list-inside mt-1 ml-2">
-                      {watchedIneligibleTypes.map(type => (
-                        <li key={type} className="text-sm">{type}</li>
-                      ))}
-                    </ul>
-                  )}
-                </AlertDescription>
-              </Alert>
+              <InlineAlert 
+                condition={hasIneligibleTypes}
+                title="Ineligible Business Type"
+                description="The selected business type(s) may not be eligible for SBA financing."
+                severity="error"
+              />
+            )}
+            
+            {watchedIneligibleTypes.length > 0 && (
+              <div className="pl-6 mt-1 mb-1">
+                <ul className="list-disc list-inside text-sm">
+                  {watchedIneligibleTypes.map(type => (
+                    <li key={type} className="text-red-700">{type}</li>
+                  ))}
+                </ul>
+              </div>
             )}
           </FormItem>
         )}
