@@ -5,14 +5,16 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { eligibilitySchema } from '../../schemas/eligibilitySchema';
+import { InlineAlert, AlertProps } from './InlineAlert';
 
 type FormData = z.infer<typeof eligibilitySchema>;
 
 interface BasicEligibilitySectionProps {
   form: UseFormReturn<FormData>;
+  alerts?: AlertProps[];
 }
 
-export const BasicEligibilitySection: React.FC<BasicEligibilitySectionProps> = ({ form }) => {
+export const BasicEligibilitySection: React.FC<BasicEligibilitySectionProps> = ({ form, alerts = [] }) => {
   return (
     <div className="space-y-4">
       <h4 className="text-md font-medium">Basic Eligibility</h4>
@@ -40,6 +42,19 @@ export const BasicEligibilitySection: React.FC<BasicEligibilitySectionProps> = (
               </RadioGroup>
             </FormControl>
             <FormMessage />
+            
+            {alerts.filter(alert => 
+              alert.condition && 
+              alert.title.includes("operating")
+            ).map((alert, index) => (
+              <InlineAlert 
+                key={`operating-alert-${index}`}
+                condition={alert.condition}
+                title={alert.title}
+                description={alert.description}
+                severity={alert.severity}
+              />
+            ))}
           </FormItem>
         )}
       />
@@ -67,6 +82,19 @@ export const BasicEligibilitySection: React.FC<BasicEligibilitySectionProps> = (
               </RadioGroup>
             </FormControl>
             <FormMessage />
+            
+            {alerts.filter(alert => 
+              alert.condition && 
+              alert.title.toLowerCase().includes("profit")
+            ).map((alert, index) => (
+              <InlineAlert 
+                key={`profit-alert-${index}`}
+                condition={alert.condition}
+                title={alert.title}
+                description={alert.description}
+                severity={alert.severity}
+              />
+            ))}
           </FormItem>
         )}
       />
@@ -94,6 +122,19 @@ export const BasicEligibilitySection: React.FC<BasicEligibilitySectionProps> = (
               </RadioGroup>
             </FormControl>
             <FormMessage />
+            
+            {alerts.filter(alert => 
+              alert.condition && 
+              alert.title.toLowerCase().includes("location")
+            ).map((alert, index) => (
+              <InlineAlert 
+                key={`location-alert-${index}`}
+                condition={alert.condition}
+                title={alert.title}
+                description={alert.description}
+                severity={alert.severity}
+              />
+            ))}
           </FormItem>
         )}
       />

@@ -5,14 +5,16 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { eligibilitySchema } from '../../schemas/eligibilitySchema';
+import { InlineAlert, AlertProps } from './InlineAlert';
 
 type FormData = z.infer<typeof eligibilitySchema>;
 
 interface AdditionalRequirementsSectionProps {
   form: UseFormReturn<FormData>;
+  alerts?: AlertProps[];
 }
 
-export const AdditionalRequirementsSection: React.FC<AdditionalRequirementsSectionProps> = ({ form }) => {
+export const AdditionalRequirementsSection: React.FC<AdditionalRequirementsSectionProps> = ({ form, alerts = [] }) => {
   return (
     <div className="space-y-4">
       <h4 className="text-md font-medium">Additional Requirements</h4>
@@ -40,6 +42,19 @@ export const AdditionalRequirementsSection: React.FC<AdditionalRequirementsSecti
               </RadioGroup>
             </FormControl>
             <FormMessage />
+            
+            {alerts.filter(alert => 
+              alert.condition && 
+              alert.title.toLowerCase().includes("debt")
+            ).map((alert, index) => (
+              <InlineAlert 
+                key={`debt-alert-${index}`}
+                condition={alert.condition}
+                title={alert.title}
+                description={alert.description}
+                severity={alert.severity}
+              />
+            ))}
           </FormItem>
         )}
       />
@@ -67,6 +82,19 @@ export const AdditionalRequirementsSection: React.FC<AdditionalRequirementsSecti
               </RadioGroup>
             </FormControl>
             <FormMessage />
+            
+            {alerts.filter(alert => 
+              alert.condition && 
+              alert.title.toLowerCase().includes("robs")
+            ).map((alert, index) => (
+              <InlineAlert 
+                key={`robs-alert-${index}`}
+                condition={alert.condition}
+                title={alert.title}
+                description={alert.description}
+                severity={alert.severity}
+              />
+            ))}
           </FormItem>
         )}
       />

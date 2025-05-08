@@ -5,15 +5,24 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { eligibilitySchema } from '../../schemas/eligibilitySchema';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { XOctagon } from 'lucide-react';
 
 type FormData = z.infer<typeof eligibilitySchema>;
 
 interface BusinessTypeSectionProps {
   form: UseFormReturn<FormData>;
   ineligibleBusinessTypes: string[];
+  hasIneligibleTypes: boolean;
+  watchedIneligibleTypes: string[];
 }
 
-export const BusinessTypeSection: React.FC<BusinessTypeSectionProps> = ({ form, ineligibleBusinessTypes }) => {
+export const BusinessTypeSection: React.FC<BusinessTypeSectionProps> = ({ 
+  form, 
+  ineligibleBusinessTypes,
+  hasIneligibleTypes,
+  watchedIneligibleTypes 
+}) => {
   return (
     <div className="space-y-4">
       <FormField
@@ -46,6 +55,22 @@ export const BusinessTypeSection: React.FC<BusinessTypeSectionProps> = ({ form, 
               ))}
             </div>
             <FormMessage />
+            
+            {hasIneligibleTypes && (
+              <Alert variant="destructive" className="bg-red-50 mt-2">
+                <XOctagon className="h-4 w-4" />
+                <AlertDescription>
+                  <span className="font-bold">Ineligible Business Type:</span> The selected business type(s) may not be eligible for SBA financing.
+                  {watchedIneligibleTypes.length > 0 && (
+                    <ul className="list-disc list-inside mt-1 ml-2">
+                      {watchedIneligibleTypes.map(type => (
+                        <li key={type} className="text-sm">{type}</li>
+                      ))}
+                    </ul>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
           </FormItem>
         )}
       />

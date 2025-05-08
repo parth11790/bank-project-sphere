@@ -14,9 +14,14 @@ interface ScreeningStatusSectionProps {
   screeningStatusOptions: string[];
 }
 
-export const ScreeningStatusSection: React.FC<ScreeningStatusSectionProps> = ({ form, screeningStatusOptions }) => {
+export const ScreeningStatusSection: React.FC<ScreeningStatusSectionProps> = ({ 
+  form, 
+  screeningStatusOptions 
+}) => {
   return (
     <div className="space-y-4">
+      <h4 className="text-md font-medium">Final Assessment</h4>
+      
       <FormField
         control={form.control}
         name="pre_screening_status"
