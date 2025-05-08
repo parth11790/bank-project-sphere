@@ -17,6 +17,9 @@ import {
   hasRiskyOwnership,
   calculateTotalOwnership
 } from './components/ownership/OwnerFormUtils';
+import { OwnershipHeader } from './components/ownership/OwnershipHeader';
+import { CurrentOwnersSection } from './components/ownership/CurrentOwnersSection';
+import { FormerOwnersSection } from './components/ownership/FormerOwnersSection';
 
 const OwnershipForm: React.FC<FormComponentProps> = ({ formData, updateFormData }) => {
   // Get citizenship status options
@@ -73,12 +76,7 @@ const OwnershipForm: React.FC<FormComponentProps> = ({ formData, updateFormData 
   
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Ownership Information</h3>
-        <p className="text-sm text-muted-foreground">
-          Enter details about current and former owners (within the last 6 months)
-        </p>
-      </div>
+      <OwnershipHeader />
       
       <OwnershipAlerts 
         hasRiskyOwner={hasRiskyOwner}
@@ -88,62 +86,21 @@ const OwnershipForm: React.FC<FormComponentProps> = ({ formData, updateFormData 
       
       <Form {...form}>
         <form className="space-y-8">
-          {/* Current Owners Section */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-medium">Current Owners</h4>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendCurrentOwner(createEmptyCurrentOwner())}
-              >
-                <Plus className="h-4 w-4 mr-2" /> Add Owner
-              </Button>
-            </div>
-            
-            {currentOwnersFields.map((field, index) => (
-              <CurrentOwnerForm
-                key={field.id}
-                index={index}
-                control={form.control}
-                citizenshipOptions={citizenshipOptions}
-                onRemove={() => removeCurrentOwner(index)}
-                canDelete={currentOwnersFields.length > 1}
-              />
-            ))}
-          </div>
+          <CurrentOwnersSection 
+            fields={currentOwnersFields} 
+            onAdd={() => appendCurrentOwner(createEmptyCurrentOwner())}
+            onRemove={removeCurrentOwner}
+            control={form.control}
+            citizenshipOptions={citizenshipOptions}
+          />
           
-          {/* Former Owners Section */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-md font-medium">Former Owners (Last 6 Months)</h4>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendFormerOwner(createEmptyFormerOwner())}
-              >
-                <Plus className="h-4 w-4 mr-2" /> Add Former Owner
-              </Button>
-            </div>
-            
-            {formerOwnersFields.length === 0 && (
-              <div className="text-sm text-muted-foreground italic">
-                No former owners entered. Add former owners only if ownership changed within the last 6 months.
-              </div>
-            )}
-            
-            {formerOwnersFields.map((field, index) => (
-              <FormerOwnerForm
-                key={field.id}
-                index={index}
-                control={form.control}
-                citizenshipOptions={citizenshipOptions}
-                onRemove={() => removeFormerOwner(index)}
-              />
-            ))}
-          </div>
+          <FormerOwnersSection
+            fields={formerOwnersFields}
+            onAdd={() => appendFormerOwner(createEmptyFormerOwner())}
+            onRemove={removeFormerOwner}
+            control={form.control}
+            citizenshipOptions={citizenshipOptions}
+          />
         </form>
       </Form>
     </div>
