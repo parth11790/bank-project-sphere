@@ -16,7 +16,7 @@ export const createEmptyFormerOwner = (): FormerOwner => ({
   name: '',
   tax_id: '',
   address: '',
-  ownership_percentage: 0,
+  ownership_percentage: 0, // Added required field
   citizenship_status: '',
   former_ownership_percentage: 0,
   date_ownership_ceased: new Date(),

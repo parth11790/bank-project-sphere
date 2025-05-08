@@ -15,10 +15,19 @@ export const ownerSchema = z.object({
 });
 
 // Schema for former owners with additional fields
-export const formerOwnerSchema = ownerSchema.extend({
+export const formerOwnerSchema = z.object({
+  name: z.string().min(2, "Former owner name is required"),
+  tax_id: z.string().min(4, "Tax ID is required"),
+  address: z.string().min(5, "Address is required"),
+  ownership_percentage: z.coerce.number()
+    .min(0.01, "Percentage must be greater than 0")
+    .max(100, "Percentage cannot exceed 100"),
   former_ownership_percentage: z.coerce.number()
     .min(0.01, "Percentage must be greater than 0")
     .max(100, "Percentage cannot exceed 100"),
+  citizenship_status: z.string({
+    required_error: "Citizenship status is required",
+  }),
   date_ownership_ceased: z.date({
     required_error: "Date is required",
   }),
