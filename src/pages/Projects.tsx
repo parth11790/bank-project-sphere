@@ -82,23 +82,7 @@ const Projects: React.FC = () => {
         
         
         
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-medium">Project List</h2>
-          <div className="flex gap-2 items-center">
-            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        
 
         <ProjectList projects={sortedProjects} />
       </motion.div>
