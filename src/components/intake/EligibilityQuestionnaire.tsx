@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -14,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, XOctagon } from 'lucide-react';
 import { sbaDropdownFields } from '@/lib/mockData/dropdownFields';
 import { IntakeFormData } from './types/intakeTypes';
 import { useAlertManager } from '@/components/alerts';
@@ -96,13 +97,17 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
   });
 
   const hasIneligibleTypes = form.watch('ineligible_business_types')?.length > 0;
-  const principalStatusIssues = form.watch('principal_status');
-  const hasPrincipalStatusIssues = principalStatusIssues?.is_incarcerated || 
-                                  principalStatusIssues?.is_on_parole || 
-                                  principalStatusIssues?.is_indicted;
-  const hasPriorDebt = form.watch('has_prior_government_debt');
   
-  const showAlerts = hasIneligibleTypes || hasPrincipalStatusIssues || hasPriorDebt;
+  const isNotOperatingBusiness = form.watch('is_operating_business') === false;
+  const isNotForProfit = form.watch('is_for_profit') === false;
+  const isNotUSLocation = form.watch('is_us_location') === false;
+  
+  const principalIsIncarcerated = form.watch('principal_status.is_incarcerated') === true;
+  const principalIsOnParole = form.watch('principal_status.is_on_parole') === true;
+  const principalIsIndicted = form.watch('principal_status.is_indicted') === true;
+  
+  const hasPriorDebt = form.watch('has_prior_government_debt') === true;
+  const hasRobsEsopInvolvement = form.watch('has_robs_esop_involvement') === true;
 
   const onSubmit = (values: z.infer<typeof eligibilitySchema>) => {
     updateFormData({
@@ -134,6 +139,20 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
     });
     return () => subscription.unsubscribe();
   }, [form, updateFormData]);
+
+  // Helper function to render individual alert
+  const renderAlert = (condition: boolean, title: string, description: string) => {
+    if (!condition) return null;
+    
+    return (
+      <Alert variant="destructive" className="bg-red-50 mt-2 mb-4">
+        <XOctagon className="h-4 w-4" />
+        <AlertDescription>
+          <span className="font-bold">{title}:</span> {description}
+        </AlertDescription>
+      </Alert>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -172,6 +191,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    isNotOperatingBusiness,
+                    "Eligibility Issue", 
+                    "SBA loans require an operating business. This may disqualify the application."
+                  )}
                 </FormItem>
               )}
             />
@@ -199,6 +224,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    isNotForProfit,
+                    "Eligibility Issue", 
+                    "SBA loans are only available to for-profit businesses. This may disqualify the application."
+                  )}
                 </FormItem>
               )}
             />
@@ -226,6 +257,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    isNotUSLocation,
+                    "Eligibility Issue", 
+                    "SBA loans require the business to be located in the United States. This may disqualify the application."
+                  )}
                 </FormItem>
               )}
             />
@@ -262,6 +299,22 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     ))}
                   </div>
                   <FormMessage />
+                  
+                  {hasIneligibleTypes && (
+                    <Alert variant="destructive" className="bg-red-50 mt-2">
+                      <XOctagon className="h-4 w-4" />
+                      <AlertDescription>
+                        <span className="font-bold">Ineligible Business Type:</span> The selected business type(s) may not be eligible for SBA financing.
+                        {field.value && field.value.length > 0 && (
+                          <ul className="list-disc list-inside mt-1 ml-2">
+                            {field.value.map(type => (
+                              <li key={type} className="text-sm">{type}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </FormItem>
               )}
             />
@@ -293,6 +346,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    principalIsIncarcerated,
+                    "Principal Status Issue", 
+                    "An incarcerated principal typically disqualifies the application per SBA regulations."
+                  )}
                 </FormItem>
               )}
             />
@@ -320,6 +379,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    principalIsOnParole,
+                    "Principal Status Issue", 
+                    "A principal on parole or probation requires additional review and may affect eligibility."
+                  )}
                 </FormItem>
               )}
             />
@@ -347,6 +412,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    principalIsIndicted,
+                    "Principal Status Issue", 
+                    "A principal under indictment may disqualify the application per SBA character requirements."
+                  )}
                 </FormItem>
               )}
             />
@@ -378,6 +449,12 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    hasPriorDebt,
+                    "Prior Debt Warning", 
+                    "Prior government debt requires additional documentation and may affect approval. Per SBA SOP 50 10 6, detailed repayment information will be needed."
+                  )}
                 </FormItem>
               )}
             />
@@ -405,24 +482,16 @@ const EligibilityQuestionnaire: React.FC<EligibilityQuestionnaireProps> = ({ for
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
+                  
+                  {renderAlert(
+                    hasRobsEsopInvolvement,
+                    "ROBS/ESOP Notice", 
+                    "ROBS or ESOP involvement requires additional documentation and specialized review. Please note all 401(k)/IRA transfers."
+                  )}
                 </FormItem>
               )}
             />
           </div>
-          
-          {showAlerts && (
-            <Alert variant="destructive" className="bg-red-50">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                <span className="font-bold">Warning:</span> This application has eligibility issues that require further review:
-                <ul className="list-disc list-inside mt-2">
-                  {hasIneligibleTypes && <li>Ineligible business type selected</li>}
-                  {hasPrincipalStatusIssues && <li>Principal status issues identified</li>}
-                  {hasPriorDebt && <li>Prior government debt reported</li>}
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )}
           
           <div className="space-y-4">
             <FormField
