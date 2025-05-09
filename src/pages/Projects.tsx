@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -13,12 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import ProjectStatusCards from '@/components/dashboard/ProjectStatusCards';
-
 const Projects: React.FC = () => {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  
   const {
     data: projects,
     isLoading
@@ -26,7 +23,6 @@ const Projects: React.FC = () => {
     queryKey: ['projects'],
     queryFn: getProjects
   });
-
   if (isLoading) {
     return <Layout>
         <div className="space-y-6">
@@ -49,13 +45,8 @@ const Projects: React.FC = () => {
         </div>
       </Layout>;
   }
-
   const projectsArray = Array.isArray(projects) ? projects as Project[] : [];
-  
-  const filteredProjects = statusFilter === "all" 
-    ? projectsArray 
-    : projectsArray.filter(project => project.status === statusFilter);
-  
+  const filteredProjects = statusFilter === "all" ? projectsArray : projectsArray.filter(project => project.status === statusFilter);
   const sortedProjects = [...filteredProjects].sort((a, b) => {
     const dateA = new Date(a.created_at).getTime();
     const dateB = new Date(b.created_at).getTime();
@@ -67,15 +58,16 @@ const Projects: React.FC = () => {
   const activeProjects = projectsArray.filter(project => project.status === 'active').length;
   const pendingProjects = projectsArray.filter(project => project.status === 'pending').length;
   const totalValue = projectsArray.reduce((sum, project) => sum + (project.loan_amount || 0), 0);
-
-  return (
-    <Layout>
-      <motion.div 
-        className="space-y-6" 
-        initial={{ opacity: 0, y: 10 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.3 }}
-      >
+  return <Layout>
+      <motion.div className="space-y-6" initial={{
+      opacity: 0,
+      y: 10
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.3
+    }}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold mb-1">Projects</h1>
@@ -87,14 +79,9 @@ const Projects: React.FC = () => {
           </Button>
         </div>
         
-        <ProjectStatusCards 
-          totalProjects={totalProjects} 
-          activeProjects={activeProjects} 
-          pendingProjects={pendingProjects} 
-          totalValue={totalValue} 
-        />
+        <ProjectStatusCards totalProjects={totalProjects} activeProjects={activeProjects} pendingProjects={pendingProjects} totalValue={totalValue} />
 
-        <div className="flex items-center justify-between mb-4">
+        <div className="flexitems-center justify-between mb">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by status" />
@@ -107,7 +94,7 @@ const Projects: React.FC = () => {
             </SelectContent>
           </Select>
 
-          <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as 'asc' | 'desc')}>
+          <Select value={sortOrder} onValueChange={value => setSortOrder(value as 'asc' | 'desc')}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Sort by date" />
             </SelectTrigger>
@@ -120,8 +107,6 @@ const Projects: React.FC = () => {
 
         <ProjectList projects={sortedProjects} />
       </motion.div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Projects;
