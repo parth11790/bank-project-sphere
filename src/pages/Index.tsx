@@ -23,18 +23,7 @@ const Index: React.FC = () => {
       icon: Building2,
       description: 'Manage loan projects and underwriting'
     },
-    {
-      id: 'buyer',
-      title: 'Buyer',
-      icon: UserCircle,
-      description: 'Access and manage your loan applications'
-    },
-    {
-      id: 'seller',
-      title: 'Seller',
-      icon: Store,
-      description: 'Manage property sales and documentation'
-    }
+    
   ];
 
   return (
