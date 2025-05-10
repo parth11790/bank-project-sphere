@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, UserCircle, Store } from 'lucide-react';
+import { Building2, UserCircle, Store, Settings as SettingsIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -12,8 +12,15 @@ const Index: React.FC = () => {
   
   const handleRoleSelection = (role: string) => {
     localStorage.setItem('userRole', role);
-    toast.success(`Logged in as ${role === 'bank_officer' ? 'Bank User' : role === 'buyer' ? 'Buyer' : 'Seller'}`);
-    navigate('/projects');
+    toast.success(`Logged in as ${role === 'bank_officer' ? 'Bank User' : role === 'buyer' ? 'Buyer' : role === 'seller' ? 'Seller' : 'Admin'}`);
+    
+    if (role === 'admin_settings') {
+      navigate('/admin-settings');
+    } else if (role === 'lender_settings') {
+      navigate('/lender-settings');
+    } else {
+      navigate('/projects');
+    }
   };
 
   const roleOptions = [
@@ -23,7 +30,18 @@ const Index: React.FC = () => {
       icon: Building2,
       description: 'Manage loan projects and underwriting'
     },
-    
+    {
+      id: 'admin_settings',
+      title: 'Admin Settings',
+      icon: SettingsIcon,
+      description: 'Configure application-wide settings'
+    },
+    {
+      id: 'lender_settings',
+      title: 'Lender Settings',
+      icon: SettingsIcon,
+      description: 'Manage loan settings and requirements'
+    }
   ];
 
   return (
