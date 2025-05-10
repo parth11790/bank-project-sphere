@@ -81,29 +81,7 @@ const Projects: React.FC = () => {
         
         <ProjectStatusCards totalProjects={totalProjects} activeProjects={activeProjects} pendingProjects={pendingProjects} totalValue={totalValue} />
 
-        <div className="flexitems-center justify-between mb">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Projects</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={sortOrder} onValueChange={value => setSortOrder(value as 'asc' | 'desc')}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by date" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="desc">Newest First</SelectItem>
-              <SelectItem value="asc">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        
 
         <ProjectList projects={sortedProjects} />
       </motion.div>
