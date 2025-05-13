@@ -8,16 +8,40 @@ export type LenderDropdownOverride = {
   fieldId: string;
   fieldLabel: string;
   values: string[];
+  timestamp: number;
+  user: string; // In a real app, this would be a user ID
 };
 
 export const useLenderDropdowns = () => {
   // In a real application, these would be loaded from the backend/database
   const [lenderOverrides, setLenderOverrides] = useState<LenderDropdownOverride[]>([]);
   
-  // Filter SBA dropdown fields for only lender customizable ones
+  // Mock loading effect
+  useEffect(() => {
+    // Simulate loading from localStorage or API
+    const savedOverrides = localStorage.getItem('lenderDropdownOverrides');
+    if (savedOverrides) {
+      try {
+        const parsed = JSON.parse(savedOverrides);
+        setLenderOverrides(parsed);
+      } catch (error) {
+        console.error('Error loading lender dropdown overrides:', error);
+      }
+    }
+  }, []);
+  
+  // Save overrides to localStorage when they change
+  useEffect(() => {
+    if (lenderOverrides.length > 0) {
+      localStorage.setItem('lenderDropdownOverrides', JSON.stringify(lenderOverrides));
+    }
+  }, [lenderOverrides]);
+  
+  // Filter SBA dropdown fields for customizable fields
   const customizableDropdowns = useMemo(() => {
     return sbaDropdownFields.filter(
-      dropdown => dropdown.customizationLevel === 'Lender Customizable'
+      dropdown => dropdown.customizationLevel === 'Lender Customizable' || 
+                 dropdown.customizationLevel === 'SBA Influenced'
     );
   }, []);
 
@@ -30,6 +54,18 @@ export const useLenderDropdowns = () => {
   const getOverrideValues = (fieldId: string) => {
     const override = lenderOverrides.find(o => o.fieldId === fieldId);
     return override ? override.values : [];
+  };
+
+  // Get override metadata
+  const getOverrideMetadata = (fieldId: string) => {
+    const override = lenderOverrides.find(o => o.fieldId === fieldId);
+    if (!override) return null;
+    
+    return {
+      timestamp: override.timestamp,
+      user: override.user,
+      lastModified: new Date(override.timestamp).toLocaleDateString()
+    };
   };
 
   // Get original or overridden values for display
@@ -51,7 +87,9 @@ export const useLenderDropdowns = () => {
         const updated = [...prev];
         updated[existingIndex] = {
           ...updated[existingIndex],
-          values: values
+          values: values,
+          timestamp: Date.now(),
+          user: 'Current User' // In a real app, get from auth context
         };
         return updated;
       } else {
@@ -59,7 +97,9 @@ export const useLenderDropdowns = () => {
           id: `override-${Date.now()}`,
           fieldId,
           fieldLabel,
-          values
+          values,
+          timestamp: Date.now(),
+          user: 'Current User' // In a real app, get from auth context
         }];
       }
     });
@@ -78,6 +118,7 @@ export const useLenderDropdowns = () => {
     lenderOverrides,
     hasOverride,
     getOverrideValues,
+    getOverrideMetadata,
     getDropdownValues,
     setDropdownValues,
     resetToDefault

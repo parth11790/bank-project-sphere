@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { sbaDropdownFields, CustomizationLevel, DropdownField } from '@/lib/mockData/dropdownFields';
@@ -8,6 +8,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownCard } from './DropdownCard';
 import { AddDropdownForm } from './AddDropdownForm';
 import { DropdownFilters } from './DropdownFilters';
+import { 
+  Alert, 
+  AlertDescription 
+} from '@/components/ui/alert';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type DropdownType = 'entityTypes' | 'loanTypes' | 'projectStatus' | string;
 
@@ -40,6 +50,12 @@ const initialDropdownConfigs = [
   }
 ];
 
+const customizationLevelInfo = {
+  'SBA Defined': 'Values defined by SBA Standard Operating Procedures (SOP). Cannot be modified.',
+  'SBA Influenced': 'Values influenced by SBA guidance but can be extended by lenders with caution.',
+  'Lender Customizable': 'Values that can be fully customized by lenders to meet their business needs.'
+};
+
 export function DropdownManager() {
   const [dropdownConfigs, setDropdownConfigs] = useState<DropdownConfig[]>([...initialDropdownConfigs, ...sbaDropdownFields]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -49,7 +65,7 @@ export function DropdownManager() {
   const modules = useMemo(() => {
     const moduleSet = new Set<string>();
     sbaDropdownFields.forEach(field => moduleSet.add(field.module));
-    return ['All', ...Array.from(moduleSet)];
+    return ['All', ...Array.from(moduleSet)].sort();
   }, []);
 
   const filteredDropdowns = useMemo(() => {
@@ -86,8 +102,44 @@ export function DropdownManager() {
     setShowAddForm(false);
   };
 
+  // Count dropdown fields by customization level
+  const countByLevel = useMemo(() => {
+    const counts = {
+      'SBA Defined': 0,
+      'SBA Influenced': 0,
+      'Lender Customizable': 0
+    };
+    
+    dropdownConfigs.forEach(config => {
+      if ('customizationLevel' in config) {
+        counts[config.customizationLevel]++;
+      }
+    });
+    
+    return counts;
+  }, [dropdownConfigs]);
+
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {Object.entries(customizationLevelInfo).map(([level, description]) => (
+          <div key={level} className="flex items-start space-x-2">
+            <div className={`w-3 h-3 mt-1 rounded-full ${
+              level === 'SBA Defined' ? 'bg-red-500' : 
+              level === 'SBA Influenced' ? 'bg-amber-500' : 
+              'bg-green-500'
+            }`} />
+            <div>
+              <div className="flex items-center">
+                <span className="font-medium">{level}</span>
+                <span className="ml-2 text-sm text-muted-foreground">({countByLevel[level as CustomizationLevel]})</span>
+              </div>
+              <p className="text-xs text-muted-foreground">{description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <div className="flex justify-between items-center">
         <Button
           onClick={() => setShowAddForm(!showAddForm)}
