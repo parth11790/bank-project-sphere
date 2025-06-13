@@ -19,6 +19,7 @@ const ProjectParticipants = lazy(() => import("./pages/ProjectParticipants"));
 const UseOfProceeds = lazy(() => import("./pages/UseOfProceeds"));
 const CashFlowAnalysis = lazy(() => import("./pages/CashFlowAnalysis"));
 const FormView = lazy(() => import("./pages/FormView"));
+const PersonalInformation = lazy(() => import("./pages/PersonalInformation"));
 // Add new page imports here
 const ProjectAnalysis = lazy(() => import("./pages/ProjectAnalysis"));
 const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
@@ -67,6 +68,7 @@ const App = () => (
                 <Route path="/project/:projectId" element={<Project />} />
                 <Route path="/create-project" element={<CreateProject />} />
                 <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
+                <Route path="/project/participants/:projectId/personal-info/:participantId" element={<PersonalInformation />} />
                 <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
                 <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />
                 <Route path="/form/:formId" element={<FormView />} />
