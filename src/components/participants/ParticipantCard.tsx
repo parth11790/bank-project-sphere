@@ -79,12 +79,14 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
         
         {participant.business ? (
           <BusinessSection
-            participant={participant}
+            business={participant.business}
             onAssignBusinessDocuments={onAssignBusinessDocuments ? 
-              () => onAssignBusinessDocuments(participant) : undefined}
+              () => onAssignBusinessDocuments(participant) : () => {}}
             onAssignBusinessForms={onAssignBusinessForms ? 
-              () => onAssignBusinessForms(participant) : undefined}
-            formTemplates={formTemplates}
+              () => onAssignBusinessForms(participant) : () => {}}
+            onFormClick={(formId, formName) => {
+              console.log('Business form clicked:', formId, formName);
+            }}
           />
         ) : (
           onAddBusiness && (
