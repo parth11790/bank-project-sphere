@@ -1,6 +1,6 @@
 
-import { User } from '@/types/user';
-import { Business } from '@/types/business';
+import type { User } from '@/types/user';
+import type { Business } from '@/types/business';
 
 export type LoanType = {
   type: string;
@@ -44,5 +44,5 @@ export interface Project {
   seller?: string;
 }
 
-// Re-export the User and Business types
-export { User, Business };
+// Re-export the User and Business types with proper syntax
+export type { User, Business };

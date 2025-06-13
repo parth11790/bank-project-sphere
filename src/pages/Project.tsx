@@ -13,7 +13,7 @@ import { generateProjectDashboardData } from '@/types/dashboard';
 import ProjectEditDialog from '@/components/ProjectEditDialog';
 import ProjectHeader from '@/components/project/ProjectHeader';
 import { ProjectSections } from '@/components/project/ProjectSections';
-import { ProjectBusinessStructure } from '@/components/project/ProjectBusinessStructure';
+import ProjectBusinessStructure from '@/components/project/ProjectBusinessStructure';
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
