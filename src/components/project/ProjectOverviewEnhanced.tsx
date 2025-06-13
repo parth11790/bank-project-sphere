@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -7,13 +6,11 @@ import { ParticipantWithDetails } from '@/types/participant';
 import { LoanDistributionChart } from './LoanDistributionChart';
 import { Activity, Users } from 'lucide-react';
 import { getStatusString } from '@/types/project';
-
 interface ProjectOverviewEnhancedProps {
   project: Project;
   dashboardData: any;
   participants: ParticipantWithDetails[];
 }
-
 const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
   project,
   dashboardData,
@@ -26,7 +23,6 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
       maximumFractionDigits: 0
     }).format(amount);
   };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -34,12 +30,10 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
       day: 'numeric'
     });
   };
-
   const totalLoanAmount = project.loan_types.reduce((sum, loan) => {
     if (typeof loan === 'string') return sum;
     return sum + (loan.amount || 0);
   }, 0);
-
   const loanDistributionData = project.loan_types.filter((loan): loan is {
     type: string;
     amount: number;
@@ -47,13 +41,11 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
     name: loan.type,
     value: loan.amount
   }));
-
   const numberOfLoans = project.loan_types.length;
   const assignedTo = project.created_by_user?.name || 'Not assigned';
   const requiredEquity = 'Not specified'; // This would come from project data when available
 
-  return (
-    <Card>
+  return <Card>
       <CardHeader>
         <CardTitle>Project Overview</CardTitle>
         <CardDescription>Key project information and financial summary</CardDescription>
@@ -85,7 +77,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
               </div>
             </div>
 
-            <Separator />
+            
 
             {/* Description */}
             <div>
@@ -95,11 +87,11 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
               </p>
             </div>
 
-            <Separator />
+            
 
             {/* Timeline */}
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Timeline</h3>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Created Date</p>
@@ -138,18 +130,16 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
               </div>
             </div>
 
-            <Separator />
+            
 
             {/* Loan Distribution Chart */}
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Loan Distribution</h3>
+              
               <LoanDistributionChart loanDistributionData={loanDistributionData} />
             </div>
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default ProjectOverviewEnhanced;

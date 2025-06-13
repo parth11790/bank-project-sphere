@@ -94,8 +94,8 @@ const Project = () => {
 
         {/* Project Sections */}
         <div className="space-y-6">
-          <div className="border-t pt-6">
-            <h2 className="text-2xl font-bold mb-4">Project Sections</h2>
+          <div className="">
+            
             <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
               <ProjectSections project={projectData} onGatherInformation={handleGatherInformation} onAnalysis={handleAnalysis} onGenerateDocumentation={handleGenerateDocumentation} onManageBusinessStructure={handleManageBusinessStructure} />
             </div>
