@@ -1,5 +1,6 @@
-import { User } from './user';
-import { Business } from './business';
+
+import { User } from '@/types/user';
+import { Business } from '@/types/business';
 
 export type LoanType = {
   type: string;
@@ -43,61 +44,5 @@ export interface Project {
   seller?: string;
 }
 
-export interface LoanType {
-  type: string;
-  amount: number;
-  term?: number;
-  rate?: number;
-  payment?: number;
-  description?: string;
-}
-
-export interface User {
-  user_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone?: string;
-  title?: string;
-  avatar?: string;
-  status?: string;
-  role?: string;
-  permissions?: string[];
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface Business {
-  business_id: string;
-  name: string;
-  entity_type: string;
-  description?: string;
-  website?: string;
-  founding_date?: string;
-  employee_count?: number;
-  
-  // Owner information (if this business is owned by someone)
-  owner_id?: string;
-  owner_type?: 'individual' | 'business';
-  
-  // Financial data
-  financial_data?: Record<string, {
-    revenue: number;
-    wages: number;
-    cogs: number;
-    gross_profit: number;
-    other_expenses: number;
-    total_noi: number;
-    nom_percentage: number;
-  }>;
-  
-  // Documents and forms
-  documents?: Array<{
-    document_id: string;
-    name: string;
-  }>;
-  forms?: Array<{
-    form_id: string;
-    name: string;
-  }>;
-}
+// Re-export the User and Business types
+export { User, Business };

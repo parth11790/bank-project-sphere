@@ -1,76 +1,86 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building2, Users, Plus, Percent } from 'lucide-react';
-import { Project, Owner, Seller } from '@/types/project';
-import { Business } from '@/types/business';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Building2, Users, Plus, DollarSign } from 'lucide-react';
+import { Project } from '@/types/project';
+import LoanDetailsTable from './LoanDetailsTable';
 
 interface ProjectBusinessStructureProps {
   project: Project;
-  onAddOwner?: () => void;
-  onAddSeller?: () => void;
-  onAddAffiliatedBusiness?: (ownerId: string) => void;
+  onAddOwner: () => void;
+  onAddSeller: () => void;
+  onAddAffiliatedBusiness: (ownerId: string) => void;
 }
 
-export const ProjectBusinessStructure: React.FC<ProjectBusinessStructureProps> = ({
+const ProjectBusinessStructure: React.FC<ProjectBusinessStructureProps> = ({
   project,
   onAddOwner,
   onAddSeller,
   onAddAffiliatedBusiness
 }) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'approved': return 'bg-blue-100 text-blue-800';
+      case 'declined': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Main Business Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            Main Business
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <CardTitle>Main Business</CardTitle>
+            </div>
+          </div>
+          <CardDescription>Primary business entity for this project</CardDescription>
         </CardHeader>
         <CardContent>
           {project.main_business ? (
             <div className="space-y-4">
-              <div className="flex items-start justify-between">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold">{project.main_business.name}</h3>
-                  <Badge variant="outline">{project.main_business.entity_type}</Badge>
+                  <h4 className="font-semibold text-lg">{project.main_business.name}</h4>
+                  <p className="text-sm text-muted-foreground">{project.main_business.entity_type}</p>
+                  {project.main_business.description && (
+                    <p className="text-sm mt-2">{project.main_business.description}</p>
+                  )}
                 </div>
-              </div>
-              
-              {project.main_business.description && (
-                <p className="text-muted-foreground">{project.main_business.description}</p>
-              )}
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
-                <div>
-                  <p className="text-sm text-muted-foreground">Website</p>
-                  <p className="font-medium">{project.main_business.website || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Founded</p>
-                  <p className="font-medium">{project.main_business.founding_date || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Employees</p>
-                  <p className="font-medium">{project.main_business.employee_count || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Documents</p>
-                  <p className="font-medium">{project.main_business.documents?.length || 0}</p>
+                <div className="space-y-2">
+                  {project.main_business.website && (
+                    <p className="text-sm"><strong>Website:</strong> {project.main_business.website}</p>
+                  )}
+                  {project.main_business.founding_date && (
+                    <p className="text-sm"><strong>Founded:</strong> {new Date(project.main_business.founding_date).toLocaleDateString()}</p>
+                  )}
+                  {project.main_business.employee_count && (
+                    <p className="text-sm"><strong>Employees:</strong> {project.main_business.employee_count}</p>
+                  )}
                 </div>
               </div>
             </div>
           ) : (
             <div className="text-center py-8">
-              <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Main Business</h3>
-              <p className="text-muted-foreground mb-4">
-                This project doesn't have a main business assigned yet.
-              </p>
-              <Button>Add Main Business</Button>
+              <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No main business configured</p>
+              <Button className="mt-4">Add Main Business</Button>
             </div>
           )}
         </CardContent>
@@ -79,125 +89,111 @@ export const ProjectBusinessStructure: React.FC<ProjectBusinessStructureProps> =
       {/* Loans Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Loans</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-primary" />
+              <CardTitle>Loans</CardTitle>
+            </div>
+          </div>
+          <CardDescription>Loans assigned to the main business</CardDescription>
         </CardHeader>
         <CardContent>
           {project.loans && project.loans.length > 0 ? (
             <div className="space-y-4">
               {project.loans.map((loan) => (
                 <div key={loan.loan_id} className="border rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold">{loan.loan_type}</h4>
+                    <Badge className={getStatusColor(loan.status)}>{loan.status}</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <h4 className="font-semibold">{loan.loan_type}</h4>
-                      <p className="text-lg font-bold text-primary">
-                        ${loan.amount.toLocaleString()}
-                      </p>
+                      <p className="text-muted-foreground">Amount</p>
+                      <p className="font-medium">{formatCurrency(loan.amount)}</p>
                     </div>
-                    <Badge variant={loan.status === 'approved' ? 'default' : 'secondary'}>
-                      {loan.status}
-                    </Badge>
+                    {loan.rate && (
+                      <div>
+                        <p className="text-muted-foreground">Rate</p>
+                        <p className="font-medium">{loan.rate}%</p>
+                      </div>
+                    )}
+                    {loan.term && (
+                      <div>
+                        <p className="text-muted-foreground">Term</p>
+                        <p className="font-medium">{loan.term} years</p>
+                      </div>
+                    )}
                   </div>
                   {loan.description && (
-                    <p className="text-sm text-muted-foreground">{loan.description}</p>
+                    <p className="text-sm text-muted-foreground mt-2">{loan.description}</p>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground">No loans assigned to this project.</p>
+            <div className="text-center py-8">
+              <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No loans configured</p>
+              <Button className="mt-4">Add Loan</Button>
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Owners Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Business Owners
-            </CardTitle>
-            {onAddOwner && (
-              <Button variant="outline" size="sm" onClick={onAddOwner}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Owner
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Mock owners data for demonstration */}
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h4 className="font-semibold">John Smith</h4>
-                  <Badge variant="outline">Individual</Badge>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center gap-1">
-                    <Percent className="h-4 w-4" />
-                    <span className="font-medium">65%</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Ownership</p>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h5 className="text-sm font-medium">Affiliated Businesses (2)</h5>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between p-2 bg-muted/30 rounded">
-                    <span className="text-sm">Smith Consulting LLC</span>
-                    <Badge variant="secondary" className="text-xs">LLC</Badge>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-muted/30 rounded">
-                    <span className="text-sm">Tech Solutions Inc</span>
-                    <Badge variant="secondary" className="text-xs">Corporation</Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Loan Details from Use of Proceeds */}
+      <LoanDetailsTable project={project} />
 
       {/* Sellers Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Sellers</CardTitle>
-            {onAddSeller && (
-              <Button variant="outline" size="sm" onClick={onAddSeller}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Seller
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              <CardTitle>Sellers</CardTitle>
+            </div>
+            <Button size="sm" onClick={onAddSeller}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Seller
+            </Button>
           </div>
+          <CardDescription>Sellers associated with this project</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {/* Mock seller data for demonstration */}
-            <div className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h4 className="font-semibold">ABC Holdings Corp</h4>
-                  <Badge variant="outline">Business</Badge>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h5 className="text-sm font-medium">Associated Businesses (1)</h5>
-                <div className="grid gap-2">
-                  <div className="flex items-center justify-between p-2 bg-muted/30 rounded">
-                    <span className="text-sm">ABC Manufacturing LLC</span>
-                    <Badge variant="secondary" className="text-xs">LLC</Badge>
+          {project.sellers && project.sellers.length > 0 ? (
+            <div className="space-y-4">
+              {project.sellers.map((seller) => (
+                <div key={seller.seller_id} className="border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold">{seller.name}</h4>
+                    <Badge variant="outline">{seller.type}</Badge>
                   </div>
+                  
+                  {seller.associated_businesses && seller.associated_businesses.length > 0 && (
+                    <div className="mt-3">
+                      <h5 className="text-sm font-medium mb-2">Associated Businesses:</h5>
+                      <div className="space-y-2">
+                        {seller.associated_businesses.map((business) => (
+                          <div key={business.business_id} className="ml-4 p-2 bg-muted/50 rounded">
+                            <p className="font-medium">{business.name}</p>
+                            <p className="text-sm text-muted-foreground">{business.entity_type}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-8">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No sellers added</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 };
+
+export default ProjectBusinessStructure;
