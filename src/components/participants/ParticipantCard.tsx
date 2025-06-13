@@ -1,99 +1,94 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Participant as ParticipantType } from '@/types/participant';
-import ParticipantCardHeader from './ParticipantCardHeader';
-import IndividualRequirementsSection from './IndividualRequirementsSection';
-import BusinessSection from './BusinessSection';
-import AddBusinessButton from './AddBusinessButton';
-
-export interface Form {
-  form_id: string;
-  name: string;
-}
-
-export interface Document {
-  document_id: string;
-  name: string;
-}
-
-export interface Business {
-  business_id: string;
-  name: string;
-  entity_type: string;
-  title?: string;
-  ownership_percentage?: number;
-  documents: Document[];
-  forms: Form[];
-}
-
-export interface Participant extends ParticipantType {}
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Participant } from '@/types/participant';
+import { ParticipantCardHeader } from './ParticipantCardHeader';
+import { IndividualRequirementsSection } from './IndividualRequirementsSection';
+import { BusinessSection } from './BusinessSection';
+import { Trash2 } from 'lucide-react';
 
 interface ParticipantCardProps {
   participant: Participant;
-  onDelete: () => void;
-  onAssignDocuments: () => void;
-  onAssignForms: () => void;
-  onAssignBusinessDocuments?: () => void;
-  onAssignBusinessForms?: () => void;
-  onAddBusiness: () => void;
-  formTemplates: {
-    individual: Form[];
-    business: Form[];
-  };
+  onRemove: (id: string) => void;
+  onAssignDocuments: (participant: Participant) => void;
+  onAssignForms: (participant: Participant) => void;
+  onAssignBusinessDocuments?: (participant: Participant) => void;
+  onAssignBusinessForms?: (participant: Participant) => void;
+  onAddBusiness?: (participant: Participant) => void;
+  formTemplates?: Array<{ form_id: string; name: string; }>;
 }
 
 const ParticipantCard: React.FC<ParticipantCardProps> = ({
   participant,
-  onDelete,
+  onRemove,
   onAssignDocuments,
   onAssignForms,
   onAssignBusinessDocuments,
   onAssignBusinessForms,
   onAddBusiness,
-  formTemplates
+  formTemplates = []
 }) => {
   const navigate = useNavigate();
-  
-  const handleFormClick = (formId: string, formName: string) => {
-    navigate(`/form/${formId}?name=${encodeURIComponent(formName)}&participant=${encodeURIComponent(participant.name)}`);
+
+  const handleNameClick = () => {
+    // Navigate to personal information form for this participant
+    const currentPath = window.location.pathname;
+    const projectId = currentPath.split('/')[3]; // Extract project ID from current path
+    navigate(`/project/participants/${projectId}/personal-info/${participant.participant_id}`);
   };
 
-  const showAddBusinessButton = 
-    !participant.business && 
-    participant.role !== 'bank_officer' && 
-    participant.role !== 'loan_specialist' && 
-    participant.role !== 'bank_manager';
-
   return (
-    <Card>
-      <ParticipantCardHeader
-        participant={participant}
-        onDelete={onDelete}
-      />
-      <CardContent className="space-y-6">
-        {/* Individual Requirements Section - Always Expanded */}
+    <Card className="h-full">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <ParticipantCardHeader 
+              participant={participant} 
+              onNameClick={handleNameClick}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onRemove(participant.participant_id)}
+            className="text-destructive hover:text-destructive/90"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
         <IndividualRequirementsSection
-          documents={participant.documents}
-          forms={participant.forms}
+          participant={participant}
           onAssignDocuments={onAssignDocuments}
           onAssignForms={onAssignForms}
-          onFormClick={handleFormClick}
+          formTemplates={formTemplates}
         />
         
-        {/* Business Section - Always Expanded if business exists */}
-        {participant.business && (
+        {participant.business ? (
           <BusinessSection
-            business={participant.business}
-            onAssignBusinessDocuments={onAssignBusinessDocuments || (() => {})}
-            onAssignBusinessForms={onAssignBusinessForms || (() => {})}
-            onFormClick={handleFormClick}
+            participant={participant}
+            onAssignBusinessDocuments={onAssignBusinessDocuments}
+            onAssignBusinessForms={onAssignBusinessForms}
+            formTemplates={formTemplates}
           />
-        )}
-        
-        {showAddBusinessButton && (
-          <AddBusinessButton onAddBusiness={onAddBusiness} />
+        ) : (
+          onAddBusiness && (
+            <div className="pt-4 border-t">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => onAddBusiness(participant)}
+                className="w-full"
+              >
+                Add Business
+              </Button>
+            </div>
+          )
         )}
       </CardContent>
     </Card>

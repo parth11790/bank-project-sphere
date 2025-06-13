@@ -1,52 +1,46 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Participant } from '@/types/participant';
+import { user } from 'lucide-react';
 
 interface ParticipantCardHeaderProps {
   participant: Participant;
-  onDelete: () => void;
+  onNameClick: () => void;
 }
 
-const ParticipantCardHeader: React.FC<ParticipantCardHeaderProps> = ({
+export const ParticipantCardHeader: React.FC<ParticipantCardHeaderProps> = ({
   participant,
-  onDelete,
+  onNameClick
 }) => {
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase();
+  const getRoleBadgeColor = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'buyer':
+        return 'bg-green-100 text-green-800 hover:bg-green-200';
+      case 'seller':
+        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+      default:
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+    }
   };
 
   return (
-    <CardHeader className="pb-3">
-      <div className="flex justify-between items-start">
-        <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${participant.name}`} alt={participant.name} />
-            <AvatarFallback>{getInitials(participant.name)}</AvatarFallback>
-          </Avatar>
-          <div>
-            <CardTitle>{participant.name}</CardTitle>
-            <CardDescription>{participant.email}</CardDescription>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="capitalize">
-            {participant.role.replace('_', ' ')}
-          </Badge>
-          <Button variant="ghost" size="icon" onClick={onDelete}>
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </div>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <Button
+          variant="link"
+          className="p-0 h-auto text-lg font-semibold text-primary hover:underline"
+          onClick={onNameClick}
+        >
+          {participant.name}
+        </Button>
+        <Badge className={getRoleBadgeColor(participant.role)}>
+          {participant.role.charAt(0).toUpperCase() + participant.role.slice(1)}
+        </Badge>
       </div>
-    </CardHeader>
+      <p className="text-sm text-muted-foreground">{participant.email}</p>
+    </div>
   );
 };
 
