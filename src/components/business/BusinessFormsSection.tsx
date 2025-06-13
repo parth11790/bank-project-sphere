@@ -10,7 +10,11 @@ interface BusinessFormsSectionProps {
 }
 
 const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business }) => {
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string | undefined) => {
+    if (!status) {
+      return <FileText className="h-4 w-4 text-gray-600" />;
+    }
+    
     switch (status.toLowerCase()) {
       case 'completed':
         return <CheckCircle className="h-4 w-4 text-green-600" />;
@@ -23,7 +27,11 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string | undefined) => {
+    if (!status) {
+      return <Badge variant="outline">Not Started</Badge>;
+    }
+    
     switch (status.toLowerCase()) {
       case 'completed':
         return <Badge variant="default" className="bg-green-100 text-green-800">Completed</Badge>;
