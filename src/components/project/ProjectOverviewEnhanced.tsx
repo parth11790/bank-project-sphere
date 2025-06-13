@@ -43,7 +43,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
       <CardContent className="grid gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-sm font-medium mb-4">Project Details</h3>
+            
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
