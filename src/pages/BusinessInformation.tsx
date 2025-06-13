@@ -8,7 +8,7 @@ import { getProjectById } from '@/services';
 import { Project } from '@/types/project';
 import EditableBusinessInfoSection from '@/components/business/EditableBusinessInfoSection';
 import EditableBusinessFormsSection from '@/components/business/EditableBusinessFormsSection';
-import EditableBusinessOwnershipSection from '@/components/business/EditableBusinessOwnershipSection';
+import EditableBusinessAcquisitionSection from '@/components/business/EditableBusinessAcquisitionSection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
@@ -95,8 +95,8 @@ const BusinessInformation = () => {
         {/* Forms Section */}
         <EditableBusinessFormsSection business={business} />
 
-        {/* Ownership Section */}
-        <EditableBusinessOwnershipSection projectId={projectId || ''} owners={projectData.owners || []} />
+        {/* Acquisition Section */}
+        <EditableBusinessAcquisitionSection projectId={projectId || ''} />
       </motion.div>
     </Layout>
   );
