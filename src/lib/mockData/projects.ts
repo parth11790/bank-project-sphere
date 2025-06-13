@@ -1,7 +1,6 @@
-
 import { Project } from './types';
 
-// Update projects to include multiple buyers per project, one seller per project
+// Update projects to include the new business structure
 export const projects: Project[] = [
   {
     project_id: 'project_1',
@@ -18,6 +17,72 @@ export const projects: Project[] = [
     updated_at: '2023-05-20T14:30:00Z',
     city: 'Chicago',
     state: 'IL',
+    
+    // New structure
+    main_business: {
+      business_id: 'business_main_1',
+      name: 'Main Street Restaurant LLC',
+      entity_type: 'LLC',
+      description: 'Full-service restaurant specializing in American cuisine',
+      website: 'https://mainstreetrestaurant.com',
+      founding_date: '2015-03-01',
+      employee_count: 25,
+      documents: [
+        { document_id: 'doc_1', name: 'Articles of Organization' },
+        { document_id: 'doc_2', name: 'Operating Agreement' }
+      ],
+      forms: [
+        { form_id: 'form_1', name: 'Business Tax Returns (3 years)' },
+        { form_id: 'form_2', name: 'Financial Statements' }
+      ]
+    },
+    
+    loans: [
+      {
+        loan_id: 'loan_1',
+        loan_type: 'SBA 7(a)',
+        amount: 2000000,
+        term: 10,
+        rate: 6.5,
+        description: 'Standard SBA loan for business acquisition',
+        business_id: 'business_main_1',
+        status: 'active'
+      },
+      {
+        loan_id: 'loan_2',
+        loan_type: 'Owner Financing',
+        amount: 500000,
+        term: 5,
+        rate: 4.0,
+        description: 'Seller carry back financing',
+        business_id: 'business_main_1',
+        status: 'pending'
+      }
+    ],
+    
+    sellers: [
+      {
+        seller_id: 'seller_1',
+        name: 'ABC Holdings Corp',
+        type: 'business',
+        business_id: 'business_seller_1',
+        associated_businesses: [
+          {
+            business_id: 'business_seller_1',
+            name: 'ABC Holdings Corp',
+            entity_type: 'Corporation'
+          }
+        ],
+        documents: [
+          { document_id: 'seller_doc_1', name: 'Corporate Records' }
+        ],
+        forms: [
+          { form_id: 'seller_form_1', name: 'Seller Disclosure Statement' }
+        ]
+      }
+    ],
+    
+    // Legacy participants for backward compatibility
     participants: [
       { userId: 'user_1', role: 'buyer' },
       { userId: 'user_3', role: 'buyer' },
@@ -43,6 +108,38 @@ export const projects: Project[] = [
     updated_at: '2023-07-05T11:45:00Z',
     city: 'Denver',
     state: 'CO',
+    
+    main_business: {
+      business_id: 'business_main_2',
+      name: 'Riverside Commercial Properties LLC',
+      entity_type: 'LLC',
+      description: 'Commercial real estate development and management',
+      website: 'https://riversidecommercial.com',
+      founding_date: '2020-01-15',
+      employee_count: 12,
+      documents: [
+        { document_id: 'doc_3', name: 'LLC Operating Agreement' },
+        { document_id: 'doc_4', name: 'Property Acquisition Plans' }
+      ],
+      forms: [
+        { form_id: 'form_3', name: 'Real Estate Appraisals' },
+        { form_id: 'form_4', name: 'Environmental Reports' }
+      ]
+    },
+    
+    loans: [
+      {
+        loan_id: 'loan_3',
+        loan_type: 'SBA 504',
+        amount: 5000000,
+        term: 20,
+        rate: 5.8,
+        description: 'CDC/SBA loan for real estate acquisition',
+        business_id: 'business_main_2',
+        status: 'pending'
+      }
+    ],
+    
     participants: [
       { userId: 'user_6', role: 'buyer' },
       { userId: 'user_8', role: 'buyer' },

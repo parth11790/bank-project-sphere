@@ -28,14 +28,17 @@ export interface BusinessFinancialData {
 export interface Business {
   business_id: string;
   name: string;
-  owner_id: string;
   entity_type: string;
   description?: string;
   website?: string;
   founding_date?: string;
   employee_count?: number;
-  title?: string; // Owner's title in the business
-  ownership_percentage?: number; // Ownership percentage
+  
+  // Owner information (if this business is owned by someone)
+  owner_id?: string;
+  owner_type?: 'individual' | 'business';
+  
+  // Financial data
   financial_data?: Record<string, {
     revenue: number;
     wages: number;
@@ -44,6 +47,16 @@ export interface Business {
     other_expenses: number;
     total_noi: number;
     nom_percentage: number;
+  }>;
+  
+  // Documents and forms
+  documents?: Array<{
+    document_id: string;
+    name: string;
+  }>;
+  forms?: Array<{
+    form_id: string;
+    name: string;
   }>;
 }
 

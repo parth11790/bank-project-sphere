@@ -13,14 +13,17 @@ import { generateProjectDashboardData } from '@/types/dashboard';
 import ProjectEditDialog from '@/components/ProjectEditDialog';
 import ProjectHeader from '@/components/project/ProjectHeader';
 import { ProjectSections } from '@/components/project/ProjectSections';
+import { ProjectBusinessStructure } from '@/components/project/ProjectBusinessStructure';
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Project = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
@@ -59,6 +62,10 @@ const Project = () => {
   const handleGenerateDocumentation = () => {
     navigate(`/project/documentation/${projectId}`);
   };
+
+  const handleManageBusinessStructure = () => {
+    setActiveTab('structure');
+  };
   
   return (
     <Layout>
@@ -72,21 +79,43 @@ const Project = () => {
           project={projectData} 
           onEdit={() => setEditDialogOpen(true)}
         />
-        
-        <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
-          <ProjectSections
-            project={projectData}
-            onGatherInformation={handleGatherInformation}
-            onAnalysis={handleAnalysis}
-            onGenerateDocumentation={handleGenerateDocumentation}
-          />
-        </div>
 
-        <ProjectOverviewEnhanced 
-          project={projectData}
-          dashboardData={dashboardData}
-          participants={participantsData}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="structure">Business Structure</TabsTrigger>
+            <TabsTrigger value="sections">Sections</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="mt-6 space-y-6">
+            <ProjectOverviewEnhanced 
+              project={projectData}
+              dashboardData={dashboardData}
+              participants={participantsData}
+            />
+          </TabsContent>
+
+          <TabsContent value="structure" className="mt-6">
+            <ProjectBusinessStructure
+              project={projectData}
+              onAddOwner={() => console.log('Add owner')}
+              onAddSeller={() => console.log('Add seller')}
+              onAddAffiliatedBusiness={(ownerId) => console.log('Add affiliated business for owner:', ownerId)}
+            />
+          </TabsContent>
+
+          <TabsContent value="sections" className="mt-6">
+            <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
+              <ProjectSections
+                project={projectData}
+                onGatherInformation={handleGatherInformation}
+                onAnalysis={handleAnalysis}
+                onGenerateDocumentation={handleGenerateDocumentation}
+                onManageBusinessStructure={handleManageBusinessStructure}
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
         
         {editDialogOpen && (
           <ProjectEditDialog

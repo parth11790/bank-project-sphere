@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Users, Percent } from 'lucide-react';
+import { Building2, Users, Percent, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Participant } from '@/types/participant';
 
 interface BusinessOwnershipSectionProps {
@@ -30,6 +31,24 @@ export const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> =
     );
   }
 
+  // Mock affiliated businesses data - in real app this would come from the participant data
+  const affiliatedBusinesses = participant.business ? [
+    {
+      business_id: 'affiliate_1',
+      name: 'Smith Consulting LLC',
+      entity_type: 'LLC',
+      ownership_percentage: 100,
+      role: 'Managing Member'
+    },
+    {
+      business_id: 'affiliate_2', 
+      name: 'Tech Solutions Inc',
+      entity_type: 'Corporation',
+      ownership_percentage: 45,
+      role: 'Director'
+    }
+  ] : [];
+
   return (
     <div className="space-y-6">
       <Card>
@@ -41,7 +60,8 @@ export const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> =
         </CardHeader>
         <CardContent>
           {participant.business ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Main Business */}
               <div className="border rounded-lg p-4 bg-muted/30">
                 <div className="flex items-start justify-between mb-4">
                   <div className="space-y-2">
@@ -99,6 +119,54 @@ export const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> =
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Affiliated Businesses */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Affiliated Businesses</h3>
+                  <Button variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Business
+                  </Button>
+                </div>
+                
+                {affiliatedBusinesses.length > 0 ? (
+                  <div className="space-y-4">
+                    {affiliatedBusinesses.map((business) => (
+                      <div key={business.business_id} className="border rounded-lg p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="space-y-1">
+                            <h4 className="font-medium">{business.name}</h4>
+                            <Badge variant="secondary" className="text-xs">
+                              {business.entity_type}
+                            </Badge>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center gap-1">
+                              <Percent className="h-3 w-3" />
+                              <span className="text-sm font-medium">{business.ownership_percentage}%</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">Ownership</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Role</p>
+                            <p className="text-sm font-medium">{business.role}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 border rounded-lg bg-muted/20">
+                    <Building2 className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground">No affiliated businesses</p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

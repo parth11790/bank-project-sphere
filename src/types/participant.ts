@@ -1,4 +1,5 @@
 
+// Legacy participant interface for backward compatibility
 export interface Participant {
   participant_id: string;
   user_id: string;
@@ -17,8 +18,8 @@ export interface Participant {
     business_id: string;
     name: string;
     entity_type: string;
-    title?: string; // Owner's title in the business
-    ownership_percentage?: number; // Ownership percentage
+    title?: string;
+    ownership_percentage?: number;
     documents: Array<{
       document_id: string;
       name: string;

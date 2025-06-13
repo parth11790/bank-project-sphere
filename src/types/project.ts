@@ -27,6 +27,15 @@ export interface Project {
   city?: string;
   state?: string;
   location?: string;
+  
+  // New structure: Main business and loans
+  main_business?: Business;
+  loans?: Loan[];
+  
+  // Sellers associated with project
+  sellers?: Seller[];
+  
+  // Legacy participants for backward compatibility
   participants?: {
     id: string;
     role: string;
@@ -38,16 +47,80 @@ export interface Project {
   seller?: string;
 }
 
-// A helper function to get the loan amount from either a string or LoanType object
+export interface Loan {
+  loan_id: string;
+  loan_type: string;
+  amount: number;
+  term?: number;
+  rate?: number;
+  payment?: number;
+  description?: string;
+  business_id: string; // Assigned to main business
+  status: 'active' | 'pending' | 'approved' | 'declined';
+}
+
+export interface Owner {
+  owner_id: string;
+  name: string;
+  email?: string;
+  type: 'individual' | 'business';
+  ownership_percentage: number;
+  role?: string;
+  
+  // If individual
+  user_id?: string;
+  
+  // If business
+  business_id?: string;
+  
+  // Associated businesses for this owner
+  affiliated_businesses?: Business[];
+  
+  // Documents and forms
+  documents?: Array<{
+    document_id: string;
+    name: string;
+  }>;
+  forms?: Array<{
+    form_id: string;
+    name: string;
+  }>;
+}
+
+export interface Seller {
+  seller_id: string;
+  name: string;
+  email?: string;
+  type: 'individual' | 'business';
+  
+  // If individual
+  user_id?: string;
+  
+  // If business
+  business_id?: string;
+  
+  // Associated businesses
+  associated_businesses?: Business[];
+  
+  // Documents and forms
+  documents?: Array<{
+    document_id: string;
+    name: string;
+  }>;
+  forms?: Array<{
+    form_id: string;
+    name: string;
+  }>;
+}
+
+// Helper functions
 export const getLoanAmount = (loanType: LoanType | string): number => {
   if (typeof loanType === 'string') {
-    // If it's a string, we can't determine the amount, return 0
     return 0;
   }
   return loanType.amount || 0;
 };
 
-// Add the getStatusString function
 export const getStatusString = (status: string): string => {
   switch (status) {
     case 'active':
@@ -61,7 +134,6 @@ export const getStatusString = (status: string): string => {
   }
 };
 
-// Add the isProject type guard
 export const isProject = (obj: any): obj is Project => {
   return (
     obj &&
