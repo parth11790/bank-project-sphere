@@ -31,6 +31,7 @@ export interface Project {
   // New structure fields
   main_business?: any;
   loans?: any[];
+  owners?: any[];
   sellers?: any[];
   
   // Legacy participants for backward compatibility

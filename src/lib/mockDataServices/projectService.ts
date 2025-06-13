@@ -9,20 +9,11 @@ export const getProjectsData = async (): Promise<Project[]> => {
     ...project,
     // Ensure status is present in each project
     status: project.status || 'active',
-    // Map participants to match the Project interface
-    participants: project.participants?.map(p => {
-      const user = getUserById(p.userId);
-      return {
-        id: p.userId,
-        role: p.role,
-        user: {
-          user_id: user?.user_id || '',
-          name: user?.name || 'Unknown',
-          email: user?.email || '',
-          role: user?.role || ''
-        }
-      };
-    }),
+    // Map participants to match the Project interface - fix the property mapping
+    participants: project.participants?.map(p => ({
+      userId: p.userId,
+      role: p.role
+    })),
     // For list view, add created_by_user
     created_by_user: { 
       name: getUserById(project.created_by)?.name || 'Unknown',
@@ -40,20 +31,11 @@ export const getProjectByIdData = async (projectId: string): Promise<Project | n
   return {
     ...project,
     status: project.status || 'active',
-    // Map participants to match the Project interface
-    participants: project.participants?.map(p => {
-      const user = getUserById(p.userId);
-      return {
-        id: p.userId,
-        role: p.role,
-        user: {
-          user_id: user?.user_id || '',
-          name: user?.name || 'Unknown',
-          email: user?.email || '',
-          role: user?.role || ''
-        }
-      };
-    }),
+    // Map participants to match the Project interface - fix the property mapping
+    participants: project.participants?.map(p => ({
+      userId: p.userId,
+      role: p.role
+    })),
     created_by_user: { 
       name: getUserById(project.created_by)?.name || 'Unknown',
       user_id: getUserById(project.created_by)?.user_id || '',
