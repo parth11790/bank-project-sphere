@@ -3,7 +3,13 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import ParticipantCard, { Participant, Form } from './ParticipantCard';
+import ParticipantCard from './ParticipantCard';
+import { Participant } from '@/types/participant';
+
+interface Form {
+  form_id: string;
+  name: string;
+}
 
 interface ParticipantsListProps {
   title: string;
@@ -64,7 +70,7 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
             <ParticipantCard 
               key={participant.participant_id}
               participant={participant}
-              onDelete={() => onRemoveParticipant(participant.participant_id)}
+              onRemove={() => onRemoveParticipant(participant.participant_id)}
               onAssignDocuments={() => onAssignDocuments(participant)}
               onAssignForms={() => onAssignForms(participant)}
               onAssignBusinessDocuments={participant.business ? 
@@ -72,7 +78,7 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
               onAssignBusinessForms={participant.business ? 
                 () => onAssignBusinessForms(participant) : undefined}
               onAddBusiness={() => onAddBusiness(participant)}
-              formTemplates={formTemplates}
+              formTemplates={[...formTemplates.individual, ...formTemplates.business]}
             />
           ))}
         </div>

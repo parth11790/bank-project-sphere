@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Participant } from '@/types/participant';
 import { ParticipantCardHeader } from './ParticipantCardHeader';
-import { IndividualRequirementsSection } from './IndividualRequirementsSection';
-import { BusinessSection } from './BusinessSection';
+import IndividualRequirementsSection from './IndividualRequirementsSection';
+import BusinessSection from './BusinessSection';
 import { Trash2 } from 'lucide-react';
 
 interface ParticipantCardProps {
@@ -63,10 +63,13 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
       
       <CardContent className="space-y-4">
         <IndividualRequirementsSection
-          participant={participant}
-          onAssignDocuments={onAssignDocuments}
-          onAssignForms={onAssignForms}
-          formTemplates={formTemplates}
+          documents={participant.documents || []}
+          forms={participant.forms || []}
+          onAssignDocuments={() => onAssignDocuments(participant)}
+          onAssignForms={() => onAssignForms(participant)}
+          onFormClick={(formId, formName) => {
+            console.log('Form clicked:', formId, formName);
+          }}
         />
         
         {participant.business ? (

@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Participant } from '@/types/participant';
-import { user } from 'lucide-react';
+import { User } from 'lucide-react';
 
 interface ParticipantCardHeaderProps {
   participant: Participant;

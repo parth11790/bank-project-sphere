@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -345,9 +344,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
             <FormField
               control={form.control}
               name="pledged_property_details"
-              render={({ field })
-
- => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Please explain (Pledged Property)</FormLabel>
                   <FormControl>
