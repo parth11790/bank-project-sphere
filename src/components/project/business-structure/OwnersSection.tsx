@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UserCheck, Plus } from 'lucide-react';
 
 interface Owner {
@@ -61,48 +62,51 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
       <CardContent>
         {mockOwners && mockOwners.length > 0 ? (
           <div className="space-y-4">
-            {mockOwners.map((owner) => (
-              <div key={owner.owner_id} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <h4 className="font-semibold">{owner.name}</h4>
-                      <p className="text-sm text-muted-foreground">{owner.email}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-primary">{owner.ownership_percentage}%</div>
-                    <p className="text-xs text-muted-foreground">Ownership</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm mt-3">
-                  <div>
-                    <p className="text-muted-foreground">Type</p>
-                    <Badge variant="outline" className="mt-1">
-                      {owner.type === 'individual' ? 'Individual' : 'Business'}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Role</p>
-                    <p className="font-medium mt-1">{owner.role}</p>
-                  </div>
-                </div>
-
-                {owner.type === 'individual' && (
-                  <div className="mt-3 pt-3 border-t">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => onAddAffiliatedBusiness(owner.owner_id)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Affiliated Business
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Ownership %</TableHead>
+                    <TableHead>Affiliated Businesses</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mockOwners.map((owner) => (
+                    <TableRow key={owner.owner_id}>
+                      <TableCell className="font-medium">{owner.name}</TableCell>
+                      <TableCell>{owner.email}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {owner.type === 'individual' ? 'Individual' : 'Business'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{owner.role}</TableCell>
+                      <TableCell className="text-right font-bold text-primary">
+                        {owner.ownership_percentage}%
+                      </TableCell>
+                      <TableCell className="text-center">0</TableCell>
+                      <TableCell>
+                        {owner.type === 'individual' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => onAddAffiliatedBusiness(owner.owner_id)}
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Business
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
             
             <div className="mt-4 p-3 bg-muted/30 rounded-lg">
               <div className="flex justify-between items-center">

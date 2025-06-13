@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Users, Plus } from 'lucide-react';
 import { Project } from '@/types/project';
 
@@ -29,29 +30,35 @@ const SellersSection: React.FC<SellersSectionProps> = ({ project, onAddSeller })
       </CardHeader>
       <CardContent>
         {project.sellers && project.sellers.length > 0 ? (
-          <div className="space-y-4">
-            {project.sellers.map((seller) => (
-              <div key={seller.seller_id} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold">{seller.name}</h4>
-                  <Badge variant="outline">{seller.type}</Badge>
-                </div>
-                
-                {seller.associated_businesses && seller.associated_businesses.length > 0 && (
-                  <div className="mt-3">
-                    <h5 className="text-sm font-medium mb-2">Associated Businesses:</h5>
-                    <div className="space-y-2">
-                      {seller.associated_businesses.map((business) => (
-                        <div key={business.business_id} className="ml-4 p-2 bg-muted/50 rounded">
-                          <p className="font-medium">{business.name}</p>
-                          <p className="text-sm text-muted-foreground">{business.entity_type}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Ownership %</TableHead>
+                  <TableHead>Affiliated Businesses</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {project.sellers.map((seller) => (
+                  <TableRow key={seller.seller_id}>
+                    <TableCell className="font-medium">{seller.name}</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{seller.type}</Badge>
+                    </TableCell>
+                    <TableCell>Seller</TableCell>
+                    <TableCell className="text-center">-</TableCell>
+                    <TableCell className="text-center">
+                      {seller.associated_businesses ? seller.associated_businesses.length : 0}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         ) : (
           <div className="text-center py-8">
