@@ -28,24 +28,44 @@ const PersonalInformationForm: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('personal');
   const [participant, setParticipant] = useState<Participant | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchParticipant = async () => {
       if (projectId && participantId) {
         try {
+          setIsLoading(true);
+          console.log('Fetching participant with ID:', participantId, 'for project:', projectId);
+          
           const participants = await getParticipantsWithDetailsData(projectId);
+          console.log('Available participants:', participants.map(p => p.participant_id));
+          
           const foundParticipant = participants.find(p => p.participant_id === participantId);
+          console.log('Found participant:', foundParticipant);
+          
           if (foundParticipant) {
             setParticipant(foundParticipant);
+          } else {
+            console.error('Participant not found with ID:', participantId);
+            setError(`Participant with ID "${participantId}" not found`);
+            toast.error('Participant not found. Redirecting to participants list.');
+            setTimeout(() => {
+              navigate(`/project/participants/${projectId}`);
+            }, 2000);
           }
         } catch (error) {
           console.error('Error fetching participant:', error);
+          setError('Failed to load participant information');
+          toast.error('Failed to load participant information');
+        } finally {
+          setIsLoading(false);
         }
       }
     };
 
     fetchParticipant();
-  }, [projectId, participantId]);
+  }, [projectId, participantId, navigate]);
 
   const form = useForm<PersonalInformationFormValues>({
     resolver: zodResolver(personalInformationSchema),
@@ -96,11 +116,46 @@ const PersonalInformationForm: React.FC = () => {
     { id: 'certification', label: 'Certification', component: CertificationSection },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading participant information...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="text-destructive mb-4">{error}</p>
+            <Button onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Participants
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!participant) {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center h-64">
-          <p>Loading participant information...</p>
+          <div className="text-center">
+            <p className="mb-4">Participant not found</p>
+            <Button onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Participants
+            </Button>
+          </div>
         </div>
       </div>
     );
