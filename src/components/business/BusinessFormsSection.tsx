@@ -12,35 +12,35 @@ interface BusinessFormsSectionProps {
 const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business }) => {
   const getStatusIcon = (status: string | undefined) => {
     if (!status) {
-      return <FileText className="h-4 w-4 text-gray-600" />;
+      return <FileText className="h-3 w-3 text-gray-600" />;
     }
     
     switch (status.toLowerCase()) {
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-3 w-3 text-green-600" />;
       case 'in_progress':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
+        return <Clock className="h-3 w-3 text-yellow-600" />;
       case 'pending':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <AlertCircle className="h-3 w-3 text-red-600" />;
       default:
-        return <FileText className="h-4 w-4 text-gray-600" />;
+        return <FileText className="h-3 w-3 text-gray-600" />;
     }
   };
 
   const getStatusBadge = (status: string | undefined) => {
     if (!status) {
-      return <Badge variant="outline" className="text-xs">Not Started</Badge>;
+      return <Badge variant="outline" className="text-xs px-1 py-0">Not Started</Badge>;
     }
     
     switch (status.toLowerCase()) {
       case 'completed':
-        return <Badge variant="default" className="bg-green-100 text-green-800 text-xs">Completed</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800 text-xs px-1 py-0">Done</Badge>;
       case 'in_progress':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-xs">In Progress</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-xs px-1 py-0">Progress</Badge>;
       case 'pending':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800 text-xs">Pending</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800 text-xs px-1 py-0">Pending</Badge>;
       default:
-        return <Badge variant="outline" className="text-xs">Not Started</Badge>;
+        return <Badge variant="outline" className="text-xs px-1 py-0">Not Started</Badge>;
     }
   };
 
@@ -55,22 +55,22 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
 
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-primary" />
-          <CardTitle>Forms</CardTitle>
+          <FileText className="h-4 w-4 text-primary" />
+          <CardTitle className="text-lg">Forms</CardTitle>
         </div>
-        <CardDescription>Required forms and their completion status</CardDescription>
+        <CardDescription className="text-xs">Required forms and their completion status</CardDescription>
       </CardHeader>
       <CardContent>
         {forms.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
             {forms.map((form: any) => (
-              <div key={form.form_id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div key={form.form_id} className="flex items-center justify-between p-2 border rounded hover:bg-muted/30 transition-colors">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   {getStatusIcon(form.status)}
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-sm truncate">{form.name}</h4>
+                    <h4 className="font-medium text-xs truncate">{form.name}</h4>
                     <p className="text-xs text-muted-foreground">ID: {form.form_id}</p>
                   </div>
                 </div>
@@ -81,9 +81,9 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
             ))}
           </div>
         ) : (
-          <div className="text-center py-6">
-            <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No forms assigned to this business</p>
+          <div className="text-center py-4">
+            <FileText className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground">No forms assigned to this business</p>
           </div>
         )}
       </CardContent>
