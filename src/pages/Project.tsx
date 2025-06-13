@@ -17,13 +17,11 @@ import { ProjectBusinessStructure } from '@/components/project/ProjectBusinessSt
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Project = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
   
   const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
@@ -64,7 +62,11 @@ const Project = () => {
   };
 
   const handleManageBusinessStructure = () => {
-    setActiveTab('structure');
+    // Scroll to business structure section
+    const structureSection = document.getElementById('business-structure-section');
+    if (structureSection) {
+      structureSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
   
   return (
@@ -73,38 +75,39 @@ const Project = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="grid gap-6"
+        className="space-y-6"
       >
         <ProjectHeader 
           project={projectData} 
           onEdit={() => setEditDialogOpen(true)}
         />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="structure">Business Structure</TabsTrigger>
-            <TabsTrigger value="sections">Sections</TabsTrigger>
-          </TabsList>
+        {/* Project Overview Section */}
+        <div className="space-y-6">
+          <ProjectOverviewEnhanced 
+            project={projectData}
+            dashboardData={dashboardData}
+            participants={participantsData}
+          />
+        </div>
 
-          <TabsContent value="overview" className="mt-6 space-y-6">
-            <ProjectOverviewEnhanced 
-              project={projectData}
-              dashboardData={dashboardData}
-              participants={participantsData}
-            />
-          </TabsContent>
-
-          <TabsContent value="structure" className="mt-6">
+        {/* Business Structure Section */}
+        <div id="business-structure-section" className="space-y-6">
+          <div className="border-t pt-6">
+            <h2 className="text-2xl font-bold mb-4">Business Structure</h2>
             <ProjectBusinessStructure
               project={projectData}
               onAddOwner={() => console.log('Add owner')}
               onAddSeller={() => console.log('Add seller')}
               onAddAffiliatedBusiness={(ownerId) => console.log('Add affiliated business for owner:', ownerId)}
             />
-          </TabsContent>
+          </div>
+        </div>
 
-          <TabsContent value="sections" className="mt-6">
+        {/* Project Sections */}
+        <div className="space-y-6">
+          <div className="border-t pt-6">
+            <h2 className="text-2xl font-bold mb-4">Project Sections</h2>
             <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
               <ProjectSections
                 project={projectData}
@@ -114,8 +117,8 @@ const Project = () => {
                 onManageBusinessStructure={handleManageBusinessStructure}
               />
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
         
         {editDialogOpen && (
           <ProjectEditDialog
