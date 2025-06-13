@@ -32,7 +32,7 @@ const Layout: React.FC<LayoutProps> = ({
     <AlertProvider>
       <div className="min-h-screen w-full bg-background flex flex-col">
         {showHeader && <Header />}
-        <div className="flex-1 p-2 md:p-3 lg:p-4 max-w-none mx-auto w-full">
+        <div className="flex-1 p-2 md:p-3 lg:p-4 max-w-[90%] mx-auto w-full">
           {children}
         </div>
         <AnimatePresence>
