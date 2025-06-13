@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -7,13 +6,11 @@ import { ParticipantWithDetails } from '@/types/participant';
 import { LoanDistributionChart } from './LoanDistributionChart';
 import { Activity, Users } from 'lucide-react';
 import { getStatusString } from '@/types/project';
-
 interface ProjectOverviewEnhancedProps {
   project: Project;
   dashboardData: any;
   participants: ParticipantWithDetails[];
 }
-
 const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
   project,
   dashboardData,
@@ -23,28 +20,22 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount);
   };
-
   const totalLoanAmount = project.loan_types.reduce((sum, loan) => {
     if (typeof loan === 'string') return sum;
     return sum + (loan.amount || 0);
   }, 0);
-
-  const loanDistributionData = project.loan_types
-    .filter((loan): loan is { type: string; amount: number } => 
-      typeof loan !== 'string' && !!loan.amount
-    )
-    .map(loan => ({
-      name: loan.type,
-      value: loan.amount
-    }));
-
+  const loanDistributionData = project.loan_types.filter((loan): loan is {
+    type: string;
+    amount: number;
+  } => typeof loan !== 'string' && !!loan.amount).map(loan => ({
+    name: loan.type,
+    value: loan.amount
+  }));
   const recentActivities = dashboardData.recentActivity.slice(0, 3);
-  
-  return (
-    <Card>
+  return <Card>
       <CardHeader>
         <CardTitle>Project Overview</CardTitle>
         <CardDescription>Key project information and financial summary</CardDescription>
@@ -73,20 +64,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
                 </div>
               </div>
 
-              <div className="pt-4">
-                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Key Participants
-                </h4>
-                <div className="space-y-2">
-                  {participants.slice(0, 3).map((participant) => (
-                    <div key={participant.participant_id} className="flex justify-between text-sm">
-                      <span>{participant.name}</span>
-                      <span className="text-muted-foreground">{participant.role}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              
 
               <div className="pt-4">
                 <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
@@ -94,12 +72,10 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
                   Recent Activity
                 </h4>
                 <div className="space-y-2">
-                  {recentActivities.map((activity: any) => (
-                    <div key={activity.id} className="text-sm">
+                  {recentActivities.map((activity: any) => <div key={activity.id} className="text-sm">
                       <p>{activity.text}</p>
                       <p className="text-xs text-muted-foreground">{activity.time}</p>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -110,8 +86,6 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default ProjectOverviewEnhanced;
