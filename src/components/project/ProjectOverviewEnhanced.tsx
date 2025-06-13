@@ -66,18 +66,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
 
               
 
-              <div className="pt-4">
-                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                  <Activity className="h-4 w-4" />
-                  Recent Activity
-                </h4>
-                <div className="space-y-2">
-                  {recentActivities.map((activity: any) => <div key={activity.id} className="text-sm">
-                      <p>{activity.text}</p>
-                      <p className="text-xs text-muted-foreground">{activity.time}</p>
-                    </div>)}
-                </div>
-              </div>
+              
             </div>
           </div>
 
