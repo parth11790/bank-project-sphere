@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -6,11 +7,13 @@ import { ParticipantWithDetails } from '@/types/participant';
 import { LoanDistributionChart } from './LoanDistributionChart';
 import { Activity, Users } from 'lucide-react';
 import { getStatusString } from '@/types/project';
+
 interface ProjectOverviewEnhancedProps {
   project: Project;
   dashboardData: any;
   participants: ParticipantWithDetails[];
 }
+
 const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
   project,
   dashboardData,
@@ -23,10 +26,20 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
       maximumFractionDigits: 0
     }).format(amount);
   };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   const totalLoanAmount = project.loan_types.reduce((sum, loan) => {
     if (typeof loan === 'string') return sum;
     return sum + (loan.amount || 0);
   }, 0);
+
   const loanDistributionData = project.loan_types.filter((loan): loan is {
     type: string;
     amount: number;
@@ -34,17 +47,24 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
     name: loan.type,
     value: loan.amount
   }));
-  const recentActivities = dashboardData.recentActivity.slice(0, 3);
-  return <Card>
+
+  const numberOfLoans = project.loan_types.length;
+  const assignedTo = project.created_by_user?.name || 'Not assigned';
+  const requiredEquity = 'Not specified'; // This would come from project data when available
+
+  return (
+    <Card>
       <CardHeader>
         <CardTitle>Project Overview</CardTitle>
         <CardDescription>Key project information and financial summary</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            
-            <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Project Details */}
+          <div className="space-y-6">
+            {/* Basic Information */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Basic Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Status</p>
@@ -59,22 +79,77 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
                   <p className="font-medium">{project.location || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Total Loan</p>
-                  <p className="font-medium text-primary">{formatCurrency(totalLoanAmount)}</p>
+                  <p className="text-sm text-muted-foreground">Assigned To</p>
+                  <p className="font-medium">{assignedTo}</p>
                 </div>
               </div>
+            </div>
 
-              
+            <Separator />
 
-              
+            {/* Description */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Description</h3>
+              <p className="text-sm leading-relaxed">
+                {project.description || 'No description provided'}
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* Timeline */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Timeline</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Created Date</p>
+                  <p className="font-medium">{formatDate(project.created_at)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Last Updated</p>
+                  <p className="font-medium">{formatDate(project.updated_at || project.created_at)}</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div>
-            <LoanDistributionChart loanDistributionData={loanDistributionData} />
+          {/* Right Column - Financial Details & Chart */}
+          <div className="space-y-6">
+            {/* Financial Summary */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Financial Summary</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Total Loan Amount</p>
+                  <p className="font-medium text-primary text-lg">{formatCurrency(totalLoanAmount)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Required Equity</p>
+                  <p className="font-medium">{requiredEquity}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Number of Loans</p>
+                  <p className="font-medium">{numberOfLoans}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Participants</p>
+                  <p className="font-medium">{participants.length}</p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Loan Distribution Chart */}
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Loan Distribution</h3>
+              <LoanDistributionChart loanDistributionData={loanDistributionData} />
+            </div>
           </div>
         </div>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
+
 export default ProjectOverviewEnhanced;
