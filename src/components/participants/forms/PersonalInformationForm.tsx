@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -15,16 +15,37 @@ import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { EducationSection } from './components/EducationSection';
 import { EmploymentSection } from './components/EmploymentSection';
 import { ReferencesSection } from './components/ReferencesSection';
-import { BusinessExperienceSection } from './components/BusinessExperienceSection';
+import { BusinessOwnershipSection } from './components/BusinessOwnershipSection';
 import { MilitarySection } from './components/MilitarySection';
 import { BackgroundSection } from './components/BackgroundSection';
 import { CertificationSection } from './components/CertificationSection';
 import { ArrowLeft, Save } from 'lucide-react';
+import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
+import { Participant } from '@/types/participant';
 
 const PersonalInformationForm: React.FC = () => {
   const { projectId, participantId } = useParams<{ projectId: string; participantId: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('personal');
+  const [participant, setParticipant] = useState<Participant | null>(null);
+
+  useEffect(() => {
+    const fetchParticipant = async () => {
+      if (projectId && participantId) {
+        try {
+          const participants = await getParticipantsWithDetailsData(projectId);
+          const foundParticipant = participants.find(p => p.participant_id === participantId);
+          if (foundParticipant) {
+            setParticipant(foundParticipant);
+          }
+        } catch (error) {
+          console.error('Error fetching participant:', error);
+        }
+      }
+    };
+
+    fetchParticipant();
+  }, [projectId, participantId]);
 
   const form = useForm<PersonalInformationFormValues>({
     resolver: zodResolver(personalInformationSchema),
@@ -69,11 +90,21 @@ const PersonalInformationForm: React.FC = () => {
     { id: 'education', label: 'Education', component: EducationSection },
     { id: 'employment', label: 'Employment', component: EmploymentSection },
     { id: 'references', label: 'References', component: ReferencesSection },
-    { id: 'business', label: 'Business Experience', component: BusinessExperienceSection },
+    { id: 'business', label: 'Businesses & Ownership', component: BusinessOwnershipSection },
     { id: 'military', label: 'Military Service', component: MilitarySection },
     { id: 'background', label: 'Background', component: BackgroundSection },
     { id: 'certification', label: 'Certification', component: CertificationSection },
   ];
+
+  if (!participant) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-64">
+          <p>Loading participant information...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -90,14 +121,14 @@ const PersonalInformationForm: React.FC = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold">Personal Information Form</h1>
-              <p className="text-muted-foreground">Complete personal information for participant</p>
+              <p className="text-muted-foreground">Complete personal information for {participant.name}</p>
             </div>
           </div>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Personal Information & Resume</CardTitle>
+            <CardTitle>Personal Information & Resume - {participant.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -115,7 +146,7 @@ const PersonalInformationForm: React.FC = () => {
                     const Component = tab.component;
                     return (
                       <TabsContent key={tab.id} value={tab.id} className="mt-6">
-                        <Component form={form} />
+                        <Component form={form} participant={participant} />
                       </TabsContent>
                     );
                   })}
