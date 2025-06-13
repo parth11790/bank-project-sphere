@@ -1,3 +1,4 @@
+
 export interface BusinessFinancialData {
   data_id: string;
   business_id: string;
@@ -31,8 +32,11 @@ export interface Business {
   description?: string;
   website?: string;
   founding_date?: string;
+  founded_date?: string; // Added this property
   employee_count?: number;
   ein?: string;
+  industry?: string; // Added this property
+  email?: string; // Added this property
   
   // Additional business information fields
   dba_name?: string;
