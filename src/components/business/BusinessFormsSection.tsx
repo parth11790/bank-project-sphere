@@ -29,18 +29,18 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
 
   const getStatusBadge = (status: string | undefined) => {
     if (!status) {
-      return <Badge variant="outline">Not Started</Badge>;
+      return <Badge variant="outline" className="text-xs">Not Started</Badge>;
     }
     
     switch (status.toLowerCase()) {
       case 'completed':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Completed</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800 text-xs">Completed</Badge>;
       case 'in_progress':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">In Progress</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-xs">In Progress</Badge>;
       case 'pending':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">Pending</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800 text-xs">Pending</Badge>;
       default:
-        return <Badge variant="outline">Not Started</Badge>;
+        return <Badge variant="outline" className="text-xs">Not Started</Badge>;
     }
   };
 
@@ -55,7 +55,7 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-primary" />
           <CardTitle>Forms</CardTitle>
@@ -64,26 +64,26 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
       </CardHeader>
       <CardContent>
         {forms.length > 0 ? (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {forms.map((form: any) => (
-              <div key={form.form_id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-3">
+              <div key={form.form_id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
                   {getStatusIcon(form.status)}
-                  <div>
-                    <h4 className="font-medium text-sm">{form.name}</h4>
-                    <p className="text-xs text-muted-foreground">Form ID: {form.form_id}</p>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-medium text-sm truncate">{form.name}</h4>
+                    <p className="text-xs text-muted-foreground">ID: {form.form_id}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="ml-2 flex-shrink-0">
                   {getStatusBadge(form.status)}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No forms assigned to this business</p>
+          <div className="text-center py-6">
+            <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">No forms assigned to this business</p>
           </div>
         )}
       </CardContent>
