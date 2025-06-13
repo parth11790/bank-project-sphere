@@ -6,9 +6,9 @@ import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
 import { getProjectById } from '@/services';
 import { Project } from '@/types/project';
-import BusinessInfoSection from '@/components/business/BusinessInfoSection';
-import BusinessFormsSection from '@/components/business/BusinessFormsSection';
-import BusinessOwnershipSection from '@/components/business/BusinessOwnershipSection';
+import EditableBusinessInfoSection from '@/components/business/EditableBusinessInfoSection';
+import EditableBusinessFormsSection from '@/components/business/EditableBusinessFormsSection';
+import EditableBusinessOwnershipSection from '@/components/business/EditableBusinessOwnershipSection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
@@ -90,13 +90,13 @@ const BusinessInformation = () => {
         </div>
 
         {/* Business Information Section */}
-        <BusinessInfoSection business={business} />
+        <EditableBusinessInfoSection business={business} />
 
         {/* Forms Section */}
-        <BusinessFormsSection business={business} />
+        <EditableBusinessFormsSection business={business} />
 
         {/* Ownership Section */}
-        <BusinessOwnershipSection projectId={projectId || ''} owners={projectData.owners || []} />
+        <EditableBusinessOwnershipSection projectId={projectId || ''} owners={projectData.owners || []} />
       </motion.div>
     </Layout>
   );
