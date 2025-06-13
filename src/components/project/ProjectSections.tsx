@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, BarChart3, FileText, Building2 } from 'lucide-react';
+import { Users, BarChart3, FileText } from 'lucide-react';
 import { Project } from '@/types/project';
 
 interface ProjectSectionsProps {
@@ -21,15 +21,6 @@ export const ProjectSections: React.FC<ProjectSectionsProps> = ({
   onManageBusinessStructure
 }) => {
   const sections = [
-    {
-      id: 'business-structure',
-      title: 'Business Structure',
-      description: 'Manage main business, owners, sellers, and their affiliated businesses',
-      icon: Building2,
-      action: onManageBusinessStructure || (() => {}),
-      buttonText: 'Manage Structure',
-      enabled: true
-    },
     {
       id: 'gather-info',
       title: 'Gather Information',
@@ -60,7 +51,7 @@ export const ProjectSections: React.FC<ProjectSectionsProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {sections.map((section) => (
         <Card key={section.id} className="relative">
           <CardHeader className="pb-3">
