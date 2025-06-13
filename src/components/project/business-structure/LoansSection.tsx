@@ -43,8 +43,60 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
     if (loanType.toLowerCase().includes('7(a)')) return 'Business acquisition';
     if (loanType.toLowerCase().includes('equipment')) return 'Equipment financing';
     if (loanType.toLowerCase().includes('working') || loanType.toLowerCase().includes('operating')) return 'Working capital';
+    if (loanType.toLowerCase().includes('industrial') || loanType.toLowerCase().includes('bond')) return 'Manufacturing expansion';
     return 'General business purposes';
   };
+
+  // Get loans from both the legacy loan_types and new loans structure
+  const getAllLoans = () => {
+    const loans = [];
+    
+    // Add loans from the new structure
+    if (project.loans && project.loans.length > 0) {
+      project.loans.forEach(loan => {
+        loans.push({
+          id: loan.loan_id,
+          type: loan.loan_type,
+          amount: loan.amount,
+          term: loan.term,
+          rate: loan.rate,
+          status: loan.status,
+          purpose: getLoanPurpose(loan.loan_type)
+        });
+      });
+    }
+    
+    // Add loans from legacy loan_types if no new structure exists
+    if (loans.length === 0 && project.loan_types && project.loan_types.length > 0) {
+      project.loan_types.forEach((loanType, index) => {
+        if (typeof loanType === 'object') {
+          loans.push({
+            id: `legacy_${index}`,
+            type: loanType.type,
+            amount: loanType.amount,
+            term: loanType.term,
+            rate: loanType.rate,
+            status: 'active',
+            purpose: getLoanPurpose(loanType.type)
+          });
+        } else {
+          loans.push({
+            id: `legacy_string_${index}`,
+            type: loanType,
+            amount: 0,
+            term: null,
+            rate: null,
+            status: 'active',
+            purpose: getLoanPurpose(loanType)
+          });
+        }
+      });
+    }
+    
+    return loans;
+  };
+
+  const loans = getAllLoans();
 
   return (
     <Card>
@@ -62,7 +114,7 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
         <CardDescription>All loans associated with this project</CardDescription>
       </CardHeader>
       <CardContent>
-        {project.loans && project.loans.length > 0 ? (
+        {loans && loans.length > 0 ? (
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -78,14 +130,14 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {project.loans.map((loan) => (
-                  <TableRow key={loan.loan_id}>
-                    <TableCell className="font-medium">{loan.loan_type}</TableCell>
+                {loans.map((loan) => (
+                  <TableRow key={loan.id}>
+                    <TableCell className="font-medium">{loan.type}</TableCell>
                     <TableCell>{formatCurrency(loan.amount)}</TableCell>
-                    <TableCell>{loan.term ? `${loan.term} months` : 'N/A'}</TableCell>
+                    <TableCell>{loan.term ? `${loan.term} years` : 'N/A'}</TableCell>
                     <TableCell>{loan.rate ? `${loan.rate}%` : 'N/A'}</TableCell>
-                    <TableCell>{getLoanPurpose(loan.loan_type)}</TableCell>
-                    <TableCell>{getSBAGuaranty(loan.loan_type)}</TableCell>
+                    <TableCell>{loan.purpose}</TableCell>
+                    <TableCell>{getSBAGuaranty(loan.type)}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(loan.status)}>
                         {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
