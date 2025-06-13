@@ -1,4 +1,3 @@
-
 import { Project } from './types';
 
 // Update projects to include the new business structure
@@ -27,6 +26,14 @@ export const projects: Project[] = [
       website: 'https://mainstreetrestaurant.com',
       founding_date: '2015-03-01',
       employee_count: 25,
+      ein: '12-3456789',
+      address: {
+        street: '123 Main Street',
+        city: 'Chicago',
+        state: 'IL',
+        zip_code: '60601',
+        country: 'USA'
+      },
       documents: [
         { document_id: 'doc_1', name: 'Articles of Organization' },
         { document_id: 'doc_2', name: 'Operating Agreement' }
@@ -178,6 +185,14 @@ export const projects: Project[] = [
       website: 'https://riversidecommercial.com',
       founding_date: '2020-01-15',
       employee_count: 12,
+      ein: '23-4567890',
+      address: {
+        street: '456 Riverside Drive',
+        city: 'Denver',
+        state: 'CO',
+        zip_code: '80202',
+        country: 'USA'
+      },
       documents: [
         { document_id: 'doc_3', name: 'LLC Operating Agreement' },
         { document_id: 'doc_4', name: 'Property Acquisition Plans' }
@@ -323,6 +338,14 @@ export const projects: Project[] = [
       website: 'https://harvestvalleyfarms.com',
       founding_date: '2018-05-10',
       employee_count: 18,
+      ein: '34-5678901',
+      address: {
+        street: '789 Valley Road',
+        city: 'Boise',
+        state: 'ID',
+        zip_code: '83702',
+        country: 'USA'
+      },
       documents: [
         { document_id: 'doc_5', name: 'Agricultural License' },
         { document_id: 'doc_6', name: 'Organic Certification' }
@@ -477,6 +500,14 @@ export const projects: Project[] = [
       website: 'https://harborviewhotel.com',
       founding_date: '2019-08-20',
       employee_count: 45,
+      ein: '45-6789012',
+      address: {
+        street: '1001 Harbor View Drive',
+        city: 'Portland',
+        state: 'OR',
+        zip_code: '97201',
+        country: 'USA'
+      },
       documents: [
         { document_id: 'doc_7', name: 'Hotel Operating License' },
         { document_id: 'doc_8', name: 'Tourism Board Certification' }
@@ -633,6 +664,14 @@ export const projects: Project[] = [
       website: 'https://maplestreetmfg.com',
       founding_date: '2016-11-01',
       employee_count: 85,
+      ein: '56-7890123',
+      address: {
+        street: '2500 Maple Street Industrial Park',
+        city: 'Cleveland',
+        state: 'OH',
+        zip_code: '44114',
+        country: 'USA'
+      },
       documents: [
         { document_id: 'doc_9', name: 'Manufacturing License' },
         { document_id: 'doc_10', name: 'ISO Certification' }

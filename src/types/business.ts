@@ -33,6 +33,14 @@ export interface Business {
   website?: string;
   founding_date?: string;
   employee_count?: number;
+  ein?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    country?: string;
+  };
   
   // Owner information (if this business is owned by someone)
   owner_id?: string;
