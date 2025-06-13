@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Building, MapPin, Phone, Mail, Globe, Calendar, Edit, Save, X } from 'lucide-react';
 import { Business } from '@/types/business';
 import { toast } from 'sonner';
@@ -37,6 +38,21 @@ const EditableBusinessInfoSection: React.FC<EditableBusinessInfoSectionProps> = 
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString();
   };
+
+  const ViewField: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-help">
+            {children}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{label}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 
   return (
     <Card>
@@ -71,133 +87,159 @@ const EditableBusinessInfoSection: React.FC<EditableBusinessInfoSectionProps> = 
           {/* Left Column */}
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Business Name</label>
               {isEditing ? (
-                <Input 
-                  value={editedBusiness.name}
-                  onChange={(e) => updateField('name', e.target.value)}
-                  className="mt-1"
-                />
+                <>
+                  <label className="text-sm font-medium text-muted-foreground">Business Name</label>
+                  <Input 
+                    value={editedBusiness.name}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    className="mt-1"
+                  />
+                </>
               ) : (
-                <p className="text-sm font-medium">{business.name}</p>
+                <ViewField label="Business Name">
+                  <p className="text-sm font-medium">{business.name}</p>
+                </ViewField>
               )}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Entity Type</label>
               {isEditing ? (
-                <Select value={editedBusiness.entity_type} onValueChange={(value) => updateField('entity_type', value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="LLC">LLC</SelectItem>
-                    <SelectItem value="Corporation">Corporation</SelectItem>
-                    <SelectItem value="Partnership">Partnership</SelectItem>
-                    <SelectItem value="Sole Proprietorship">Sole Proprietorship</SelectItem>
-                  </SelectContent>
-                </Select>
+                <>
+                  <label className="text-sm font-medium text-muted-foreground">Entity Type</label>
+                  <Select value={editedBusiness.entity_type} onValueChange={(value) => updateField('entity_type', value)}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="LLC">LLC</SelectItem>
+                      <SelectItem value="Corporation">Corporation</SelectItem>
+                      <SelectItem value="Partnership">Partnership</SelectItem>
+                      <SelectItem value="Sole Proprietorship">Sole Proprietorship</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
               ) : (
-                <Badge variant="outline" className="mt-1">{business.entity_type}</Badge>
+                <ViewField label="Entity Type">
+                  <Badge variant="outline" className="mt-1">{business.entity_type}</Badge>
+                </ViewField>
               )}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Industry</label>
               {isEditing ? (
-                <Input 
-                  value={editedBusiness.industry || ''}
-                  onChange={(e) => updateField('industry', e.target.value)}
-                  className="mt-1"
-                />
+                <>
+                  <label className="text-sm font-medium text-muted-foreground">Industry</label>
+                  <Input 
+                    value={editedBusiness.industry || ''}
+                    onChange={(e) => updateField('industry', e.target.value)}
+                    className="mt-1"
+                  />
+                </>
               ) : (
-                <p className="text-sm">{business.industry || 'Not specified'}</p>
+                <ViewField label="Industry">
+                  <p className="text-sm">{business.industry || 'Not specified'}</p>
+                </ViewField>
               )}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Founded</label>
-              <div className="flex items-center gap-1 mt-1">
-                <Calendar className="h-3 w-3 text-muted-foreground" />
-                <span className="text-sm">{formatDate(business.founded_date)}</span>
-              </div>
+              <ViewField label="Founded">
+                <div className="flex items-center gap-1 mt-1">
+                  <Calendar className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-sm">{formatDate(business.founded_date)}</span>
+                </div>
+              </ViewField>
             </div>
           </div>
 
           {/* Right Column */}
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Address</label>
-              {business.address ? (
-                <div className="flex items-start gap-1 mt-1">
-                  <MapPin className="h-3 w-3 text-muted-foreground mt-0.5" />
-                  <div className="text-sm">
-                    <p>{business.address.street}</p>
-                    <p>{business.address.city}, {business.address.state} {business.address.zip_code}</p>
+              <ViewField label="Address">
+                {business.address ? (
+                  <div className="flex items-start gap-1 mt-1">
+                    <MapPin className="h-3 w-3 text-muted-foreground mt-0.5" />
+                    <div className="text-sm">
+                      <p>{business.address.street}</p>
+                      <p>{business.address.city}, {business.address.state} {business.address.zip_code}</p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground mt-1">No address provided</p>
+                )}
+              </ViewField>
+            </div>
+
+            <div>
+              {isEditing ? (
+                <>
+                  <label className="text-sm font-medium text-muted-foreground">Phone</label>
+                  <Input 
+                    value={editedBusiness.phone || ''}
+                    onChange={(e) => updateField('phone', e.target.value)}
+                    className="mt-1"
+                  />
+                </>
               ) : (
-                <p className="text-sm text-muted-foreground mt-1">No address provided</p>
+                <ViewField label="Phone">
+                  {business.phone ? (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Phone className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{business.phone}</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mt-1">No phone provided</p>
+                  )}
+                </ViewField>
               )}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Phone</label>
               {isEditing ? (
-                <Input 
-                  value={editedBusiness.phone || ''}
-                  onChange={(e) => updateField('phone', e.target.value)}
-                  className="mt-1"
-                />
+                <>
+                  <label className="text-sm font-medium text-muted-foreground">Email</label>
+                  <Input 
+                    value={editedBusiness.email || ''}
+                    onChange={(e) => updateField('email', e.target.value)}
+                    className="mt-1"
+                  />
+                </>
               ) : (
-                business.phone ? (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Phone className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-sm">{business.phone}</span>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-1">No phone provided</p>
-                )
+                <ViewField label="Email">
+                  {business.email ? (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Mail className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{business.email}</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mt-1">No email provided</p>
+                  )}
+                </ViewField>
               )}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
               {isEditing ? (
-                <Input 
-                  value={editedBusiness.email || ''}
-                  onChange={(e) => updateField('email', e.target.value)}
-                  className="mt-1"
-                />
+                <>
+                  <label className="text-sm font-medium text-muted-foreground">Website</label>
+                  <Input 
+                    value={editedBusiness.website || ''}
+                    onChange={(e) => updateField('website', e.target.value)}
+                    className="mt-1"
+                  />
+                </>
               ) : (
-                business.email ? (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Mail className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-sm">{business.email}</span>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-1">No email provided</p>
-                )
-              )}
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Website</label>
-              {isEditing ? (
-                <Input 
-                  value={editedBusiness.website || ''}
-                  onChange={(e) => updateField('website', e.target.value)}
-                  className="mt-1"
-                />
-              ) : (
-                business.website ? (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Globe className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-sm">{business.website}</span>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-1">No website provided</p>
-                )
+                <ViewField label="Website">
+                  {business.website ? (
+                    <div className="flex items-center gap-1 mt-1">
+                      <Globe className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{business.website}</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mt-1">No website provided</p>
+                  )}
+                </ViewField>
               )}
             </div>
           </div>
@@ -205,16 +247,20 @@ const EditableBusinessInfoSection: React.FC<EditableBusinessInfoSectionProps> = 
 
         {business.description && (
           <div className="mt-4 pt-4 border-t">
-            <label className="text-sm font-medium text-muted-foreground">Description</label>
             {isEditing ? (
-              <Textarea 
-                value={editedBusiness.description || ''}
-                onChange={(e) => updateField('description', e.target.value)}
-                className="mt-1"
-                rows={3}
-              />
+              <>
+                <label className="text-sm font-medium text-muted-foreground">Description</label>
+                <Textarea 
+                  value={editedBusiness.description || ''}
+                  onChange={(e) => updateField('description', e.target.value)}
+                  className="mt-1"
+                  rows={3}
+                />
+              </>
             ) : (
-              <p className="text-sm mt-1">{business.description}</p>
+              <ViewField label="Description">
+                <p className="text-sm mt-1">{business.description}</p>
+              </ViewField>
             )}
           </div>
         )}

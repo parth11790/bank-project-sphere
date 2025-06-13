@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Users, User, Building, Phone, Mail, MapPin, Plus, Edit, Save, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -58,6 +59,19 @@ const EditableBusinessOwnershipSection: React.FC<EditableBusinessOwnershipSectio
     );
   };
 
+  const TableHeaderWithTooltip: React.FC<{ label: string; tooltip: string }> = ({ label, tooltip }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <TableHead className="cursor-help">{isEditing ? label : label.split(' ')[0]}</TableHead>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -104,14 +118,14 @@ const EditableBusinessOwnershipSection: React.FC<EditableBusinessOwnershipSectio
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Ownership %</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead>Affiliated Businesses</TableHead>
+                    <TableHeaderWithTooltip label="Name" tooltip="Owner's full name" />
+                    <TableHeaderWithTooltip label="Email" tooltip="Contact email address" />
+                    <TableHeaderWithTooltip label="Type" tooltip="Individual or Business entity" />
+                    <TableHeaderWithTooltip label="Role" tooltip="Role or title in the business" />
+                    <TableHeaderWithTooltip label="Ownership %" tooltip="Percentage of business ownership" />
+                    <TableHeaderWithTooltip label="Phone" tooltip="Contact phone number" />
+                    <TableHeaderWithTooltip label="Address" tooltip="Residential or business address" />
+                    <TableHeaderWithTooltip label="Affiliated Businesses" tooltip="Number of affiliated businesses" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>

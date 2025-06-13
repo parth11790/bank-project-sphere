@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FileText, CheckCircle, Clock, AlertCircle, Plus, Edit, Save, X } from 'lucide-react';
 import { Business } from '@/types/business';
 import { cn } from '@/lib/utils';
@@ -136,6 +137,58 @@ const EditableBusinessFormsSection: React.FC<EditableBusinessFormsSectionProps> 
     );
   };
 
+  const FormRow: React.FC<{ form: any }> = ({ form }) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div 
+            className={cn(
+              "flex items-center justify-between p-2 rounded-md transition-colors cursor-help",
+              !isEditing && "hover:bg-muted/80",
+              form.status === 'completed' || form.status === 'submitted' ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted'
+            )}
+            onClick={() => handleFormClick(form.form_id, form.name)}
+          >
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              {getStatusIcon(form.status)}
+              <div className="min-w-0 flex-1">
+                <span className="text-sm font-medium truncate block">{form.name}</span>
+                {isEditing && <span className="text-xs text-muted-foreground">ID: {form.form_id}</span>}
+              </div>
+            </div>
+            <div className="ml-2 flex-shrink-0">
+              {isEditing ? (
+                <Select 
+                  value={form.status || 'not_started'} 
+                  onValueChange={(value) => updateFormStatus(form.form_id, value)}
+                >
+                  <SelectTrigger className="h-7 w-32 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="not_started">Not Started</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="submitted">Submitted</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                getStatusBadge(form.status)
+              )}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <div className="text-xs">
+            <p><strong>Form ID:</strong> {form.form_id}</p>
+            <p><strong>Status:</strong> {form.status || 'Not Started'}</p>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
   return (
     <>
       <Card>
@@ -187,44 +240,7 @@ const EditableBusinessFormsSection: React.FC<EditableBusinessFormsSectionProps> 
           {forms.length > 0 ? (
             <div className="grid gap-2">
               {forms.map((form: any) => (
-                <div 
-                  key={form.form_id} 
-                  className={cn(
-                    "flex items-center justify-between p-2 rounded-md transition-colors",
-                    !isEditing && "cursor-pointer hover:bg-muted/80",
-                    form.status === 'completed' || form.status === 'submitted' ? 'bg-green-50 dark:bg-green-950/30' : 'bg-muted'
-                  )}
-                  onClick={() => handleFormClick(form.form_id, form.name)}
-                >
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {getStatusIcon(form.status)}
-                    <div className="min-w-0 flex-1">
-                      <span className="text-sm font-medium truncate block">{form.name}</span>
-                      <span className="text-xs text-muted-foreground">ID: {form.form_id}</span>
-                    </div>
-                  </div>
-                  <div className="ml-2 flex-shrink-0">
-                    {isEditing ? (
-                      <Select 
-                        value={form.status || 'not_started'} 
-                        onValueChange={(value) => updateFormStatus(form.form_id, value)}
-                      >
-                        <SelectTrigger className="h-7 w-32 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="not_started">Not Started</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
-                          <SelectItem value="submitted">Submitted</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      getStatusBadge(form.status)
-                    )}
-                  </div>
-                </div>
+                <FormRow key={form.form_id} form={form} />
               ))}
             </div>
           ) : (
