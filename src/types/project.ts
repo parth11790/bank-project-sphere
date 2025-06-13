@@ -32,14 +32,14 @@ export interface Project {
   main_business?: Business;
   loans?: Loan[];
   
-  // Sellers associated with project
+  // Owners and sellers
+  owners?: Owner[];
   sellers?: Seller[];
   
   // Legacy participants for backward compatibility
   participants?: {
-    id: string;
+    userId: string;
     role: string;
-    user: User;
   }[];
   businesses?: Business[];
   documentIds?: string[];

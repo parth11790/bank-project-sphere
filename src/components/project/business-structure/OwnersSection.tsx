@@ -5,44 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UserCheck, Plus } from 'lucide-react';
-
-interface Owner {
-  owner_id: string;
-  name: string;
-  type: 'individual' | 'business';
-  ownership_percentage: number;
-  role: string;
-  email: string;
-}
+import { Project } from '@/types/project';
 
 interface OwnersSectionProps {
+  project: Project;
   onAddOwner: () => void;
   onAddAffiliatedBusiness: (ownerId: string) => void;
 }
 
 const OwnersSection: React.FC<OwnersSectionProps> = ({
+  project,
   onAddOwner,
   onAddAffiliatedBusiness
 }) => {
-  // Mock owners data - in a real app this would come from props
-  const mockOwners: Owner[] = [
-    {
-      owner_id: 'owner_1',
-      name: 'John Smith',
-      type: 'individual',
-      ownership_percentage: 60,
-      role: 'CEO',
-      email: 'john.smith@example.com'
-    },
-    {
-      owner_id: 'owner_2', 
-      name: 'Sarah Johnson',
-      type: 'individual',
-      ownership_percentage: 40,
-      role: 'COO',
-      email: 'sarah.johnson@example.com'
-    }
-  ];
+  const owners = project.owners || [];
 
   return (
     <Card>
@@ -60,7 +36,7 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
         <CardDescription>Ownership structure of the main business</CardDescription>
       </CardHeader>
       <CardContent>
-        {mockOwners && mockOwners.length > 0 ? (
+        {owners && owners.length > 0 ? (
           <div className="space-y-4">
             <div className="rounded-md border">
               <Table>
@@ -76,20 +52,22 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockOwners.map((owner) => (
+                  {owners.map((owner) => (
                     <TableRow key={owner.owner_id}>
                       <TableCell className="font-medium">{owner.name}</TableCell>
-                      <TableCell>{owner.email}</TableCell>
+                      <TableCell>{owner.email || '-'}</TableCell>
                       <TableCell>
                         <Badge variant="outline">
                           {owner.type === 'individual' ? 'Individual' : 'Business'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{owner.role}</TableCell>
+                      <TableCell>{owner.role || '-'}</TableCell>
                       <TableCell className="text-right font-bold text-primary">
                         {owner.ownership_percentage}%
                       </TableCell>
-                      <TableCell className="text-center">0</TableCell>
+                      <TableCell className="text-center">
+                        {owner.affiliated_businesses ? owner.affiliated_businesses.length : 0}
+                      </TableCell>
                       <TableCell>
                         {owner.type === 'individual' && (
                           <Button 
@@ -112,7 +90,7 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
               <div className="flex justify-between items-center">
                 <span className="font-medium">Total Ownership:</span>
                 <span className="text-lg font-bold text-primary">
-                  {mockOwners.reduce((sum, owner) => sum + owner.ownership_percentage, 0)}%
+                  {owners.reduce((sum, owner) => sum + owner.ownership_percentage, 0)}%
                 </span>
               </div>
             </div>

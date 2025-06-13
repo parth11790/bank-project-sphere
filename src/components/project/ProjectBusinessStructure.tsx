@@ -23,6 +23,7 @@ const ProjectBusinessStructure: React.FC<ProjectBusinessStructureProps> = ({
     <div className="space-y-6">
       <MainBusinessSection project={project} />
       <OwnersSection 
+        project={project}
         onAddOwner={onAddOwner}
         onAddAffiliatedBusiness={onAddAffiliatedBusiness}
       />
