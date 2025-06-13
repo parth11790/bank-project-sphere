@@ -2,7 +2,9 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, User, Building, Phone, Mail, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Users, User, Building, Phone, Mail, MapPin, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface BusinessOwnershipSectionProps {
@@ -39,115 +41,106 @@ const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({ pro
             <Users className="h-4 w-4 text-primary" />
             <CardTitle className="text-lg">Ownership Structure</CardTitle>
           </div>
-          <Badge variant="outline" className="text-xs">
-            Total: {getTotalOwnership()}%
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              Total: {getTotalOwnership()}%
+            </Badge>
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Owner
+            </Button>
+          </div>
         </div>
         <CardDescription className="text-xs">Business ownership breakdown and key stakeholders</CardDescription>
       </CardHeader>
       <CardContent className="pt-2">
         {owners && owners.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {owners.map((owner) => (
-              <div 
-                key={owner.owner_id} 
-                className="p-3 border rounded cursor-pointer hover:bg-muted/30 transition-colors"
-                onClick={() => handleOwnerClick(owner.owner_id)}
-              >
-                {/* Header with name and ownership */}
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 flex-shrink-0">
-                      {owner.type === 'individual' ? (
-                        <User className="h-3 w-3 text-primary" />
-                      ) : (
-                        <Building className="h-3 w-3 text-primary" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-medium text-sm truncate">{owner.name}</h4>
-                      <p className="text-xs text-muted-foreground">{owner.role}</p>
-                    </div>
-                  </div>
-                  <div className="text-right flex-shrink-0 ml-2">
-                    <div className="text-sm font-bold text-primary">
-                      {owner.ownership_percentage}%
-                    </div>
-                    <p className="text-xs text-muted-foreground capitalize">{owner.type}</p>
-                  </div>
-                </div>
-
-                {/* Contact Information */}
-                <div className="grid grid-cols-1 gap-1 mb-2 text-xs">
-                  {owner.email && (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Mail className="h-3 w-3" />
-                      <span className="truncate">{owner.email}</span>
-                    </div>
-                  )}
-                  {owner.phone && (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Phone className="h-3 w-3" />
-                      <span>{owner.phone}</span>
-                    </div>
-                  )}
-                  {owner.address && (
-                    <div className="flex items-start gap-1 text-muted-foreground">
-                      <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                      <span className="break-words">{formatAddress(owner.address)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Additional Information */}
-                {(owner.ssn || owner.date_of_birth) && (
-                  <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t">
-                    {owner.ssn && (
-                      <div>
-                        <span className="text-muted-foreground">SSN: </span>
-                        <span>***-**-{owner.ssn.slice(-4)}</span>
-                      </div>
-                    )}
-                    {owner.date_of_birth && (
-                      <div>
-                        <span className="text-muted-foreground">DOB: </span>
-                        <span>{new Date(owner.date_of_birth).toLocaleDateString()}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {/* Affiliated Businesses */}
-                {owner.affiliated_businesses && owner.affiliated_businesses.length > 0 && (
-                  <div className="mt-2 pt-2 border-t">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">
-                      Affiliated ({owner.affiliated_businesses.length})
-                    </p>
-                    <div className="space-y-1">
-                      {owner.affiliated_businesses.slice(0, 2).map((business: any) => (
-                        <div key={business.business_id} className="flex items-center gap-1 p-1 bg-muted/20 rounded text-xs">
-                          <Building className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                          <span className="truncate flex-1 text-xs">{business.name}</span>
-                          <Badge variant="outline" className="text-xs px-1 py-0 flex-shrink-0">
-                            {business.entity_type}
+          <div className="space-y-4">
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Ownership %</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Address</TableHead>
+                    <TableHead>Affiliated Businesses</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {owners.map((owner) => (
+                    <TableRow 
+                      key={owner.owner_id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleOwnerClick(owner.owner_id)}
+                    >
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 flex-shrink-0">
+                            {owner.type === 'individual' ? (
+                              <User className="h-3 w-3 text-primary" />
+                            ) : (
+                              <Building className="h-3 w-3 text-primary" />
+                            )}
+                          </div>
+                          {owner.name}
+                        </div>
+                      </TableCell>
+                      <TableCell>{owner.email || '-'}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="capitalize">
+                          {owner.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{owner.role || '-'}</TableCell>
+                      <TableCell className="text-right font-bold text-primary">
+                        {owner.ownership_percentage}%
+                      </TableCell>
+                      <TableCell>
+                        {owner.phone ? (
+                          <div className="flex items-center gap-1 text-xs">
+                            <Phone className="h-3 w-3" />
+                            {owner.phone}
+                          </div>
+                        ) : '-'}
+                      </TableCell>
+                      <TableCell className="max-w-48">
+                        {owner.address ? (
+                          <div className="flex items-start gap-1 text-xs">
+                            <MapPin className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                            <span className="truncate">{formatAddress(owner.address)}</span>
+                          </div>
+                        ) : '-'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center">
+                          <Badge variant="secondary" className="text-xs">
+                            {owner.affiliated_businesses ? owner.affiliated_businesses.length : 0}
                           </Badge>
                         </div>
-                      ))}
-                      {owner.affiliated_businesses.length > 2 && (
-                        <div className="text-xs text-muted-foreground text-center py-0.5">
-                          +{owner.affiliated_businesses.length - 2} more
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            
+            <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Total Ownership:</span>
+                <span className="text-lg font-bold text-primary">
+                  {getTotalOwnership()}%
+                </span>
               </div>
-            ))}
+            </div>
           </div>
         ) : (
-          <div className="text-center py-4">
-            <Users className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-            <p className="text-xs text-muted-foreground">No ownership information available</p>
+          <div className="text-center py-8">
+            <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No ownership information available</p>
           </div>
         )}
       </CardContent>
