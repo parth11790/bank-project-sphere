@@ -33,6 +33,11 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  // Add safety check for participant
+  if (!participant) {
+    return null;
+  }
+
   const handleNameClick = () => {
     // Navigate to personal information form for this participant
     const currentPath = window.location.pathname;
@@ -75,8 +80,10 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
         {participant.business ? (
           <BusinessSection
             participant={participant}
-            onAssignBusinessDocuments={onAssignBusinessDocuments}
-            onAssignBusinessForms={onAssignBusinessForms}
+            onAssignBusinessDocuments={onAssignBusinessDocuments ? 
+              () => onAssignBusinessDocuments(participant) : undefined}
+            onAssignBusinessForms={onAssignBusinessForms ? 
+              () => onAssignBusinessForms(participant) : undefined}
             formTemplates={formTemplates}
           />
         ) : (

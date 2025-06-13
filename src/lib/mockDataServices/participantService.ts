@@ -46,7 +46,16 @@ export const getParticipantsWithDetailsData = async (projectId: string): Promise
   
   return project.participants.map(participant => {
     const user = users.find(u => u.user_id === participant.userId);
-    if (!user) return null;
+    if (!user) {
+      console.warn(`User not found for participant: ${participant.userId}`);
+      return null;
+    }
+    
+    // Add safety check for user data
+    if (!user.name || !user.email) {
+      console.warn(`Invalid user data for participant: ${participant.userId}`, user);
+      return null;
+    }
     
     // Find if this participant has any businesses 
     const userBusinesses = businesses.filter(b => b.owner_id === user.user_id);

@@ -17,12 +17,18 @@ export const useParticipantData = (projectId: string) => {
       setIsLoading(true);
       const participantsData = await getParticipantsWithDetailsData(projectId);
       
-      // Split participants into their roles
+      // Split participants into their roles with safety checks
       const buyersList: Participant[] = [];
       const sellersList: Participant[] = [];
       const bankList: Participant[] = [];
       
       participantsData.forEach(participant => {
+        // Add safety check for participant data
+        if (!participant || !participant.name) {
+          console.warn('Invalid participant data:', participant);
+          return;
+        }
+        
         if (participant.role === 'buyer') {
           buyersList.push(participant);
         } else if (participant.role === 'seller') {
