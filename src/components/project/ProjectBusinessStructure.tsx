@@ -2,9 +2,8 @@
 import React from 'react';
 import { Project } from '@/types/project';
 import MainBusinessSection from './business-structure/MainBusinessSection';
-import OwnersSection from './business-structure/OwnersSection';
 import LoansSection from './business-structure/LoansSection';
-import SellersSection from './business-structure/SellersSection';
+import EditableBusinessAcquisitionSection from '@/components/business/EditableBusinessAcquisitionSection';
 
 interface ProjectBusinessStructureProps {
   project: Project;
@@ -22,16 +21,8 @@ const ProjectBusinessStructure: React.FC<ProjectBusinessStructureProps> = ({
   return (
     <div className="space-y-6">
       <MainBusinessSection project={project} />
-      <OwnersSection 
-        project={project}
-        onAddOwner={onAddOwner}
-        onAddAffiliatedBusiness={onAddAffiliatedBusiness}
-      />
       <LoansSection project={project} />
-      <SellersSection 
-        project={project} 
-        onAddSeller={onAddSeller} 
-      />
+      <EditableBusinessAcquisitionSection projectId={project.project_id} />
     </div>
   );
 };
