@@ -1,3 +1,4 @@
+
 import { FormTemplate, Document } from '@/types/form';
 
 export const individualFormsData: FormTemplate[] = [
@@ -14,20 +15,24 @@ export const individualFormsData: FormTemplate[] = [
 ];
 
 export const businessFormsData: FormTemplate[] = [
-  { form_id: "form_8", name: "Tax Returns", entity_type: "business", status: "submitted" },
+  { form_id: "form_8", name: "Business Tax Returns (3 years)", entity_type: "business", status: "submitted" },
   { form_id: "form_9", name: "Balance Sheet", entity_type: "business", status: "pending" },
-  { form_id: "form_10", name: "Profit & Loss Report", entity_type: "business", status: "pending" },
+  { form_id: "form_10", name: "Profit & Loss Statement", entity_type: "business", status: "pending" },
   { form_id: "form_11", name: "Accounts Receivable & Accounts Payable", entity_type: "business" },
   { form_id: "form_12", name: "Inventory and Equipment List", entity_type: "business" },
-  { form_id: "form_13", name: "Broker Listing", entity_type: "business" },
-  { form_id: "form_14", name: "Acquisition Questionnaire", entity_type: "business" },
+  { form_id: "form_13", name: "Broker Listing Agreement", entity_type: "business" },
+  { form_id: "form_14", name: "Business Acquisition Questionnaire", entity_type: "business" },
   { form_id: "form_15", name: "Business Debt Schedule", entity_type: "business" },
   { form_id: "form_16", name: "K1 Schedules", entity_type: "business" },
-  { form_id: "form_20", name: "Customer Concentration", entity_type: "business" },
-  { form_id: "form_21", name: "Vendor Relationships", entity_type: "business" },
-  { form_id: "form_22", name: "Employee Information", entity_type: "business" },
-  { form_id: "form_23", name: "Lease Agreements", entity_type: "business" },
-  { form_id: "form_24", name: "Intellectual Property", entity_type: "business" },
+  { form_id: "form_20", name: "Customer Concentration Analysis", entity_type: "business" },
+  { form_id: "form_21", name: "Vendor Relationship Documentation", entity_type: "business" },
+  { form_id: "form_22", name: "Employee Information & Payroll", entity_type: "business" },
+  { form_id: "form_23", name: "Lease Agreements & Contracts", entity_type: "business" },
+  { form_id: "form_24", name: "Intellectual Property Documentation", entity_type: "business" },
+  { form_id: "form_25", name: "Business Insurance Policies", entity_type: "business" },
+  { form_id: "form_26", name: "Operating Procedures Manual", entity_type: "business" },
+  { form_id: "form_27", name: "Financial Projections (5 years)", entity_type: "business" },
+  { form_id: "form_28", name: "Market Analysis Report", entity_type: "business" },
 ];
 
 export const individualDocumentsData: Document[] = [
