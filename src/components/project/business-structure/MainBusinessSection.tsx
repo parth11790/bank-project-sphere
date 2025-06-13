@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building2 } from 'lucide-react';
+import { Building2, ExternalLink } from 'lucide-react';
 import { Project } from '@/types/project';
 
 interface MainBusinessSectionProps {
@@ -12,6 +13,8 @@ interface MainBusinessSectionProps {
 const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
   project
 }) => {
+  const navigate = useNavigate();
+  
   const formatAddress = (address: any) => {
     if (!address) return 'N/A';
     
@@ -24,14 +27,22 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
     return parts.length > 0 ? parts.join(', ') : 'N/A';
   };
 
+  const handleViewDetails = () => {
+    navigate(`/business/${project.project_id}`);
+  };
+
   return (
-    <Card>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleViewDetails}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
             <CardTitle>Borrower Information</CardTitle>
           </div>
+          <Button variant="ghost" size="sm" className="flex items-center gap-2">
+            View Details
+            <ExternalLink className="h-4 w-4" />
+          </Button>
         </div>
         <CardDescription>Primary business entity for this project</CardDescription>
       </CardHeader>

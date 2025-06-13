@@ -1,4 +1,3 @@
-
 export interface BusinessFinancialData {
   data_id: string;
   business_id: string;
@@ -34,6 +33,21 @@ export interface Business {
   founding_date?: string;
   employee_count?: number;
   ein?: string;
+  
+  // Additional business information fields
+  dba_name?: string;
+  naics_code?: string;
+  phone?: string;
+  primary_contact_name?: string;
+  primary_contact_email?: string;
+  special_ownership_type?: string;
+  prior_year_sales?: number;
+  current_year_sales?: number;
+  is_startup?: boolean;
+  months_in_business?: number;
+  has_previous_sba_loan?: boolean;
+  previous_sba_loan_details?: string;
+  
   address?: {
     street?: string;
     city?: string;
@@ -41,6 +55,44 @@ export interface Business {
     zip_code?: string;
     country?: string;
   };
+  
+  // Additional address types
+  project_address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    country?: string;
+  };
+  
+  mailing_address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    country?: string;
+  };
+  
+  notice_address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zip_code?: string;
+    country?: string;
+  };
+  
+  // Existing debt information
+  existing_debt?: Array<{
+    lender: string;
+    original_amount: number;
+    current_balance: number;
+    payment: number;
+    rate: number;
+    maturity_date: string;
+    collateral?: string;
+    guarantors?: string;
+    status: 'Current' | 'Delinquent' | 'Paid Off';
+  }>;
   
   // Owner information (if this business is owned by someone)
   owner_id?: string;
@@ -65,6 +117,7 @@ export interface Business {
   forms?: Array<{
     form_id: string;
     name: string;
+    status?: string;
   }>;
 }
 

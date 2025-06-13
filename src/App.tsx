@@ -25,6 +25,7 @@ const ProjectAnalysis = lazy(() => import("./pages/ProjectAnalysis"));
 const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const LenderSettings = lazy(() => import("./pages/LenderSettings"));
+const BusinessInformation = lazy(() => import("./pages/BusinessInformation"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -75,6 +76,7 @@ const App = () => (
                 {/* Add new routes for our sections */}
                 <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
                 <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
+                <Route path="/business/:projectId" element={<BusinessInformation />} />
                 {/* Redirect project dashboard to project detail */}
                 <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="/admin-settings" element={<AdminSettings />} />
