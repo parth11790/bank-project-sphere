@@ -34,26 +34,28 @@ const BusinessSection: React.FC<BusinessSectionProps> = ({
   onFormClick,
 }) => {
   return (
-    <div className="space-y-4 border-t pt-4">
-      <div className="flex items-center gap-2 mb-2">
-        <h3 className="text-sm font-medium">Business: {business.name}</h3>
-        <Badge variant="outline">{business.entity_type}</Badge>
+    <div className="space-y-3 border-t pt-3">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium">Business: {business.name}</h3>
+          <Badge variant="outline" className="text-xs">{business.entity_type}</Badge>
+        </div>
       </div>
       
-      <div className="mb-4">
+      <div className="mb-3">
         <div className="grid grid-cols-2 gap-2 p-2 bg-muted/30 rounded-md">
           <div>
-            <p className="text-sm text-muted-foreground">Title:</p>
-            <p className="font-medium">{business.title || 'N/A'}</p>
+            <p className="text-xs text-muted-foreground">Title:</p>
+            <p className="text-sm font-medium">{business.title || 'N/A'}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Ownership:</p>
-            <p className="font-medium">{business.ownership_percentage || '0'}%</p>
+            <p className="text-xs text-muted-foreground">Ownership:</p>
+            <p className="text-sm font-medium">{business.ownership_percentage || '0'}%</p>
           </div>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <DocumentsList 
           title="Required Documents" 
           documents={business.documents} 

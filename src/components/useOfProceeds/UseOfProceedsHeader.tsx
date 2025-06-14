@@ -21,16 +21,18 @@ const UseOfProceedsHeader: React.FC<UseOfProceedsHeaderProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+      className="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
     >
-      <div>
-        <h1 className="text-3xl font-bold mb-1">Use of Proceeds</h1>
-        {projectName && (
-          <p className="text-muted-foreground">{projectName}</p>
-        )}
+      <div className="space-y-1">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold">Use of Proceeds</h1>
+          {projectName && (
+            <p className="text-sm text-muted-foreground">{projectName}</p>
+          )}
+        </div>
       </div>
       
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" asChild>
           <Link to={`/project/${projectId}`} className="flex items-center gap-1">
             <ChevronLeft className="h-4 w-4" />

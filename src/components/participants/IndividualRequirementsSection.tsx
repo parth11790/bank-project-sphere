@@ -29,12 +29,12 @@ const IndividualRequirementsSection: React.FC<IndividualRequirementsSectionProps
   onFormClick,
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-2">
+    <div className="space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
         <h3 className="text-sm font-medium">Individual Requirements</h3>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <DocumentsList 
           title="Required Documents" 
           documents={documents} 

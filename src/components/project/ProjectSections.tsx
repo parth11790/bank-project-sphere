@@ -51,24 +51,27 @@ export const ProjectSections: React.FC<ProjectSectionsProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       {sections.map((section) => (
         <Card key={section.id} className="relative">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <section.icon className="h-5 w-5 text-primary" />
-              <CardTitle className="text-base">{section.title}</CardTitle>
+          <CardHeader className="p-3 pb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-2">
+                <section.icon className="h-4 w-4 text-primary" />
+                <CardTitle className="text-sm sm:text-base">{section.title}</CardTitle>
+              </div>
+              <CardDescription className="text-xs">
+                {section.description}
+              </CardDescription>
             </div>
-            <CardDescription className="text-sm">
-              {section.description}
-            </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 pt-0">
             <Button
               onClick={section.action}
               disabled={!section.enabled}
               className="w-full"
               variant={section.enabled ? "default" : "secondary"}
+              size="sm"
             >
               {section.buttonText}
             </Button>

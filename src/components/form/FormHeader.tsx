@@ -18,24 +18,26 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   const navigate = useNavigate();
   
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="mb-4"
-        >
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <h1 className="text-3xl font-bold">{formName}</h1>
-        <p className="text-muted-foreground">Participant: {participantName}</p>
-      </div>
-      <Button onClick={onSubmit}>
-        <Save className="h-4 w-4 mr-2" />
-        Save Form
+    <div className="space-y-3">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigate(-1)}
+      >
+        <ChevronLeft className="h-4 w-4 mr-2" />
+        Back
       </Button>
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">{formName}</h1>
+          <p className="text-sm text-muted-foreground">Participant: {participantName}</p>
+        </div>
+        <Button onClick={onSubmit} size="sm">
+          <Save className="h-4 w-4 mr-2" />
+          Save Form
+        </Button>
+      </div>
     </div>
   );
 };
