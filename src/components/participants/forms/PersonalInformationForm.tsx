@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -69,22 +70,39 @@ const PersonalInformationForm: React.FC = () => {
           const participants = await getParticipantsWithDetailsData(projectId);
           console.log('PersonalInfoForm: Available participants:', participants.map(p => ({ id: p.participant_id, name: p.name })));
           
-          // Try to find participant by exact ID match first
-          let foundParticipant = participants.find(p => p.participant_id === participantId);
+          let foundParticipant = null;
           
-          // If not found and the ID looks like an owner ID, try to match by extracting user ID
-          if (!foundParticipant && participantId.startsWith('owner_')) {
-            console.log('PersonalInfoForm: Trying to match owner ID to participant');
-            const userIdMatch = participantId.match(/owner_(\d+)_/);
-            if (userIdMatch) {
-              const userId = userIdMatch[1];
-              const expectedParticipantId = `part_${userId}`;
-              console.log('PersonalInfoForm: Looking for participant with ID:', expectedParticipantId);
-              foundParticipant = participants.find(p => p.participant_id === expectedParticipantId);
+          // If this is an owner ID, we need to find the corresponding participant
+          if (participantId.startsWith('owner_')) {
+            console.log('PersonalInfoForm: Handling owner ID:', participantId);
+            
+            // For owner_5_1, we need to find the participant from project 5
+            // Extract project number from owner ID (owner_5_1 -> project 5)
+            const ownerIdMatch = participantId.match(/owner_(\d+)_(\d+)/);
+            if (ownerIdMatch) {
+              const ownerProjectNum = ownerIdMatch[1];
+              const ownerIndex = ownerIdMatch[2];
+              
+              console.log('PersonalInfoForm: Owner project:', ownerProjectNum, 'Owner index:', ownerIndex);
+              
+              // Find any participant from this project since we're just using it for display
+              // The actual data comes from the owner service
+              foundParticipant = participants.length > 0 ? participants[0] : null;
+              
+              if (foundParticipant) {
+                // Create a mock participant for the owner
+                foundParticipant = {
+                  ...foundParticipant,
+                  participant_id: participantId,
+                  name: `Owner ${ownerIndex}`, // Temporary name, will be overridden by form data
+                };
+              }
             }
+          } else {
+            // Regular participant ID lookup
+            foundParticipant = participants.find(p => p.participant_id === participantId);
           }
           
-          console.log('PersonalInfoForm: Looking for participant ID:', participantId);
           console.log('PersonalInfoForm: Found participant:', foundParticipant);
           
           if (foundParticipant) {
@@ -97,6 +115,12 @@ const PersonalInformationForm: React.FC = () => {
               const ownerData = getOwnerPersonalInformation(participantId);
               form.reset(ownerData);
               console.log('PersonalInfoForm: Loaded owner data:', ownerData);
+              
+              // Update participant name with the actual owner name
+              setParticipant(prev => prev ? {
+                ...prev,
+                name: ownerData.first_name + ' ' + ownerData.last_name
+              } : null);
             }
           } else {
             console.error('PersonalInfoForm: Participant not found with ID:', participantId);
