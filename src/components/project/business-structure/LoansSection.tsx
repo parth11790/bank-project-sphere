@@ -120,15 +120,15 @@ const LoansSection: React.FC<LoansSectionProps> = ({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
             <CardTitle>Project Loans</CardTitle>
+            <CardDescription>All loans associated with this project</CardDescription>
           </div>
           <Button size="sm" onClick={handleAddLoan}>
             <Plus className="h-4 w-4 mr-2" />
             Add Loan
           </Button>
         </div>
-        <CardDescription>All loans associated with this project</CardDescription>
       </CardHeader>
       <CardContent>
         {loans && loans.length > 0 ? (

@@ -45,16 +45,18 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
     <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleViewDetails}>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Borrower Information</CardTitle>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Borrower Information</CardTitle>
+            </div>
+            <CardDescription className="text-sm">Primary business entity details</CardDescription>
           </div>
           <Button variant="ghost" size="sm" className="flex items-center gap-2">
             View Details
             <ExternalLink className="h-4 w-4" />
           </Button>
         </div>
-        <CardDescription>Primary business entity details</CardDescription>
       </CardHeader>
       <CardContent>
         {project.main_business ? (
