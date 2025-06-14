@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, MapPin, DollarSign, Globe } from 'lucide-react';
+import { Building2, MapPin, DollarSign, Globe, Plus } from 'lucide-react';
 import { Project } from '@/types/project';
 import { Badge } from '@/components/ui/badge';
 
@@ -51,17 +51,28 @@ const AcquisitionSection: React.FC<AcquisitionSectionProps> = ({
     }).format(amount);
   };
 
+  const handleAddBusiness = () => {
+    console.log('Add business to acquisition');
+    // This would typically open a dialog or navigate to an add business page
+  };
+
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            <CardTitle>Business Acquisition</CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <CardTitle>Business Acquisition</CardTitle>
+            </div>
+            <CardDescription>
+              Businesses being acquired as part of this project
+            </CardDescription>
           </div>
-          <CardDescription>
-            Businesses being acquired as part of this project
-          </CardDescription>
+          <Button size="sm" onClick={handleAddBusiness}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Business
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -131,6 +142,7 @@ const AcquisitionSection: React.FC<AcquisitionSectionProps> = ({
           <div className="text-center py-8">
             <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">No businesses being acquired in this project</p>
+            <Button className="mt-4" onClick={handleAddBusiness}>Add Business</Button>
           </div>
         )}
       </CardContent>
