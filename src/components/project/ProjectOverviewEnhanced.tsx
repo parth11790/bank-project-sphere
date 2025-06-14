@@ -4,11 +4,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Project } from '@/types/project';
 import { ParticipantWithDetails } from '@/types/participant';
 import { LoanDistributionChart } from './LoanDistributionChart';
-import { Activity, Users, Edit, Save, X } from 'lucide-react';
+import { Edit, Save, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { getStatusString } from '@/types/project';
 import { updateProject } from '@/services/projectService';
 import { toast } from 'sonner';
@@ -29,6 +29,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [formData, setFormData] = useState({
     project_name: project.project_name,
     project_type: project.project_type,
@@ -106,13 +107,15 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <CardTitle>Project Overview</CardTitle>
-            <CardDescription>Key project information and financial summary</CardDescription>
+      <CardHeader className="p-4 pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-lg">Project Overview</CardTitle>
+              <CardDescription className="text-xs">Key project information and financial summary</CardDescription>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             {isEditing ? (
               <>
                 <Button 
@@ -120,147 +123,146 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
                   size="sm" 
                   onClick={handleCancel}
                   disabled={isLoading}
+                  className="h-7 px-2 text-xs"
                 >
-                  <X className="mr-2 h-4 w-4" />
+                  <X className="mr-1 h-3 w-3" />
                   Cancel
                 </Button>
                 <Button 
                   size="sm" 
                   onClick={handleSave}
                   disabled={isLoading}
+                  className="h-7 px-2 text-xs"
                 >
-                  <Save className="mr-2 h-4 w-4" />
+                  <Save className="mr-1 h-3 w-3" />
                   {isLoading ? 'Saving...' : 'Save'}
                 </Button>
               </>
             ) : (
-              <Button variant="outline" onClick={() => setIsEditing(true)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Project
+              <Button variant="outline" onClick={() => setIsEditing(true)} size="sm" className="h-7 px-2 text-xs">
+                <Edit className="mr-1 h-3 w-3" />
+                Edit
               </Button>
             )}
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <CardContent className="p-4 pt-2 space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column - Project Details */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Basic Information */}
-            <div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <p className="font-medium">{getStatusString(project.status)}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Type</p>
-                  {isEditing ? (
-                    <Input
-                      name="project_type"
-                      value={formData.project_type}
-                      onChange={handleInputChange}
-                      className="h-8"
-                    />
-                  ) : (
-                    <p className="font-medium">{project.project_type}</p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Location</p>
-                  {isEditing ? (
-                    <Input
-                      name="location"
-                      value={formData.location}
-                      onChange={handleInputChange}
-                      placeholder="City, State"
-                      className="h-8"
-                    />
-                  ) : (
-                    <p className="font-medium">{project.location || 'N/A'}</p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Assigned To</p>
-                  <p className="font-medium">{assignedTo}</p>
-                </div>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Status</p>
+                <p className="font-medium text-sm leading-tight">{getStatusString(project.status)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Type</p>
+                {isEditing ? (
+                  <Input
+                    name="project_type"
+                    value={formData.project_type}
+                    onChange={handleInputChange}
+                    className="h-7 text-sm"
+                  />
+                ) : (
+                  <p className="font-medium text-sm leading-tight">{project.project_type}</p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Location</p>
+                {isEditing ? (
+                  <Input
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="City, State"
+                    className="h-7 text-sm"
+                  />
+                ) : (
+                  <p className="font-medium text-sm leading-tight">{project.location || 'N/A'}</p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Assigned To</p>
+                <p className="font-medium text-sm leading-tight">{assignedTo}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Created</p>
+                <p className="font-medium text-sm leading-tight">{formatDate(project.created_at)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Updated</p>
+                <p className="font-medium text-sm leading-tight">{formatDate(project.updated_at || project.created_at)}</p>
               </div>
             </div>
 
             {/* Project Name */}
-            <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Project Name</h3>
+            <div className="border-t pt-3">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">Project Name</p>
               {isEditing ? (
                 <Input
                   name="project_name"
                   value={formData.project_name}
                   onChange={handleInputChange}
-                  className="text-lg font-semibold"
+                  className="h-8 text-base font-semibold"
                 />
               ) : (
-                <p className="text-lg font-semibold">{project.project_name}</p>
+                <p className="text-base font-semibold leading-tight">{project.project_name}</p>
               )}
             </div>
 
-            {/* Description */}
-            <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Description</h3>
-              {isEditing ? (
-                <Textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Project description"
-                  className="min-h-[100px] resize-none"
-                />
-              ) : (
-                <p className="text-sm leading-relaxed">
-                  {project.description || 'No description provided'}
-                </p>
-              )}
-            </div>
-
-            {/* Timeline */}
-            <div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Created Date</p>
-                  <p className="font-medium">{formatDate(project.created_at)}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Last Updated</p>
-                  <p className="font-medium">{formatDate(project.updated_at || project.created_at)}</p>
-                </div>
-              </div>
+            {/* Collapsible Description */}
+            <div className="border-t pt-3">
+              <Collapsible open={isDescriptionExpanded} onOpenChange={setIsDescriptionExpanded}>
+                <CollapsibleTrigger className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-2 hover:text-foreground transition-colors">
+                  {isDescriptionExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                  Description
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2">
+                  {isEditing ? (
+                    <Textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      placeholder="Project description"
+                      className="min-h-[60px] resize-none text-sm"
+                    />
+                  ) : (
+                    <p className="text-sm leading-relaxed">
+                      {project.description || 'No description provided'}
+                    </p>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
 
           {/* Right Column - Financial Details & Chart */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Financial Summary */}
-            <div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Total Loan Amount</p>
-                  <p className="font-medium text-primary text-lg">{formatCurrency(totalLoanAmount)}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Required Equity</p>
-                  <p className="font-medium">{requiredEquity}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Number of Loans</p>
-                  <p className="font-medium">{numberOfLoans}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Participants</p>
-                  <p className="font-medium">{participants.length}</p>
-                </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Total Loan Amount</p>
+                <p className="font-medium text-primary text-base leading-tight">{formatCurrency(totalLoanAmount)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Required Equity</p>
+                <p className="font-medium text-sm leading-tight">{requiredEquity}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Number of Loans</p>
+                <p className="font-medium text-sm leading-tight">{numberOfLoans}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Participants</p>
+                <p className="font-medium text-sm leading-tight">{participants.length}</p>
               </div>
             </div>
 
             {/* Loan Distribution Chart */}
-            <div>
+            <div className="border-t pt-3">
               <LoanDistributionChart loanDistributionData={loanDistributionData} />
             </div>
           </div>
