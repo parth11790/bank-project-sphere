@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +25,7 @@ const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const LenderSettings = lazy(() => import("./pages/LenderSettings"));
 const BusinessInformation = lazy(() => import("./pages/BusinessInformation"));
+const LoanDetails = lazy(() => import("./pages/LoanDetails"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -77,6 +77,7 @@ const App = () => (
                 <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
                 <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
                 <Route path="/business/:projectId" element={<BusinessInformation />} />
+                <Route path="/project/:projectId/loan/:loanId" element={<LoanDetails />} />
                 {/* Redirect project dashboard to project detail */}
                 <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="/admin-settings" element={<AdminSettings />} />
