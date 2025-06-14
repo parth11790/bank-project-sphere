@@ -11,7 +11,7 @@ export const projects: Project[] = [
     created_at: "2024-01-15T10:30:00Z",
     updated_at: "2024-01-20T14:45:00Z",
     created_by: "user_1",
-    created_by_user: users.find(u => u.id === "user_1"),
+    created_by_user: users.find(u => u.user_id === "user_1"),
     description: "Acquisition of established downtown restaurant with prime location and strong customer base",
     loan_amount: 850000,
     loan_types: [
@@ -49,7 +49,7 @@ export const projects: Project[] = [
     created_at: "2024-02-01T09:15:00Z",
     updated_at: "2024-02-05T16:20:00Z",
     created_by: "user_2",
-    created_by_user: users.find(u => u.id === "user_2"),
+    created_by_user: users.find(u => u.user_id === "user_2"),
     description: "Financing for specialized tech equipment and software development infrastructure",
     loan_amount: 450000,
     loan_types: [
@@ -86,7 +86,7 @@ export const projects: Project[] = [
     created_at: "2023-11-10T13:00:00Z",
     updated_at: "2023-12-15T11:30:00Z",
     created_by: "user_3",
-    created_by_user: users.find(u => u.id === "user_3"),
+    created_by_user: users.find(u => u.user_id === "user_3"),
     description: "Expansion of manufacturing facility to increase production capacity by 40%",
     loan_amount: 1200000,
     loan_types: [
@@ -124,7 +124,7 @@ export const projects: Project[] = [
     created_at: "2024-01-25T08:45:00Z",
     updated_at: "2024-02-10T12:15:00Z",
     created_by: "user_4",
-    created_by_user: users.find(u => u.id === "user_4"),
+    created_by_user: users.find(u => u.user_id === "user_4"),
     description: "Acquisition of established family medical practice with existing patient base",
     loan_amount: 650000,
     loan_types: [
@@ -162,7 +162,7 @@ export const projects: Project[] = [
     created_at: "2024-02-15T14:20:00Z",
     updated_at: "2024-02-20T09:30:00Z", 
     created_by: "user_5",
-    created_by_user: users.find(u => u.id === "user_5"),
+    created_by_user: users.find(u => u.user_id === "user_5"),
     description: "Opening 3 new retail locations across the metropolitan area with inventory and fixtures",
     loan_amount: 975000,
     loan_types: [
