@@ -1,20 +1,26 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Project } from '@/types/project';
 import { ParticipantWithDetails } from '@/types/participant';
 import { LoanDistributionChart } from './LoanDistributionChart';
-import { Activity, Users } from 'lucide-react';
+import { Activity, Users, Edit } from 'lucide-react';
 import { getStatusString } from '@/types/project';
+
 interface ProjectOverviewEnhancedProps {
   project: Project;
   dashboardData: any;
   participants: ParticipantWithDetails[];
+  onEdit?: () => void;
 }
+
 const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
   project,
   dashboardData,
-  participants
+  participants,
+  onEdit
 }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -47,8 +53,18 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
 
   return <Card>
       <CardHeader>
-        <CardTitle>Project Overview</CardTitle>
-        <CardDescription>Key project information and financial summary</CardDescription>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle>Project Overview</CardTitle>
+            <CardDescription>Key project information and financial summary</CardDescription>
+          </div>
+          {onEdit && (
+            <Button variant="outline" onClick={onEdit}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Project
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -142,4 +158,5 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
       </CardContent>
     </Card>;
 };
+
 export default ProjectOverviewEnhanced;

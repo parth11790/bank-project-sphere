@@ -15,6 +15,7 @@ import ProjectBusinessStructure from '@/components/project/ProjectBusinessStruct
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
+
 const Project = () => {
   const {
     projectId
@@ -77,11 +78,16 @@ const Project = () => {
     }} transition={{
       duration: 0.3
     }} className="space-y-6">
-        <ProjectHeader project={projectData} onEdit={() => setEditDialogOpen(true)} />
+        <ProjectHeader project={projectData} />
 
         {/* Project Overview Section */}
         <div className="space-y-6">
-          <ProjectOverviewEnhanced project={projectData} dashboardData={dashboardData} participants={participantsData} />
+          <ProjectOverviewEnhanced 
+            project={projectData} 
+            dashboardData={dashboardData} 
+            participants={participantsData}
+            onEdit={() => setEditDialogOpen(true)}
+          />
         </div>
 
         {/* Business Structure Section */}
@@ -106,4 +112,5 @@ const Project = () => {
       </motion.div>
     </Layout>;
 };
+
 export default Project;
