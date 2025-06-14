@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -163,7 +162,7 @@ const PersonalInformationForm: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -176,7 +175,7 @@ const PersonalInformationForm: React.FC = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <p className="text-destructive mb-4">{error}</p>
@@ -202,7 +201,7 @@ const PersonalInformationForm: React.FC = () => {
 
   if (!participant) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="mb-4">Participant not found</p>
@@ -217,13 +216,13 @@ const PersonalInformationForm: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <Button variant="outline" onClick={handleBack}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -237,12 +236,12 @@ const PersonalInformationForm: React.FC = () => {
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle>Personal Information & Resume - {participant.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full">
                     {tabs.map((tab) => (
@@ -255,7 +254,7 @@ const PersonalInformationForm: React.FC = () => {
                   {tabs.map((tab) => {
                     const Component = tab.component;
                     return (
-                      <TabsContent key={tab.id} value={tab.id} className="mt-6">
+                      <TabsContent key={tab.id} value={tab.id} className="mt-4">
                         <Component form={form} participant={participant} />
                       </TabsContent>
                     );
