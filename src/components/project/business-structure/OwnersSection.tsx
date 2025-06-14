@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +22,16 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
   const owners = project.owners || [];
 
   const handleOwnerClick = (ownerId: string) => {
-    navigate(`/project/participants/${project.project_id}/personal-info/${ownerId}`);
+    // Find the participant that corresponds to this owner
+    const participant = project.participants?.find(p => p.userId === ownerId);
+    if (participant) {
+      // Use the participant ID for navigation
+      navigate(`/project/participants/${project.project_id}/personal-info/part_${participant.userId}`);
+    } else {
+      console.warn('No participant found for owner:', ownerId);
+      // Fallback: try using the owner ID directly
+      navigate(`/project/participants/${project.project_id}/personal-info/part_${ownerId}`);
+    }
   };
 
   return (

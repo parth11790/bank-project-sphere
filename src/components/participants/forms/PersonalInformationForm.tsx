@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,26 +35,26 @@ const PersonalInformationForm: React.FC = () => {
       if (projectId && participantId) {
         try {
           setIsLoading(true);
-          console.log('Fetching participant with ID:', participantId, 'for project:', projectId);
+          console.log('PersonalInfoForm: Fetching participant with ID:', participantId, 'for project:', projectId);
           
           const participants = await getParticipantsWithDetailsData(projectId);
-          console.log('Available participants:', participants.map(p => p.participant_id));
+          console.log('PersonalInfoForm: Available participants:', participants.map(p => ({ id: p.participant_id, name: p.name })));
           
           const foundParticipant = participants.find(p => p.participant_id === participantId);
-          console.log('Found participant:', foundParticipant);
+          console.log('PersonalInfoForm: Looking for participant ID:', participantId);
+          console.log('PersonalInfoForm: Found participant:', foundParticipant);
           
           if (foundParticipant) {
             setParticipant(foundParticipant);
+            setError(null);
           } else {
-            console.error('Participant not found with ID:', participantId);
+            console.error('PersonalInfoForm: Participant not found with ID:', participantId);
             setError(`Participant with ID "${participantId}" not found`);
-            toast.error('Participant not found. Redirecting to participants list.');
-            setTimeout(() => {
-              navigate(`/project/participants/${projectId}`);
-            }, 2000);
+            toast.error('Participant not found');
+            // Don't auto-redirect immediately, let user decide
           }
         } catch (error) {
-          console.error('Error fetching participant:', error);
+          console.error('PersonalInfoForm: Error fetching participant:', error);
           setError('Failed to load participant information');
           toast.error('Failed to load participant information');
         } finally {
@@ -65,7 +64,7 @@ const PersonalInformationForm: React.FC = () => {
     };
 
     fetchParticipant();
-  }, [projectId, participantId, navigate]);
+  }, [projectId, participantId]);
 
   const form = useForm<PersonalInformationFormValues>({
     resolver: zodResolver(personalInformationSchema),
@@ -133,12 +132,22 @@ const PersonalInformationForm: React.FC = () => {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center h-64">
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={handleBack}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Participants
-            </Button>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>Debug info:</p>
+              <p>Project ID: {projectId}</p>
+              <p>Participant ID: {participantId}</p>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={handleBack}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Participants
+              </Button>
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Retry
+              </Button>
+            </div>
           </div>
         </div>
       </div>
