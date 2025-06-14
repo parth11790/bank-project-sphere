@@ -509,7 +509,7 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
       professional_references: [
         {
           reference_name: 'Dr. Michael Rodriguez',
-          relationship: 'Former Supervising Physician',
+          relationship: 'Former Supervising Physician',   
           phone_number: '(602) 555-7777',
           email_address: 'mrodriguez@phoenixgeneral.com'
         },
@@ -567,7 +567,7 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
       mailing_city: 'Seattle',
       mailing_state: 'WA',
       mailing_zip_code: '98101',
-      marital_status: 'divorced',
+      marital_status: 'separated',
       dependents_count: 1,
       liable_for_alimony: 'no',
       delinquent_child_support: 'no',
