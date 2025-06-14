@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,12 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DollarSign, Plus, Eye, Edit } from 'lucide-react';
 import { Project } from '@/types/project';
-
 interface LoansSectionProps {
   project: Project;
 }
-
-const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
+const LoansSection: React.FC<LoansSectionProps> = ({
+  project
+}) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -19,25 +18,28 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
       maximumFractionDigits: 0
     }).format(amount);
   };
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'approved': return 'bg-blue-100 text-blue-800';
-      case 'declined': return 'bg-red-100 text-red-800';
-      case 'underwriting': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'approved':
+        return 'bg-blue-100 text-blue-800';
+      case 'declined':
+        return 'bg-red-100 text-red-800';
+      case 'underwriting':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getSBAGuaranty = (loanType: string) => {
     if (loanType.toLowerCase().includes('sba')) {
       return loanType.includes('504') ? '40%' : '75%';
     }
     return 'N/A';
   };
-
   const getLoanPurpose = (loanType: string) => {
     if (loanType.toLowerCase().includes('504')) return 'Real estate acquisition';
     if (loanType.toLowerCase().includes('7(a)')) return 'Business acquisition';
@@ -50,7 +52,7 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
   // Get loans from both the legacy loan_types and new loans structure
   const getAllLoans = () => {
     const loans = [];
-    
+
     // Add loans from the new structure
     if (project.loans && project.loans.length > 0) {
       project.loans.forEach(loan => {
@@ -65,7 +67,7 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
         });
       });
     }
-    
+
     // Add loans from legacy loan_types if no new structure exists
     if (loans.length === 0 && project.loan_types && project.loan_types.length > 0) {
       project.loan_types.forEach((loanType, index) => {
@@ -92,18 +94,14 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
         }
       });
     }
-    
     return loans;
   };
-
   const loans = getAllLoans();
-
-  return (
-    <Card>
+  return <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-primary" />
+            
             <CardTitle>Project Loans</CardTitle>
           </div>
           <Button size="sm">
@@ -114,8 +112,7 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
         <CardDescription>All loans associated with this project</CardDescription>
       </CardHeader>
       <CardContent>
-        {loans && loans.length > 0 ? (
-          <div className="rounded-md border">
+        {loans && loans.length > 0 ? <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -130,8 +127,7 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loans.map((loan) => (
-                  <TableRow key={loan.id}>
+                {loans.map(loan => <TableRow key={loan.id}>
                     <TableCell className="font-medium">{loan.type}</TableCell>
                     <TableCell>{formatCurrency(loan.amount)}</TableCell>
                     <TableCell>{loan.term ? `${loan.term} years` : 'N/A'}</TableCell>
@@ -153,21 +149,15 @@ const LoansSection: React.FC<LoansSectionProps> = ({ project }) => {
                         </Button>
                       </div>
                     </TableCell>
-                  </TableRow>
-                ))}
+                  </TableRow>)}
               </TableBody>
             </Table>
-          </div>
-        ) : (
-          <div className="text-center py-8">
+          </div> : <div className="text-center py-8">
             <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">No loans configured</p>
             <Button className="mt-4">Add Loan</Button>
-          </div>
-        )}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default LoansSection;
