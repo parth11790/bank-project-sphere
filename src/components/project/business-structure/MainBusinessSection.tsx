@@ -48,24 +48,37 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
       </CardHeader>
       <CardContent>
         {project.main_business ? (
-          <div className="space-y-4">
-            {/* Business Name and Type */}
-            <div className="border-b pb-3">
-              <h3 className="font-semibold text-xl text-foreground">{project.main_business.name}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{project.main_business.entity_type}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Side - Basic Info without labels */}
+            <div className="space-y-3">
+              <div>
+                <h3 className="font-semibold text-xl text-foreground">{project.main_business.name}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{project.main_business.entity_type}</p>
+              </div>
+              
+              {project.main_business.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {project.main_business.description}
+                </p>
+              )}
+              
+              <div className="flex items-start gap-2 text-sm">
+                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <span>{formatAddress(project.main_business.address)}</span>
+              </div>
             </div>
 
-            {/* Key Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {/* Right Side - Detailed Info with labels */}
+            <div className="space-y-4">
               {project.main_business.ein && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm">
                   <span className="font-medium text-muted-foreground min-w-[60px]">EIN:</span>
                   <span>{project.main_business.ein}</span>
                 </div>
               )}
               
               {project.main_business.founding_date && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-muted-foreground">Founded:</span>
                   <span>{new Date(project.main_business.founding_date).toLocaleDateString()}</span>
@@ -73,7 +86,7 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
               )}
               
               {project.main_business.employee_count && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-muted-foreground">Employees:</span>
                   <span>{project.main_business.employee_count}</span>
@@ -81,7 +94,7 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
               )}
               
               {project.main_business.website && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm">
                   <Globe className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-muted-foreground">Website:</span>
                   <a 
@@ -96,23 +109,6 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
                 </div>
               )}
             </div>
-
-            {/* Address */}
-            <div className="flex items-start gap-2 text-sm pt-2 border-t">
-              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <div>
-                <span className="font-medium text-muted-foreground">Address:</span>
-                <p className="mt-1">{formatAddress(project.main_business.address)}</p>
-              </div>
-            </div>
-
-            {/* Description if available */}
-            {project.main_business.description && (
-              <div className="text-sm pt-2 border-t">
-                <span className="font-medium text-muted-foreground">Description:</span>
-                <p className="mt-1 text-muted-foreground">{project.main_business.description}</p>
-              </div>
-            )}
           </div>
         ) : (
           <div className="text-center py-8">
