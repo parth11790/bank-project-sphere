@@ -109,7 +109,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
           <div className="space-y-6">
             {/* Financial Summary */}
             <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Financial Summary</h3>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Total Loan Amount</p>
