@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,12 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
   onAddOwner,
   onAddAffiliatedBusiness
 }) => {
+  const navigate = useNavigate();
   const owners = project.owners || [];
+
+  const handleOwnerClick = (ownerId: string) => {
+    navigate(`/project/participants/${project.project_id}/personal-info/${ownerId}`);
+  };
 
   return (
     <Card>
@@ -53,7 +59,11 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
                 </TableHeader>
                 <TableBody>
                   {owners.map((owner) => (
-                    <TableRow key={owner.owner_id}>
+                    <TableRow 
+                      key={owner.owner_id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleOwnerClick(owner.owner_id)}
+                    >
                       <TableCell className="font-medium">{owner.name}</TableCell>
                       <TableCell>{owner.email || '-'}</TableCell>
                       <TableCell>
@@ -73,7 +83,10 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => onAddAffiliatedBusiness(owner.owner_id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAddAffiliatedBusiness(owner.owner_id);
+                            }}
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Add Business
