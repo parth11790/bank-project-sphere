@@ -1,4 +1,3 @@
-
 import { Project } from './types';
 import { users } from './users';
 
@@ -39,7 +38,31 @@ export const projects: Project[] = [
       { userId: "user_2", role: "Co-Borrower" }
     ],
     buyers: ["user_1", "user_2"],
-    seller: "user_3"
+    seller: "user_3",
+    main_business: {
+      business_id: "business_1",
+      name: "Golden Gate Bistro LLC",
+      entity_type: "LLC",
+      ein: "123456789",
+      description: "Established downtown restaurant specializing in contemporary American cuisine with 15 years of operation",
+      address: {
+        street: "456 Market Street",
+        city: "San Francisco",
+        state: "CA",
+        zip_code: "94102"
+      },
+      phone: "(415) 555-0123",
+      email: "info@goldengatesbistro.com",
+      website: "www.goldengatebistro.com",
+      founding_date: "2009-03-15",
+      employee_count: 24,
+      industry: "Food Service",
+      naics_code: "722513",
+      prior_year_sales: 1850000,
+      current_year_sales: 1950000,
+      primary_contact_name: "Maria Rodriguez",
+      primary_contact_email: "maria@goldengatebistro.com"
+    }
   },
   {
     project_id: "project_2", 
@@ -76,7 +99,42 @@ export const projects: Project[] = [
       { userId: "user_2", role: "Primary Borrower" }
     ],
     buyers: ["user_2"],
-    seller: "user_4"
+    seller: "user_4",
+    main_business: {
+      business_id: "business_2",
+      name: "InnovateTech Solutions Inc.",
+      entity_type: "Corporation",
+      ein: "987654321",
+      description: "Software development company specializing in AI-powered business solutions and custom enterprise applications",
+      address: {
+        street: "1200 South Lamar Blvd, Suite 300",
+        city: "Austin",
+        state: "TX",
+        zip_code: "78704"
+      },
+      phone: "(512) 555-0234",
+      email: "contact@innovatetech.com",
+      website: "www.innovatetech.com",
+      founding_date: "2020-06-10",
+      employee_count: 12,
+      industry: "Technology",
+      naics_code: "541511",
+      prior_year_sales: 890000,
+      current_year_sales: 1200000,
+      primary_contact_name: "David Chen",
+      primary_contact_email: "david@innovatetech.com",
+      existing_debt: [
+        {
+          lender: "Austin Business Bank",
+          original_amount: 150000,
+          current_balance: 85000,
+          payment: 3500,
+          rate: 7.25,
+          maturity_date: "2026-08-15",
+          status: "Current" as const
+        }
+      ]
+    }
   },
   {
     project_id: "project_3",
@@ -114,7 +172,31 @@ export const projects: Project[] = [
       { userId: "user_1", role: "Guarantor" }
     ],
     buyers: ["user_3"],
-    seller: "user_5"
+    seller: "user_5",
+    main_business: {
+      business_id: "business_3",
+      name: "Precision Manufacturing Corp",
+      entity_type: "Corporation",
+      ein: "456789123",
+      description: "Industrial manufacturing company producing precision components for aerospace and automotive industries",
+      address: {
+        street: "8500 Industrial Parkway",
+        city: "Dallas",
+        state: "TX",
+        zip_code: "75201"
+      },
+      phone: "(214) 555-0345",
+      email: "info@precisionmfg.com",
+      website: "www.precisionmanufacturing.com",
+      founding_date: "1998-11-20",
+      employee_count: 85,
+      industry: "Manufacturing",
+      naics_code: "336413",
+      prior_year_sales: 8500000,
+      current_year_sales: 9200000,
+      primary_contact_name: "Robert Johnson",
+      primary_contact_email: "rjohnson@precisionmfg.com"
+    }
   },
   {
     project_id: "project_4",
@@ -152,7 +234,31 @@ export const projects: Project[] = [
       { userId: "user_5", role: "Co-Borrower" }
     ],
     buyers: ["user_4", "user_5"],
-    seller: "user_1"
+    seller: "user_1",
+    main_business: {
+      business_id: "business_4",
+      name: "Desert Family Medical Group",
+      entity_type: "Professional Corporation",
+      ein: "789123456",
+      description: "Established family medical practice serving the Phoenix community for over 20 years",
+      address: {
+        street: "3456 North Central Avenue",
+        city: "Phoenix",
+        state: "AZ",
+        zip_code: "85012"
+      },
+      phone: "(602) 555-0456",
+      email: "office@desertfamilymed.com",
+      website: "www.desertfamilymedical.com",
+      founding_date: "2003-05-12",
+      employee_count: 18,
+      industry: "Healthcare",
+      naics_code: "621111",
+      prior_year_sales: 2100000,
+      current_year_sales: 2350000,
+      primary_contact_name: "Dr. Sarah Williams",
+      primary_contact_email: "swilliams@desertfamilymed.com"
+    }
   },
   {
     project_id: "project_5",
@@ -197,6 +303,30 @@ export const projects: Project[] = [
       { userId: "user_2", role: "Co-Borrower" }
     ],
     buyers: ["user_5", "user_2"],
-    seller: "user_3"
+    seller: "user_3",
+    main_business: {
+      business_id: "business_5",
+      name: "Pacific Northwest Retail LLC",
+      entity_type: "LLC",
+      ein: "321654987",
+      description: "Specialty retail chain focusing on outdoor gear and Pacific Northwest lifestyle products",
+      address: {
+        street: "2200 First Avenue",
+        city: "Seattle",
+        state: "WA",
+        zip_code: "98121"
+      },
+      phone: "(206) 555-0567",
+      email: "info@pnwretail.com",
+      website: "www.pacificnorthwestretail.com",
+      founding_date: "2018-09-03",
+      employee_count: 32,
+      industry: "Retail Trade",
+      naics_code: "451110",
+      prior_year_sales: 3200000,
+      current_year_sales: 3650000,
+      primary_contact_name: "Jennifer Martinez",
+      primary_contact_email: "jmartinez@pnwretail.com"
+    }
   }
 ];
