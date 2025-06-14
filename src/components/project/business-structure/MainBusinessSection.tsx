@@ -27,6 +27,16 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
     return parts.length > 0 ? parts.join(', ') : 'N/A';
   };
 
+  const handleAddressClick = (address: any) => {
+    if (!address) return;
+    
+    const addressString = formatAddress(address);
+    if (addressString !== 'N/A') {
+      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressString)}`;
+      window.open(googleMapsUrl, '_blank');
+    }
+  };
+
   const handleViewDetails = () => {
     navigate(`/business/${project.project_id}`);
   };
@@ -62,9 +72,15 @@ const MainBusinessSection: React.FC<MainBusinessSectionProps> = ({
                 </p>
               )}
               
-              <div className="flex items-start gap-2 text-sm">
+              <div 
+                className="flex items-start gap-2 text-sm cursor-pointer hover:text-primary transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddressClick(project.main_business.address);
+                }}
+              >
                 <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <span>{formatAddress(project.main_business.address)}</span>
+                <span className="hover:underline">{formatAddress(project.main_business.address)}</span>
               </div>
             </div>
 
