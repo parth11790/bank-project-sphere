@@ -1,3 +1,4 @@
+
 import { Project } from './types';
 import { users } from './users';
 
@@ -39,6 +40,50 @@ export const projects: Project[] = [
     ],
     buyers: ["user_1", "user_2"],
     seller: "user_3",
+    owners: [
+      {
+        owner_id: "owner_1_1",
+        name: "Maria Rodriguez",
+        email: "maria.rodriguez@gmail.com",
+        type: "individual",
+        ownership_percentage: 45,
+        role: "Managing Member",
+        user_id: "user_1",
+        phone: "(415) 555-0123",
+        address: {
+          street: "1234 Valencia Street",
+          city: "San Francisco",
+          state: "CA",
+          zip_code: "94110"
+        }
+      },
+      {
+        owner_id: "owner_1_2",
+        name: "Carlos Martinez",
+        email: "carlos.martinez@gmail.com",
+        type: "individual",
+        ownership_percentage: 35,
+        role: "Operations Partner",
+        user_id: "user_2",
+        phone: "(415) 555-0124",
+        address: {
+          street: "5678 Mission Street",
+          city: "San Francisco",
+          state: "CA",
+          zip_code: "94112"
+        }
+      },
+      {
+        owner_id: "owner_1_3",
+        name: "Golden Gate Investment LLC",
+        email: "info@ggii.com",
+        type: "business",
+        ownership_percentage: 20,
+        role: "Silent Partner",
+        business_id: "business_11",
+        phone: "(415) 555-9876"
+      }
+    ],
     main_business: {
       business_id: "business_1",
       name: "Golden Gate Bistro LLC",
@@ -100,6 +145,54 @@ export const projects: Project[] = [
     ],
     buyers: ["user_2"],
     seller: "user_4",
+    owners: [
+      {
+        owner_id: "owner_2_1",
+        name: "David Chen",
+        email: "david.chen@innovatetech.com",
+        type: "individual",
+        ownership_percentage: 51,
+        role: "CEO & Founder",
+        user_id: "user_2",
+        phone: "(512) 555-0234",
+        address: {
+          street: "1200 South Lamar Blvd, Unit 101",
+          city: "Austin",
+          state: "TX",
+          zip_code: "78704"
+        }
+      },
+      {
+        owner_id: "owner_2_2",
+        name: "Sarah Kim",
+        email: "sarah.kim@innovatetech.com",
+        type: "individual",
+        ownership_percentage: 25,
+        role: "CTO & Co-Founder",
+        user_id: "user_6",
+        phone: "(512) 555-0235"
+      },
+      {
+        owner_id: "owner_2_3",
+        name: "Michael Thompson",
+        email: "michael.thompson@venturecap.com",
+        type: "individual",
+        ownership_percentage: 15,
+        role: "Lead Investor",
+        user_id: "user_8",
+        phone: "(512) 555-0236"
+      },
+      {
+        owner_id: "owner_2_4",
+        name: "Austin Ventures Fund II",
+        email: "fund@austinventures.com",
+        type: "business",
+        ownership_percentage: 9,
+        role: "Institutional Investor",
+        business_id: "business_12",
+        phone: "(512) 555-7890"
+      }
+    ],
     main_business: {
       business_id: "business_2",
       name: "InnovateTech Solutions Inc.",
@@ -173,6 +266,54 @@ export const projects: Project[] = [
     ],
     buyers: ["user_3"],
     seller: "user_5",
+    owners: [
+      {
+        owner_id: "owner_3_1",
+        name: "Robert Johnson",
+        email: "rjohnson@precisionmfg.com",
+        type: "individual",
+        ownership_percentage: 55,
+        role: "President & CEO",
+        user_id: "user_3",
+        phone: "(214) 555-0345",
+        address: {
+          street: "3456 Oak Lawn Ave",
+          city: "Dallas",
+          state: "TX",
+          zip_code: "75219"
+        }
+      },
+      {
+        owner_id: "owner_3_2",
+        name: "Jennifer Johnson",
+        email: "jennifer.johnson@precisionmfg.com",
+        type: "individual",
+        ownership_percentage: 25,
+        role: "CFO",
+        user_id: "user_14",
+        phone: "(214) 555-0346"
+      },
+      {
+        owner_id: "owner_3_3",
+        name: "Thomas Wilson",
+        email: "twilson@precisionmfg.com",
+        type: "individual",
+        ownership_percentage: 15,
+        role: "VP Operations",
+        user_id: "user_11",
+        phone: "(214) 555-0347"
+      },
+      {
+        owner_id: "owner_3_4",
+        name: "Lisa Anderson",
+        email: "landerson@precisionmfg.com",
+        type: "individual",
+        ownership_percentage: 5,
+        role: "VP Sales",
+        user_id: "user_12",
+        phone: "(214) 555-0348"
+      }
+    ],
     main_business: {
       business_id: "business_3",
       name: "Precision Manufacturing Corp",
@@ -235,6 +376,44 @@ export const projects: Project[] = [
     ],
     buyers: ["user_4", "user_5"],
     seller: "user_1",
+    owners: [
+      {
+        owner_id: "owner_4_1",
+        name: "Dr. Sarah Williams",
+        email: "swilliams@desertfamilymed.com",
+        type: "individual",
+        ownership_percentage: 60,
+        role: "Lead Physician & Managing Partner",
+        user_id: "user_4",
+        phone: "(602) 555-0456",
+        address: {
+          street: "1234 North Scottsdale Road",
+          city: "Phoenix",
+          state: "AZ",
+          zip_code: "85016"
+        }
+      },
+      {
+        owner_id: "owner_4_2",
+        name: "Dr. Mark Rodriguez",
+        email: "mrodriguez@desertfamilymed.com",
+        type: "individual",
+        ownership_percentage: 30,
+        role: "Associate Physician",
+        user_id: "user_5",
+        phone: "(602) 555-0457"
+      },
+      {
+        owner_id: "owner_4_3",
+        name: "Phoenix Medical Holdings",
+        email: "info@phoenixmedical.com",
+        type: "business",
+        ownership_percentage: 10,
+        role: "Equipment Financier",
+        business_id: "business_10",
+        phone: "(602) 555-8900"
+      }
+    ],
     main_business: {
       business_id: "business_4",
       name: "Desert Family Medical Group",
@@ -304,6 +483,64 @@ export const projects: Project[] = [
     ],
     buyers: ["user_5", "user_2"],
     seller: "user_3",
+    owners: [
+      {
+        owner_id: "owner_5_1",
+        name: "Jennifer Martinez",
+        email: "jmartinez@pnwretail.com",
+        type: "individual",
+        ownership_percentage: 40,
+        role: "Founder & CEO",
+        user_id: "user_5",
+        phone: "(206) 555-0567",
+        address: {
+          street: "1500 Pike Place",
+          city: "Seattle",
+          state: "WA",
+          zip_code: "98101"
+        }
+      },
+      {
+        owner_id: "owner_5_2",
+        name: "Kevin Thompson",
+        email: "kthompson@pnwretail.com",
+        type: "individual",
+        ownership_percentage: 25,
+        role: "COO",
+        user_id: "user_15",
+        phone: "(206) 555-0568"
+      },
+      {
+        owner_id: "owner_5_3",
+        name: "Amanda Foster",
+        email: "afoster@pnwretail.com",
+        type: "individual",
+        ownership_percentage: 20,
+        role: "VP Marketing",
+        user_id: "user_22",
+        phone: "(206) 555-0569"
+      },
+      {
+        owner_id: "owner_5_4",
+        name: "Seattle Retail Partners LLC",
+        email: "partners@seattleretail.com",
+        type: "business",
+        ownership_percentage: 10,
+        role: "Strategic Investor",
+        business_id: "business_20",
+        phone: "(206) 555-7800"
+      },
+      {
+        owner_id: "owner_5_5",
+        name: "Pacific Investment Group",
+        email: "info@pacificinvest.com",
+        type: "business",
+        ownership_percentage: 5,
+        role: "Minority Investor",
+        business_id: "business_16",
+        phone: "(206) 555-7801"
+      }
+    ],
     main_business: {
       business_id: "business_5",
       name: "Pacific Northwest Retail LLC",
