@@ -107,11 +107,11 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
 
   return (
     <Card>
-      <CardHeader className="p-4 pb-2">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+      <CardHeader className="p-3 pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <CardTitle className="text-lg">Project Overview</CardTitle>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <CardTitle className="text-base sm:text-lg">Project Overview</CardTitle>
               <CardDescription className="text-xs">Key project information and financial summary</CardDescription>
             </div>
           </div>
@@ -147,12 +147,12 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4 pt-2 space-y-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <CardContent className="p-3 pt-2 space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {/* Left Column - Project Details */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Basic Information */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Status</p>
                 <p className="font-medium text-sm leading-tight">{getStatusString(project.status)}</p>
@@ -199,8 +199,10 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
             </div>
 
             {/* Project Name */}
-            <div className="border-t pt-3">
-              <p className="text-xs font-semibold text-muted-foreground mb-2">Project Name</p>
+            <div className="border-t pt-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                <p className="text-xs font-semibold text-muted-foreground">Project Name</p>
+              </div>
               {isEditing ? (
                 <Input
                   name="project_name"
@@ -214,11 +216,11 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
             </div>
 
             {/* Collapsible Description */}
-            <div className="border-t pt-3">
+            <div className="border-t pt-2">
               <Collapsible open={isDescriptionExpanded} onOpenChange={setIsDescriptionExpanded}>
                 <CollapsibleTrigger className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-2 hover:text-foreground transition-colors">
                   {isDescriptionExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                  Description
+                  <span>Description</span>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2">
                   {isEditing ? (
@@ -240,9 +242,9 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
           </div>
 
           {/* Right Column - Financial Details & Chart */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Financial Summary */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Total Loan Amount</p>
                 <p className="font-medium text-primary text-base leading-tight">{formatCurrency(totalLoanAmount)}</p>
@@ -262,7 +264,7 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
             </div>
 
             {/* Loan Distribution Chart */}
-            <div className="border-t pt-3">
+            <div className="border-t pt-2">
               <LoanDistributionChart loanDistributionData={loanDistributionData} />
             </div>
           </div>
