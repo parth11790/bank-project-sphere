@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -134,6 +133,41 @@ const LoanDetails = () => {
             <CardDescription>Basic loan details and terms</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="loan-type">Loan Type</Label>
+              <Select value={loanType} onValueChange={setLoanType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SBA 7(a)">SBA 7(a)</SelectItem>
+                  <SelectItem value="SBA 504 Debenture">SBA 504 Debenture</SelectItem>
+                  <SelectItem value="Commercial Real Estate">Commercial Real Estate</SelectItem>
+                  <SelectItem value="Business Acquisition">Business Acquisition</SelectItem>
+                  <SelectItem value="Equipment Financing">Equipment Financing</SelectItem>
+                  <SelectItem value="Working Capital">Working Capital</SelectItem>
+                  <SelectItem value="Line of Credit">Line of Credit</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status-select">Status</Label>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Underwriting">Underwriting</SelectItem>
+                  <SelectItem value="Approved">Approved</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Declined">Declined</SelectItem>
+                  <SelectItem value="Closed">Closed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="amount">Amount</Label>
               <Input
