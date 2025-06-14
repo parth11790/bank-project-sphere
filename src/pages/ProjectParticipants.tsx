@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import ParticipantHeader from '@/components/participants/ParticipantHeader';
 import ParticipantsList from '@/components/participants/ParticipantsList';
 import BankPersonnelList from '@/components/participants/BankPersonnelList';
+import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
 import { useParticipantData } from '@/hooks/useParticipantData';
 import { useFormDocumentData } from '@/hooks/useFormDocumentData';
 import { useParticipantDialogHandler } from '@/components/participants/ParticipantDialogHandler';
@@ -84,6 +85,7 @@ const ProjectParticipants: React.FC = () => {
     return (
       <Layout>
         <div className="space-y-6">
+          <Skeleton className="h-16 w-full" />
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <Skeleton className="h-10 w-64" />
             <Skeleton className="h-10 w-32" />
@@ -105,6 +107,18 @@ const ProjectParticipants: React.FC = () => {
     );
   }
 
+  if (!project) {
+    return (
+      <Layout>
+        <div className="space-y-6">
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Project not found</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <motion.div
@@ -113,6 +127,8 @@ const ProjectParticipants: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="space-y-6"
       >
+        <ProjectBreadcrumb project={project} currentPageTitle="Participants" />
+        
         <ParticipantHeader 
           projectId={projectId || ''}
           projectName={project?.project_name || 'Project'}

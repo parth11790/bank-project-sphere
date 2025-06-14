@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -6,19 +7,24 @@ import { getProjectById, getBusinessFinancialData } from '@/services';
 import Layout from '@/components/Layout';
 import CashFlowHeader from '@/components/cashFlow/CashFlowHeader';
 import AnalysisTable from '@/components/cashFlow/AnalysisTable';
+import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
+import { Project, isProject } from '@/types/project';
 
 const CashFlowAnalysis: React.FC = () => {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { projectId } =  useParams<{ projectId: string }>();
   
-  const { data: project } = useQuery({
+  const { data: projectData } = useQuery({
     queryKey: ['project', projectId],
-    queryFn: () => getProjectById(projectId || '')
+    queryFn: () => getProjectById(projectId || ''),
+    enabled: !!projectId,
   });
 
   const { data: financialData } = useQuery({
     queryKey: ['financialData', projectId],
     queryFn: () => getBusinessFinancialData(projectId || '')
   });
+
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -74,6 +80,10 @@ const CashFlowAnalysis: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="max-w-[1400px] mx-auto space-y-6"
       >
+        {project && (
+          <ProjectBreadcrumb project={project} currentPageTitle="Cash Flow Analysis" />
+        )}
+        
         <CashFlowHeader 
           projectName={project?.project_name || ''} 
           projectId={projectId || ''} 

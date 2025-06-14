@@ -10,16 +10,20 @@ import Layout from '@/components/Layout';
 import { getProjectById } from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
+import { Project, isProject } from '@/types/project';
 
 const ProjectDocumentation: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
-  const { data: project, isLoading } = useQuery({
+  const { data: projectData, isLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId,
   });
+
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
 
   // Mock data for documents
   const mockDocuments = [
@@ -62,6 +66,7 @@ const ProjectDocumentation: React.FC = () => {
     return (
       <Layout>
         <div className="space-y-6">
+          <Skeleton className="h-16 w-full" />
           <Skeleton className="h-10 w-64" />
           <div className="grid grid-cols-1 gap-6">
             <Skeleton className="h-40 w-full" />
@@ -86,6 +91,8 @@ const ProjectDocumentation: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="space-y-6"
       >
+        <ProjectBreadcrumb project={project} currentPageTitle="Documentation" />
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">

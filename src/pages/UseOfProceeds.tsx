@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import Layout from '@/components/Layout';
 import EnhancedUseOfProceedsTable from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 import { getProjectById, getUseOfProceedsForProject } from '@/lib/mockData/utilities';
@@ -9,25 +11,22 @@ import UseOfProceedsHeader from '@/components/useOfProceeds/UseOfProceedsHeader'
 import EmptyState from '@/components/useOfProceeds/EmptyState';
 import { Card } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-
-interface Project {
-  project_id: string;
-  project_name: string;
-  project_type: string;
-  loan_amount: number;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  city?: string;
-  state?: string;
-}
+import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
+import { Project, isProject } from '@/types/project';
 
 const UseOfProceeds: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId || '');
   const [proceedsData, setProceedsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const selectedProject = getProjectById(selectedProjectId) as Project | undefined;
+
+  const { data: projectData } = useQuery({
+    queryKey: ['project', selectedProjectId],
+    queryFn: () => getProjectById(selectedProjectId),
+    enabled: !!selectedProjectId,
+  });
+
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
 
   useEffect(() => {
     if (projectId) {
@@ -71,8 +70,12 @@ const UseOfProceeds: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
+        {project && (
+          <ProjectBreadcrumb project={project} currentPageTitle="Use of Proceeds" />
+        )}
+
         <UseOfProceedsHeader 
-          projectName={selectedProject?.project_name}
+          projectName={project?.project_name}
           projectId={projectId}
           onExport={handleExport}
         />

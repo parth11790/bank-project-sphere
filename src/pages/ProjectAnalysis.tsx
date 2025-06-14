@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -13,6 +14,8 @@ import { toast } from 'sonner';
 import BuyerIncomeCard from '@/components/analysis/BuyerIncomeCard';
 import BusinessCashFlowCard from '@/components/analysis/BusinessCashFlowCard';
 import UseOfProceedsCard from '@/components/analysis/UseOfProceedsCard';
+import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
+import { Project, isProject } from '@/types/project';
 
 const mockAnalysisData = {
   buyerIncome: {
@@ -31,16 +34,19 @@ const ProjectAnalysis: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
-  const { data: project, isLoading } = useQuery({
+  const { data: projectData, isLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId,
   });
 
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
+
   if (isLoading) {
     return (
       <Layout>
         <div className="space-y-6">
+          <Skeleton className="h-16 w-full" />
           <Skeleton className="h-10 w-64" />
           <div className="grid grid-cols-1 gap-6">
             <Skeleton className="h-40 w-full" />
@@ -99,6 +105,8 @@ const ProjectAnalysis: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="space-y-6"
       >
+        <ProjectBreadcrumb project={project} currentPageTitle="Analysis" />
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
