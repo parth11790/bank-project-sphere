@@ -3,17 +3,30 @@ import * as z from 'zod';
 
 // Personal Information Schema
 export const personalInformationSchema = z.object({
-  // Personal Information
+  // Basic Personal Information
+  applicant_name: z.string().min(2, "Applicant name is required"),
   first_name: z.string().min(2, "First name is required"),
   middle_name: z.string().optional(),
   last_name: z.string().min(2, "Last name is required"),
   date_of_birth: z.date({ required_error: "Date of birth is required" }),
   social_security_number: z.string().regex(/^\d{3}-\d{2}-\d{4}$/, "Format must be XXX-XX-XXXX"),
+  
+  // Contact Information
+  primary_phone_number: z.string().min(10, "Phone number is required"),
   primary_phone: z.string().min(10, "Phone number is required"),
-  primary_phone_type: z.enum(['cell', 'home', 'work']),
+  primary_phone_type: z.enum(['cell', 'home', 'work', 'other']),
+  primary_phone_type_other: z.string().optional(),
   secondary_phone: z.string().optional(),
   secondary_phone_type: z.enum(['cell', 'home', 'work']).optional(),
   email_address: z.string().email("Valid email is required"),
+  
+  // Address Information
+  residence_address: z.string().min(5, "Street address is required"),
+  residence_city: z.string().min(2, "City is required"),
+  residence_state: z.string().min(2, "State is required"),
+  residence_zip: z.string().min(5, "ZIP code is required"),
+  residency_start_date: z.date().optional(),
+  residency_end_date: z.date().optional(),
   home_address: z.string().min(5, "Street address is required"),
   home_city: z.string().min(2, "City is required"),
   home_state: z.string().min(2, "State is required"),
@@ -22,6 +35,8 @@ export const personalInformationSchema = z.object({
   mailing_city: z.string().min(2, "Mailing city is required"),
   mailing_state: z.string().min(2, "Mailing state is required"),
   mailing_zip_code: z.string().min(5, "Mailing ZIP code is required"),
+  
+  // Personal Details
   marital_status: z.enum(['married', 'unmarried', 'separated']),
   spouse_name: z.string().optional(),
   dependents_count: z.number().min(0).optional(),
@@ -32,8 +47,13 @@ export const personalInformationSchema = z.object({
   us_citizen: z.enum(['yes', 'no']),
   alien_registration_number: z.string().optional(),
   itin_number: z.string().optional(),
+  
+  // Business Information
+  business_applicant_name: z.string().optional(),
+  ownership_percentage: z.number().min(0).max(100).optional(),
   assets_in_trust: z.enum(['yes', 'no']),
   trust_description: z.string().optional(),
+  business_experience: z.string().optional(),
   
   // Education (repeatable)
   education: z.array(z.object({
@@ -77,6 +97,11 @@ export const personalInformationSchema = z.object({
   
   // Military Service
   military_service: z.enum(['yes', 'no']),
+  military_branch: z.string().optional(),
+  military_rank: z.string().optional(),
+  military_start_date: z.date().optional(),
+  military_end_date: z.date().optional(),
+  discharge_type: z.string().optional(),
   military_service_details: z.object({
     branch: z.string().optional(),
     start_date: z.date().optional(),
@@ -100,6 +125,10 @@ export const personalInformationSchema = z.object({
   business_failure_details: z.string().optional(),
   pledged_property: z.enum(['yes', 'no']),
   pledged_property_details: z.string().optional(),
+  
+  // Certification
+  certification_name: z.string().optional(),
+  certification_date: z.date().optional(),
 });
 
 export type PersonalInformationFormValues = z.infer<typeof personalInformationSchema>;

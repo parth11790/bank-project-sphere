@@ -1,4 +1,3 @@
-
 import { PersonalInformationFormValues } from '@/components/participants/forms/schemas/personalInformationSchema';
 
 // Mock personal information data for owners
@@ -7,16 +6,22 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
     // Project 1 Owners
     'owner_1_1': {
       // Personal Information
+      applicant_name: 'Maria Elena Rodriguez',
       first_name: 'Maria',
       middle_name: 'Elena',
       last_name: 'Rodriguez',
       date_of_birth: new Date('1985-03-15'),
       social_security_number: '123-45-6789',
       primary_phone: '(415) 555-0123',
+      primary_phone_number: '(415) 555-0123',
       primary_phone_type: 'cell',
       secondary_phone: '(415) 555-0456',
       secondary_phone_type: 'work',
       email_address: 'maria.rodriguez@gmail.com',
+      residence_address: '1234 Valencia Street',
+      residence_city: 'San Francisco',
+      residence_state: 'CA',
+      residence_zip: '94110',
       home_address: '1234 Valencia Street',
       home_city: 'San Francisco',
       home_state: 'CA',
@@ -33,6 +38,9 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
       us_government_employee: 'no',
       us_citizen: 'yes',
       assets_in_trust: 'no',
+      business_applicant_name: 'Golden Gate Bistro LLC',
+      ownership_percentage: 45,
+      business_experience: 'Over 15 years of restaurant management experience, including 8 years as managing partner of Golden Gate Bistro. Expertise in operations, staff management, and customer service.',
 
       // Education
       education: [
@@ -121,18 +129,28 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
       unsatisfied_judgments: 'no',
       foreclosure_party: 'no',
       business_failure: 'no',
-      pledged_property: 'no'
+      pledged_property: 'no',
+
+      // Certification
+      certification_name: 'Maria Elena Rodriguez',
+      certification_date: new Date()
     },
 
     'owner_1_2': {
+      applicant_name: 'Carlos Antonio Martinez',
       first_name: 'Carlos',
       middle_name: 'Antonio',
       last_name: 'Martinez',
       date_of_birth: new Date('1982-07-22'),
       social_security_number: '234-56-7890',
       primary_phone: '(415) 555-0124',
+      primary_phone_number: '(415) 555-0124',
       primary_phone_type: 'cell',
       email_address: 'carlos.martinez@gmail.com',
+      residence_address: '5678 Mission Street',
+      residence_city: 'San Francisco',
+      residence_state: 'CA',
+      residence_zip: '94112',
       home_address: '5678 Mission Street',
       home_city: 'San Francisco',
       home_state: 'CA',
@@ -149,6 +167,9 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
       us_government_employee: 'no',
       us_citizen: 'yes',
       assets_in_trust: 'no',
+      business_applicant_name: 'Golden Gate Bistro LLC',
+      ownership_percentage: 35,
+      business_experience: '12 years of hospitality management experience with focus on kitchen operations and menu development.',
 
       education: [
         {
@@ -211,7 +232,9 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
       unsatisfied_judgments: 'no',
       foreclosure_party: 'no',
       business_failure: 'no',
-      pledged_property: 'no'
+      pledged_property: 'no',
+      certification_name: 'Carlos Antonio Martinez',
+      certification_date: new Date()
     },
 
     // Project 2 Owners
@@ -660,13 +683,19 @@ export const getOwnerPersonalInformation = (ownerId: string): PersonalInformatio
 
   // Return the mock data for the requested owner, or default values if not found
   return ownerMockData[ownerId] || {
+    applicant_name: '',
     first_name: '',
     last_name: '',
     date_of_birth: new Date(),
     social_security_number: '',
     primary_phone: '',
+    primary_phone_number: '',
     primary_phone_type: 'cell',
     email_address: '',
+    residence_address: '',
+    residence_city: '',
+    residence_state: '',
+    residence_zip: '',
     home_address: '',
     home_city: '',
     home_state: '',
