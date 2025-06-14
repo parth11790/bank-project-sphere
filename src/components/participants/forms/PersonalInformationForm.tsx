@@ -40,7 +40,21 @@ const PersonalInformationForm: React.FC = () => {
           const participants = await getParticipantsWithDetailsData(projectId);
           console.log('PersonalInfoForm: Available participants:', participants.map(p => ({ id: p.participant_id, name: p.name })));
           
-          const foundParticipant = participants.find(p => p.participant_id === participantId);
+          // Try to find participant by exact ID match first
+          let foundParticipant = participants.find(p => p.participant_id === participantId);
+          
+          // If not found and the ID looks like an owner ID, try to match by extracting user ID
+          if (!foundParticipant && participantId.startsWith('owner_')) {
+            console.log('PersonalInfoForm: Trying to match owner ID to participant');
+            const userIdMatch = participantId.match(/owner_(\d+)_/);
+            if (userIdMatch) {
+              const userId = userIdMatch[1];
+              const expectedParticipantId = `part_${userId}`;
+              console.log('PersonalInfoForm: Looking for participant with ID:', expectedParticipantId);
+              foundParticipant = participants.find(p => p.participant_id === expectedParticipantId);
+            }
+          }
+          
           console.log('PersonalInfoForm: Looking for participant ID:', participantId);
           console.log('PersonalInfoForm: Found participant:', foundParticipant);
           
@@ -51,7 +65,6 @@ const PersonalInformationForm: React.FC = () => {
             console.error('PersonalInfoForm: Participant not found with ID:', participantId);
             setError(`Participant with ID "${participantId}" not found`);
             toast.error('Participant not found');
-            // Don't auto-redirect immediately, let user decide
           }
         } catch (error) {
           console.error('PersonalInfoForm: Error fetching participant:', error);

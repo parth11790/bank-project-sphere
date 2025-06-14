@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,15 +23,23 @@ const OwnersSection: React.FC<OwnersSectionProps> = ({
   const owners = project.owners || [];
 
   const handleOwnerClick = (ownerId: string) => {
-    // Find the participant that corresponds to this owner
-    const participant = project.participants?.find(p => p.userId === ownerId);
-    if (participant) {
-      // Use the participant ID for navigation
-      navigate(`/project/participants/${project.project_id}/personal-info/part_${participant.userId}`);
+    console.log('OwnersSection: Clicking owner with ID:', ownerId);
+    
+    // Extract the user ID from the owner ID (e.g., "owner_5_1" -> "5")
+    const userIdMatch = ownerId.match(/owner_(\d+)_/);
+    const userId = userIdMatch ? userIdMatch[1] : null;
+    
+    console.log('OwnersSection: Extracted user ID:', userId);
+    
+    if (userId) {
+      // Use the extracted user ID to create the participant ID format
+      const participantId = `part_${userId}`;
+      console.log('OwnersSection: Navigating to participant ID:', participantId);
+      navigate(`/project/participants/${project.project_id}/personal-info/${participantId}`);
     } else {
-      console.warn('No participant found for owner:', ownerId);
-      // Fallback: try using the owner ID directly
-      navigate(`/project/participants/${project.project_id}/personal-info/part_${ownerId}`);
+      console.warn('OwnersSection: Could not extract user ID from owner ID:', ownerId);
+      // Fallback: use the owner ID directly
+      navigate(`/project/participants/${project.project_id}/personal-info/${ownerId}`);
     }
   };
 
