@@ -21,127 +21,150 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
   const watchAssetsInTrust = form.watch('assets_in_trust');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card>
-        <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Basic Information</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="applicant_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Applicant Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="social_security_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Social Security Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="XXX-XX-XXXX" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="date_of_birth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date of Birth</FormLabel>
-                <FormControl>
-                  <DatePicker selected={field.value} onSelect={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="primary_phone_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Primary Phone Number</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="primary_phone_type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Primary Phone Type</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cell">Cell</SelectItem>
-                      <SelectItem value="home">Home</SelectItem>
-                      <SelectItem value="work">Work</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {watchPhoneType === 'other' && (
+        <CardContent className="space-y-4">
+          {/* Name and SSN Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <FormField
               control={form.control}
-              name="primary_phone_type_other"
+              name="first_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Specify Other Phone Type</FormLabel>
+                  <FormLabel className="text-sm">First Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} className="h-9" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
 
-          <FormField
-            control={form.control}
-            name="email_address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email Address</FormLabel>
-                <FormControl>
-                  <Input type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            <FormField
+              control={form.control}
+              name="last_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Last Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="social_security_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">SSN</FormLabel>
+                  <FormControl>
+                    <Input placeholder="XXX-XX-XXXX" {...field} className="h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* DOB, Phone, Email Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <FormField
+              control={form.control}
+              name="date_of_birth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Date of Birth</FormLabel>
+                  <FormControl>
+                    <DatePicker selected={field.value} onSelect={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="primary_phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Primary Phone</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email_address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" {...field} className="h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Phone Type Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="primary_phone_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Phone Type</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cell">Cell</SelectItem>
+                        <SelectItem value="home">Home</SelectItem>
+                        <SelectItem value="work">Work</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {watchPhoneType === 'other' && (
+              <FormField
+                control={form.control}
+                name="primary_phone_type_other"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm">Specify Other</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="h-9" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
-          />
+          </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Address Information</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Address</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <FormField
@@ -149,24 +172,24 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
             name="residence_address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Residence Address</FormLabel>
+                <FormLabel className="text-sm">Street Address</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} className="h-9" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <FormField
               control={form.control}
               name="residence_city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City</FormLabel>
+                  <FormLabel className="text-sm">City</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} className="h-9" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -178,9 +201,9 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
               name="residence_state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>State</FormLabel>
+                  <FormLabel className="text-sm">State</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} className="h-9" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -192,37 +215,21 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
               name="residence_zip"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ZIP Code</FormLabel>
+                  <FormLabel className="text-sm">ZIP</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} className="h-9" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="residency_start_date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Residency Start Date</FormLabel>
-                  <FormControl>
-                    <DatePicker selected={field.value} onSelect={field.onChange} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="residency_end_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Residency End Date (Optional)</FormLabel>
+                  <FormLabel className="text-sm">Since</FormLabel>
                   <FormControl>
                     <DatePicker selected={field.value} onSelect={field.onChange} />
                   </FormControl>
@@ -235,197 +242,91 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Personal Details</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Personal Details</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <FormField
-            control={form.control}
-            name="marital_status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Marital Status</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-row space-x-6"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="married" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Married</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="unmarried" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Unmarried</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="separated" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Separated</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="liable_for_alimony"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Are you currently liable for alimony payments, child support, or separate maintenance income?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-row space-x-6"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="yes" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Yes</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="no" />
-                      </FormControl>
-                      <FormLabel className="font-normal">No</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="delinquent_child_support"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Are you more than 60 days delinquent on any obligation to pay child support?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-row space-x-6"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="yes" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Yes</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="no" />
-                      </FormControl>
-                      <FormLabel className="font-normal">No</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="us_government_employee"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Are you employed by the U.S. Government?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-row space-x-6"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="yes" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Yes</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="no" />
-                      </FormControl>
-                      <FormLabel className="font-normal">No</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {watchGovEmployee === 'yes' && (
+        <CardContent className="space-y-4">
+          {/* Marital Status - Horizontal */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="government_agency_position"
+              name="marital_status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Please provide the agency/position (Government Employment)</FormLabel>
+                  <FormLabel className="text-sm">Marital Status</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="married" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Married</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="unmarried" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Single</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="separated" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Separated</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
 
-          <FormField
-            control={form.control}
-            name="us_citizen"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Are you a U.S. Citizen?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-row space-x-6"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="yes" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Yes</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="no" />
-                      </FormControl>
-                      <FormLabel className="font-normal">No</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="us_citizen"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">U.S. Citizen?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {watchUsCitizen === 'no' && (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="alien_registration_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Alien Registration Number</FormLabel>
+                    <FormLabel className="text-sm">Alien Registration Number</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="h-9" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -437,9 +338,9 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
                 name="itin_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>International Taxpayer Identification Number (ITIN)</FormLabel>
+                    <FormLabel className="text-sm">ITIN</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input {...field} className="h-9" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -447,72 +348,150 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
               />
             </div>
           )}
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Business Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <FormField
-            control={form.control}
-            name="business_applicant_name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Applicant Name (associated with this personal form)</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Yes/No Questions - Compact Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="liable_for_alimony"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Liable for alimony/child support?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="ownership_percentage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Percentage of what the Applicant Business Owns/Will Own</FormLabel>
-                <FormControl>
-                  <Input type="number" min="0" max="100" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="delinquent_child_support"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Delinquent child support (60+ days)?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="assets_in_trust"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Do you or the Applicant Business hold any assets in a trust?</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-row space-x-6"
-                  >
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="yes" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Yes</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="no" />
-                      </FormControl>
-                      <FormLabel className="font-normal">No</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="us_government_employee"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">U.S. Government employee?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="assets_in_trust"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Assets held in trust?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Conditional Fields */}
+          {watchGovEmployee === 'yes' && (
+            <FormField
+              control={form.control}
+              name="government_agency_position"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Agency/Position</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} rows={2} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {watchAssetsInTrust === 'yes' && (
             <FormField
@@ -520,15 +499,52 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ form }
               name="trust_description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Please describe the trust and assets</FormLabel>
+                  <FormLabel className="text-sm">Trust Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea {...field} rows={2} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Business Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="business_applicant_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Business Applicant Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="ownership_percentage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm">Ownership %</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" max="100" {...field} className="h-9" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
