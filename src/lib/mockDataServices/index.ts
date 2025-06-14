@@ -4,3 +4,4 @@ export * from './projectService';
 export * from './participantService';
 export * from './businessService';
 export * from './formService';
+export * from './ownerService';

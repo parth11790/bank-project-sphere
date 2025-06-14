@@ -20,6 +20,7 @@ import { BackgroundSection } from './components/BackgroundSection';
 import { CertificationSection } from './components/CertificationSection';
 import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
+import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
 import { Participant } from '@/types/participant';
 
 const PersonalInformationForm: React.FC = () => {
@@ -29,6 +30,34 @@ const PersonalInformationForm: React.FC = () => {
   const [participant, setParticipant] = useState<Participant | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const form = useForm<PersonalInformationFormValues>({
+    resolver: zodResolver(personalInformationSchema),
+    defaultValues: {
+      education: [{ school_name: '', degree_certification: '', area_of_study: '', start_date: new Date() }],
+      employment_history: [{ employer_name: '', position_title: '', start_date: new Date(), responsibilities: '', reason_for_leaving: '' }],
+      professional_references: [
+        { reference_name: '', relationship: '', phone_number: '', email_address: '' },
+        { reference_name: '', relationship: '', phone_number: '', email_address: '' },
+        { reference_name: '', relationship: '', phone_number: '', email_address: '' }
+      ],
+      primary_phone_type: 'cell',
+      marital_status: 'unmarried',
+      liable_for_alimony: 'no',
+      delinquent_child_support: 'no',
+      us_government_employee: 'no',
+      us_citizen: 'yes',
+      assets_in_trust: 'no',
+      military_service: 'no',
+      declared_bankrupt: 'no',
+      criminal_charges: 'no',
+      federal_debt_delinquent: 'no',
+      unsatisfied_judgments: 'no',
+      foreclosure_party: 'no',
+      business_failure: 'no',
+      pledged_property: 'no',
+    },
+  });
 
   useEffect(() => {
     const fetchParticipant = async () => {
@@ -61,6 +90,14 @@ const PersonalInformationForm: React.FC = () => {
           if (foundParticipant) {
             setParticipant(foundParticipant);
             setError(null);
+            
+            // Load mock data for owner if this is an owner ID
+            if (participantId.startsWith('owner_')) {
+              console.log('PersonalInfoForm: Loading owner mock data for:', participantId);
+              const ownerData = getOwnerPersonalInformation(participantId);
+              form.reset(ownerData);
+              console.log('PersonalInfoForm: Loaded owner data:', ownerData);
+            }
           } else {
             console.error('PersonalInfoForm: Participant not found with ID:', participantId);
             setError(`Participant with ID "${participantId}" not found`);
@@ -77,35 +114,7 @@ const PersonalInformationForm: React.FC = () => {
     };
 
     fetchParticipant();
-  }, [projectId, participantId]);
-
-  const form = useForm<PersonalInformationFormValues>({
-    resolver: zodResolver(personalInformationSchema),
-    defaultValues: {
-      education: [{ school_name: '', degree_certification: '', area_of_study: '', start_date: new Date() }],
-      employment_history: [{ employer_name: '', position_title: '', start_date: new Date(), responsibilities: '', reason_for_leaving: '' }],
-      professional_references: [
-        { reference_name: '', relationship: '', phone_number: '', email_address: '' },
-        { reference_name: '', relationship: '', phone_number: '', email_address: '' },
-        { reference_name: '', relationship: '', phone_number: '', email_address: '' }
-      ],
-      primary_phone_type: 'cell',
-      marital_status: 'unmarried',
-      liable_for_alimony: 'no',
-      delinquent_child_support: 'no',
-      us_government_employee: 'no',
-      us_citizen: 'yes',
-      assets_in_trust: 'no',
-      military_service: 'no',
-      declared_bankrupt: 'no',
-      criminal_charges: 'no',
-      federal_debt_delinquent: 'no',
-      unsatisfied_judgments: 'no',
-      foreclosure_party: 'no',
-      business_failure: 'no',
-      pledged_property: 'no',
-    },
-  });
+  }, [projectId, participantId, form]);
 
   const onSubmit = (data: PersonalInformationFormValues) => {
     console.log('Personal Information Form Data:', data);
