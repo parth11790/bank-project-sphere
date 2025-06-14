@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -14,10 +15,14 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Plus, Save, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
+import { projects } from '@/lib/mockData/projects';
 
 const LoanDetails = () => {
   const navigate = useNavigate();
   const { projectId, loanId } = useParams();
+  
+  // Get project data
+  const project = projects.find(p => p.project_id === projectId);
   
   // Basic loan information
   const [loanType, setLoanType] = useState('SBA 504 Debenture');
@@ -91,6 +96,15 @@ const LoanDetails = () => {
     ));
   };
 
+  const getStatusVariant = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'active': return 'default';
+      case 'pending': return 'secondary';
+      case 'completed': return 'default';
+      default: return 'secondary';
+    }
+  };
+
   return (
     <Layout>
       <motion.div 
@@ -108,7 +122,7 @@ const LoanDetails = () => {
             </Button>
             <div>
               <h1 className="text-3xl font-bold">
-                {isNewLoan ? 'New Loan' : `${loanType}`}
+                {isNewLoan ? 'New Loan' : (project?.project_name || 'Unknown Project')}
               </h1>
               <p className="text-muted-foreground">
                 Project ID: {projectId}
@@ -116,8 +130,8 @@ const LoanDetails = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={status === 'Underwriting' ? 'secondary' : 'default'}>
-              {status}
+            <Badge variant={getStatusVariant(project?.status || 'pending')}>
+              {project?.status ? project.status.charAt(0).toUpperCase() + project.status.slice(1) : 'Pending'}
             </Badge>
             <Button onClick={handleSave}>
               <Save className="h-4 w-4 mr-2" />
