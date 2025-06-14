@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -162,7 +163,7 @@ const PersonalInformationForm: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-4">
+      <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -175,7 +176,7 @@ const PersonalInformationForm: React.FC = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto p-4">
+      <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <p className="text-destructive mb-4">{error}</p>
@@ -201,7 +202,7 @@ const PersonalInformationForm: React.FC = () => {
 
   if (!participant) {
     return (
-      <div className="container mx-auto p-4">
+      <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="mb-4">Participant not found</p>
@@ -216,7 +217,7 @@ const PersonalInformationForm: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 space-y-4">
+    <div className="w-[90%] mx-auto p-4 space-y-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
