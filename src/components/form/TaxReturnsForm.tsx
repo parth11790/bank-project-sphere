@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +7,7 @@ import ContributionIndicator from './ContributionIndicator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info } from 'lucide-react';
+import DebtSummarySection from './DebtSummarySection';
 
 interface TaxReturnsFormProps {
   formValues: Record<string, string>;
@@ -130,75 +130,84 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Tax Returns Information</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* Tax Returns Table */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-1/3">Field</TableHead>
-                {selectedYears.map((year, index) => (
-                  <TableHead key={year} className="text-center">
-                    <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
-                      <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableYears.map((availableYear) => (
-                          <SelectItem key={availableYear} value={availableYear}>
-                            {availableYear}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {/* Basic Information */}
-              {renderFormRow('adjustedGrossIncome', 'Adjusted Gross Income ($)', true)}
-              {renderFormRow('householdMembers', 'Number of Household Members')}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Tax Returns Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Tax Returns Table */}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/3">Field</TableHead>
+                  {selectedYears.map((year, index) => (
+                    <TableHead key={year} className="text-center">
+                      <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
+                        <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableYears.map((availableYear) => (
+                            <SelectItem key={availableYear} value={availableYear}>
+                              {availableYear}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {/* Basic Information */}
+                {renderFormRow('adjustedGrossIncome', 'Adjusted Gross Income ($)', true)}
+                {renderFormRow('householdMembers', 'Number of Household Members')}
 
-              {/* Income Fields */}
-              {renderFormRow('wages', 'Wages, Salaries ($)', true)}
-              {renderFormRow('interestDividend', 'Interest & Dividend Income ($)', true)}
-              {renderFormRow('alimonyReceived', 'Alimony Received ($)', true)}
-              {renderFormRow('iraDistributions', 'IRA Distributions ($)', true)}
-              {renderFormRow('pensionsAnnuities', 'Pensions / Annuities ($)', true)}
-              {renderFormRow('socialSecurityBenefits', 'Social Security Benefits ($)', true)}
-              {renderFormRow('scheduleCIncome', 'Schedule C - Business Income / Loss ($)', true)}
-              {renderFormRow('scheduleCDepreciation', 'Schedule C - Business Depreciation / Amortization ($)', true)}
-              {renderFormRow('scheduleCInterest', 'Schedule C - Business Interest ($)', true)}
-              {renderFormRow('scheduleERentalIncome', 'Schedule E - Rental Real Estate Income / Loss ($)', true)}
-              {renderFormRow('scheduleERentalInterest', 'Schedule E - Rental Real Estate Interest ($)', true)}
-              {renderFormRow('scheduleERentalDepreciation', 'Schedule E - Rental Real Estate Depreciation / Amortization ($)', true)}
-              {renderFormRow('scheduleFIncome', 'Schedule F - Farm Income / Loss ($)', true)}
-              {renderFormRow('scheduleFInterest', 'Schedule F - Farm Interest ($)', true)}
-              {renderFormRow('scheduleFDepreciation', 'Schedule F - Farm Depreciation / Amortization ($)', true)}
-              {renderFormRow('partnershipDistributions', 'Partnership / S-Corp Distributions ($)', true)}
-              {renderFormRow('capitalContributions', 'Capital Contributions ($)', true)}
-              {renderFormRow('otherCashIncome', 'Other Cash Income ($)', true)}
+                {/* Income Fields */}
+                {renderFormRow('wages', 'Wages, Salaries ($)', true)}
+                {renderFormRow('interestDividend', 'Interest & Dividend Income ($)', true)}
+                {renderFormRow('alimonyReceived', 'Alimony Received ($)', true)}
+                {renderFormRow('iraDistributions', 'IRA Distributions ($)', true)}
+                {renderFormRow('pensionsAnnuities', 'Pensions / Annuities ($)', true)}
+                {renderFormRow('socialSecurityBenefits', 'Social Security Benefits ($)', true)}
+                {renderFormRow('scheduleCIncome', 'Schedule C - Business Income / Loss ($)', true)}
+                {renderFormRow('scheduleCDepreciation', 'Schedule C - Business Depreciation / Amortization ($)', true)}
+                {renderFormRow('scheduleCInterest', 'Schedule C - Business Interest ($)', true)}
+                {renderFormRow('scheduleERentalIncome', 'Schedule E - Rental Real Estate Income / Loss ($)', true)}
+                {renderFormRow('scheduleERentalInterest', 'Schedule E - Rental Real Estate Interest ($)', true)}
+                {renderFormRow('scheduleERentalDepreciation', 'Schedule E - Rental Real Estate Depreciation / Amortization ($)', true)}
+                {renderFormRow('scheduleFIncome', 'Schedule F - Farm Income / Loss ($)', true)}
+                {renderFormRow('scheduleFInterest', 'Schedule F - Farm Interest ($)', true)}
+                {renderFormRow('scheduleFDepreciation', 'Schedule F - Farm Depreciation / Amortization ($)', true)}
+                {renderFormRow('partnershipDistributions', 'Partnership / S-Corp Distributions ($)', true)}
+                {renderFormRow('capitalContributions', 'Capital Contributions ($)', true)}
+                {renderFormRow('otherCashIncome', 'Other Cash Income ($)', true)}
 
-              {/* Calculated Gross Cash Flow */}
-              {renderFormRow('grossCashFlow', 'Gross Cash Flow ($)', true, false, true)}
+                {/* Calculated Gross Cash Flow */}
+                {renderFormRow('grossCashFlow', 'Gross Cash Flow ($)', true, false, true)}
 
-              {/* Expense Fields */}
-              {renderFormRow('federalStateTaxes', 'Federal & State Taxes ($)', false, true)}
-              {renderFormRow('otherExpenses', 'Other Expenses ($)', false, true)}
-              {renderFormRow('livingExpenses', 'Living Expenses ($)', false, true, true)}
+                {/* Expense Fields */}
+                {renderFormRow('federalStateTaxes', 'Federal & State Taxes ($)', false, true)}
+                {renderFormRow('otherExpenses', 'Other Expenses ($)', false, true)}
+                {renderFormRow('livingExpenses', 'Living Expenses ($)', false, true, true)}
 
-              {/* Calculated Net Cash Flow */}
-              {renderFormRow('netCashFlow', 'Net Cash Flow ($)', false, false, true)}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+                {/* Calculated Net Cash Flow */}
+                {renderFormRow('netCashFlow', 'Net Cash Flow ($)', false, false, true)}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <DebtSummarySection 
+        formValues={formValues}
+        calculatedValues={calculatedValues}
+        onInputChange={onInputChange}
+        selectedYears={selectedYears}
+      />
+    </div>
   );
 };
 
