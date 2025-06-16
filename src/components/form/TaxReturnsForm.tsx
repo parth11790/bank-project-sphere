@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,6 +12,7 @@ interface TaxReturnsFormProps {
   calculatedValues: {
     grossCashFlow: number;
     netCashFlow: number;
+    livingExpenses: number;
   };
   onInputChange: (field: string, value: string) => void;
 }
@@ -34,12 +35,25 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
 
   const renderInputCell = (fieldName: string, year: string, isReadOnly: boolean = false) => {
     const key = getFieldKey(fieldName, year);
+    let value = formValues[key] || '';
+    
+    // For calculated fields, use the calculated values for the current year (2023)
+    if (isReadOnly && year === '2023') {
+      if (fieldName === 'grossCashFlow') {
+        value = calculatedValues.grossCashFlow.toFixed(2);
+      } else if (fieldName === 'netCashFlow') {
+        value = calculatedValues.netCashFlow.toFixed(2);
+      } else if (fieldName === 'livingExpenses') {
+        value = calculatedValues.livingExpenses.toFixed(2);
+      }
+    }
+    
     return (
       <TableCell className="p-2">
         <Input
           type="number"
           placeholder="0"
-          value={formValues[key] || ''}
+          value={value}
           onChange={(e) => onInputChange(key, e.target.value)}
           readOnly={isReadOnly}
           className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
@@ -139,7 +153,7 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
               {/* Expense Fields */}
               {renderFormRow('federalStateTaxes', 'Federal & State Taxes ($)', false, true)}
               {renderFormRow('otherExpenses', 'Other Expenses ($)', false, true)}
-              {renderFormRow('livingExpenses', 'Living Expenses ($)', false, true)}
+              {renderFormRow('livingExpenses', 'Living Expenses ($)', false, true, true)}
 
               {/* Calculated Net Cash Flow */}
               {renderFormRow('netCashFlow', 'Net Cash Flow ($)', false, false, true)}
@@ -156,7 +170,7 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
               <li>• Include Amortization, if applicable (Business & Rental Depreciation)</li>
               <li>• Enter as negative (Capital Contributions)</li>
               <li>• Example: Guaranteed payments to partners for Partnerships</li>
-              <li>• This autocalculates the greater of $5M per household member or 15% of AGI (Living Expenses)</li>
+              <li>• Living Expenses autocalculates as the greater of $5,000 per household member or 15% of AGI</li>
             </ul>
           </div>
         </div>
