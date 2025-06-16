@@ -1,4 +1,3 @@
-
 import { FormTemplate, Document } from '@/types/form';
 
 export const individualFormsData: FormTemplate[] = [
@@ -12,6 +11,7 @@ export const individualFormsData: FormTemplate[] = [
   { form_id: "form_17", name: "Personal Credit History", entity_type: "individual" },
   { form_id: "form_18", name: "Management Experience", entity_type: "individual" },
   { form_id: "form_19", name: "Personal References", entity_type: "individual" },
+  { form_id: "form_29", name: "Personal Debt Summary", entity_type: "individual" },
 ];
 
 export const businessFormsData: FormTemplate[] = [

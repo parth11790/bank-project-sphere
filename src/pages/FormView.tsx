@@ -18,6 +18,7 @@ import PersonalFinancialStatementForm from '@/components/form/PersonalFinancialS
 import BalanceSheetForm from '@/components/form/BalanceSheetForm';
 import GenericForm from '@/components/form/GenericForm';
 import FormAnalysis from '@/components/form/FormAnalysis';
+import DebtSummaryForm from '@/components/form/DebtSummaryForm';
 
 // Import custom hooks
 import { useTaxReturnCalculations } from '@/hooks/useTaxReturnCalculations';
@@ -81,6 +82,13 @@ const FormView: React.FC = () => {
                   />
                 )}
                 
+                {formName === 'Personal Debt Summary' && (
+                  <DebtSummaryForm 
+                    formValues={formValues}
+                    onInputChange={handleInputChange}
+                  />
+                )}
+                
                 {formName === 'Personal Financial Statement' && (
                   <PersonalFinancialStatementForm />
                 )}
@@ -89,7 +97,7 @@ const FormView: React.FC = () => {
                   <BalanceSheetForm />
                 )}
                 
-                {formName !== 'Tax Returns' && formName !== 'Personal Financial Statement' && formName !== 'Balance Sheet' && (
+                {formName !== 'Tax Returns' && formName !== 'Personal Debt Summary' && formName !== 'Personal Financial Statement' && formName !== 'Balance Sheet' && (
                   <GenericForm />
                 )}
                 
