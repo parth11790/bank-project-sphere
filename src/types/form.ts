@@ -1,15 +1,14 @@
-
 export interface Form {
   form_id: string;
   name: string;
-  status?: 'submitted' | 'pending';
+  status?: 'submitted' | 'pending' | 'overdue';
 }
 
 export interface FormTemplate {
   form_id: string;
   name: string;
   entity_type: string;
-  status?: 'submitted' | 'pending';
+  status?: 'submitted' | 'pending' | 'overdue';
 }
 
 export interface Document {

@@ -8,6 +8,7 @@ import { useFormDocumentData } from '@/hooks/useFormDocumentData';
 import { FormTemplate } from '@/types/form';
 import AssignmentDialog from '@/components/AssignmentDialog';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface FormsAssignmentSectionProps {
   participant?: any;
@@ -47,11 +48,17 @@ const getMockAssignedForms = (participantId: string): AssignedForm[] => {
 };
 
 export const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ participant }) => {
+  const navigate = useNavigate();
   const { individualForms } = useFormDocumentData();
   const [assignedForms, setAssignedForms] = useState<AssignedForm[]>(
     participant ? getMockAssignedForms(participant.participant_id) : []
   );
   const [showAssignmentDialog, setShowAssignmentDialog] = useState(false);
+
+  const handleFormClick = (form: AssignedForm) => {
+    // Navigate to the specific form with query parameters
+    navigate(`/form/${form.form_id}?name=${encodeURIComponent(form.name)}&participant=${encodeURIComponent(participant?.name || 'Unknown')}`);
+  };
 
   const handleAssignForms = (forms: FormTemplate[]) => {
     const newAssignments: AssignedForm[] = forms.map(form => ({
@@ -121,10 +128,13 @@ export const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ 
             <div className="space-y-4">
               {assignedForms.map((form) => (
                 <div key={form.assignment_id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50">
-                  <div className="flex items-center gap-3">
+                  <div 
+                    className="flex items-center gap-3 flex-1 cursor-pointer"
+                    onClick={() => handleFormClick(form)}
+                  >
                     {getStatusIcon(form.status)}
                     <div className="flex-1">
-                      <div className="font-medium">{form.name}</div>
+                      <div className="font-medium hover:text-primary transition-colors">{form.name}</div>
                       <div className="text-sm text-muted-foreground">
                         Assigned: {form.assigned_date} • Due: {form.due_date}
                       </div>
@@ -135,7 +145,10 @@ export const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ 
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleRemoveForm(form.assignment_id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveForm(form.assignment_id);
+                      }}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <X className="h-4 w-4" />
