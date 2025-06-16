@@ -12,7 +12,7 @@ interface ResumeSectionProps {
   participant?: any;
 }
 
-export const ResumeSection: React.FC<ResumeSectionProps> = ({ form, participant }) => {
+export const ResumeSection: React.FC<ResumeSectionProps> = ({ form }) => {
   return (
     <div className="space-y-6">
       <Card>
@@ -22,14 +22,14 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ form, participant 
         <CardContent className="space-y-8">
           <div>
             <h3 className="text-base font-semibold mb-4">Education History</h3>
-            <EducationSection form={form} participant={participant} />
+            <EducationSection form={form} />
           </div>
           
           <Separator />
           
           <div>
             <h3 className="text-base font-semibold mb-4">Employment History</h3>
-            <EmploymentSection form={form} participant={participant} />
+            <EmploymentSection form={form} />
           </div>
         </CardContent>
       </Card>
