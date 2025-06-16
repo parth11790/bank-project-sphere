@@ -27,18 +27,33 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
   const [selectedYears, setSelectedYears] = useState<string[]>(['2023', '2022', '2021']);
   const availableYears = ['2023', '2022', '2021', '2020', '2019'];
 
-  // Notes for specific fields
+  // Instructions for each field from the image
   const fieldNotes: Record<string, string> = {
-    'scheduleCInterest': 'Exclude Interest from K-1s if Distributions included for that entity below',
-    'iraDistributions': 'Only include if recurring & over age 59 1/2',
-    'pensionsAnnuities': 'Only include if recurring',
-    'socialSecurityBenefits': 'Only include if recurring',
-    'scheduleCDepreciation': 'Include Amortization, if applicable',
-    'scheduleERentalDepreciation': 'Include Amortization, if applicable',
-    'scheduleFDepreciation': 'Include Amortization, if applicable',
-    'capitalContributions': 'Enter as negative',
+    'adjustedGrossIncome': '(1040, line 11)',
+    'householdMembers': 'Count Taxpayers + Dependents',
+    'wages': '(1040, line 1)',
+    'interestDividend': '(1040, lines 2a, 2b & 3a) - Exclude Interest from K-1s if Distributions included for that entity below (can be found on Sch B)',
+    'alimonyReceived': '(Schedule 1, line 2a)',
+    'iraDistributions': '(1040, line 4a) - Only include if recurring & over age 59 1/2',
+    'pensionsAnnuities': '(1040, line 5a) - Only include if recurring',
+    'socialSecurityBenefits': '(1040, line 6a) - Only include if recurring',
+    'scheduleCIncome': '(Schedule C, line 31)',
+    'scheduleCDepreciation': '(Schedule C, line 13) - Include Amortization, if applicable',
+    'scheduleCInterest': '(Schedule C, line 16a & 16b) - Exclude Interest from K-1s if Distributions included for that entity below',
+    'scheduleERentalIncome': '(Schedule E, line 21)',
+    'scheduleERentalInterest': '(Schedule E, line 12 & 13)',
+    'scheduleERentalDepreciation': '(Schedule E, line 18) - Include Amortization, if applicable',
+    'scheduleFIncome': '(Schedule F, line 34)',
+    'scheduleFInterest': '(Schedule F, line 21a & 21b)',
+    'scheduleFDepreciation': '(Schedule F, line 14) - Include Amortization, if applicable',
+    'partnershipDistributions': '(Business - Sch K-1, line 16 - "17")',
+    'capitalContributions': '(Business - Sch K-1) - Enter as negative',
     'otherCashIncome': 'Example: Guaranteed payments to partners for Partnerships',
-    'livingExpenses': 'Autocalculates as the greater of $5,000 per household member or 15% of AGI'
+    'grossCashFlow': 'Calculated field - sum of all income items above',
+    'federalStateTaxes': 'Federal (1040, line 24) & State Taxes (D-400, line 17 or Sch A, line 5a) (Sch 1, lines 11[2022] or lines 12 [2022, 2023] , 17, 18a, and 13 + Sch A, lines 1, 5a, 6, 11)',
+    'otherExpenses': 'Other cash expenses not included above',
+    'livingExpenses': 'This autocalculates the greater of $5000 per household member or 15% of AGI',
+    'netCashFlow': 'Calculated field - Gross Cash Flow minus all expenses'
   };
 
   const handleYearChange = (index: number, year: string) => {
@@ -85,7 +100,7 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
     isExpense: boolean = false,
     isCalculated: boolean = false
   ) => {
-    const hasNote = fieldNotes[fieldName];
+    const note = fieldNotes[fieldName];
     
     return (
       <TableRow className={isCalculated ? "bg-muted font-semibold" : ""}>
@@ -97,18 +112,16 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
               )}
               <span>{label}</span>
             </div>
-            {hasNote && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">{hasNote}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="max-w-xs">{note}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </TableCell>
         {selectedYears.map((year) => renderInputCell(fieldName, year, isCalculated))}
