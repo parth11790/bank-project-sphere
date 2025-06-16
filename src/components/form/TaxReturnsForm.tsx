@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ContributionIndicator from './ContributionIndicator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Info } from 'lucide-react';
 
 interface TaxReturnsFormProps {
   formValues: Record<string, string>;
@@ -24,6 +26,20 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
 }) => {
   const [selectedYears, setSelectedYears] = useState<string[]>(['2023', '2022', '2021']);
   const availableYears = ['2023', '2022', '2021', '2020', '2019'];
+
+  // Notes for specific fields
+  const fieldNotes: Record<string, string> = {
+    'scheduleCInterest': 'Exclude Interest from K-1s if Distributions included for that entity below',
+    'iraDistributions': 'Only include if recurring & over age 59 1/2',
+    'pensionsAnnuities': 'Only include if recurring',
+    'socialSecurityBenefits': 'Only include if recurring',
+    'scheduleCDepreciation': 'Include Amortization, if applicable',
+    'scheduleERentalDepreciation': 'Include Amortization, if applicable',
+    'scheduleFDepreciation': 'Include Amortization, if applicable',
+    'capitalContributions': 'Enter as negative',
+    'otherCashIncome': 'Example: Guaranteed payments to partners for Partnerships',
+    'livingExpenses': 'Autocalculates as the greater of $5,000 per household member or 15% of AGI'
+  };
 
   const handleYearChange = (index: number, year: string) => {
     const newYears = [...selectedYears];
@@ -69,13 +85,31 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
     isExpense: boolean = false,
     isCalculated: boolean = false
   ) => {
+    const hasNote = fieldNotes[fieldName];
+    
     return (
       <TableRow className={isCalculated ? "bg-muted font-semibold" : ""}>
         <TableCell className="font-medium w-1/3 p-3">
-          {(isIncome || isExpense) && (
-            <ContributionIndicator fieldType={isIncome ? "income" : "expense"} />
-          )}{' '}
-          {label}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {(isIncome || isExpense) && (
+                <ContributionIndicator fieldType={isIncome ? "income" : "expense"} />
+              )}
+              <span>{label}</span>
+            </div>
+            {hasNote && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">{hasNote}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </TableCell>
         {selectedYears.map((year) => renderInputCell(fieldName, year, isCalculated))}
       </TableRow>
@@ -159,20 +193,6 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
               {renderFormRow('netCashFlow', 'Net Cash Flow ($)', false, false, true)}
             </TableBody>
           </Table>
-
-          {/* Instructions and Notes */}
-          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-            <h4 className="font-semibold mb-2">Additional Notes:</h4>
-            <ul className="text-sm space-y-1 text-muted-foreground">
-              <li>• Exclude Interest from K-1s if Distributions included for that entity below</li>
-              <li>• Only include if recurring & over age 59 1/2 (IRA Distributions)</li>
-              <li>• Only include if recurring (Pensions/Annuities, Social Security)</li>
-              <li>• Include Amortization, if applicable (Business & Rental Depreciation)</li>
-              <li>• Enter as negative (Capital Contributions)</li>
-              <li>• Example: Guaranteed payments to partners for Partnerships</li>
-              <li>• Living Expenses autocalculates as the greater of $5,000 per household member or 15% of AGI</li>
-            </ul>
-          </div>
         </div>
       </CardContent>
     </Card>
