@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,6 +20,7 @@ import { BusinessOwnershipSection } from './components/BusinessOwnershipSection'
 import { MilitarySection } from './components/MilitarySection';
 import { BackgroundSection } from './components/BackgroundSection';
 import { CertificationSection } from './components/CertificationSection';
+import { ResumeSection } from './components/ResumeSection';
 import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
@@ -152,11 +154,10 @@ const PersonalInformationForm: React.FC = () => {
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', component: PersonalInfoSection },
-    { id: 'education', label: 'Education', component: EducationSection },
-    { id: 'employment', label: 'Employment', component: EmploymentSection },
     { id: 'references', label: 'References', component: ReferencesSection },
     { id: 'business', label: 'Businesses & Ownership', component: BusinessOwnershipSection },
     { id: 'military', label: 'Military Service', component: MilitarySection },
+    { id: 'resume', label: 'Resume', component: ResumeSection },
     { id: 'background', label: 'Background', component: BackgroundSection },
     { id: 'certification', label: 'Certification', component: CertificationSection },
   ];
@@ -244,7 +245,7 @@ const PersonalInformationForm: React.FC = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-4 lg:grid-cols-8 w-full">
+                  <TabsList className="grid grid-cols-7 w-full">
                     {tabs.map((tab) => (
                       <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
@@ -283,3 +284,4 @@ const PersonalInformationForm: React.FC = () => {
 };
 
 export default PersonalInformationForm;
+
