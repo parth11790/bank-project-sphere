@@ -123,35 +123,25 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Year Selection */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            {selectedYears.map((year, index) => (
-              <div key={index} className="space-y-2">
-                <Label>Tax Year {index + 1}</Label>
-                <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableYears.map((availableYear) => (
-                      <SelectItem key={availableYear} value={availableYear}>
-                        {availableYear}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-          </div>
-
           {/* Tax Returns Table */}
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-1/3">Field</TableHead>
-                {selectedYears.map((year) => (
-                  <TableHead key={year} className="text-center font-bold text-blue-600">
-                    {year}
+                {selectedYears.map((year, index) => (
+                  <TableHead key={year} className="text-center">
+                    <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
+                      <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableYears.map((availableYear) => (
+                          <SelectItem key={availableYear} value={availableYear}>
+                            {availableYear}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </TableHead>
                 ))}
               </TableRow>
