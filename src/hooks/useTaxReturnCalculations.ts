@@ -16,24 +16,47 @@ export const useTaxReturnCalculations = (
   });
 
   useEffect(() => {
-    if (formName === 'Tax Returns') {
-      // Remove adjustedGrossIncome from income fields calculation
+    if (formName === 'Tax Returns' || formName === 'Personal Tax Returns (3 Years)') {
+      // For multi-year tax returns, we'll calculate based on the most recent year (2023)
+      const currentYear = '2023';
+      
       const incomeFields = [
-        'wages', 'interest', 'alimony', 'ira', 'pensions',
-        'socialSecurity', 'businessIncome', 'rentalIncome', 
-        'farmIncome', 'partnershipDistributions', 'capitalContributions',
-        'otherIncome'
+        'adjustedGrossIncome',
+        'wages',
+        'interestDividend',
+        'alimonyReceived',
+        'iraDistributions',
+        'pensionsAnnuities',
+        'socialSecurityBenefits',
+        'scheduleCIncome',
+        'scheduleCDepreciation',
+        'scheduleCInterest',
+        'scheduleERentalIncome',
+        'scheduleERentalInterest',
+        'scheduleERentalDepreciation',
+        'scheduleFIncome',
+        'scheduleFInterest',
+        'scheduleFDepreciation',
+        'partnershipDistributions',
+        'capitalContributions',
+        'otherCashIncome'
       ];
       
-      const expenseFields = ['taxes', 'otherExpenses', 'livingExpenses'];
+      const expenseFields = [
+        'federalStateTaxes',
+        'otherExpenses',
+        'livingExpenses'
+      ];
       
       const income = incomeFields.reduce((sum, field) => {
-        const value = parseFloat(formValues[field] || '0');
+        const fieldKey = `${field}_${currentYear}`;
+        const value = parseFloat(formValues[fieldKey] || '0');
         return sum + (isNaN(value) ? 0 : value);
       }, 0);
       
       const expenses = expenseFields.reduce((sum, field) => {
-        const value = parseFloat(formValues[field] || '0');
+        const fieldKey = `${field}_${currentYear}`;
+        const value = parseFloat(formValues[fieldKey] || '0');
         return sum + (isNaN(value) ? 0 : value);
       }, 0);
       
