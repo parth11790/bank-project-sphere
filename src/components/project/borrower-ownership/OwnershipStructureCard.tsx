@@ -13,8 +13,14 @@ interface OwnershipStructureCardProps {
 const OwnershipStructureCard: React.FC<OwnershipStructureCardProps> = ({ project }) => {
   const navigate = useNavigate();
 
-  const handleOwnerClick = (ownerId: string) => {
-    navigate(`/project/participants/${project.project_id}/personal-info/${ownerId}`);
+  const handleOwnerClick = (owner: any) => {
+    if (owner.type === 'business') {
+      // Navigate to business information page
+      navigate(`/business/${owner.business_id || owner.owner_id}`);
+    } else {
+      // Navigate to personal information page for individual owners
+      navigate(`/project/participants/${project.project_id}/personal-info/${owner.owner_id}`);
+    }
   };
 
   return (
@@ -33,7 +39,7 @@ const OwnershipStructureCard: React.FC<OwnershipStructureCardProps> = ({ project
               <div 
                 key={owner.owner_id} 
                 className="border-b pb-1 last:border-b-0 cursor-pointer hover:bg-gray-50 p-1.5 rounded transition-colors"
-                onClick={() => handleOwnerClick(owner.owner_id)}
+                onClick={() => handleOwnerClick(owner)}
               >
                 <div className="flex justify-between items-center">
                   <div className="flex-1 min-w-0">
