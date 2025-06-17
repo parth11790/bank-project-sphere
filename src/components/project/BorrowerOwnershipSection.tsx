@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, Users, Building } from 'lucide-react';
+import { Building2, Users, Building, Phone, Mail } from 'lucide-react';
 import { Project } from '@/types/project';
 
 interface BorrowerOwnershipSectionProps {
@@ -11,102 +11,176 @@ interface BorrowerOwnershipSectionProps {
 }
 
 const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ project }) => {
+  // Mock affiliated businesses for owners
+  const getAffiliatedBusinesses = (ownerId: string) => {
+    const mockBusinesses = [
+      { business_id: 'aff_1', name: 'Tech Consulting LLC', entity_type: 'LLC', ownership_percentage: 75 },
+      { business_id: 'aff_2', name: 'Real Estate Holdings', entity_type: 'Partnership', ownership_percentage: 45 },
+      { business_id: 'aff_3', name: 'Marketing Solutions Inc', entity_type: 'Corporation', ownership_percentage: 60 },
+      { business_id: 'aff_4', name: 'Investment Properties LLC', entity_type: 'LLC', ownership_percentage: 85 },
+      { business_id: 'aff_5', name: 'Retail Ventures', entity_type: 'S-Corp', ownership_percentage: 30 }
+    ];
+    
+    // Return 1-2 businesses per owner
+    const startIndex = parseInt(ownerId.slice(-1)) || 0;
+    return mockBusinesses.slice(startIndex % 3, (startIndex % 3) + 2);
+  };
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Borrower Information */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Borrower</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {project.main_business ? (
-            <div className="space-y-3">
-              <div>
-                <h3 className="font-semibold text-lg">{project.main_business.name}</h3>
-                <Badge variant="outline" className="mt-1">{project.main_business.entity_type}</Badge>
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {project.main_business.description || 'No description available'}
-              </p>
-              {project.main_business.address && (
-                <p className="text-sm">
-                  {project.main_business.address.city}, {project.main_business.address.state}
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Borrower & Ownership Structure</h2>
+        <p className="text-gray-600">Overview of the borrowing entity, ownership structure, and affiliated businesses</p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Borrower Information */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Borrowing Entity</CardTitle>
+            </div>
+            <CardDescription>Primary business seeking financing</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {project.main_business ? (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-900">{project.main_business.name}</h3>
+                  <Badge variant="outline" className="mt-1">{project.main_business.entity_type}</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {project.main_business.description || 'No description available'}
                 </p>
-              )}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No borrower information available</p>
-          )}
-        </CardContent>
-      </Card>
+                {project.main_business.address && (
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-gray-700">Business Address</p>
+                    <p className="text-sm text-gray-600">
+                      {project.main_business.address.street}<br/>
+                      {project.main_business.address.city}, {project.main_business.address.state} {project.main_business.address.zip_code}
+                    </p>
+                  </div>
+                )}
+                {project.main_business.phone && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone className="h-4 w-4" />
+                    {project.main_business.phone}
+                  </div>
+                )}
+                {project.main_business.email && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Mail className="h-4 w-4" />
+                    {project.main_business.email}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No borrower information available</p>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* Owners Information */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Owners</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {project.owners && project.owners.length > 0 ? (
-            <div className="space-y-2">
-              {project.owners.map((owner, index) => (
-                <div key={owner.owner_id} className="flex justify-between items-center py-2 border-b last:border-b-0">
-                  <span className="font-medium text-sm">Owner {index + 1}</span>
-                  <span className="font-bold text-primary">{owner.ownership_percentage}%</span>
-                </div>
-              ))}
+        {/* Ownership Structure */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Ownership Structure</CardTitle>
             </div>
-          ) : (
-            <p className="text-muted-foreground">No owner information available</p>
-          )}
-        </CardContent>
-      </Card>
+            <CardDescription>Business owners and their stakes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {project.owners && project.owners.length > 0 ? (
+              <div className="space-y-3">
+                {project.owners.map((owner) => (
+                  <div key={owner.owner_id} className="border-b pb-3 last:border-b-0">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm text-gray-900">{owner.name}</h4>
+                        {owner.role && (
+                          <p className="text-xs text-gray-500">{owner.role}</p>
+                        )}
+                        <Badge variant={owner.type === 'individual' ? 'secondary' : 'outline'} className="mt-1 text-xs">
+                          {owner.type}
+                        </Badge>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-primary text-lg">{owner.ownership_percentage}%</span>
+                      </div>
+                    </div>
+                    {owner.email && (
+                      <p className="text-xs text-gray-500">{owner.email}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No ownership information available</p>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* Affiliated Business Information */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-2">
-            <Building className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Affiliated Business</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {project.owners && project.owners.length > 0 ? (
-            <div className="space-y-3">
-              {project.owners.map((owner, ownerIndex) => (
-                <div key={owner.owner_id}>
-                  {owner.affiliated_businesses && owner.affiliated_businesses.length > 0 ? (
-                    owner.affiliated_businesses.map((business, businessIndex) => (
-                      <div key={`${owner.owner_id}-${business.business_id}`} className="flex justify-between items-center py-2 border-b last:border-b-0">
-                        <div className="flex flex-col">
-                          <span className="text-xs text-muted-foreground">Owner {ownerIndex + 1}</span>
-                          <span className="font-medium text-sm">Business {businessIndex + 1}</span>
+        {/* Affiliated Businesses */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Building className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Affiliated Businesses</CardTitle>
+            </div>
+            <CardDescription>Other businesses owned by the principals</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {project.owners && project.owners.length > 0 ? (
+              <div className="space-y-4">
+                {project.owners
+                  .filter(owner => owner.type === 'individual')
+                  .map((owner) => {
+                    const affiliatedBusinesses = getAffiliatedBusinesses(owner.owner_id);
+                    
+                    return (
+                      <div key={owner.owner_id} className="space-y-2">
+                        <div className="border-b pb-2">
+                          <h5 className="font-medium text-sm text-gray-800">{owner.name}</h5>
+                          <p className="text-xs text-gray-500">Principal Owner</p>
                         </div>
-                        <span className="font-bold text-primary">
-                          {Math.floor(Math.random() * 50) + 15}%
-                        </span>
+                        
+                        {affiliatedBusinesses.length > 0 ? (
+                          <div className="space-y-2 ml-2">
+                            {affiliatedBusinesses.map((business, index) => (
+                              <div key={business.business_id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-800">{business.name}</p>
+                                  <Badge variant="outline" className="text-xs mt-1">
+                                    {business.entity_type}
+                                  </Badge>
+                                </div>
+                                <div className="text-right">
+                                  <span className="text-sm font-semibold text-primary">
+                                    {business.ownership_percentage}%
+                                  </span>
+                                  <p className="text-xs text-gray-500">ownership</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-500 ml-2">No affiliated businesses</p>
+                        )}
                       </div>
-                    ))
-                  ) : (
-                    ownerIndex === 0 && (
-                      <div className="text-center py-4">
-                        <p className="text-muted-foreground text-sm">No affiliated businesses</p>
-                      </div>
-                    )
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No affiliated business information available</p>
-          )}
-        </CardContent>
-      </Card>
+                    );
+                  })}
+                  
+                {project.owners.filter(owner => owner.type === 'individual').length === 0 && (
+                  <p className="text-muted-foreground text-sm">No individual owners to show affiliated businesses</p>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No affiliated business information available</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
