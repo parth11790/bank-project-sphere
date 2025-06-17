@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -60,7 +59,7 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
   const mockNetCashFlow = 75000;
   const mockGrossCashFlow = 120000;
 
-  const debtServiceCoverage = mockNetCashFlow === 0 || totalDebtService === 0 
+  const debtServiceCoverage = totalDebtService === 0 
     ? 0 
     : mockNetCashFlow / totalDebtService;
 
