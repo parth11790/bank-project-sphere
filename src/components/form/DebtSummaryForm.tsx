@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface DebtSummaryFormProps {
   formValues: Record<string, string>;
@@ -15,9 +15,6 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
   formValues,
   onInputChange
 }) => {
-  const [selectedYears, setSelectedYears] = useState<string[]>(['2023', '2022', '2021']);
-  const availableYears = ['2023', '2022', '2021', '2020', '2019'];
-
   // Instructions for debt summary fields
   const debtFieldNotes: Record<string, string> = {
     'mortgage': 'Use payment on CBI or estimate the payment using a 20 yr amort or 1.5% of balance - Note, only include payments based on what is drawn or about to be drawn (i.e. for injection). Don\'t estimate payment if they have been keeping $0 balance.',
@@ -34,19 +31,11 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
     'cashAvailable': 'Calculated field - Net Cash Flow minus Total Debt Service'
   };
 
-  const handleYearChange = (index: number, year: string) => {
-    const newYears = [...selectedYears];
-    newYears[index] = year;
-    setSelectedYears(newYears);
-  };
+  const getFieldKey = (fieldName: string, fieldType: string) => `debt_${fieldName}_${fieldType}`;
 
-  const getFieldKey = (fieldName: string, year: string) => `debt_${fieldName}_${year}`;
-
-  // Calculate debt summary values for the current year (2023)
-  const currentYear = selectedYears[0] || '2023';
-  
+  // Calculate debt summary values
   const calculateAnnualDebtService = (fieldName: string) => {
-    const monthlyPayment = parseFloat(formValues[getFieldKey(fieldName, currentYear)] || '0');
+    const monthlyPayment = parseFloat(formValues[getFieldKey(fieldName, 'monthlyPayment')] || '0');
     return monthlyPayment * 12;
   };
 
@@ -70,46 +59,25 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
 
   const cashAvailable = mockNetCashFlow - totalDebtService;
 
-  const renderInputCell = (fieldName: string, year: string, isReadOnly: boolean = false) => {
-    const key = getFieldKey(fieldName, year);
+  const renderInputCell = (fieldName: string, fieldType: string, isReadOnly: boolean = false) => {
+    const key = getFieldKey(fieldName, fieldType);
     let value = formValues[key] || '';
     
-    // For calculated fields, show calculated values
-    if (isReadOnly && year === currentYear) {
-      if (fieldName === 'totalDebtService') {
-        value = totalDebtService.toFixed(2);
-      } else if (fieldName === 'debtServiceCoverage') {
-        value = debtServiceCoverage.toFixed(3);
-      } else if (fieldName === 'debtToIncomeRatio') {
-        value = (debtToIncomeRatio * 100).toFixed(2) + '%';
-      } else if (fieldName === 'cashAvailable') {
-        value = cashAvailable.toFixed(2);
-      }
+    // For calculated annual debt service fields
+    if (fieldType === 'annualDebtService' && !isReadOnly) {
+      const annualValue = calculateAnnualDebtService(fieldName);
+      value = annualValue.toFixed(2);
     }
     
     return (
       <TableCell className="p-2">
         <Input
-          type={fieldName.includes('Ratio') ? "text" : "number"}
+          type={fieldType === 'annualDebtService' ? "text" : "number"}
           placeholder="0"
           value={value}
           onChange={(e) => onInputChange(key, e.target.value)}
-          readOnly={isReadOnly}
-          className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
-        />
-      </TableCell>
-    );
-  };
-
-  const renderAnnualDebtServiceCell = (fieldName: string, year: string) => {
-    const annualValue = calculateAnnualDebtService(fieldName);
-    return (
-      <TableCell className="p-2">
-        <Input
-          type="text"
-          value={annualValue.toFixed(2)}
-          readOnly
-          className="text-center bg-muted-foreground/10"
+          readOnly={fieldType === 'annualDebtService' || isReadOnly}
+          className={`text-center ${(fieldType === 'annualDebtService' || isReadOnly) ? "bg-muted-foreground/10" : ""}`}
         />
       </TableCell>
     );
@@ -118,13 +86,12 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
   const renderDebtRow = (
     fieldName: string,
     label: string,
-    isCalculated: boolean = false,
     isTotal: boolean = false
   ) => {
     const note = debtFieldNotes[fieldName];
     
     return (
-      <TableRow className={isCalculated || isTotal ? "bg-muted font-semibold" : ""}>
+      <TableRow className={isTotal ? "bg-muted font-semibold" : ""}>
         <TableCell className="font-medium w-1/5 p-3">
           <div className="flex items-center gap-2">
             <span>{label}</span>
@@ -140,22 +107,20 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
             </TooltipProvider>
           </div>
         </TableCell>
-        {selectedYears.map((year) => renderInputCell(`${fieldName}HighCredit`, year, false))}
-        {selectedYears.map((year) => renderInputCell(`${fieldName}Balance`, year, false))}
-        {selectedYears.map((year) => renderInputCell(fieldName, year, false))}
-        {selectedYears.map((year) => 
-          isTotal ? (
-            <TableCell key={year} className="p-2">
-              <Input
-                type="text"
-                value={totalDebtService.toFixed(2)}
-                readOnly
-                className="text-center bg-muted-foreground/10 font-semibold"
-              />
-            </TableCell>
-          ) : (
-            renderAnnualDebtServiceCell(fieldName, year)
-          )
+        {renderInputCell(fieldName, 'highCredit')}
+        {renderInputCell(fieldName, 'balance')}
+        {renderInputCell(fieldName, 'monthlyPayment')}
+        {isTotal ? (
+          <TableCell className="p-2">
+            <Input
+              type="text"
+              value={totalDebtService.toFixed(2)}
+              readOnly
+              className="text-center bg-muted-foreground/10 font-semibold"
+            />
+          </TableCell>
+        ) : (
+          renderInputCell(fieldName, 'annualDebtService')
         )}
       </TableRow>
     );
@@ -166,7 +131,7 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
     
     return (
       <TableRow className="bg-muted font-semibold">
-        <TableCell colSpan={selectedYears.length * 4 + 1} className="p-3">
+        <TableCell colSpan={5} className="p-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span>{label}</span>
@@ -200,37 +165,10 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead className="w-1/5">Lender / Collateral Description</TableHead>
-              {selectedYears.map((year, index) => (
-                <TableHead key={`high-${year}`} className="text-center">
-                  <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
-                    <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableYears.map((availableYear) => (
-                        <SelectItem key={availableYear} value={availableYear}>
-                          {availableYear}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TableHead>
-              ))}
-              {selectedYears.map((year) => (
-                <TableHead key={`balance-${year}`} className="text-center">
-                  Balance Owed ({year})
-                </TableHead>
-              ))}
-              {selectedYears.map((year) => (
-                <TableHead key={`monthly-${year}`} className="text-center">
-                  Monthly Payment ({year})
-                </TableHead>
-              ))}
-              {selectedYears.map((year) => (
-                <TableHead key={`annual-${year}`} className="text-center">
-                  Annual Debt Service ({year})
-                </TableHead>
-              ))}
+              <TableHead className="text-center">High Credit / Limit</TableHead>
+              <TableHead className="text-center">Balance Owed</TableHead>
+              <TableHead className="text-center">Monthly Payment</TableHead>
+              <TableHead className="text-center">Annual Debt Service</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -242,7 +180,7 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
             {renderDebtRow('storeCard', 'Store Card')}
             {renderDebtRow('education', 'Education')}
             {renderDebtRow('proposedLoan', 'Proposed Loan')}
-            {renderDebtRow('total', 'Total Debt Service', false, true)}
+            {renderDebtRow('total', 'Total Debt Service', true)}
             
             {renderCalculationRow(
               'debtServiceCoverage',
