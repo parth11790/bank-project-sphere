@@ -153,10 +153,12 @@ const PersonalInformationForm: React.FC = () => {
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', component: PersonalInfoSection },
+    { id: 'references', label: 'References', component: ReferencesSection },
     { id: 'business', label: 'Businesses & Ownership', component: BusinessOwnershipSection },
     { id: 'military', label: 'Military Service', component: MilitarySection },
     { id: 'resume', label: 'Resume', component: ResumeSection },
     { id: 'forms', label: 'Forms', component: FormsAssignmentSection },
+    { id: 'background', label: 'Background', component: BackgroundSection },
     { id: 'certification', label: 'Certification', component: CertificationSection },
   ];
 
@@ -230,20 +232,20 @@ const PersonalInformationForm: React.FC = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold">Personal Information Form</h1>
-              <p className="text-muted-foreground">Complete personal information for {participant?.name}</p>
+              <p className="text-muted-foreground">Complete personal information for {participant.name}</p>
             </div>
           </div>
         </div>
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle>Personal Information & Resume - {participant?.name}</CardTitle>
+            <CardTitle>Personal Information & Resume - {participant.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-6 w-full">
+                  <TabsList className="grid grid-cols-8 w-full">
                     {tabs.map((tab) => (
                       <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}

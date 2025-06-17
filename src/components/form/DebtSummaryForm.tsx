@@ -1,13 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import ContributionIndicator from './ContributionIndicator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface DebtSummaryFormProps {
   formValues: Record<string, string>;
@@ -21,22 +19,20 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
   const [selectedYears, setSelectedYears] = useState<string[]>(['2023', '2022', '2021']);
   const availableYears = ['2023', '2022', '2021', '2020', '2019'];
 
-  // Field instructions
-  const fieldNotes: Record<string, string> = {
-    'primaryResidence': 'Monthly payment for primary residence mortgage',
-    'secondResidence': 'Monthly payment for second home/vacation property',
-    'investmentProperties': 'Total monthly payments for all investment properties',
-    'businessLoans': 'Monthly payments for business debt obligations',
-    'vehicleLoans': 'Monthly payments for car, truck, boat, RV loans',
-    'creditCards': 'Minimum monthly payments for all credit cards',
-    'studentLoans': 'Monthly student loan payments',
-    'personalLoans': 'Monthly payments for personal loans and lines of credit',
-    'otherDebt': 'Any other monthly debt obligations not listed above',
-    'totalDebtService': 'Calculated: Sum of all monthly debt payments',
-    'grossMonthlyIncome': 'Total monthly income before taxes (from tax returns)',
-    'debtServiceCoverage': 'Calculated: Gross Monthly Income ÷ Total Debt Service',
-    'debtToIncomeRatio': 'Calculated: (Total Debt Service ÷ Gross Monthly Income) × 100',
-    'cashAvailable': 'Calculated: Gross Monthly Income - Total Debt Service'
+  // Instructions for debt summary fields
+  const debtFieldNotes: Record<string, string> = {
+    'mortgage': 'Use payment on CBI or estimate the payment using a 20 yr amort or 1.5% of balance - Note, only include payments based on what is drawn or about to be drawn (i.e. for injection). Don\'t estimate payment if they have been keeping $0 balance.',
+    'homeEquityLine': 'Use payment on CBI or estimate the payment using a 20 yr amort or 1.5% of balance',
+    'auto': 'Use payment on CBI or estimate based on typical auto loan terms',
+    'revolvingCredit': 'Use payment on CBI or 3% of balance',
+    'creditCard': 'Use payment on CBI or minimum payment requirement',
+    'storeCard': 'Use payment on CBI or minimum payment requirement',
+    'education': 'Use payment on CBI or 1% of balance',
+    'proposedLoan': 'Enter the proposed loan payment amount',
+    'totalDebtService': 'Calculated field - sum of all annual debt service amounts',
+    'debtServiceCoverage': 'Calculated field - Net Cash Flow divided by Total Debt Service',
+    'debtToIncomeRatio': 'Calculated field - Total Debt Service divided by monthly Gross Cash Flow',
+    'cashAvailable': 'Calculated field - Net Cash Flow minus Total Debt Service'
   };
 
   const handleYearChange = (index: number, year: string) => {
@@ -45,62 +41,57 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
     setSelectedYears(newYears);
   };
 
-  const getFieldKey = (fieldName: string, year: string) => `${fieldName}_${year}`;
+  const getFieldKey = (fieldName: string, year: string) => `debt_${fieldName}_${year}`;
 
-  // Calculate totals for each year
-  const calculateDebtTotals = (year: string) => {
-    const debtFields = [
-      'primaryResidence', 'secondResidence', 'investmentProperties', 
-      'businessLoans', 'vehicleLoans', 'creditCards', 
-      'studentLoans', 'personalLoans', 'otherDebt'
-    ];
-    
-    const total = debtFields.reduce((sum, field) => {
-      const value = parseFloat(formValues[getFieldKey(field, year)] || '0');
-      return sum + value;
-    }, 0);
-    
-    return total;
+  // Calculate debt summary values for the current year (2023)
+  const currentYear = selectedYears[0] || '2023';
+  
+  const calculateAnnualDebtService = (fieldName: string) => {
+    const monthlyPayment = parseFloat(formValues[getFieldKey(fieldName, currentYear)] || '0');
+    return monthlyPayment * 12;
   };
 
-  const calculateRatios = (year: string) => {
-    const totalDebt = calculateDebtTotals(year);
-    const grossIncome = parseFloat(formValues[getFieldKey('grossMonthlyIncome', year)] || '0');
-    
-    const debtServiceCoverage = grossIncome > 0 ? grossIncome / totalDebt : 0;
-    const debtToIncomeRatio = grossIncome > 0 ? (totalDebt / grossIncome) * 100 : 0;
-    const cashAvailable = grossIncome - totalDebt;
-    
-    return {
-      totalDebt,
-      debtServiceCoverage,
-      debtToIncomeRatio,
-      cashAvailable
-    };
-  };
+  const totalDebtService = [
+    'mortgage', 'homeEquityLine', 'auto', 'revolvingCredit', 
+    'creditCard', 'storeCard', 'education', 'proposedLoan'
+  ].reduce((sum, field) => sum + calculateAnnualDebtService(field), 0);
+
+  // Mock calculated values for demonstration - in real implementation these would come from props
+  const mockNetCashFlow = 75000;
+  const mockGrossCashFlow = 120000;
+
+  const debtServiceCoverage = mockNetCashFlow === 0 || totalDebtService === 0 
+    ? 0 
+    : mockNetCashFlow / totalDebtService;
+
+  const monthlyGrossCashFlow = mockGrossCashFlow / 12;
+  const debtToIncomeRatio = monthlyGrossCashFlow === 0 
+    ? 0 
+    : (totalDebtService / 12) / monthlyGrossCashFlow;
+
+  const cashAvailable = mockNetCashFlow - totalDebtService;
 
   const renderInputCell = (fieldName: string, year: string, isReadOnly: boolean = false) => {
     const key = getFieldKey(fieldName, year);
     let value = formValues[key] || '';
     
-    // For calculated fields, use the calculated values
-    if (isReadOnly) {
-      const calculations = calculateRatios(year);
+    // For calculated fields, show calculated values
+    if (isReadOnly && year === currentYear) {
       if (fieldName === 'totalDebtService') {
-        value = calculations.totalDebt.toFixed(2);
+        value = totalDebtService.toFixed(2);
       } else if (fieldName === 'debtServiceCoverage') {
-        value = calculations.debtServiceCoverage.toFixed(2);
+        value = debtServiceCoverage.toFixed(3);
       } else if (fieldName === 'debtToIncomeRatio') {
-        value = calculations.debtToIncomeRatio.toFixed(2);
+        value = (debtToIncomeRatio * 100).toFixed(2) + '%';
       } else if (fieldName === 'cashAvailable') {
-        value = calculations.cashAvailable.toFixed(2);
+        value = cashAvailable.toFixed(2);
       }
     }
     
     return (
       <TableCell className="p-2">
         <Input
-          type="number"
+          type={fieldName.includes('Ratio') ? "text" : "number"}
           placeholder="0"
           value={value}
           onChange={(e) => onInputChange(key, e.target.value)}
@@ -111,24 +102,33 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
     );
   };
 
-  const renderFormRow = (
+  const renderAnnualDebtServiceCell = (fieldName: string, year: string) => {
+    const annualValue = calculateAnnualDebtService(fieldName);
+    return (
+      <TableCell className="p-2">
+        <Input
+          type="text"
+          value={annualValue.toFixed(2)}
+          readOnly
+          className="text-center bg-muted-foreground/10"
+        />
+      </TableCell>
+    );
+  };
+
+  const renderDebtRow = (
     fieldName: string,
     label: string,
-    isExpense: boolean = false,
-    isCalculated: boolean = false
+    isCalculated: boolean = false,
+    isTotal: boolean = false
   ) => {
-    const note = fieldNotes[fieldName];
+    const note = debtFieldNotes[fieldName];
     
     return (
-      <TableRow className={isCalculated ? "bg-muted font-semibold" : ""}>
-        <TableCell className="font-medium w-1/3 p-3">
+      <TableRow className={isCalculated || isTotal ? "bg-muted font-semibold" : ""}>
+        <TableCell className="font-medium w-1/5 p-3">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              {isExpense && (
-                <ContributionIndicator fieldType="expense" />
-              )}
-              <span>{label}</span>
-            </div>
+            <span>{label}</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -141,7 +141,52 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
             </TooltipProvider>
           </div>
         </TableCell>
-        {selectedYears.map((year) => renderInputCell(fieldName, year, isCalculated))}
+        {selectedYears.map((year) => renderInputCell(`${fieldName}HighCredit`, year, false))}
+        {selectedYears.map((year) => renderInputCell(`${fieldName}Balance`, year, false))}
+        {selectedYears.map((year) => renderInputCell(fieldName, year, false))}
+        {selectedYears.map((year) => 
+          isTotal ? (
+            <TableCell key={year} className="p-2">
+              <Input
+                type="text"
+                value={totalDebtService.toFixed(2)}
+                readOnly
+                className="text-center bg-muted-foreground/10 font-semibold"
+              />
+            </TableCell>
+          ) : (
+            renderAnnualDebtServiceCell(fieldName, year)
+          )
+        )}
+      </TableRow>
+    );
+  };
+
+  const renderCalculationRow = (fieldName: string, label: string, value: string) => {
+    const note = debtFieldNotes[fieldName];
+    
+    return (
+      <TableRow className="bg-muted font-semibold">
+        <TableCell colSpan={selectedYears.length * 4 + 1} className="p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span>{label}</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">{note}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="text-right font-bold">
+              {value}
+            </div>
+          </div>
+        </TableCell>
       </TableRow>
     );
   };
@@ -152,52 +197,73 @@ const DebtSummaryForm: React.FC<DebtSummaryFormProps> = ({
         <CardTitle>Personal Debt Summary</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-1/3">Debt Category</TableHead>
-                {selectedYears.map((year, index) => (
-                  <TableHead key={year} className="text-center">
-                    <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
-                      <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableYears.map((availableYear) => (
-                          <SelectItem key={availableYear} value={availableYear}>
-                            {availableYear}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {/* Monthly Debt Payments */}
-              {renderFormRow('primaryResidence', 'Primary Residence ($)', true)}
-              {renderFormRow('secondResidence', 'Second Residence ($)', true)}
-              {renderFormRow('investmentProperties', 'Investment Properties ($)', true)}
-              {renderFormRow('businessLoans', 'Business Loans ($)', true)}
-              {renderFormRow('vehicleLoans', 'Vehicle Loans ($)', true)}
-              {renderFormRow('creditCards', 'Credit Cards ($)', true)}
-              {renderFormRow('studentLoans', 'Student Loans ($)', true)}
-              {renderFormRow('personalLoans', 'Personal Loans ($)', true)}
-              {renderFormRow('otherDebt', 'Other Debt ($)', true)}
-
-              {/* Calculated Total */}
-              {renderFormRow('totalDebtService', 'Total Debt Service ($)', true, true)}
-
-              {/* Income and Ratios */}
-              {renderFormRow('grossMonthlyIncome', 'Gross Monthly Income ($)')}
-              {renderFormRow('debtServiceCoverage', 'Debt Service Coverage Ratio', false, true)}
-              {renderFormRow('debtToIncomeRatio', 'Debt to Income Ratio (%)', false, true)}
-              {renderFormRow('cashAvailable', 'Cash Available ($)', false, true)}
-            </TableBody>
-          </Table>
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-1/5">Lender / Collateral Description</TableHead>
+              {selectedYears.map((year, index) => (
+                <TableHead key={`high-${year}`} className="text-center">
+                  <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
+                    <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableYears.map((availableYear) => (
+                        <SelectItem key={availableYear} value={availableYear}>
+                          {availableYear}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableHead>
+              ))}
+              {selectedYears.map((year) => (
+                <TableHead key={`balance-${year}`} className="text-center">
+                  Balance Owed ({year})
+                </TableHead>
+              ))}
+              {selectedYears.map((year) => (
+                <TableHead key={`monthly-${year}`} className="text-center">
+                  Monthly Payment ({year})
+                </TableHead>
+              ))}
+              {selectedYears.map((year) => (
+                <TableHead key={`annual-${year}`} className="text-center">
+                  Annual Debt Service ({year})
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {renderDebtRow('mortgage', 'Mortgage')}
+            {renderDebtRow('homeEquityLine', 'Home Equity Line')}
+            {renderDebtRow('auto', 'Auto')}
+            {renderDebtRow('revolvingCredit', 'Revolving Credit')}
+            {renderDebtRow('creditCard', 'Credit Card')}
+            {renderDebtRow('storeCard', 'Store Card')}
+            {renderDebtRow('education', 'Education')}
+            {renderDebtRow('proposedLoan', 'Proposed Loan')}
+            {renderDebtRow('total', 'Total Debt Service', false, true)}
+            
+            {renderCalculationRow(
+              'debtServiceCoverage',
+              'Debt Service Coverage (based on Net Cash Flow)',
+              debtServiceCoverage.toFixed(3)
+            )}
+            
+            {renderCalculationRow(
+              'debtToIncomeRatio',
+              'Debt to Income Ratio (based on Gross Cash Flow)',
+              (debtToIncomeRatio * 100).toFixed(2) + '%'
+            )}
+            
+            {renderCalculationRow(
+              'cashAvailable',
+              'Cash Available for Additional Debt Service, etc.',
+              '$' + cashAvailable.toFixed(2)
+            )}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
