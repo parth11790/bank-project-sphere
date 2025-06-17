@@ -166,22 +166,22 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           <CardTitle className="text-base">Address</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <FormField
-            control={form.control}
-            name="residence_address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs">Street Address</FormLabel>
-                <FormControl>
-                  <Input {...field} className="h-8 text-sm" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Address, City, State, ZIP, Since - 5 fields in one row */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+            <FormField
+              control={form.control}
+              name="residence_address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Address</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-8 text-sm" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* City, State, ZIP, Since - 4 fields in one row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <FormField
               control={form.control}
               name="residence_city"
