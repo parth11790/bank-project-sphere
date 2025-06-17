@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,9 +13,7 @@ const BorrowingEntityCard: React.FC<BorrowingEntityCardProps> = ({ project }) =>
   const navigate = useNavigate();
 
   const handleBorrowingEntityClick = () => {
-    if (project.main_business?.business_id) {
-      navigate(`/business/${project.main_business.business_id}`);
-    }
+    navigate(`/business/${project.project_id}`);
   };
 
   return (
