@@ -9,13 +9,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { DatePicker } from '@/components/ui/date-picker';
 import { PersonalInformationFormValues } from '../schemas/personalInformationSchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { BusinessOwnershipSection } from './BusinessOwnershipSection';
+import { FormsAssignmentSection } from './FormsAssignmentSection';
+import { Participant } from '@/types/participant';
 
 interface PersonalInfoSectionProps {
   form: UseFormReturn<PersonalInformationFormValues>;
+  participant?: Participant;
 }
 
 export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
-  form
+  form,
+  participant
 }) => {
   const watchPhoneType = form.watch('primary_phone_type');
   const watchUsCitizen = form.watch('us_citizen');
@@ -23,10 +29,10 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const watchAssetsInTrust = form.watch('assets_in_trust');
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Basic Information</CardTitle>
+          <CardTitle className="text-base">Basic Information & Address</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {/* Name, SSN, DOB, Phone, Email - 5 fields in one row */}
@@ -158,14 +164,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               />
             )}
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Address</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
           {/* Address, City, State, ZIP, Since - 5 fields in one row */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
             <FormField
@@ -486,6 +485,22 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           )}
         </CardContent>
       </Card>
+
+      <Separator />
+
+      {/* Business Ownership Section */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Businesses & Ownership</h3>
+        <BusinessOwnershipSection form={form} participant={participant} />
+      </div>
+
+      <Separator />
+
+      {/* Forms Assignment Section */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Forms Assignment</h3>
+        <FormsAssignmentSection participant={participant} />
+      </div>
     </div>
   );
 };

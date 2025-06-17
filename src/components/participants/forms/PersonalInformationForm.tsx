@@ -154,10 +154,8 @@ const PersonalInformationForm: React.FC = () => {
   const tabs = [
     { id: 'personal', label: 'Personal Info', component: PersonalInfoSection },
     { id: 'references', label: 'References', component: ReferencesSection },
-    { id: 'business', label: 'Businesses & Ownership', component: BusinessOwnershipSection },
     { id: 'military', label: 'Military Service', component: MilitarySection },
     { id: 'resume', label: 'Resume', component: ResumeSection },
-    { id: 'forms', label: 'Forms', component: FormsAssignmentSection },
     { id: 'background', label: 'Background', component: BackgroundSection },
     { id: 'certification', label: 'Certification', component: CertificationSection },
   ];
@@ -245,7 +243,7 @@ const PersonalInformationForm: React.FC = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-8 w-full">
+                  <TabsList className="grid grid-cols-6 w-full">
                     {tabs.map((tab) => (
                       <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
