@@ -9,6 +9,17 @@ export interface Participant {
     form_id: string;
     name: string;
   }>;
+  business?: {
+    business_id: string;
+    name: string;
+    entity_type: string;
+    title?: string;
+    ownership_percentage?: number;
+    forms: Array<{
+      form_id: string;
+      name: string;
+    }>;
+  };
 }
 
 export interface ParticipantWithDetails extends Participant {

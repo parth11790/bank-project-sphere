@@ -116,6 +116,31 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
     );
   };
 
+  const renderUploadCell = (year: string) => {
+    return (
+      <TableCell className="p-2">
+        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-2 text-center">
+          <input
+            type="file"
+            id={`tax-return-${year}`}
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={(e) => handleFileUpload(year, e.target.files?.[0] || null)}
+            className="hidden"
+          />
+          <label
+            htmlFor={`tax-return-${year}`}
+            className="cursor-pointer flex flex-col items-center gap-1"
+          >
+            <Upload className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
+              {uploadedFiles[year] ? uploadedFiles[year]?.name?.substring(0, 10) + '...' : 'Upload'}
+            </span>
+          </label>
+        </div>
+      </TableCell>
+    );
+  };
+
   const renderFormRow = (
     fieldName: string,
     label: string,
@@ -173,49 +198,6 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Document Upload Section */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-medium">Upload Tax Return Documents</h4>
-            <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${selectedYears.length}, 1fr)` }}>
-              {selectedYears.map((year, index) => (
-                <div key={year} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-sm font-medium">{year} Tax Returns</Label>
-                    {selectedYears.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeYear(index)}
-                        className="h-6 w-6 p-0 text-destructive"
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center">
-                    <input
-                      type="file"
-                      id={`tax-return-${year}`}
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleFileUpload(year, e.target.files?.[0] || null)}
-                      className="hidden"
-                    />
-                    <label
-                      htmlFor={`tax-return-${year}`}
-                      className="cursor-pointer flex flex-col items-center gap-2"
-                    >
-                      <Upload className="h-6 w-6 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {uploadedFiles[year] ? uploadedFiles[year]?.name : 'Click to upload'}
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Tax Returns Table */}
           <Table>
             <TableHeader>
@@ -236,7 +218,28 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
                           ))}
                         </SelectContent>
                       </Select>
+                      {selectedYears.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeYear(index)}
+                          className="h-6 w-6 p-0 text-destructive"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+              
+              {/* Document Upload Row */}
+              <TableRow className="bg-muted/50">
+                <TableHead className="font-medium">Tax Return Documents</TableHead>
+                {selectedYears.map((year) => (
+                  <TableHead key={`upload-${year}`} className="text-center p-2">
+                    {renderUploadCell(year)}
                   </TableHead>
                 ))}
               </TableRow>

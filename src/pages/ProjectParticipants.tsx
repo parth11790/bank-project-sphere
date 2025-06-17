@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams } from 'react-router-dom';
@@ -42,8 +41,7 @@ const ProjectParticipants: React.FC = () => {
   // Load forms data only (no documents)
   const {
     individualForms,
-    businessForms,
-    formTemplates
+    businessForms
   } = useFormDocumentData();
 
   const project: Project | null = projectData && isProject(projectData) ? projectData : null;
@@ -149,7 +147,7 @@ const ProjectParticipants: React.FC = () => {
               onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
               onAddBusiness={openAddBusinessDialog}
-              formTemplates={formTemplates}
+              formTemplates={individualForms}
             />
           </TabsContent>
           
@@ -163,7 +161,7 @@ const ProjectParticipants: React.FC = () => {
               onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
               onAddBusiness={openAddBusinessDialog}
-              formTemplates={formTemplates}
+              formTemplates={individualForms}
             />
           </TabsContent>
           

@@ -52,7 +52,6 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
               onAssignForms={() => onAssignForms(participant)}
               onAssignBusinessForms={() => onAssignBusinessForms(participant)}
               onAddBusiness={() => onAddBusiness(participant)}
-              formTemplates={formTemplates}
             />
           ))}
         </div>
