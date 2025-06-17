@@ -1,17 +1,61 @@
 import { FormTemplate, Document } from '@/types/form';
 
 export const individualFormsData: FormTemplate[] = [
-  { form_id: "form_1", name: "Personal Information Form", entity_type: "individual", status: "submitted" },
-  { form_id: "form_2", name: "Intent Form", entity_type: "individual", status: "pending" },
-  { form_id: "form_3", name: "Personal Financial Statement", entity_type: "individual", status: "pending" },
-  { form_id: "form_4", name: "Resume", entity_type: "individual", status: "submitted" },
-  { form_id: "form_5", name: "Tax Returns", entity_type: "individual" },
-  { form_id: "form_6", name: "Acquisition Questionnaire", entity_type: "individual" },
-  { form_id: "form_7", name: "Broker Listing Form", entity_type: "individual" },
-  { form_id: "form_17", name: "Personal Credit History", entity_type: "individual" },
-  { form_id: "form_18", name: "Management Experience", entity_type: "individual" },
-  { form_id: "form_19", name: "Personal References", entity_type: "individual" },
-  { form_id: "form_29", name: "Personal Debt Summary", entity_type: "individual" },
+  { 
+    form_id: "pif_001", 
+    name: "Personal Information Form", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "networth_001", 
+    name: "Net Worth Assessment", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "pfs_001", 
+    name: "Personal Financial Statement", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "tax_001", 
+    name: "Personal Tax Returns (3 Years)", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "credit_001", 
+    name: "Credit Authorization Form", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "intent_001", 
+    name: "Letter of Intent", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "resume_001", 
+    name: "Professional Resume", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "ref_001", 
+    name: "Professional References Form", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "exp_001", 
+    name: "Management Experience Questionnaire", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "acquire_001", 
+    name: "Acquisition Questionnaire", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "bank_001", 
+    name: "Bank Statements (6 Months)", 
+    entity_type: "individual" 
+  },
 ];
 
 export const businessFormsData: FormTemplate[] = [

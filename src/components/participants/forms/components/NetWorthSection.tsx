@@ -6,10 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PersonalInformationFormValues } from '../schemas/personalInformationSchema';
+import { NetWorthFormValues } from '../schemas/netWorthSchema';
 import { Participant } from '@/types/participant';
 
 interface NetWorthSectionProps {
-  form: UseFormReturn<PersonalInformationFormValues>;
+  form: UseFormReturn<PersonalInformationFormValues | NetWorthFormValues>;
   participant?: Participant;
 }
 
@@ -52,12 +53,12 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
 
   // Calculate totals
   const totalAssets = assetFields.reduce((sum, field) => {
-    const value = parseFloat(form.watch(`networth_${field.key}` as keyof PersonalInformationFormValues) as string || '0');
+    const value = parseFloat(form.watch(`networth_${field.key}` as any) as string || '0');
     return sum + value;
   }, 0);
 
   const totalLiabilities = liabilityFields.reduce((sum, field) => {
-    const value = parseFloat(form.watch(`networth_${field.key}` as keyof PersonalInformationFormValues) as string || '0');
+    const value = parseFloat(form.watch(`networth_${field.key}` as any) as string || '0');
     return sum + value;
   }, 0);
 
@@ -75,7 +76,7 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
   const renderInputField = (fieldKey: string) => (
     <FormField
       control={form.control}
-      name={`networth_${fieldKey}` as keyof PersonalInformationFormValues}
+      name={`networth_${fieldKey}` as any}
       render={({ field }) => (
         <FormItem>
           <FormControl>
