@@ -17,11 +17,6 @@ export const individualFormsData: FormTemplate[] = [
     entity_type: "individual" 
   },
   { 
-    form_id: "tax_001", 
-    name: "Personal Tax Returns (3 Years)", 
-    entity_type: "individual" 
-  },
-  { 
     form_id: "credit_001", 
     name: "Credit Authorization Form", 
     entity_type: "individual" 
