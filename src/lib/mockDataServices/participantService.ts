@@ -1,6 +1,6 @@
 
 import { Participant, ParticipantWithDetails } from '@/types/participant';
-import { projects, users, businesses, individualFormsData, businessFormsData, individualDocumentsData, businessDocumentsData } from '../mockData';
+import { projects, users, businesses, individualFormsData, businessFormsData } from '../mockData';
 import { User } from '@/types/user';
 
 // Helper to get a random sample of items
@@ -33,7 +33,6 @@ export const getProjectParticipantsData = async (projectId: string): Promise<Par
       name: user?.name || 'Unknown',
       email: user?.email || 'unknown@example.com',
       role: participant.role,
-      documents: [],
       forms: []
     };
   });
@@ -63,12 +62,10 @@ export const getParticipantsWithDetailsData = async (projectId: string): Promise
     // For bank roles, don't include business
     const isBankRole = ['bank_officer', 'loan_specialist', 'bank_manager'].includes(participant.role);
     
-    // Assign forms and documents - more for buyers and sellers
+    // Assign forms - more for buyers and sellers
     const formCount = isBankRole ? 0 : (participant.role === 'buyer' ? 3 : 2);
-    const docCount = isBankRole ? 0 : (participant.role === 'buyer' ? 2 : 1);
     
     const individualForms = sampleItems(individualFormsData, formCount);
-    const individualDocs = sampleItems(individualDocumentsData, docCount);
     
     // Always include a business for buyers and sellers unless they don't have one
     const hasBusiness = userBusinesses.length > 0 && !isBankRole;
@@ -79,7 +76,6 @@ export const getParticipantsWithDetailsData = async (projectId: string): Promise
       name: user.name,
       email: user.email,
       role: participant.role,
-      documents: individualDocs,
       forms: individualForms,
       business: hasBusiness ? {
         business_id: userBusinesses[0].business_id,
@@ -87,7 +83,6 @@ export const getParticipantsWithDetailsData = async (projectId: string): Promise
         entity_type: userBusinesses[0].entity_type,
         title: getRandomTitle(),
         ownership_percentage: getRandomOwnership(),
-        documents: sampleItems(businessDocumentsData, docCount + 1),
         forms: sampleItems(businessFormsData, formCount + 1),
       } : undefined
     };

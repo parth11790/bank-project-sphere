@@ -13,9 +13,7 @@ import { Trash2 } from 'lucide-react';
 interface ParticipantCardProps {
   participant: Participant;
   onRemove: (id: string) => void;
-  onAssignDocuments: (participant: Participant) => void;
   onAssignForms: (participant: Participant) => void;
-  onAssignBusinessDocuments?: (participant: Participant) => void;
   onAssignBusinessForms?: (participant: Participant) => void;
   onAddBusiness?: (participant: Participant) => void;
   formTemplates?: Array<{ form_id: string; name: string; }>;
@@ -24,9 +22,7 @@ interface ParticipantCardProps {
 const ParticipantCard: React.FC<ParticipantCardProps> = ({
   participant,
   onRemove,
-  onAssignDocuments,
   onAssignForms,
-  onAssignBusinessDocuments,
   onAssignBusinessForms,
   onAddBusiness,
   formTemplates = []
@@ -68,9 +64,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
       
       <CardContent className="space-y-4">
         <IndividualRequirementsSection
-          documents={participant.documents || []}
           forms={participant.forms || []}
-          onAssignDocuments={() => onAssignDocuments(participant)}
           onAssignForms={() => onAssignForms(participant)}
           onFormClick={(formId, formName) => {
             console.log('Form clicked:', formId, formName);
@@ -80,8 +74,6 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
         {participant.business ? (
           <BusinessSection
             business={participant.business}
-            onAssignBusinessDocuments={onAssignBusinessDocuments ? 
-              () => onAssignBusinessDocuments(participant) : () => {}}
             onAssignBusinessForms={onAssignBusinessForms ? 
               () => onAssignBusinessForms(participant) : () => {}}
             onFormClick={(formId, formName) => {

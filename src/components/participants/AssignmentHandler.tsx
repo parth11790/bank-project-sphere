@@ -24,13 +24,13 @@ export const useAssignmentHandler = ({
 }: AssignmentHandlerProps) => {
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
-  const [assignmentType, setAssignmentType] = useState<'documents' | 'forms'>('documents');
+  const [assignmentType, setAssignmentType] = useState<'documents' | 'forms'>('forms');
   const [entityType, setEntityType] = useState<'individual' | 'business'>('individual');
 
   const handleAssignItems = (items: FormTemplate[] | Document[]) => {
     if (!currentParticipant) return;
     
-    toast(`${assignmentType === 'documents' ? 'Documents' : 'Forms'} assigned to ${currentParticipant.name} successfully`);
+    toast(`Forms assigned to ${currentParticipant.name} successfully`);
     setIsAssignmentDialogOpen(false);
     // Refetch participants to update the list
     refetchParticipants();
@@ -38,18 +38,14 @@ export const useAssignmentHandler = ({
 
   const openAssignDialog = (participant: Participant, type: 'documents' | 'forms', entity: 'individual' | 'business' = 'individual') => {
     setCurrentParticipant(participant);
-    setAssignmentType(type);
+    setAssignmentType('forms'); // Always use forms since documents are eliminated
     setEntityType(entity);
     setIsAssignmentDialogOpen(true);
   };
 
   // Get the appropriate available items for the current assignment dialog
   const getAvailableItems = () => {
-    if (assignmentType === 'forms') {
-      return entityType === 'individual' ? individualForms : businessForms;
-    } else {
-      return entityType === 'individual' ? individualDocuments : businessDocuments;
-    }
+    return entityType === 'individual' ? individualForms : businessForms;
   };
 
   const assignmentDialog = (
@@ -57,7 +53,7 @@ export const useAssignmentHandler = ({
       open={isAssignmentDialogOpen}
       onOpenChange={setIsAssignmentDialogOpen}
       onSave={handleAssignItems}
-      type={assignmentType}
+      type="forms"
       participantName={currentParticipant?.name || ''}
       availableItems={getAvailableItems()}
     />

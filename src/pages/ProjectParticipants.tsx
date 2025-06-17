@@ -39,12 +39,10 @@ const ProjectParticipants: React.FC = () => {
     refetchParticipants
   } = useParticipantData(projectId || '');
 
-  // Load forms and documents data
+  // Load forms data only (no documents)
   const {
     individualForms,
     businessForms,
-    individualDocuments,
-    businessDocuments,
     formTemplates
   } = useFormDocumentData();
 
@@ -61,7 +59,7 @@ const ProjectParticipants: React.FC = () => {
     refetchParticipants
   });
 
-  // Handle assignment dialog
+  // Handle assignment dialog for forms only
   const {
     openAssignDialog,
     assignmentDialog
@@ -70,8 +68,8 @@ const ProjectParticipants: React.FC = () => {
     refetchParticipants,
     individualForms,
     businessForms,
-    individualDocuments,
-    businessDocuments
+    individualDocuments: [], // Empty since we removed documents
+    businessDocuments: [] // Empty since we removed documents
   });
 
   const handleRemoveParticipant = (id: string) => {
@@ -148,9 +146,7 @@ const ProjectParticipants: React.FC = () => {
               emptyMessage="No buyers added yet"
               onAddParticipant={openAddBuyerDialog}
               onRemoveParticipant={handleRemoveParticipant}
-              onAssignDocuments={(participant) => openAssignDialog(participant, 'documents')}
               onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
-              onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
               onAddBusiness={openAddBusinessDialog}
               formTemplates={formTemplates}
@@ -164,9 +160,7 @@ const ProjectParticipants: React.FC = () => {
               emptyMessage="No sellers added yet"
               onAddParticipant={openAddSellerDialog}
               onRemoveParticipant={handleRemoveParticipant}
-              onAssignDocuments={(participant) => openAssignDialog(participant, 'documents')}
               onAssignForms={(participant) => openAssignDialog(participant, 'forms')}
-              onAssignBusinessDocuments={(participant) => openAssignDialog(participant, 'documents', 'business')}
               onAssignBusinessForms={(participant) => openAssignDialog(participant, 'forms', 'business')}
               onAddBusiness={openAddBusinessDialog}
               formTemplates={formTemplates}

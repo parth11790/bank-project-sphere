@@ -1,13 +1,13 @@
-
 import { FormTemplate, Document } from '@/types/form';
-import { individualFormsData, businessFormsData, individualDocumentsData, businessDocumentsData } from '../mockData';
+import { individualFormsData, businessFormsData } from '../mockData';
 
 export const getFormTemplatesData = async (entityType: string): Promise<FormTemplate[]> => {
   return entityType === 'individual' ? individualFormsData : businessFormsData;
 };
 
+// Keep for backward compatibility but return empty arrays
 export const getDocumentsData = async (entityType: string): Promise<Document[]> => {
-  return entityType === 'individual' ? individualDocumentsData : businessDocumentsData;
+  return [];
 };
 
 export const getAssignedFormsData = async (participantId: string, businessId?: string) => {
@@ -26,20 +26,9 @@ export const getAssignedFormsData = async (participantId: string, businessId?: s
   }));
 };
 
+// Keep for backward compatibility but return empty arrays
 export const getAssignedDocumentsData = async (participantId: string, businessId?: string) => {
-  // Mock assigned documents - for demo purposes, assign a variable number of documents
-  const numberOfDocs = Math.floor(Math.random() * 3) + 1; // 1 to 3 documents
-  const documents = businessId ? 
-    sampleItems(businessDocumentsData, numberOfDocs) : 
-    sampleItems(individualDocumentsData, numberOfDocs);
-    
-  return documents.map(document => ({
-    assignment_id: `ad_${participantId}_${document.document_id}`,
-    participant_id: participantId,
-    business_id: businessId,
-    document_id: document.document_id,
-    document
-  }));
+  return [];
 };
 
 // Helper to get a random sample of items

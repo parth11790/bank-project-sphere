@@ -1,4 +1,3 @@
-
 import { FormTemplate, Document } from '@/types/form';
 
 export const individualFormsData: FormTemplate[] = [
@@ -57,6 +56,21 @@ export const individualFormsData: FormTemplate[] = [
     name: "Tax Returns", 
     entity_type: "individual" 
   },
+  { 
+    form_id: "drivers_license_001", 
+    name: "Driver's License Upload", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "credit_report_001", 
+    name: "Credit Report Upload", 
+    entity_type: "individual" 
+  },
+  { 
+    form_id: "mgmt_resume_001", 
+    name: "Management Resume Upload", 
+    entity_type: "individual" 
+  },
 ];
 
 export const businessFormsData: FormTemplate[] = [
@@ -78,24 +92,14 @@ export const businessFormsData: FormTemplate[] = [
   { form_id: "form_26", name: "Operating Procedures Manual", entity_type: "business" },
   { form_id: "form_27", name: "Financial Projections (5 years)", entity_type: "business" },
   { form_id: "form_28", name: "Market Analysis Report", entity_type: "business" },
+  { form_id: "business_license_001", name: "Business License Upload", entity_type: "business" },
+  { form_id: "articles_inc_001", name: "Articles of Incorporation Upload", entity_type: "business" },
+  { form_id: "operating_agreement_001", name: "Operating Agreement Upload", entity_type: "business" },
+  { form_id: "lease_agreement_001", name: "Lease Agreement Upload", entity_type: "business" },
+  { form_id: "equipment_list_001", name: "Equipment List Upload", entity_type: "business" },
+  { form_id: "insurance_policies_001", name: "Insurance Policies Upload", entity_type: "business" },
 ];
 
-export const individualDocumentsData: Document[] = [
-  { document_id: "doc_1", name: "Driver's License", entity_type: "individual", status: "submitted" },
-  { document_id: "doc_2", name: "Tax Returns", entity_type: "individual", status: "pending" },
-  { document_id: "doc_3", name: "Resume", entity_type: "individual", status: "submitted" },
-  { document_id: "doc_7", name: "Bank Statements", entity_type: "individual" },
-  { document_id: "doc_8", name: "Credit Report", entity_type: "individual" },
-  { document_id: "doc_9", name: "Management Resume", entity_type: "individual" },
-];
-
-export const businessDocumentsData: Document[] = [
-  { document_id: "doc_4", name: "Business License", entity_type: "business", status: "submitted" },
-  { document_id: "doc_5", name: "Tax Returns", entity_type: "business", status: "pending" },
-  { document_id: "doc_6", name: "Financial Statements", entity_type: "business", status: "pending" },
-  { document_id: "doc_10", name: "Articles of Incorporation", entity_type: "business" },
-  { document_id: "doc_11", name: "Operating Agreement", entity_type: "business" },
-  { document_id: "doc_12", name: "Lease Agreement", entity_type: "business" },
-  { document_id: "doc_13", name: "Equipment List", entity_type: "business" },
-  { document_id: "doc_14", name: "Insurance Policies", entity_type: "business" },
-];
+// Keep empty arrays for backward compatibility but these won't be used
+export const individualDocumentsData: Document[] = [];
+export const businessDocumentsData: Document[] = [];

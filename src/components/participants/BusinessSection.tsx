@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import DocumentsList from './DocumentsList';
 import FormsList from './FormsList';
 
 interface Business {
@@ -10,10 +9,6 @@ interface Business {
   entity_type: string;
   title?: string;
   ownership_percentage?: number;
-  documents: Array<{
-    document_id: string;
-    name: string;
-  }>;
   forms: Array<{
     form_id: string;
     name: string;
@@ -22,14 +17,12 @@ interface Business {
 
 interface BusinessSectionProps {
   business: Business;
-  onAssignBusinessDocuments: () => void;
   onAssignBusinessForms: () => void;
   onFormClick: (formId: string, formName: string) => void;
 }
 
 const BusinessSection: React.FC<BusinessSectionProps> = ({
   business,
-  onAssignBusinessDocuments,
   onAssignBusinessForms,
   onFormClick,
 }) => {
@@ -55,20 +48,12 @@ const BusinessSection: React.FC<BusinessSectionProps> = ({
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <DocumentsList 
-          title="Required Documents" 
-          documents={business.documents} 
-          onAssign={onAssignBusinessDocuments} 
-        />
-        
-        <FormsList 
-          title="Required Forms" 
-          forms={business.forms} 
-          onAssign={onAssignBusinessForms} 
-          onFormClick={onFormClick} 
-        />
-      </div>
+      <FormsList 
+        title="Required Forms" 
+        forms={business.forms} 
+        onAssign={onAssignBusinessForms} 
+        onFormClick={onFormClick} 
+      />
     </div>
   );
 };
