@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -11,6 +12,8 @@ interface BorrowerOwnershipSectionProps {
 }
 
 const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ project }) => {
+  const navigate = useNavigate();
+
   // Mock affiliated businesses for owners
   const getAffiliatedBusinesses = (ownerId: string) => {
     const mockBusinesses = [
@@ -26,6 +29,20 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
     return mockBusinesses.slice(startIndex % 3, (startIndex % 3) + 2);
   };
 
+  const handleBorrowingEntityClick = () => {
+    if (project.main_business?.business_id) {
+      navigate(`/business/${project.main_business.business_id}`);
+    }
+  };
+
+  const handleOwnerClick = (ownerId: string) => {
+    navigate(`/project/participants/${project.project_id}/personal-info/${ownerId}`);
+  };
+
+  const handleAffiliatedBusinessClick = (businessId: string) => {
+    navigate(`/business/${businessId}`);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -35,7 +52,10 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Borrower Information */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-md transition-shadow"
+          onClick={handleBorrowingEntityClick}
+        >
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
@@ -94,7 +114,11 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
             {project.owners && project.owners.length > 0 ? (
               <div className="space-y-3">
                 {project.owners.map((owner) => (
-                  <div key={owner.owner_id} className="border-b pb-3 last:border-b-0">
+                  <div 
+                    key={owner.owner_id} 
+                    className="border-b pb-3 last:border-b-0 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+                    onClick={() => handleOwnerClick(owner.owner_id)}
+                  >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <h4 className="font-medium text-sm text-gray-900">{owner.name}</h4>
@@ -148,7 +172,11 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
                         {affiliatedBusinesses.length > 0 ? (
                           <div className="space-y-2 ml-2">
                             {affiliatedBusinesses.map((business, index) => (
-                              <div key={business.business_id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                              <div 
+                                key={business.business_id} 
+                                className="flex justify-between items-center p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
+                                onClick={() => handleAffiliatedBusinessClick(business.business_id)}
+                              >
                                 <div className="flex-1">
                                   <p className="text-sm font-medium text-gray-800">{business.name}</p>
                                   <Badge variant="outline" className="text-xs mt-1">
