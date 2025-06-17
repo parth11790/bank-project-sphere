@@ -160,6 +160,7 @@ const PersonalInformationForm: React.FC = () => {
     { id: 'resume', label: 'Resume', component: ResumeSection },
     { id: 'background', label: 'Background', component: BackgroundSection },
     { id: 'certification', label: 'Certification', component: CertificationSection },
+    { id: 'networth', label: 'Net Worth', component: NetWorthSection },
   ];
 
   if (isLoading) {
@@ -245,7 +246,7 @@ const PersonalInformationForm: React.FC = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-6 w-full">
+                  <TabsList className="grid grid-cols-7 w-full">
                     {tabs.map((tab) => (
                       <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
@@ -257,7 +258,11 @@ const PersonalInformationForm: React.FC = () => {
                     const Component = tab.component;
                     return (
                       <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                        <Component form={form} participant={participant} />
+                        {tab.id === 'references' ? (
+                          <Component form={form} />
+                        ) : (
+                          <Component form={form} participant={participant} />
+                        )}
                       </TabsContent>
                     );
                   })}

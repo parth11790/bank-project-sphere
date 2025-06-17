@@ -52,12 +52,12 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
 
   // Calculate totals
   const totalAssets = assetFields.reduce((sum, field) => {
-    const value = parseFloat(form.watch(`networth_${field.key}` as any) || '0');
+    const value = parseFloat(form.watch(`networth_${field.key}` as keyof PersonalInformationFormValues) as string || '0');
     return sum + value;
   }, 0);
 
   const totalLiabilities = liabilityFields.reduce((sum, field) => {
-    const value = parseFloat(form.watch(`networth_${field.key}` as any) || '0');
+    const value = parseFloat(form.watch(`networth_${field.key}` as keyof PersonalInformationFormValues) as string || '0');
     return sum + value;
   }, 0);
 
@@ -75,7 +75,7 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
   const renderInputField = (fieldKey: string) => (
     <FormField
       control={form.control}
-      name={`networth_${fieldKey}` as any}
+      name={`networth_${fieldKey}` as keyof PersonalInformationFormValues}
       render={({ field }) => (
         <FormItem>
           <FormControl>
@@ -84,6 +84,7 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
               placeholder="0"
               {...field}
               className="text-right"
+              value={field.value as string || ''}
               onChange={(e) => field.onChange(e.target.value)}
             />
           </FormControl>
@@ -117,11 +118,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_individual_name" as any
+                    name="credit_individual_name"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" />
+                          <Input {...field} className="text-center" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -131,11 +132,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_individual_score" as any
+                    name="credit_individual_score"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" placeholder="780" />
+                          <Input {...field} className="text-center" placeholder="780" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -145,11 +146,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_individual_source" as any
+                    name="credit_individual_source"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" placeholder="Experian" />
+                          <Input {...field} className="text-center" placeholder="Experian" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -159,11 +160,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_individual_date" as any
+                    name="credit_individual_date"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" placeholder="5/16/2024" />
+                          <Input {...field} className="text-center" placeholder="5/16/2024" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -176,11 +177,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_spouse_name" as any
+                    name="credit_spouse_name"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" />
+                          <Input {...field} className="text-center" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -190,11 +191,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_spouse_score" as any
+                    name="credit_spouse_score"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" placeholder="630" />
+                          <Input {...field} className="text-center" placeholder="630" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -204,11 +205,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_spouse_source" as any
+                    name="credit_spouse_source"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" placeholder="Equifax" />
+                          <Input {...field} className="text-center" placeholder="Equifax" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -218,11 +219,11 @@ export const NetWorthSection: React.FC<NetWorthSectionProps> = ({
                 <TableCell>
                   <FormField
                     control={form.control}
-                    name="credit_spouse_date" as any
+                    name="credit_spouse_date"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} className="text-center" placeholder="5/16/2024" />
+                          <Input {...field} className="text-center" placeholder="5/16/2024" value={field.value || ''} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
