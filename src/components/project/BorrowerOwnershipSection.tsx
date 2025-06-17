@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,7 +64,7 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
           </CardHeader>
           <CardContent>
             {project.main_business ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
                   <h3 className="font-semibold text-lg text-gray-900">{project.main_business.name}</h3>
                   <Badge variant="outline" className="mt-1">{project.main_business.entity_type}</Badge>
@@ -112,30 +111,34 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
           </CardHeader>
           <CardContent>
             {project.owners && project.owners.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {project.owners.map((owner) => (
                   <div 
                     key={owner.owner_id} 
-                    className="border-b pb-3 last:border-b-0 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+                    className="border-b pb-2 last:border-b-0 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
                     onClick={() => handleOwnerClick(owner.owner_id)}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm text-gray-900">{owner.name}</h4>
-                        {owner.role && (
-                          <p className="text-xs text-gray-500">{owner.role}</p>
-                        )}
-                        <Badge variant={owner.type === 'individual' ? 'secondary' : 'outline'} className="mt-1 text-xs">
-                          {owner.type}
-                        </Badge>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-bold text-primary text-lg">{owner.ownership_percentage}%</span>
+                    <div className="flex justify-between items-center">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium text-sm text-gray-900 truncate">{owner.name}</h4>
+                          <Badge variant={owner.type === 'individual' ? 'secondary' : 'outline'} className="text-xs shrink-0">
+                            {owner.type}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col gap-0.5">
+                            {owner.role && (
+                              <p className="text-xs text-gray-500">{owner.role}</p>
+                            )}
+                            {owner.email && (
+                              <p className="text-xs text-gray-500 truncate">{owner.email}</p>
+                            )}
+                          </div>
+                          <span className="font-bold text-primary text-lg ml-2">{owner.ownership_percentage}%</span>
+                        </div>
                       </div>
                     </div>
-                    {owner.email && (
-                      <p className="text-xs text-gray-500">{owner.email}</p>
-                    )}
                   </div>
                 ))}
               </div>
@@ -156,44 +159,44 @@ const BorrowerOwnershipSection: React.FC<BorrowerOwnershipSectionProps> = ({ pro
           </CardHeader>
           <CardContent>
             {project.owners && project.owners.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {project.owners
                   .filter(owner => owner.type === 'individual')
                   .map((owner) => {
                     const affiliatedBusinesses = getAffiliatedBusinesses(owner.owner_id);
                     
                     return (
-                      <div key={owner.owner_id} className="space-y-2">
-                        <div className="border-b pb-2">
+                      <div key={owner.owner_id} className="space-y-1">
+                        <div className="border-b pb-1">
                           <h5 className="font-medium text-sm text-gray-800">{owner.name}</h5>
-                          <p className="text-xs text-gray-500">Principal Owner</p>
                         </div>
                         
                         {affiliatedBusinesses.length > 0 ? (
-                          <div className="space-y-2 ml-2">
+                          <div className="space-y-1 ml-1">
                             {affiliatedBusinesses.map((business, index) => (
                               <div 
                                 key={business.business_id} 
-                                className="flex justify-between items-center p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
+                                className="flex justify-between items-center p-1.5 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 transition-colors"
                                 onClick={() => handleAffiliatedBusinessClick(business.business_id)}
                               >
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium text-gray-800">{business.name}</p>
-                                  <Badge variant="outline" className="text-xs mt-1">
-                                    {business.entity_type}
-                                  </Badge>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-sm font-medium text-gray-800 truncate">{business.name}</p>
+                                    <Badge variant="outline" className="text-xs shrink-0">
+                                      {business.entity_type}
+                                    </Badge>
+                                  </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right ml-2 shrink-0">
                                   <span className="text-sm font-semibold text-primary">
                                     {business.ownership_percentage}%
                                   </span>
-                                  <p className="text-xs text-gray-500">ownership</p>
                                 </div>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-xs text-gray-500 ml-2">No affiliated businesses</p>
+                          <p className="text-xs text-gray-500 ml-1">No affiliated businesses</p>
                         )}
                       </div>
                     );
