@@ -15,6 +15,7 @@ import ProjectBusinessStructure from '@/components/project/ProjectBusinessStruct
 import ProjectLoadingState from '@/components/project/ProjectLoadingState';
 import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
+import BorrowerOwnershipSection from '@/components/project/BorrowerOwnershipSection';
 
 const Project = () => {
   const {
@@ -88,6 +89,11 @@ const Project = () => {
             participants={participantsData}
             onEdit={() => setEditDialogOpen(true)}
           />
+        </div>
+
+        {/* Borrower and Ownership Information Section */}
+        <div className="space-y-6">
+          <BorrowerOwnershipSection project={projectData} />
         </div>
 
         {/* Business Structure Section */}
