@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ContributionIndicator from './ContributionIndicator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Info } from 'lucide-react';
+import { Info, Plus, Minus, Upload } from 'lucide-react';
 
 interface TaxReturnsFormProps {
   formValues: Record<string, string>;
@@ -25,7 +26,8 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
   onInputChange
 }) => {
   const [selectedYears, setSelectedYears] = useState<string[]>(['2023', '2022', '2021']);
-  const availableYears = ['2023', '2022', '2021', '2020', '2019'];
+  const [uploadedFiles, setUploadedFiles] = useState<Record<string, File | null>>({});
+  const availableYears = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015'];
 
   // Instructions for each field from the image
   const fieldNotes: Record<string, string> = {
@@ -60,6 +62,27 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
     const newYears = [...selectedYears];
     newYears[index] = year;
     setSelectedYears(newYears);
+  };
+
+  const addYear = () => {
+    const nextAvailableYear = availableYears.find(year => !selectedYears.includes(year));
+    if (nextAvailableYear && selectedYears.length < 8) {
+      setSelectedYears([...selectedYears, nextAvailableYear]);
+    }
+  };
+
+  const removeYear = (index: number) => {
+    if (selectedYears.length > 1) {
+      const newYears = selectedYears.filter((_, i) => i !== index);
+      setSelectedYears(newYears);
+    }
+  };
+
+  const handleFileUpload = (year: string, file: File | null) => {
+    setUploadedFiles(prev => ({
+      ...prev,
+      [year]: file
+    }));
   };
 
   const getFieldKey = (fieldName: string, year: string) => `${fieldName}_${year}`;
@@ -132,10 +155,67 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Tax Returns Information</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Tax Returns Information</CardTitle>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addYear}
+              disabled={selectedYears.length >= 8}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Year
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
+          {/* Document Upload Section */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium">Upload Tax Return Documents</h4>
+            <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${selectedYears.length}, 1fr)` }}>
+              {selectedYears.map((year, index) => (
+                <div key={year} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">{year} Tax Returns</Label>
+                    {selectedYears.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeYear(index)}
+                        className="h-6 w-6 p-0 text-destructive"
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center">
+                    <input
+                      type="file"
+                      id={`tax-return-${year}`}
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={(e) => handleFileUpload(year, e.target.files?.[0] || null)}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor={`tax-return-${year}`}
+                      className="cursor-pointer flex flex-col items-center gap-2"
+                    >
+                      <Upload className="h-6 w-6 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {uploadedFiles[year] ? uploadedFiles[year]?.name : 'Click to upload'}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Tax Returns Table */}
           <Table>
             <TableHeader>
@@ -143,18 +223,20 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
                 <TableHead className="w-1/3">Field</TableHead>
                 {selectedYears.map((year, index) => (
                   <TableHead key={year} className="text-center">
-                    <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
-                      <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableYears.map((availableYear) => (
-                          <SelectItem key={availableYear} value={availableYear}>
-                            {availableYear}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center justify-center gap-2">
+                      <Select value={year} onValueChange={(value) => handleYearChange(index, value)}>
+                        <SelectTrigger className="w-full font-bold text-blue-600 border-none shadow-none">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableYears.map((availableYear) => (
+                            <SelectItem key={availableYear} value={availableYear}>
+                              {availableYear}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </TableHead>
                 ))}
               </TableRow>

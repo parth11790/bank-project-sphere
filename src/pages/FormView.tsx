@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'react-router-dom';
@@ -12,7 +13,6 @@ import { Save } from 'lucide-react';
 
 // Import custom components
 import FormHeader from '@/components/form/FormHeader';
-import DocumentUploadCard from '@/components/form/DocumentUploadCard';
 import TaxReturnsForm from '@/components/form/TaxReturnsForm';
 import PersonalFinancialStatementForm from '@/components/form/PersonalFinancialStatementForm';
 import BalanceSheetForm from '@/components/form/BalanceSheetForm';
@@ -29,7 +29,6 @@ const FormView: React.FC = () => {
   const formName = searchParams.get('name') || 'Form';
   const participantName = searchParams.get('participant') || 'User';
 
-  const [file, setFile] = useState<File | null>(null);
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   
   const calculatedValues = useTaxReturnCalculations(formValues, formName);
@@ -58,8 +57,6 @@ const FormView: React.FC = () => {
           participantName={participantName}
           onSubmit={handleSubmit}
         />
-
-        <DocumentUploadCard file={file} setFile={setFile} />
 
         <Tabs defaultValue="form">
           <TabsList className="w-full">
