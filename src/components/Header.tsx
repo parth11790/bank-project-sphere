@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, User, Settings, ChevronDown } from 'lucide-react';
+import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { Search, User, Settings, ChevronDown, Building2, UserCircle, FileText, FolderOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,17 +11,114 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
+  const [searchParams] = useSearchParams();
   const userRole = localStorage.getItem('userRole') || 'bank_officer';
   
   const generateBreadcrumbs = () => {
     const paths = location.pathname.split('/').filter(Boolean);
     if (paths.length === 0) return null;
     
+    // Special handling for form pages
+    if (paths[0] === 'form') {
+      const formName = searchParams.get('name') || 'Form';
+      const participantName = searchParams.get('participant') || 'Participant';
+      
+      return (
+        <Breadcrumb className="hidden md:flex">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1">
+                <FolderOpen className="h-3 w-3" />
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate('/projects')} className="flex items-center gap-1">
+                <Building2 className="h-3 w-3" />
+                Mountain View Acquisition
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink className="flex items-center gap-1 text-muted-foreground">
+                <Building2 className="h-3 w-3" />
+                Outdoor Adventures LLC
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink className="flex items-center gap-1 text-muted-foreground">
+                <UserCircle className="h-3 w-3" />
+                {participantName}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="flex items-center gap-1">
+                <FileText className="h-3 w-3" />
+                {formName}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      );
+    }
+    
+    // Special handling for project participants pages
+    if (paths.includes('participants') && params.projectId) {
+      return (
+        <Breadcrumb className="hidden md:flex">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1">
+                <FolderOpen className="h-3 w-3" />
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate('/projects')} className="flex items-center gap-1">
+                <Building2 className="h-3 w-3" />
+                Projects
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink onClick={() => navigate(`/project/${params.projectId}`)} className="flex items-center gap-1">
+                <Building2 className="h-3 w-3" />
+                Mountain View Acquisition
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="flex items-center gap-1">
+                <UserCircle className="h-3 w-3" />
+                Participants
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      );
+    }
+    
+    // Default breadcrumb generation for other pages
     return (
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate('/')}>Home</BreadcrumbLink>
+            <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1">
+              <FolderOpen className="h-3 w-3" />
+              Home
+            </BreadcrumbLink>
           </BreadcrumbItem>
           
           {paths.map((path, index) => {
@@ -33,7 +130,10 @@ const Header: React.FC = () => {
                 <React.Fragment key={path}>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbPage>{formattedPath}</BreadcrumbPage>
+                    <BreadcrumbPage className="flex items-center gap-1">
+                      <FileText className="h-3 w-3" />
+                      {formattedPath}
+                    </BreadcrumbPage>
                   </BreadcrumbItem>
                 </React.Fragment>
               );
@@ -43,7 +143,8 @@ const Header: React.FC = () => {
               <React.Fragment key={path}>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink onClick={() => navigate(fullPath)}>
+                  <BreadcrumbLink onClick={() => navigate(fullPath)} className="flex items-center gap-1">
+                    <Building2 className="h-3 w-3" />
                     {formattedPath}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
