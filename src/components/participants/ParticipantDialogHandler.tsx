@@ -1,88 +1,68 @@
 
 import React, { useState } from 'react';
 import { Participant } from '@/types/participant';
-import ParticipantDialog from '@/components/ParticipantDialog';
-import BusinessDialog, { BusinessFormData } from '@/components/participants/BusinessDialog';
-import { toast } from 'sonner';
+import ParticipantDialog from './ParticipantDialog';
+import BusinessDialog from './BusinessDialog';
 
 interface ParticipantDialogHandlerProps {
   refetchParticipants: () => void;
 }
 
-export const useParticipantDialogHandler = ({
-  refetchParticipants
-}: ParticipantDialogHandlerProps) => {
-  const [isParticipantDialogOpen, setIsParticipantDialogOpen] = useState(false);
-  const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
-  
-  // Business dialog state
-  const [isBusinessDialogOpen, setIsBusinessDialogOpen] = useState(false);
-  const [participantForBusiness, setParticipantForBusiness] = useState<Participant | null>(null);
+export const useParticipantDialogHandler = ({ refetchParticipants }: ParticipantDialogHandlerProps) => {
+  const [showAddBuyerDialog, setShowAddBuyerDialog] = useState(false);
+  const [showAddSellerDialog, setShowAddSellerDialog] = useState(false);
+  const [showAddBusinessDialog, setShowAddBusinessDialog] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
 
-  const handleAddParticipant = (participant: Omit<Participant, 'participant_id' | 'documents' | 'forms' | 'user_id'>) => {
-    // In a real app, this would call an API to add the participant
-    toast(`${participant.role === 'buyer' ? 'Buyer' : 'Seller'} added successfully`);
-    setIsParticipantDialogOpen(false);
-    // Refetch participants to update the list
-    refetchParticipants();
-  };
-
-  const handleAddBusiness = (businessData: BusinessFormData) => {
-    if (!participantForBusiness) return;
-    
-    // In a real app, this would call an API to add the business
-    toast(`Business ${businessData.name} added to ${participantForBusiness.name}`);
-    setIsBusinessDialogOpen(false);
-    
-    // Refetch participants to update the list
-    refetchParticipants();
-  };
-
-  const openAddBuyerDialog = () => {
-    setIsParticipantDialogOpen(true);
-    setCurrentParticipant({ 
-      participant_id: '', 
-      user_id: '', 
-      name: '', 
-      email: '', 
-      role: 'buyer', 
-      documents: [], 
-      forms: [] 
-    });
-  };
-
-  const openAddSellerDialog = () => {
-    setIsParticipantDialogOpen(true);
-    setCurrentParticipant({ 
-      participant_id: '', 
-      user_id: '', 
-      name: '', 
-      email: '', 
-      role: 'seller', 
-      documents: [], 
-      forms: [] 
-    });
-  };
-  
+  const openAddBuyerDialog = () => setShowAddBuyerDialog(true);
+  const openAddSellerDialog = () => setShowAddSellerDialog(true);
   const openAddBusinessDialog = (participant: Participant) => {
-    setParticipantForBusiness(participant);
-    setIsBusinessDialogOpen(true);
+    setSelectedParticipant(participant);
+    setShowAddBusinessDialog(true);
+  };
+
+  const handleAddParticipant = (participantData: any, role: string) => {
+    // In a real app, this would call an API
+    console.log('Adding participant:', participantData, 'as', role);
+    refetchParticipants();
+    
+    if (role === 'buyer') setShowAddBuyerDialog(false);
+    if (role === 'seller') setShowAddSellerDialog(false);
+  };
+
+  const handleAddBusiness = (businessData: any) => {
+    // In a real app, this would call an API to add business to participant
+    console.log('Adding business to participant:', selectedParticipant?.name, businessData);
+    refetchParticipants();
+    setShowAddBusinessDialog(false);
+    setSelectedParticipant(null);
   };
 
   const participantDialog = (
-    <ParticipantDialog 
-      open={isParticipantDialogOpen}
-      onOpenChange={setIsParticipantDialogOpen}
-      onSave={handleAddParticipant}
-      defaultType={currentParticipant?.role as "buyer" | "seller" | undefined}
-    />
+    <>
+      <ParticipantDialog
+        open={showAddBuyerDialog}
+        onOpenChange={setShowAddBuyerDialog}
+        onSave={(data) => handleAddParticipant(data, 'buyer')}
+        title="Add Buyer"
+        role="buyer"
+      />
+      <ParticipantDialog
+        open={showAddSellerDialog}
+        onOpenChange={setShowAddSellerDialog}
+        onSave={(data) => handleAddParticipant(data, 'seller')}
+        title="Add Seller"
+        role="seller"
+      />
+    </>
   );
-  
+
   const businessDialog = (
     <BusinessDialog
-      open={isBusinessDialogOpen}
-      onOpenChange={setIsBusinessDialogOpen}
+      open={showAddBusinessDialog}
+      onOpenChange={setShowAddBusinessDialog}
       onSave={handleAddBusiness}
+      participantName={selectedParticipant?.name || ''}
     />
   );
 
@@ -91,6 +71,6 @@ export const useParticipantDialogHandler = ({
     openAddSellerDialog,
     openAddBusinessDialog,
     participantDialog,
-    businessDialog,
+    businessDialog
   };
 };
