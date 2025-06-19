@@ -89,13 +89,16 @@ const BusinessInformation = () => {
           </div>
         </div>
 
-        {/* Business Information Section */}
-        <EditableBusinessInfoSection business={business} />
+        {/* Side-by-side layout for Business Information and Forms */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Business Information Section */}
+          <EditableBusinessInfoSection business={business} />
 
-        {/* Forms Section */}
-        <EditableBusinessFormsSection business={business} />
+          {/* Forms Section */}
+          <EditableBusinessFormsSection business={business} />
+        </div>
 
-        {/* Ownership Section */}
+        {/* Ownership Section - Full width */}
         <EditableBusinessOwnershipSection projectId={projectId || ''} owners={projectData.owners || []} />
       </motion.div>
     </Layout>
