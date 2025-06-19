@@ -11,13 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { personalInformationSchema, PersonalInformationFormValues } from './schemas/personalInformationSchema';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
-import { EducationSection } from './components/EducationSection';
-import { EmploymentSection } from './components/EmploymentSection';
 import BusinessOwnershipSection from './components/BusinessOwnershipSection';
 import { MilitarySection } from './components/MilitarySection';
 import { BackgroundSection } from './components/BackgroundSection';
 import { CertificationSection } from './components/CertificationSection';
-import { ResumeSection } from './components/ResumeSection';
 import { FormsAssignmentSection } from './components/FormsAssignmentSection';
 import { NetWorthSection } from './components/NetWorthSection';
 import { ArrowLeft, Save } from 'lucide-react';
@@ -180,10 +177,6 @@ const PersonalInformationForm: React.FC = () => {
     label: 'Military Service',
     component: MilitarySection
   }, {
-    id: 'resume',
-    label: 'Resume',
-    component: ResumeSection
-  }, {
     id: 'background',
     label: 'Background',
     component: BackgroundSection
@@ -260,20 +253,20 @@ const PersonalInformationForm: React.FC = () => {
             </Button>
             <div>
               <h1 className="text-2xl font-bold">Personal Information Form</h1>
-              <p className="text-muted-foreground">Complete personal information for {participant.name}</p>
+              <p className="text-muted-foreground">Complete personal information for {participant?.name}</p>
             </div>
           </div>
         </div>
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle>Personal Information & Resume - {participant.name}</CardTitle>
+            <CardTitle>Personal Information - {participant?.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-6 w-full">
+                  <TabsList className="grid grid-cols-5 w-full">
                     {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
                       </TabsTrigger>)}
