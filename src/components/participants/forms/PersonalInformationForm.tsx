@@ -261,7 +261,11 @@ const PersonalInformationForm: React.FC = () => {
                   {tabs.map(tab => {
                   const Component = tab.component;
                   return <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                        <Component form={form} participant={participant} />
+                        {tab.id === 'personal' ? (
+                          <Component form={form} participant={participant} />
+                        ) : (
+                          <Component form={form} />
+                        )}
                       </TabsContent>;
                 })}
                 </Tabs>
