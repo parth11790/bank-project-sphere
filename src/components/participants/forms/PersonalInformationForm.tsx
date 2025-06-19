@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,25 +25,51 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
 import { Participant } from '@/types/participant';
-
 const PersonalInformationForm: React.FC = () => {
-  const { projectId, participantId } = useParams<{ projectId: string; participantId: string }>();
+  const {
+    projectId,
+    participantId
+  } = useParams<{
+    projectId: string;
+    participantId: string;
+  }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('personal');
   const [participant, setParticipant] = useState<Participant | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const form = useForm<PersonalInformationFormValues>({
     resolver: zodResolver(personalInformationSchema),
     defaultValues: {
-      education: [{ school_name: '', degree_certification: '', area_of_study: '', start_date: new Date() }],
-      employment_history: [{ employer_name: '', position_title: '', start_date: new Date(), responsibilities: '', reason_for_leaving: '' }],
-      professional_references: [
-        { reference_name: '', relationship: '', phone_number: '', email_address: '' },
-        { reference_name: '', relationship: '', phone_number: '', email_address: '' },
-        { reference_name: '', relationship: '', phone_number: '', email_address: '' }
-      ],
+      education: [{
+        school_name: '',
+        degree_certification: '',
+        area_of_study: '',
+        start_date: new Date()
+      }],
+      employment_history: [{
+        employer_name: '',
+        position_title: '',
+        start_date: new Date(),
+        responsibilities: '',
+        reason_for_leaving: ''
+      }],
+      professional_references: [{
+        reference_name: '',
+        relationship: '',
+        phone_number: '',
+        email_address: ''
+      }, {
+        reference_name: '',
+        relationship: '',
+        phone_number: '',
+        email_address: ''
+      }, {
+        reference_name: '',
+        relationship: '',
+        phone_number: '',
+        email_address: ''
+      }],
       primary_phone_type: 'cell',
       marital_status: 'unmarried',
       liable_for_alimony: 'no',
@@ -59,45 +84,43 @@ const PersonalInformationForm: React.FC = () => {
       unsatisfied_judgments: 'no',
       foreclosure_party: 'no',
       business_failure: 'no',
-      pledged_property: 'no',
-    },
+      pledged_property: 'no'
+    }
   });
-
   useEffect(() => {
     const fetchParticipant = async () => {
       if (projectId && participantId) {
         try {
           setIsLoading(true);
           console.log('PersonalInfoForm: Fetching participant with ID:', participantId, 'for project:', projectId);
-          
           const participants = await getParticipantsWithDetailsData(projectId);
-          console.log('PersonalInfoForm: Available participants:', participants.map(p => ({ id: p.participant_id, name: p.name })));
-          
+          console.log('PersonalInfoForm: Available participants:', participants.map(p => ({
+            id: p.participant_id,
+            name: p.name
+          })));
           let foundParticipant = null;
-          
+
           // If this is an owner ID, we need to find the corresponding participant
           if (participantId.startsWith('owner_')) {
             console.log('PersonalInfoForm: Handling owner ID:', participantId);
-            
+
             // For owner_5_1, we need to find the participant from project 5
             // Extract project number from owner ID (owner_5_1 -> project 5)
             const ownerIdMatch = participantId.match(/owner_(\d+)_(\d+)/);
             if (ownerIdMatch) {
               const ownerProjectNum = ownerIdMatch[1];
               const ownerIndex = ownerIdMatch[2];
-              
               console.log('PersonalInfoForm: Owner project:', ownerProjectNum, 'Owner index:', ownerIndex);
-              
+
               // Find any participant from this project since we're just using it for display
               // The actual data comes from the owner service
               foundParticipant = participants.length > 0 ? participants[0] : null;
-              
               if (foundParticipant) {
                 // Create a mock participant for the owner
                 foundParticipant = {
                   ...foundParticipant,
                   participant_id: participantId,
-                  name: `Owner ${ownerIndex}`, // Temporary name, will be overridden by form data
+                  name: `Owner ${ownerIndex}` // Temporary name, will be overridden by form data
                 };
               }
             }
@@ -105,20 +128,18 @@ const PersonalInformationForm: React.FC = () => {
             // Regular participant ID lookup
             foundParticipant = participants.find(p => p.participant_id === participantId);
           }
-          
           console.log('PersonalInfoForm: Found participant:', foundParticipant);
-          
           if (foundParticipant) {
             setParticipant(foundParticipant);
             setError(null);
-            
+
             // Load mock data for owner if this is an owner ID
             if (participantId.startsWith('owner_')) {
               console.log('PersonalInfoForm: Loading owner mock data for:', participantId);
               const ownerData = getOwnerPersonalInformation(participantId);
               form.reset(ownerData);
               console.log('PersonalInfoForm: Loaded owner data:', ownerData);
-              
+
               // Update participant name with the actual owner name
               setParticipant(prev => prev ? {
                 ...prev,
@@ -139,45 +160,53 @@ const PersonalInformationForm: React.FC = () => {
         }
       }
     };
-
     fetchParticipant();
   }, [projectId, participantId, form]);
-
   const onSubmit = (data: PersonalInformationFormValues) => {
     console.log('Personal Information Form Data:', data);
     toast.success('Personal information saved successfully');
     // In a real app, this would save to the backend
   };
-
   const handleBack = () => {
     navigate(`/project/participants/${projectId}`);
   };
-
-  const tabs = [
-    { id: 'personal', label: 'Personal Info', component: PersonalInfoSection },
-    { id: 'military', label: 'Military Service', component: MilitarySection },
-    { id: 'resume', label: 'Resume', component: ResumeSection },
-    { id: 'background', label: 'Background', component: BackgroundSection },
-    { id: 'certification', label: 'Certification', component: CertificationSection },
-    { id: 'networth', label: 'Net Worth', component: NetWorthSection },
-  ];
-
+  const tabs = [{
+    id: 'personal',
+    label: 'Personal Info',
+    component: PersonalInfoSection
+  }, {
+    id: 'military',
+    label: 'Military Service',
+    component: MilitarySection
+  }, {
+    id: 'resume',
+    label: 'Resume',
+    component: ResumeSection
+  }, {
+    id: 'background',
+    label: 'Background',
+    component: BackgroundSection
+  }, {
+    id: 'certification',
+    label: 'Certification',
+    component: CertificationSection
+  }, {
+    id: 'networth',
+    label: 'Net Worth',
+    component: NetWorthSection
+  }];
   if (isLoading) {
-    return (
-      <div className="w-[90%] mx-auto p-4">
+    return <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p>Loading participant information...</p>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (error) {
-    return (
-      <div className="w-[90%] mx-auto p-4">
+    return <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <p className="text-destructive mb-4">{error}</p>
@@ -197,13 +226,10 @@ const PersonalInformationForm: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!participant) {
-    return (
-      <div className="w-[90%] mx-auto p-4">
+    return <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="mb-4">Participant not found</p>
@@ -213,17 +239,18 @@ const PersonalInformationForm: React.FC = () => {
             </Button>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="w-[90%] mx-auto p-4 space-y-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+  return <div className="w-[90%] mx-auto p-4 space-y-4">
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <Button variant="outline" onClick={handleBack}>
@@ -246,48 +273,34 @@ const PersonalInformationForm: React.FC = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid grid-cols-6 w-full">
-                    {tabs.map((tab) => (
-                      <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
+                    {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
-                      </TabsTrigger>
-                    ))}
+                      </TabsTrigger>)}
                   </TabsList>
 
-                  {tabs.map((tab) => {
-                    const Component = tab.component;
-                    return (
-                      <TabsContent key={tab.id} value={tab.id} className="mt-4">
+                  {tabs.map(tab => {
+                  const Component = tab.component;
+                  return <TabsContent key={tab.id} value={tab.id} className="mt-4">
                         <Component form={form} participant={participant} />
-                      </TabsContent>
-                    );
-                  })}
+                      </TabsContent>;
+                })}
                 </Tabs>
 
-                <Separator />
+                
 
                 {/* Professional References Section - Always visible */}
                 <div className="space-y-4">
                   <ReferencesSection form={form} />
                 </div>
 
-                <Separator />
+                
 
-                <div className="flex justify-end space-x-4">
-                  <Button type="button" variant="outline" onClick={handleBack}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Information
-                  </Button>
-                </div>
+                
               </form>
             </Form>
           </CardContent>
         </Card>
       </motion.div>
-    </div>
-  );
+    </div>;
 };
-
 export default PersonalInformationForm;
