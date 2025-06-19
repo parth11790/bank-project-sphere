@@ -12,16 +12,13 @@ import { Separator } from '@/components/ui/separator';
 import { personalInformationSchema, PersonalInformationFormValues } from './schemas/personalInformationSchema';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
 import BusinessOwnershipSection from './components/BusinessOwnershipSection';
-import { MilitarySection } from './components/MilitarySection';
 import { BackgroundSection } from './components/BackgroundSection';
-import { CertificationSection } from './components/CertificationSection';
 import { FormsAssignmentSection } from './components/FormsAssignmentSection';
 import { NetWorthSection } from './components/NetWorthSection';
 import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
 import { Participant } from '@/types/participant';
-import { ReferencesSection } from './components/ReferencesSection';
 
 const PersonalInformationForm: React.FC = () => {
   const {
@@ -173,22 +170,15 @@ const PersonalInformationForm: React.FC = () => {
     label: 'Personal Info',
     component: PersonalInfoSection
   }, {
-    id: 'military',
-    label: 'Military Service',
-    component: MilitarySection
-  }, {
     id: 'background',
     label: 'Background',
     component: BackgroundSection
-  }, {
-    id: 'certification',
-    label: 'Certification',
-    component: CertificationSection
   }, {
     id: 'networth',
     label: 'Net Worth',
     component: NetWorthSection
   }];
+
   if (isLoading) {
     return <div className="w-[90%] mx-auto p-4">
         <div className="flex items-center justify-center h-64">
@@ -266,7 +256,7 @@ const PersonalInformationForm: React.FC = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-5 w-full">
+                  <TabsList className="grid grid-cols-3 w-full">
                     {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
                       </TabsTrigger>)}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -27,9 +26,11 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const watchUsCitizen = form.watch('us_citizen');
   const watchGovEmployee = form.watch('us_government_employee');
   const watchAssetsInTrust = form.watch('assets_in_trust');
+  const watchMilitaryService = form.watch('military_service');
 
   return (
     <div className="space-y-4">
+      {/* Basic Information & Address Card */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Basic Information & Address</CardTitle>
@@ -240,11 +241,12 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
         </CardContent>
       </Card>
 
+      {/* Personal Details Card (now includes military service) */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Personal Details</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           {/* Marital Status and US Citizen - Horizontal */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <FormField
@@ -308,6 +310,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             />
           </div>
 
+          {/* Conditional alien registration and ITIN fields */}
           {watchUsCitizen === 'no' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <FormField
@@ -449,6 +452,124 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                 </FormItem>
               )}
             />
+          </div>
+
+          {/* Military Service Section */}
+          <div className="space-y-4">
+            <Separator />
+            <h4 className="text-sm font-medium">Military Service</h4>
+            
+            <FormField
+              control={form.control}
+              name="military_service"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Have you ever served in the U.S. Military?</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-row space-x-3"
+                    >
+                      <FormItem className="flex items-center space-x-1 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="text-xs font-normal">Yes</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-1 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="text-xs font-normal">No</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {watchMilitaryService === 'yes' && (
+              <div className="space-y-3 pl-4 border-l-2 border-muted">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="military_branch"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Branch of Service</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-8 text-sm" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="military_rank"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">Rank at Discharge</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-8 text-sm" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium mb-2 block">Dates of Service</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <FormField
+                      control={form.control}
+                      name="military_start_date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs">Start Date</FormLabel>
+                          <FormControl>
+                            <DatePicker selected={field.value} onSelect={field.onChange} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="military_end_date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs">End Date</FormLabel>
+                          <FormControl>
+                            <DatePicker selected={field.value} onSelect={field.onChange} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="discharge_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Type of Discharge</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="h-8 text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
           </div>
 
           {/* Conditional Fields */}
