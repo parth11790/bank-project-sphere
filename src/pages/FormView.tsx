@@ -21,6 +21,7 @@ import FormAnalysis from '@/components/form/FormAnalysis';
 import DebtSummaryForm from '@/components/form/DebtSummaryForm';
 import ProfessionalReferencesForm from '@/components/form/ProfessionalReferencesForm';
 import ProfessionalResumeForm from '@/components/form/ProfessionalResumeForm';
+import NetWorthForm from '@/components/participants/forms/NetWorthForm';
 
 // Import custom hooks
 import { useTaxReturnCalculations } from '@/hooks/useTaxReturnCalculations';
@@ -105,24 +106,33 @@ const FormView: React.FC = () => {
                     onInputChange={handleInputChange}
                   />
                 )}
+
+                {formName === 'Net worth assessment' && (
+                  <NetWorthForm />
+                )}
                 
                 {formName !== 'Tax Returns' && 
                  formName !== 'Personal Debt Summary' && 
                  formName !== 'Personal Financial Statement' && 
                  formName !== 'Balance Sheet' &&
                  formName !== 'Professional References Form' &&
-                 formName !== 'Professional Resume' && (
+                 formName !== 'Professional Resume' &&
+                 formName !== 'Net worth assessment' && (
                   <GenericForm />
                 )}
                 
-                {formName !== 'Professional References Form' && formName !== 'Professional Resume' && (
+                {formName !== 'Professional References Form' && 
+                 formName !== 'Professional Resume' && 
+                 formName !== 'Net worth assessment' && (
                   <div className="mt-6">
                     <Label htmlFor="notes">Additional Notes</Label>
                     <Textarea id="notes" placeholder="Enter any additional information" className="mt-2" />
                   </div>
                 )}
               </CardContent>
-              {formName !== 'Professional References Form' && formName !== 'Professional Resume' && (
+              {formName !== 'Professional References Form' && 
+               formName !== 'Professional Resume' && 
+               formName !== 'Net worth assessment' && (
                 <CardFooter className="flex justify-end">
                   <Button onClick={handleSubmit}>
                     <Save className="h-4 w-4 mr-2" />

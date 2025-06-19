@@ -173,10 +173,6 @@ const PersonalInformationForm: React.FC = () => {
     id: 'background',
     label: 'Background',
     component: BackgroundSection
-  }, {
-    id: 'networth',
-    label: 'Net Worth',
-    component: NetWorthSection
   }];
 
   if (isLoading) {
@@ -256,7 +252,7 @@ const PersonalInformationForm: React.FC = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-3 w-full">
+                  <TabsList className="grid grid-cols-2 w-full">
                     {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
                       </TabsTrigger>)}
