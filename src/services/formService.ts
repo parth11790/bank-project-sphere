@@ -20,15 +20,10 @@ export const getFormTemplates = async (entityType: string): Promise<FormTemplate
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*');
+    console.log('Supabase query would be made here for form templates:', entityType);
     
-    if (error) throw error;
-    
-    // Filter and transform API data to match our FormTemplate type
-    return data?.filter(item => isFormTemplate(item as any))
-      .map(item => item as unknown as FormTemplate) || [];
+    // Fallback to mock data since no tables exist
+    return getFormTemplatesData(entityType);
   } catch (error: any) {
     console.error(`Error fetching form templates for ${entityType}:`, error.message);
     toast.error('Failed to load form templates');
@@ -43,13 +38,10 @@ export const getDocuments = async (entityType: string): Promise<Document[]> => {
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*');
+    console.log('Supabase query would be made here for documents:', entityType);
     
-    if (error) throw error;
-    
-    return (data || []).map(item => item as unknown as Document);
+    // Fallback to mock data since no tables exist
+    return getDocumentsData(entityType);
   } catch (error: any) {
     console.error(`Error fetching documents for ${entityType}:`, error.message);
     toast.error('Failed to load document types');
@@ -64,12 +56,10 @@ export const getAssignedForms = async (participantId: string, businessId?: strin
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*');
+    console.log('Supabase query would be made here for assigned forms:', participantId);
     
-    if (error) throw error;
-    return data || [];
+    // Fallback to mock data since no tables exist
+    return getAssignedFormsData(participantId, businessId);
   } catch (error: any) {
     console.error('Error fetching assigned forms:', error.message);
     toast.error('Failed to load assigned forms');
@@ -84,12 +74,10 @@ export const getAssignedDocuments = async (participantId: string, businessId?: s
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*');
+    console.log('Supabase query would be made here for assigned documents:', participantId);
     
-    if (error) throw error;
-    return data || [];
+    // Fallback to mock data since no tables exist
+    return getAssignedDocumentsData(participantId, businessId);
   } catch (error: any) {
     console.error('Error fetching assigned documents:', error.message);
     toast.error('Failed to load assigned documents');

@@ -15,16 +15,10 @@ export const getProjects = async (): Promise<Project[]> => {
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*');
+    console.log('Supabase query would be made here for projects');
     
-    if (error) throw error;
-    
-    // Filter and transform API data to match our Project type
-    // Use proper type casting with unknown as intermediary
-    return data?.filter(item => isProject(item as unknown as any))
-      .map(item => item as unknown as Project) || [];
+    // Fallback to mock data since no tables exist
+    return getProjectsData();
   } catch (error: any) {
     console.error('Error fetching projects:', error.message);
     toast.error('Failed to load projects');
@@ -39,15 +33,10 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*')
-      .eq('id', Number(projectId))
-      .single();
+    console.log('Supabase query would be made here for project:', projectId);
     
-    if (error) throw error;
-    
-    return isProject(data as unknown as any) ? (data as unknown as Project) : null;
+    // Fallback to mock data since no tables exist
+    return getProjectByIdData(projectId);
   } catch (error: any) {
     console.error(`Error fetching project ${projectId}:`, error.message);
     toast.error('Failed to load project details');
@@ -84,19 +73,20 @@ export const updateProject = async (
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .update({
+    console.log('Supabase update would be made here for project:', projectId, projectData);
+    
+    // Simulate successful update with mock data
+    const currentProject = getProjectByIdData(projectId);
+    if (currentProject) {
+      const updatedProject = {
+        ...currentProject,
         ...projectData,
         updated_at: new Date().toISOString()
-      })
-      .eq('id', Number(projectId))
-      .select()
-      .single();
-    
-    if (error) throw error;
-    
-    return data as unknown as Project;
+      };
+      return updatedProject;
+    } else {
+      throw new Error('Project not found');
+    }
   } catch (error: any) {
     console.error(`Error updating project ${projectId}:`, error.message);
     toast.error('Failed to update project');

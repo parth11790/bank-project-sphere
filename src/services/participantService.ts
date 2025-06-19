@@ -16,14 +16,10 @@ export const getProjectParticipants = async (projectId: string): Promise<Partici
   
   try {
     // When Supabase tables are set up, replace this with proper queries
-    const { data, error } = await supabase
-      .from('test')
-      .select('*');
+    console.log('Supabase query would be made here for project participants:', projectId);
     
-    if (error) throw error;
-    
-    // Filter and transform API data to match our Participant type
-    return data?.map(item => item as unknown as Participant) || [];
+    // Fallback to mock data since no tables exist
+    return getParticipantsWithDetailsData(projectId);
   } catch (error: any) {
     console.error(`Error fetching participants for project ${projectId}:`, error.message);
     toast.error('Failed to load project participants');

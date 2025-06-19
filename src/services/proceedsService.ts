@@ -15,22 +15,12 @@ export const getUseOfProceeds = async (projectId: string) => {
   }
   
   try {
-    // Check if projectId is a valid UUID format before querying
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    // When Supabase tables are set up, replace this with proper queries
+    console.log('Supabase query would be made here for use of proceeds:', projectId);
     
-    if (!uuidRegex.test(projectId)) {
-      console.warn(`Invalid UUID format for project ID: ${projectId}, falling back to mock data`);
-      const { getUseOfProceedsForProject } = await import('@/lib/mockData');
-      return getUseOfProceedsForProject(projectId);
-    }
-    
-    const { data, error } = await supabase
-      .from('use_of_proceeds')
-      .select('*')
-      .eq('project_id', projectId);
-    
-    if (error) throw error;
-    return data || [];
+    // Fallback to mock data since no tables exist
+    const { getUseOfProceedsForProject } = await import('@/lib/mockData');
+    return getUseOfProceedsForProject(projectId);
   } catch (error: any) {
     console.error(`Error fetching use of proceeds for project ${projectId}:`, error.message);
     toast.error('Failed to load use of proceeds data');
@@ -54,34 +44,12 @@ export const saveUseOfProceeds = async (projectId: string, proceedsData: Array<{
   }
   
   try {
-    // Check if projectId is a valid UUID format before saving
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    // When Supabase tables are set up, replace this with proper queries
+    console.log('Supabase save would be made here for use of proceeds:', projectId, proceedsData);
     
-    if (!uuidRegex.test(projectId)) {
-      console.warn(`Invalid UUID format for project ID: ${projectId}, using mock save`);
-      toast.success('Use of proceeds data saved successfully (Mock)');
-      return proceedsData;
-    }
-    
-    // Format the data for upsert
-    const formattedData = proceedsData.map(item => ({
-      project_id: projectId,
-      row_name: item.row_name,
-      column_name: item.column_name,
-      value: item.value,
-      overall_category: item.overall_category || ''
-    }));
-    
-    const { data, error } = await supabase
-      .from('use_of_proceeds')
-      .upsert(formattedData, {
-        onConflict: 'project_id,row_name,column_name'
-      });
-    
-    if (error) throw error;
-    
-    toast.success('Use of proceeds data saved successfully');
-    return data;
+    // Simulate successful save with mock data
+    toast.success('Use of proceeds data saved successfully (Mock)');
+    return proceedsData;
   } catch (error: any) {
     console.error('Error saving use of proceeds:', error.message);
     toast.error('Failed to save use of proceeds data');
