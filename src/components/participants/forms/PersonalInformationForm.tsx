@@ -24,6 +24,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
 import { Participant } from '@/types/participant';
+import { ReferencesSection } from './components/ReferencesSection';
 
 const PersonalInformationForm: React.FC = () => {
   const {
@@ -286,16 +287,15 @@ const PersonalInformationForm: React.FC = () => {
                 })}
                 </Tabs>
 
-                
-
-                {/* Professional References Section - Always visible */}
-                <div className="space-y-4">
-                  <ReferencesSection form={form} />
+                <div className="flex justify-end space-x-2 pt-6 border-t">
+                  <Button type="button" variant="outline" onClick={handleBack}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Information
+                  </Button>
                 </div>
-
-                
-
-                
               </form>
             </Form>
           </CardContent>
