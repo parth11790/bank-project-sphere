@@ -148,6 +148,42 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
         </div>
       </CardHeader>
       <CardContent className="p-3 pt-2 space-y-3">
+        {/* Project Name and Description Row - First */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pb-3 border-b">
+          {/* Project Name */}
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground">Project Name</p>
+            {isEditing ? (
+              <Input
+                name="project_name"
+                value={formData.project_name}
+                onChange={handleInputChange}
+                className="h-8 text-base font-semibold"
+              />
+            ) : (
+              <p className="text-base font-semibold leading-tight">{project.project_name}</p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground">Description</p>
+            {isEditing ? (
+              <Textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Project description"
+                className="min-h-[60px] resize-none text-sm"
+              />
+            ) : (
+              <p className="text-sm leading-relaxed">
+                {project.description || 'No description provided'}
+              </p>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {/* Left Column - Project Details */}
           <div className="space-y-3">
@@ -196,48 +232,6 @@ const ProjectOverviewEnhanced: React.FC<ProjectOverviewEnhancedProps> = ({
                 <p className="text-xs text-muted-foreground">Updated</p>
                 <p className="font-medium text-sm leading-tight">{formatDate(project.updated_at || project.created_at)}</p>
               </div>
-            </div>
-
-            {/* Project Name */}
-            <div className="border-t pt-2">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                <p className="text-xs font-semibold text-muted-foreground">Project Name</p>
-              </div>
-              {isEditing ? (
-                <Input
-                  name="project_name"
-                  value={formData.project_name}
-                  onChange={handleInputChange}
-                  className="h-8 text-base font-semibold"
-                />
-              ) : (
-                <p className="text-base font-semibold leading-tight">{project.project_name}</p>
-              )}
-            </div>
-
-            {/* Collapsible Description */}
-            <div className="border-t pt-2">
-              <Collapsible open={isDescriptionExpanded} onOpenChange={setIsDescriptionExpanded}>
-                <CollapsibleTrigger className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-2 hover:text-foreground transition-colors">
-                  {isDescriptionExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                  <span>Description</span>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-2">
-                  {isEditing ? (
-                    <Textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      placeholder="Project description"
-                      className="min-h-[60px] resize-none text-sm"
-                    />
-                  ) : (
-                    <p className="text-sm leading-relaxed">
-                      {project.description || 'No description provided'}
-                    </p>
-                  )}
-                </CollapsibleContent>
-              </Collapsible>
             </div>
           </div>
 
