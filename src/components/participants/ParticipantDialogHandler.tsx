@@ -62,7 +62,7 @@ export const useParticipantDialogHandler = ({ refetchParticipants }: Participant
       open={showAddBusinessDialog}
       onOpenChange={setShowAddBusinessDialog}
       onSave={handleAddBusiness}
-      participantName={selectedParticipant?.name || ''}
+      title={`Add Business for ${selectedParticipant?.name || ''}`}
     />
   );
 

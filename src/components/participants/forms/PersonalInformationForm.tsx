@@ -14,7 +14,7 @@ import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { EducationSection } from './components/EducationSection';
 import { EmploymentSection } from './components/EmploymentSection';
 import { ReferencesSection } from './components/ReferencesSection';
-import { BusinessOwnershipSection } from './components/BusinessOwnershipSection';
+import BusinessOwnershipSection from './components/BusinessOwnershipSection';
 import { MilitarySection } from './components/MilitarySection';
 import { BackgroundSection } from './components/BackgroundSection';
 import { CertificationSection } from './components/CertificationSection';
