@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2, Phone, Mail, Calendar, MapPin } from 'lucide-react';
@@ -27,6 +28,12 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ business }) =
     return parts.length > 0 ? parts.join(', ') : 'N/A';
   };
 
+  const formatEIN = (ein: string | undefined) => {
+    if (!ein) return 'N/A';
+    // Format EIN as XX-XXXXXXX
+    return ein.replace(/(\d{2})(\d{7})/, '$1-$2');
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -54,8 +61,8 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ business }) =
               <p className="text-xs">{business.entity_type || 'N/A'}</p>
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Tax ID</label>
-              <p className="text-xs">{business.ein ? business.ein.replace(/(\d{2})(\d{7})/, '$1-$2') : 'N/A'}</p>
+              <label className="text-xs font-medium text-muted-foreground">EIN</label>
+              <p className="text-xs">{formatEIN(business.ein)}</p>
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground">NAICS</label>

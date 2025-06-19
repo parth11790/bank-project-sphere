@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,13 @@ const EditableBusinessInfoSection: React.FC<EditableBusinessInfoSectionProps> = 
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString();
   };
+
+  const formatEIN = (ein: string | undefined) => {
+    if (!ein) return 'Not specified';
+    // Format EIN as XX-XXXXXXX
+    return ein.replace(/(\d{2})(\d{7})/, '$1-$2');
+  };
+
   return <Card>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
@@ -84,6 +92,11 @@ const EditableBusinessInfoSection: React.FC<EditableBusinessInfoSectionProps> = 
                     <SelectItem value="Sole Proprietorship">Sole Proprietorship</SelectItem>
                   </SelectContent>
                 </Select> : <Badge variant="outline" className="mt-1">{business.entity_type}</Badge>}
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">EIN</label>
+              {isEditing ? <Input value={editedBusiness.ein || ''} onChange={e => updateField('ein', e.target.value)} placeholder="XX-XXXXXXX" className="mt-1" /> : <p className="text-sm">{formatEIN(business.ein)}</p>}
             </div>
 
             <div>
