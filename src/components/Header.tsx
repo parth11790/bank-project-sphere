@@ -1,12 +1,14 @@
 
 import React from 'react';
 import { useNavigate, useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { Search, User, Settings, ChevronDown, Building2, UserCircle, FileText, FolderOpen } from 'lucide-react';
+import { Search, User, Settings, ChevronDown, Building2, UserCircle, FileText, FolderOpen, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { getProjectById } from '@/services';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -15,143 +17,213 @@ const Header: React.FC = () => {
   const [searchParams] = useSearchParams();
   const userRole = localStorage.getItem('userRole') || 'bank_officer';
   
+  // Get project data for accurate breadcrumbs
+  const { data: project } = useQuery({
+    queryKey: ['project', params.projectId],
+    queryFn: () => getProjectById(params.projectId || ''),
+    enabled: !!params.projectId
+  });
+  
   const generateBreadcrumbs = () => {
     const paths = location.pathname.split('/').filter(Boolean);
     if (paths.length === 0) return null;
     
-    // Special handling for form pages
-    if (paths[0] === 'form') {
-      const formName = searchParams.get('name') || 'Form';
-      const participantName = searchParams.get('participant') || 'Participant';
-      
+    const breadcrumbs = [];
+    
+    // Always start with Home
+    breadcrumbs.push(
+      <BreadcrumbItem key="home">
+        <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1 cursor-pointer">
+          <FolderOpen className="h-3 w-3" />
+          Home
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+    );
+    
+    // Handle specific route patterns
+    if (paths[0] === 'projects') {
+      breadcrumbs.push(
+        <BreadcrumbSeparator key="sep-projects" />,
+        <BreadcrumbItem key="projects">
+          <BreadcrumbPage className="flex items-center gap-1">
+            <Building2 className="h-3 w-3" />
+            Projects
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      );
       return (
         <Breadcrumb className="hidden md:flex">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1">
-                <FolderOpen className="h-3 w-3" />
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/projects')} className="flex items-center gap-1">
-                <Building2 className="h-3 w-3" />
-                Mountain View Acquisition
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink className="flex items-center gap-1 text-muted-foreground">
-                <Building2 className="h-3 w-3" />
-                Outdoor Adventures LLC
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink className="flex items-center gap-1 text-muted-foreground">
-                <UserCircle className="h-3 w-3" />
-                {participantName}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage className="flex items-center gap-1">
-                <FileText className="h-3 w-3" />
-                {formName}
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
+          <BreadcrumbList>{breadcrumbs}</BreadcrumbList>
         </Breadcrumb>
       );
     }
     
-    // Special handling for project participants pages
-    if (paths.includes('participants') && params.projectId) {
-      return (
-        <Breadcrumb className="hidden md:flex">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1">
-                <FolderOpen className="h-3 w-3" />
-                Home
+    // Handle project-related pages
+    if (params.projectId && project) {
+      breadcrumbs.push(
+        <BreadcrumbSeparator key="sep-projects" />,
+        <BreadcrumbItem key="projects">
+          <BreadcrumbLink onClick={() => navigate('/projects')} className="flex items-center gap-1 cursor-pointer">
+            <Building2 className="h-3 w-3" />
+            Projects
+          </BreadcrumbLink>
+        </BreadcrumbItem>,
+        <BreadcrumbSeparator key="sep-project" />,
+        <BreadcrumbItem key="project">
+          <BreadcrumbLink onClick={() => navigate(`/project/${params.projectId}`)} className="flex items-center gap-1 cursor-pointer">
+            <Building2 className="h-3 w-3" />
+            {project.project_name}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+      );
+      
+      // Add specific page breadcrumbs based on current route
+      if (paths.includes('business')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-business" />,
+          <BreadcrumbItem key="business">
+            <BreadcrumbPage className="flex items-center gap-1">
+              <Building2 className="h-3 w-3" />
+              Business Information
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        );
+      } else if (paths.includes('participants')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-participants" />,
+          <BreadcrumbItem key="participants">
+            {params.participantId ? (
+              <BreadcrumbLink onClick={() => navigate(`/project/participants/${params.projectId}`)} className="flex items-center gap-1 cursor-pointer">
+                <UserCircle className="h-3 w-3" />
+                Participants
               </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate('/projects')} className="flex items-center gap-1">
-                <Building2 className="h-3 w-3" />
-                Projects
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate(`/project/${params.projectId}`)} className="flex items-center gap-1">
-                <Building2 className="h-3 w-3" />
-                Mountain View Acquisition
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
+            ) : (
               <BreadcrumbPage className="flex items-center gap-1">
                 <UserCircle className="h-3 w-3" />
                 Participants
               </BreadcrumbPage>
+            )}
+          </BreadcrumbItem>
+        );
+        
+        if (params.participantId) {
+          breadcrumbs.push(
+            <BreadcrumbSeparator key="sep-participant" />,
+            <BreadcrumbItem key="participant">
+              <BreadcrumbPage className="flex items-center gap-1">
+                <UserCircle className="h-3 w-3" />
+                Personal Information
+              </BreadcrumbPage>
             </BreadcrumbItem>
-          </BreadcrumbList>
+          );
+        }
+      } else if (paths.includes('use-of-proceeds')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-proceeds" />,
+          <BreadcrumbItem key="proceeds">
+            <BreadcrumbPage className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              Use of Proceeds
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        );
+      } else if (paths.includes('cash-flow')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-cashflow" />,
+          <BreadcrumbItem key="cashflow">
+            <BreadcrumbPage className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              Cash Flow Analysis
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        );
+      } else if (paths.includes('analysis')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-analysis" />,
+          <BreadcrumbItem key="analysis">
+            <BreadcrumbPage className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              Analysis
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        );
+      } else if (paths.includes('documentation')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-docs" />,
+          <BreadcrumbItem key="docs">
+            <BreadcrumbPage className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              Documentation
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        );
+      } else if (paths.includes('loan')) {
+        breadcrumbs.push(
+          <BreadcrumbSeparator key="sep-loan" />,
+          <BreadcrumbItem key="loan">
+            <BreadcrumbPage className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              Loan Details
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        );
+      }
+      
+      return (
+        <Breadcrumb className="hidden md:flex">
+          <BreadcrumbList>{breadcrumbs}</BreadcrumbList>
         </Breadcrumb>
       );
     }
     
-    // Default breadcrumb generation for other pages
+    // Handle form pages
+    if (paths[0] === 'form') {
+      const formName = searchParams.get('name') || 'Form';
+      const participantName = searchParams.get('participant') || 'Participant';
+      
+      breadcrumbs.push(
+        <BreadcrumbSeparator key="sep-form" />,
+        <BreadcrumbItem key="form">
+          <BreadcrumbPage className="flex items-center gap-1">
+            <FileText className="h-3 w-3" />
+            {formName} - {participantName}
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      );
+      
+      return (
+        <Breadcrumb className="hidden md:flex">
+          <BreadcrumbList>{breadcrumbs}</BreadcrumbList>
+        </Breadcrumb>
+      );
+    }
+    
+    // Handle admin/settings pages
+    if (paths[0] === 'admin-settings') {
+      breadcrumbs.push(
+        <BreadcrumbSeparator key="sep-admin" />,
+        <BreadcrumbItem key="admin">
+          <BreadcrumbPage className="flex items-center gap-1">
+            <Settings className="h-3 w-3" />
+            Admin Settings
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      );
+    } else if (paths[0] === 'lender-settings') {
+      breadcrumbs.push(
+        <BreadcrumbSeparator key="sep-lender" />,
+        <BreadcrumbItem key="lender">
+          <BreadcrumbPage className="flex items-center gap-1">
+            <Settings className="h-3 w-3" />
+            Lender Settings
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      );
+    }
+    
     return (
       <Breadcrumb className="hidden md:flex">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate('/')} className="flex items-center gap-1">
-              <FolderOpen className="h-3 w-3" />
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          
-          {paths.map((path, index) => {
-            const formattedPath = path.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            const fullPath = `/${paths.slice(0, index + 1).join('/')}`;
-            
-            if (index === paths.length - 1) {
-              return (
-                <React.Fragment key={path}>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage className="flex items-center gap-1">
-                      <FileText className="h-3 w-3" />
-                      {formattedPath}
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                </React.Fragment>
-              );
-            }
-            
-            return (
-              <React.Fragment key={path}>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink onClick={() => navigate(fullPath)} className="flex items-center gap-1">
-                    <Building2 className="h-3 w-3" />
-                    {formattedPath}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </React.Fragment>
-            );
-          })}
-        </BreadcrumbList>
+        <BreadcrumbList>{breadcrumbs}</BreadcrumbList>
       </Breadcrumb>
     );
   };

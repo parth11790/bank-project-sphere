@@ -9,6 +9,7 @@ import { Project } from '@/types/project';
 import EditableBusinessInfoSection from '@/components/business/EditableBusinessInfoSection';
 import EditableBusinessFormsSection from '@/components/business/EditableBusinessFormsSection';
 import EditableBusinessOwnershipSection from '@/components/business/EditableBusinessOwnershipSection';
+import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
@@ -72,16 +73,19 @@ const BusinessInformation = () => {
         transition={{ duration: 0.3 }}
         className="space-y-6"
       >
+        {/* Project Breadcrumb */}
+        <ProjectBreadcrumb project={projectData} currentPageTitle="Business Information" />
+
         {/* Header */}
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/project/${projectId}`)}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            Back to Project
           </Button>
           <div>
             <h1 className="text-2xl font-bold">{business.name}</h1>
