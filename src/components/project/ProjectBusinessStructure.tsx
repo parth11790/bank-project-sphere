@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Project } from '@/types/project';
-import MainBusinessSection from './business-structure/MainBusinessSection';
 import LoansSection from './business-structure/LoansSection';
 import AcquisitionSection from './business-structure/AcquisitionSection';
 
@@ -20,7 +19,6 @@ const ProjectBusinessStructure: React.FC<ProjectBusinessStructureProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      <MainBusinessSection project={project} />
       <LoansSection project={project} />
       <AcquisitionSection project={project} />
     </div>
