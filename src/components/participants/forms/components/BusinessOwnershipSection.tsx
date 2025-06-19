@@ -1,9 +1,12 @@
 
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Building2, FileText, Plus, Edit } from 'lucide-react';
+import { PersonalInformationFormValues } from '../schemas/personalInformationSchema';
+import { Participant } from '@/types/participant';
 
 interface Business {
   business_id: string;
@@ -18,18 +21,29 @@ interface Business {
 }
 
 interface BusinessOwnershipSectionProps {
-  businesses: Business[];
-  onAddBusiness: () => void;
-  onEditBusiness: (business: Business) => void;
-  onAssignBusinessForms: (business: Business) => void;
+  form: UseFormReturn<PersonalInformationFormValues>;
+  participant?: Participant;
 }
 
 const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({
-  businesses,
-  onAddBusiness,
-  onEditBusiness,
-  onAssignBusinessForms
+  form,
+  participant
 }) => {
+  // Mock businesses data - in a real app, this would come from the participant data
+  const businesses: Business[] = [];
+
+  const handleAddBusiness = () => {
+    console.log('Add business clicked for participant:', participant?.name);
+  };
+
+  const handleEditBusiness = (business: Business) => {
+    console.log('Edit business clicked:', business.name);
+  };
+
+  const handleAssignBusinessForms = (business: Business) => {
+    console.log('Assign business forms clicked for:', business.name);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -38,7 +52,7 @@ const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({
             <Building2 className="h-5 w-5" />
             Business Ownership
           </CardTitle>
-          <Button onClick={onAddBusiness} size="sm">
+          <Button onClick={handleAddBusiness} size="sm">
             <Plus className="h-4 w-4 mr-2" />
             Add Business
           </Button>
@@ -73,7 +87,7 @@ const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onEditBusiness(business)}
+                    onClick={() => handleEditBusiness(business)}
                   >
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
@@ -91,7 +105,7 @@ const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => onAssignBusinessForms(business)}
+                        onClick={() => handleAssignBusinessForms(business)}
                       >
                         <Plus className="h-4 w-4 mr-1" />
                         Assign

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Participant } from '@/types/participant';
-import ParticipantDialog from './ParticipantDialog';
+import ParticipantDialog from '../ParticipantDialog';
 import BusinessDialog from './BusinessDialog';
 
 interface ParticipantDialogHandlerProps {
@@ -44,15 +44,13 @@ export const useParticipantDialogHandler = ({ refetchParticipants }: Participant
         open={showAddBuyerDialog}
         onOpenChange={setShowAddBuyerDialog}
         onSave={(data) => handleAddParticipant(data, 'buyer')}
-        title="Add Buyer"
-        role="buyer"
+        defaultType="buyer"
       />
       <ParticipantDialog
         open={showAddSellerDialog}
         onOpenChange={setShowAddSellerDialog}
         onSave={(data) => handleAddParticipant(data, 'seller')}
-        title="Add Seller"
-        role="seller"
+        defaultType="seller"
       />
     </>
   );
@@ -62,7 +60,6 @@ export const useParticipantDialogHandler = ({ refetchParticipants }: Participant
       open={showAddBusinessDialog}
       onOpenChange={setShowAddBusinessDialog}
       onSave={handleAddBusiness}
-      title={`Add Business for ${selectedParticipant?.name || ''}`}
     />
   );
 
