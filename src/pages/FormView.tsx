@@ -67,10 +67,6 @@ const FormView: React.FC = () => {
           
           <TabsContent value="form" className="mt-6 space-y-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Form Information</CardTitle>
-                <CardDescription>Please fill out all required fields</CardDescription>
-              </CardHeader>
               <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
                 {formName === 'Tax Returns' && (
                   <TaxReturnsForm 
