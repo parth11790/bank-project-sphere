@@ -5,16 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, DollarSign, Percent } from 'lucide-react';
 import { ReferralFee } from '@/types/referral';
+import { Project } from '@/types/project';
 import { ReferralDialog } from './ReferralDialog';
+import { calculateTotalLoanAmount, calculatePercentageFeeAmount } from '@/services/referralService';
 
 interface ReferralSectionProps {
   projectId: string;
+  project: Project;
   referralFees?: ReferralFee[];
   onUpdate?: (fees: ReferralFee[]) => void;
 }
 
 export const ReferralSection: React.FC<ReferralSectionProps> = ({
   projectId,
+  project,
   referralFees = [],
   onUpdate
 }) => {
@@ -29,9 +33,12 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
     }).format(amount);
   };
 
+  const totalLoanAmount = calculateTotalLoanAmount(project);
+
   const formatFee = (fee: ReferralFee) => {
     if (fee.fee_type === 'percentage') {
-      return `${fee.fee_amount}%`;
+      const dollarAmount = calculatePercentageFeeAmount(fee.fee_amount, totalLoanAmount);
+      return `${fee.fee_amount}% (${formatCurrency(dollarAmount)})`;
     }
     return formatCurrency(fee.fee_amount);
   };
@@ -40,8 +47,10 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
     return referralFees.reduce((total, fee) => {
       if (fee.fee_type === 'flat') {
         return total + fee.fee_amount;
+      } else if (fee.fee_type === 'percentage') {
+        return total + calculatePercentageFeeAmount(fee.fee_amount, totalLoanAmount);
       }
-      return total; // Percentage fees would need loan amount to calculate
+      return total;
     }, 0);
   };
 
@@ -109,6 +118,21 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
         </div>
       </CardHeader>
       <CardContent>
+        {/* Total Loan Amount Display */}
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              Total Project Loan Amount:
+            </span>
+            <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
+              {formatCurrency(totalLoanAmount)}
+            </span>
+          </div>
+          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+            Used for calculating percentage-based referral fees
+          </p>
+        </div>
+
         {referralFees.length === 0 ? (
           <div className="text-center py-8">
             <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -130,7 +154,7 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
                 <p className="text-lg font-semibold">{referralFees.length}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Flat Fees Total</p>
+                <p className="text-sm text-muted-foreground">Total Cost</p>
                 <p className="text-lg font-semibold">{formatCurrency(calculateTotalCost())}</p>
               </div>
               <div>

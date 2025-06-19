@@ -130,6 +130,7 @@ const Project = () => {
           <div className="space-y-6">
             <ReferralSection 
               projectId={projectId || ''}
+              project={projectData}
               referralFees={referralFeesData}
               onUpdate={handleUpdateReferrals}
             />

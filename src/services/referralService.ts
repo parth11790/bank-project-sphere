@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ReferralFee, ProjectReferral } from '@/types/referral';
+import { Project } from '@/types/project';
 
 // Flag to use mock data or actual supabase
 const USE_MOCK_DATA = true;
@@ -87,6 +88,26 @@ export const saveReferralFees = async (projectId: string, fees: ReferralFee[]): 
   }
 };
 
+export const calculateTotalLoanAmount = (project: Project): number => {
+  let totalAmount = 0;
+
+  // Calculate from new loans structure if available
+  if (project.loans && project.loans.length > 0) {
+    totalAmount = project.loans.reduce((sum, loan) => sum + loan.amount, 0);
+  }
+  // Fall back to legacy loan_types if no new structure
+  else if (project.loan_types && project.loan_types.length > 0) {
+    totalAmount = project.loan_types.reduce((sum, loanType) => {
+      if (typeof loanType === 'object' && loanType.amount) {
+        return sum + loanType.amount;
+      }
+      return sum;
+    }, 0);
+  }
+
+  return totalAmount;
+};
+
 export const calculateTotalReferralCost = (fees: ReferralFee[], loanAmount?: number): number => {
   return fees.reduce((total, fee) => {
     if (fee.fee_type === 'flat') {
@@ -96,4 +117,8 @@ export const calculateTotalReferralCost = (fees: ReferralFee[], loanAmount?: num
     }
     return total;
   }, 0);
+};
+
+export const calculatePercentageFeeAmount = (feePercentage: number, loanAmount: number): number => {
+  return (loanAmount * feePercentage) / 100;
 };
