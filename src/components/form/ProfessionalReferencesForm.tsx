@@ -106,7 +106,7 @@ const ProfessionalReferencesForm: React.FC<ProfessionalReferencesFormProps> = ({
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <FormField
                   control={form.control}
                   name={`professional_references.${index}.reference_name`}
