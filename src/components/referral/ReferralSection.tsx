@@ -118,21 +118,6 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        {/* Total Loan Amount Display */}
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
-              Total Project Loan Amount:
-            </span>
-            <span className="text-lg font-bold text-blue-900 dark:text-blue-100">
-              {formatCurrency(totalLoanAmount)}
-            </span>
-          </div>
-          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-            Used for calculating percentage-based referral fees
-          </p>
-        </div>
-
         {referralFees.length === 0 ? (
           <div className="text-center py-8">
             <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
