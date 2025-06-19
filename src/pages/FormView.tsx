@@ -19,6 +19,7 @@ import BalanceSheetForm from '@/components/form/BalanceSheetForm';
 import GenericForm from '@/components/form/GenericForm';
 import FormAnalysis from '@/components/form/FormAnalysis';
 import DebtSummaryForm from '@/components/form/DebtSummaryForm';
+import ProfessionalReferencesForm from '@/components/form/ProfessionalReferencesForm';
 
 // Import custom hooks
 import { useTaxReturnCalculations } from '@/hooks/useTaxReturnCalculations';
@@ -93,22 +94,37 @@ const FormView: React.FC = () => {
                 {formName === 'Balance Sheet' && (
                   <BalanceSheetForm />
                 )}
+
+                {formName === 'Professional References Form' && (
+                  <ProfessionalReferencesForm 
+                    formValues={formValues}
+                    onInputChange={handleInputChange}
+                  />
+                )}
                 
-                {formName !== 'Tax Returns' && formName !== 'Personal Debt Summary' && formName !== 'Personal Financial Statement' && formName !== 'Balance Sheet' && (
+                {formName !== 'Tax Returns' && 
+                 formName !== 'Personal Debt Summary' && 
+                 formName !== 'Personal Financial Statement' && 
+                 formName !== 'Balance Sheet' &&
+                 formName !== 'Professional References Form' && (
                   <GenericForm />
                 )}
                 
-                <div className="mt-6">
-                  <Label htmlFor="notes">Additional Notes</Label>
-                  <Textarea id="notes" placeholder="Enter any additional information" className="mt-2" />
-                </div>
+                {formName !== 'Professional References Form' && (
+                  <div className="mt-6">
+                    <Label htmlFor="notes">Additional Notes</Label>
+                    <Textarea id="notes" placeholder="Enter any additional information" className="mt-2" />
+                  </div>
+                )}
               </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button onClick={handleSubmit}>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Form
-                </Button>
-              </CardFooter>
+              {formName !== 'Professional References Form' && (
+                <CardFooter className="flex justify-end">
+                  <Button onClick={handleSubmit}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Form
+                  </Button>
+                </CardFooter>
+              )}
             </Card>
           </TabsContent>
           
