@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +15,6 @@ const Projects = lazy(() => import("./pages/Projects"));
 const Project = lazy(() => import("./pages/Project"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CreateProject = lazy(() => import("./pages/CreateProject"));
-const ProjectParticipants = lazy(() => import("./pages/ProjectParticipants"));
 const UseOfProceeds = lazy(() => import("./pages/UseOfProceeds"));
 const CashFlowAnalysis = lazy(() => import("./pages/CashFlowAnalysis"));
 const FormView = lazy(() => import("./pages/FormView"));
@@ -68,7 +68,6 @@ const App = () => (
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/project/:projectId" element={<Project />} />
                 <Route path="/create-project" element={<CreateProject />} />
-                <Route path="/project/participants/:projectId" element={<ProjectParticipants />} />
                 <Route path="/project/participants/:projectId/personal-info/:participantId" element={<PersonalInformation />} />
                 <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
                 <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -61,7 +60,8 @@ const Project = () => {
   const dashboardData = generateProjectDashboardData(participantsData);
 
   const handleGatherInformation = () => {
-    navigate(`/project/participants/${projectId}`);
+    // Navigate to business information instead since participants page is removed
+    navigate(`/business/${projectId}`);
   };
 
   const handleAnalysis = () => {

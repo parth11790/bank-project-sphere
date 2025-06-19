@@ -88,35 +88,6 @@ const Header: React.FC = () => {
             </BreadcrumbPage>
           </BreadcrumbItem>
         );
-      } else if (paths.includes('participants')) {
-        breadcrumbs.push(
-          <BreadcrumbSeparator key="sep-participants" />,
-          <BreadcrumbItem key="participants">
-            {params.participantId ? (
-              <BreadcrumbLink onClick={() => navigate(`/project/participants/${params.projectId}`)} className="flex items-center gap-1 cursor-pointer">
-                <UserCircle className="h-3 w-3" />
-                Participants
-              </BreadcrumbLink>
-            ) : (
-              <BreadcrumbPage className="flex items-center gap-1">
-                <UserCircle className="h-3 w-3" />
-                Participants
-              </BreadcrumbPage>
-            )}
-          </BreadcrumbItem>
-        );
-        
-        if (params.participantId) {
-          breadcrumbs.push(
-            <BreadcrumbSeparator key="sep-participant" />,
-            <BreadcrumbItem key="participant">
-              <BreadcrumbPage className="flex items-center gap-1">
-                <UserCircle className="h-3 w-3" />
-                Personal Information
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          );
-        }
       } else if (paths.includes('use-of-proceeds')) {
         breadcrumbs.push(
           <BreadcrumbSeparator key="sep-proceeds" />,
