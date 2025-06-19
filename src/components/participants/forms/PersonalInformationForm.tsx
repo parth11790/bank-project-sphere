@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -154,7 +155,6 @@ const PersonalInformationForm: React.FC = () => {
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', component: PersonalInfoSection },
-    { id: 'references', label: 'References', component: ReferencesSection },
     { id: 'military', label: 'Military Service', component: MilitarySection },
     { id: 'resume', label: 'Resume', component: ResumeSection },
     { id: 'background', label: 'Background', component: BackgroundSection },
@@ -243,9 +243,9 @@ const PersonalInformationForm: React.FC = () => {
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-7 w-full">
+                  <TabsList className="grid grid-cols-6 w-full">
                     {tabs.map((tab) => (
                       <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
                         {tab.label}
@@ -257,15 +257,18 @@ const PersonalInformationForm: React.FC = () => {
                     const Component = tab.component;
                     return (
                       <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                        {tab.id === 'references' ? (
-                          <Component form={form} />
-                        ) : (
-                          <Component form={form} participant={participant} />
-                        )}
+                        <Component form={form} participant={participant} />
                       </TabsContent>
                     );
                   })}
                 </Tabs>
+
+                <Separator />
+
+                {/* Professional References Section - Always visible */}
+                <div className="space-y-4">
+                  <ReferencesSection form={form} />
+                </div>
 
                 <Separator />
 
