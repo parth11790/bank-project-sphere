@@ -13,7 +13,6 @@ import { personalInformationSchema, PersonalInformationFormValues } from './sche
 import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { EducationSection } from './components/EducationSection';
 import { EmploymentSection } from './components/EmploymentSection';
-import { ReferencesSection } from './components/ReferencesSection';
 import BusinessOwnershipSection from './components/BusinessOwnershipSection';
 import { MilitarySection } from './components/MilitarySection';
 import { BackgroundSection } from './components/BackgroundSection';
@@ -25,6 +24,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
 import { Participant } from '@/types/participant';
+
 const PersonalInformationForm: React.FC = () => {
   const {
     projectId,
@@ -303,4 +303,5 @@ const PersonalInformationForm: React.FC = () => {
       </motion.div>
     </div>;
 };
+
 export default PersonalInformationForm;
