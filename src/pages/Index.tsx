@@ -12,7 +12,7 @@ const Index: React.FC = () => {
   
   const handleRoleSelection = (role: string) => {
     localStorage.setItem('userRole', role);
-    toast.success(`Logged in as ${role === 'bank_officer' ? 'Bank User' : role === 'buyer' ? 'Buyer' : role === 'seller' ? 'Seller' : 'Admin'}`);
+    toast.success(`Logged in as ${role === 'bank_officer' ? 'Lender Experience' : role === 'buyer' ? 'Buyer' : role === 'seller' ? 'Seller' : 'Admin'}`);
     
     if (role === 'admin_settings') {
       navigate('/admin-settings');
@@ -26,7 +26,7 @@ const Index: React.FC = () => {
   const roleOptions = [
     {
       id: 'bank_officer',
-      title: 'Bank User',
+      title: 'Lender Experience',
       icon: Building2,
       description: 'Manage loan projects and underwriting'
     },
