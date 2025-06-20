@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Users, Building2, Plus, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
+import { FileText, Users, Building2, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getFormTemplatesData } from '@/lib/mockDataServices/formService';
 import { FormTemplate } from '@/types/form';
@@ -18,8 +18,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface FormTemplateWithStatus extends FormTemplate {
-  status: 'active' | 'inactive';
+interface AdminFormTemplate extends Omit<FormTemplate, 'status'> {
+  adminStatus: 'active' | 'inactive';
 }
 
 const FormsManager: React.FC = () => {
@@ -37,15 +37,15 @@ const FormsManager: React.FC = () => {
     queryFn: () => getFormTemplatesData('business'),
   });
 
-  // Add status to forms (default to active)
-  const individualForms: FormTemplateWithStatus[] = individualFormsData.map(form => ({
+  // Add admin status to forms (default to active)
+  const individualForms: AdminFormTemplate[] = individualFormsData.map(form => ({
     ...form,
-    status: formStatuses[form.form_id] || 'active'
+    adminStatus: formStatuses[form.form_id] || 'active'
   }));
 
-  const businessForms: FormTemplateWithStatus[] = businessFormsData.map(form => ({
+  const businessForms: AdminFormTemplate[] = businessFormsData.map(form => ({
     ...form,
-    status: formStatuses[form.form_id] || 'active'
+    adminStatus: formStatuses[form.form_id] || 'active'
   }));
 
   const handleToggleStatus = (formId: string, currentStatus: 'active' | 'inactive') => {
@@ -55,23 +55,17 @@ const FormsManager: React.FC = () => {
       [formId]: newStatus
     }));
     toast.success(`Form status changed to ${newStatus}`);
+    
+    // Log audit entry
+    console.log(`[AUDIT] Form status changed: ${formId} from ${currentStatus} to ${newStatus} by admin at ${new Date().toISOString()}`);
   };
 
-  const handleAssignForm = (form: FormTemplateWithStatus, entityType: 'individual' | 'business') => {
-    if (form.status === 'inactive') {
-      toast.error('Cannot assign inactive forms');
-      return;
-    }
-    toast.success(`Form "${form.name}" assigned to ${entityType} entities`);
-    console.log(`Assigning form ${form.form_id} to ${entityType}`);
-  };
-
-  const handleViewForm = (form: FormTemplateWithStatus) => {
+  const handleViewForm = (form: AdminFormTemplate) => {
     toast.info(`Opening form: ${form.name}`);
-    console.log(`Viewing form ${form.form_id}`);
+    console.log(`[AUDIT] Form viewed: ${form.form_id} by admin at ${new Date().toISOString()}`);
   };
 
-  const renderFormsTable = (forms: FormTemplateWithStatus[], entityType: 'individual' | 'business', loading: boolean) => {
+  const renderFormsTable = (forms: AdminFormTemplate[], entityType: 'individual' | 'business', loading: boolean) => {
     if (loading) {
       return (
         <div className="space-y-4">
@@ -129,18 +123,18 @@ const FormsManager: React.FC = () => {
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Badge 
-                    variant={form.status === 'active' ? 'default' : 'secondary'}
-                    className={form.status === 'active' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500'}
+                    variant={form.adminStatus === 'active' ? 'default' : 'secondary'}
+                    className={form.adminStatus === 'active' ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500'}
                   >
-                    {form.status}
+                    {form.adminStatus}
                   </Badge>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleToggleStatus(form.form_id, form.status)}
+                    onClick={() => handleToggleStatus(form.form_id, form.adminStatus)}
                     className="h-6 w-6 p-0"
                   >
-                    {form.status === 'active' ? (
+                    {form.adminStatus === 'active' ? (
                       <ToggleRight className="h-4 w-4 text-green-600" />
                     ) : (
                       <ToggleLeft className="h-4 w-4 text-gray-600" />
@@ -149,25 +143,14 @@ const FormsManager: React.FC = () => {
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex items-center gap-2 justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewForm(form)}
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleAssignForm(form, entityType)}
-                    disabled={form.status === 'inactive'}
-                    className={form.status === 'inactive' ? 'opacity-50 cursor-not-allowed' : ''}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Assign
-                  </Button>
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleViewForm(form)}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  View
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -179,9 +162,9 @@ const FormsManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold">Forms Assignment</h2>
+        <h2 className="text-xl font-semibold">Forms Management</h2>
         <p className="text-muted-foreground">
-          Assign forms to individual participants or business entities across projects. Toggle status to control form availability.
+          Manage form availability across the system. Toggle status to control whether forms can be assigned to participants.
         </p>
       </div>
 

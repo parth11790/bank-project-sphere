@@ -10,12 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Save } from 'lucide-react';
+import { logAuditEvent } from '@/services/auditService';
 
 // Import custom components
 import FormHeader from '@/components/form/FormHeader';
 import TaxReturnsForm from '@/components/form/TaxReturnsForm';
 import PersonalFinancialStatementForm from '@/components/form/PersonalFinancialStatementForm';
 import BalanceSheetForm from '@/components/form/BalanceSheetForm';
+import BusinessBalanceSheetForm from '@/components/form/BusinessBalanceSheetForm';
 import GenericForm from '@/components/form/GenericForm';
 import FormAnalysis from '@/components/form/FormAnalysis';
 import DebtSummaryForm from '@/components/form/DebtSummaryForm';
@@ -31,6 +33,9 @@ const FormView: React.FC = () => {
   const [searchParams] = useSearchParams();
   const formName = searchParams.get('name') || 'Form';
   const participantName = searchParams.get('participant') || 'User';
+  const projectId = searchParams.get('projectId');
+  const participantId = searchParams.get('participantId');
+  const entityType = searchParams.get('entityType') || 'individual';
 
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   
@@ -41,11 +46,111 @@ const FormView: React.FC = () => {
       ...prev,
       [field]: value
     }));
+
+    // Log field changes for audit
+    logAuditEvent({
+      userId: 'current_user', // Replace with actual user ID when auth is implemented
+      userName: 'Current User',
+      projectId: projectId || undefined,
+      participantId: participantId || undefined,
+      action: 'form_field_updated',
+      category: 'form',
+      details: {
+        formName,
+        fieldName: field,
+        formId: formId
+      }
+    });
   };
   
   const handleSubmit = () => {
+    // Log form submission
+    logAuditEvent({
+      userId: 'current_user',
+      userName: 'Current User',
+      projectId: projectId || undefined,
+      participantId: participantId || undefined,
+      action: 'form_submitted',
+      category: 'form',
+      details: {
+        formName,
+        formId,
+        entityType,
+        fieldCount: Object.keys(formValues).length
+      }
+    });
+
     toast("Form submitted successfully");
   };
+
+  const renderFormContent = () => {
+    if (formName === 'Tax Returns') {
+      return (
+        <TaxReturnsForm 
+          formValues={formValues}
+          calculatedValues={calculatedValues}
+          onInputChange={handleInputChange}
+        />
+      );
+    }
+    
+    if (formName === 'Personal Debt Summary') {
+      return (
+        <DebtSummaryForm 
+          formValues={formValues}
+          onInputChange={handleInputChange}
+        />
+      );
+    }
+    
+    if (formName === 'Personal Financial Statement') {
+      return <PersonalFinancialStatementForm />;
+    }
+    
+    if (formName === 'Balance Sheet' && entityType === 'business') {
+      return <BusinessBalanceSheetForm />;
+    }
+    
+    if (formName === 'Balance Sheet') {
+      return <BalanceSheetForm />;
+    }
+
+    if (formName === 'Professional References Form') {
+      return (
+        <ProfessionalReferencesForm 
+          formValues={formValues}
+          onInputChange={handleInputChange}
+        />
+      );
+    }
+
+    if (formName === 'Professional Resume') {
+      return (
+        <ProfessionalResumeForm 
+          formValues={formValues}
+          onInputChange={handleInputChange}
+        />
+      );
+    }
+
+    if (formName === 'Net worth assessment') {
+      return <NetWorthForm />;
+    }
+    
+    return <GenericForm />;
+  };
+
+  const shouldShowNotes = ![
+    'Professional References Form',
+    'Professional Resume',
+    'Net worth assessment'
+  ].includes(formName);
+
+  const shouldShowFooter = ![
+    'Professional References Form',
+    'Professional Resume',
+    'Net worth assessment'
+  ].includes(formName);
 
   return (
     <Layout>
@@ -70,69 +175,21 @@ const FormView: React.FC = () => {
           <TabsContent value="form" className="mt-6 space-y-6">
             <Card>
               <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
-                {formName === 'Tax Returns' && (
-                  <TaxReturnsForm 
-                    formValues={formValues}
-                    calculatedValues={calculatedValues}
-                    onInputChange={handleInputChange}
-                  />
-                )}
+                {renderFormContent()}
                 
-                {formName === 'Personal Debt Summary' && (
-                  <DebtSummaryForm 
-                    formValues={formValues}
-                    onInputChange={handleInputChange}
-                  />
-                )}
-                
-                {formName === 'Personal Financial Statement' && (
-                  <PersonalFinancialStatementForm />
-                )}
-                
-                {formName === 'Balance Sheet' && (
-                  <BalanceSheetForm />
-                )}
-
-                {formName === 'Professional References Form' && (
-                  <ProfessionalReferencesForm 
-                    formValues={formValues}
-                    onInputChange={handleInputChange}
-                  />
-                )}
-
-                {formName === 'Professional Resume' && (
-                  <ProfessionalResumeForm 
-                    formValues={formValues}
-                    onInputChange={handleInputChange}
-                  />
-                )}
-
-                {formName === 'Net worth assessment' && (
-                  <NetWorthForm />
-                )}
-                
-                {formName !== 'Tax Returns' && 
-                 formName !== 'Personal Debt Summary' && 
-                 formName !== 'Personal Financial Statement' && 
-                 formName !== 'Balance Sheet' &&
-                 formName !== 'Professional References Form' &&
-                 formName !== 'Professional Resume' &&
-                 formName !== 'Net worth assessment' && (
-                  <GenericForm />
-                )}
-                
-                {formName !== 'Professional References Form' && 
-                 formName !== 'Professional Resume' && 
-                 formName !== 'Net worth assessment' && (
+                {shouldShowNotes && (
                   <div className="mt-6">
                     <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea id="notes" placeholder="Enter any additional information" className="mt-2" />
+                    <Textarea 
+                      id="notes" 
+                      placeholder="Enter any additional information" 
+                      className="mt-2"
+                      onChange={(e) => handleInputChange('notes', e.target.value)}
+                    />
                   </div>
                 )}
               </CardContent>
-              {formName !== 'Professional References Form' && 
-               formName !== 'Professional Resume' && 
-               formName !== 'Net worth assessment' && (
+              {shouldShowFooter && (
                 <CardFooter className="flex justify-end">
                   <Button onClick={handleSubmit}>
                     <Save className="h-4 w-4 mr-2" />

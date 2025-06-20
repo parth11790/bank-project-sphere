@@ -158,11 +158,24 @@ const PersonalInformationForm: React.FC = () => {
     fetchParticipant();
   }, [projectId, participantId, form]);
   const onSubmit = (data: PersonalInformationFormValues) => {
+    console.log('[AUDIT] Personal Information Form submitted:', {
+      participantId,
+      projectId,
+      timestamp: new Date().toISOString(),
+      userId: 'current_user', // Replace with actual user ID when auth is implemented
+      action: 'form_submit',
+      formType: 'personal_information'
+    });
     console.log('Personal Information Form Data:', data);
     toast.success('Personal information saved successfully');
-    // In a real app, this would save to the backend
   };
   const handleBack = () => {
+    console.log('[AUDIT] User navigated back from personal information form:', {
+      participantId,
+      projectId,
+      timestamp: new Date().toISOString(),
+      userId: 'current_user'
+    });
     navigate(`/project/participants/${projectId}`);
   };
   const tabs = [{
