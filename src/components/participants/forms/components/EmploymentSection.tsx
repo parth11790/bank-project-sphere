@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -9,17 +8,20 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { PersonalInformationFormValues } from '../schemas/personalInformationSchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
-
 interface EmploymentSectionProps {
   form: UseFormReturn<PersonalInformationFormValues>;
 }
-
-export const EmploymentSection: React.FC<EmploymentSectionProps> = ({ form }) => {
-  const { fields, append, remove } = useFieldArray({
+export const EmploymentSection: React.FC<EmploymentSectionProps> = ({
+  form
+}) => {
+  const {
+    fields,
+    append,
+    remove
+  } = useFieldArray({
     control: form.control,
-    name: 'employment_history',
+    name: 'employment_history'
   });
-
   const addEmployment = () => {
     append({
       employer_name: '',
@@ -27,134 +29,89 @@ export const EmploymentSection: React.FC<EmploymentSectionProps> = ({ form }) =>
       start_date: new Date(),
       end_date: undefined,
       responsibilities: '',
-      reason_for_leaving: '',
+      reason_for_leaving: ''
     });
   };
+  return <div className="space-y-6">
+      
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-semibold">Employment History</h3>
-          <p className="text-sm text-muted-foreground">Current and Past 5 years</p>
-        </div>
-        <Button type="button" onClick={addEmployment} variant="outline">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Employment
-        </Button>
-      </div>
-
-      {fields.map((field, index) => (
-        <Card key={field.id}>
+      {fields.map((field, index) => <Card key={field.id}>
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle className="text-base">Employment #{index + 1}</CardTitle>
-              {fields.length > 1 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => remove(index)}
-                >
+              {fields.length > 1 && <Button type="button" variant="outline" size="sm" onClick={() => remove(index)}>
                   <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
+                </Button>}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name={`employment_history.${index}.employer_name`}
-                render={({ field }) => (
-                  <FormItem>
+              <FormField control={form.control} name={`employment_history.${index}.employer_name`} render={({
+            field
+          }) => <FormItem>
                     <FormLabel>Employer Name</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  </FormItem>} />
 
-              <FormField
-                control={form.control}
-                name={`employment_history.${index}.position_title`}
-                render={({ field }) => (
-                  <FormItem>
+              <FormField control={form.control} name={`employment_history.${index}.position_title`} render={({
+            field
+          }) => <FormItem>
                     <FormLabel>Position / Title</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  </FormItem>} />
             </div>
 
             <div>
               <label className="text-sm font-medium mb-2 block">Dates of Employment</label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name={`employment_history.${index}.start_date`}
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={form.control} name={`employment_history.${index}.start_date`} render={({
+              field
+            }) => <FormItem>
                       <FormLabel className="text-xs">Start Date</FormLabel>
                       <FormControl>
                         <DatePicker selected={field.value} onSelect={field.onChange} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={form.control}
-                  name={`employment_history.${index}.end_date`}
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={form.control} name={`employment_history.${index}.end_date`} render={({
+              field
+            }) => <FormItem>
                       <FormLabel className="text-xs">End Date (if applicable)</FormLabel>
                       <FormControl>
                         <DatePicker selected={field.value} onSelect={field.onChange} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
               </div>
             </div>
 
-            <FormField
-              control={form.control}
-              name={`employment_history.${index}.responsibilities`}
-              render={({ field }) => (
-                <FormItem>
+            <FormField control={form.control} name={`employment_history.${index}.responsibilities`} render={({
+          field
+        }) => <FormItem>
                   <FormLabel>Responsibilities</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
+                </FormItem>} />
 
-            <FormField
-              control={form.control}
-              name={`employment_history.${index}.reason_for_leaving`}
-              render={({ field }) => (
-                <FormItem>
+            <FormField control={form.control} name={`employment_history.${index}.reason_for_leaving`} render={({
+          field
+        }) => <FormItem>
                   <FormLabel>Reason for Leaving</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
+                </FormItem>} />
           </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+        </Card>)}
+    </div>;
 };

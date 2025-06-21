@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Building2, FileText, Plus, Edit } from 'lucide-react';
 import { PersonalInformationFormValues } from '../schemas/personalInformationSchema';
 import { Participant } from '@/types/participant';
-
 interface Business {
   business_id: string;
   name: string;
@@ -19,76 +17,46 @@ interface Business {
     name: string;
   }>;
 }
-
 interface BusinessOwnershipSectionProps {
   form: UseFormReturn<PersonalInformationFormValues>;
   participant?: Participant;
 }
-
 const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({
   form,
   participant
 }) => {
   // Mock businesses data - in a real app, this would come from the participant data
   const businesses: Business[] = [];
-
   const handleAddBusiness = () => {
     console.log('Add business clicked for participant:', participant?.name);
   };
-
   const handleEditBusiness = (business: Business) => {
     console.log('Edit business clicked:', business.name);
   };
-
   const handleAssignBusinessForms = (business: Business) => {
     console.log('Assign business forms clicked for:', business.name);
   };
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            Business Ownership
-          </CardTitle>
-          <Button onClick={handleAddBusiness} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Business
-          </Button>
-        </div>
-      </CardHeader>
+  return <Card>
+      
       <CardContent>
-        {businesses.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+        {businesses.length === 0 ? <div className="text-center py-8 text-muted-foreground">
             <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No business ownership information</p>
             <p className="text-sm">Click "Add Business" to get started</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {businesses.map((business) => (
-              <div key={business.business_id} className="border rounded-lg p-4">
+          </div> : <div className="space-y-4">
+            {businesses.map(business => <div key={business.business_id} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="font-medium text-lg">{business.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline">{business.entity_type}</Badge>
-                      {business.title && (
-                        <Badge variant="secondary">{business.title}</Badge>
-                      )}
-                      {business.ownership_percentage && (
-                        <Badge variant="outline">
+                      {business.title && <Badge variant="secondary">{business.title}</Badge>}
+                      {business.ownership_percentage && <Badge variant="outline">
                           {business.ownership_percentage}% ownership
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEditBusiness(business)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => handleEditBusiness(business)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
                   </Button>
@@ -102,40 +70,24 @@ const BusinessOwnershipSection: React.FC<BusinessOwnershipSectionProps> = ({
                         <FileText className="h-4 w-4" />
                         Business Forms ({business.forms?.length || 0})
                       </h4>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleAssignBusinessForms(business)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleAssignBusinessForms(business)}>
                         <Plus className="h-4 w-4 mr-1" />
                         Assign
                       </Button>
                     </div>
-                    {business.forms && business.forms.length > 0 ? (
-                      <div className="space-y-1">
-                        {business.forms.slice(0, 3).map((form) => (
-                          <div key={form.form_id} className="text-sm text-muted-foreground">
+                    {business.forms && business.forms.length > 0 ? <div className="space-y-1">
+                        {business.forms.slice(0, 3).map(form => <div key={form.form_id} className="text-sm text-muted-foreground">
                             • {form.name}
-                          </div>
-                        ))}
-                        {business.forms.length > 3 && (
-                          <div className="text-sm text-muted-foreground">
+                          </div>)}
+                        {business.forms.length > 3 && <div className="text-sm text-muted-foreground">
                             +{business.forms.length - 3} more forms
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">No forms assigned</p>
-                    )}
+                          </div>}
+                      </div> : <p className="text-sm text-muted-foreground">No forms assigned</p>}
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              </div>)}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default BusinessOwnershipSection;
