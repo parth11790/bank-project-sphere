@@ -21,7 +21,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
       <CardContent className="space-y-6">
         <FormField
           control={form.control}
-          name="background_information.criminal_background"
+          name="criminal_details"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
@@ -31,7 +31,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
               <FormControl>
                 <Textarea 
                   {...field} 
-                  value={field.value || ''}
+                  value={String(field.value || '')}
                   rows={4}
                   placeholder="Please provide details if applicable..."
                 />
@@ -43,7 +43,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
 
         <FormField
           control={form.control}
-          name="background_information.bankruptcy_history"
+          name="federal_debt_details"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
@@ -53,7 +53,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
               <FormControl>
                 <Textarea 
                   {...field} 
-                  value={field.value || ''}
+                  value={String(field.value || '')}
                   rows={4}
                   placeholder="Please provide details if applicable..."
                 />
@@ -65,7 +65,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
 
         <FormField
           control={form.control}
-          name="background_information.litigation_history"
+          name="judgment_details"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
@@ -75,7 +75,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
               <FormControl>
                 <Textarea 
                   {...field} 
-                  value={field.value || ''}
+                  value={String(field.value || '')}
                   rows={4}
                   placeholder="Please provide details if applicable..."
                 />
