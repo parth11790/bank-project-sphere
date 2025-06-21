@@ -5,14 +5,14 @@ import { Form } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import PersonalInfoSection from './components/PersonalInfoSection';
-import EmploymentSection from './components/EmploymentSection';
-import EducationSection from './components/EducationSection';
-import BusinessExperienceSection from './components/BusinessExperienceSection';
-import BusinessOwnershipSection from './components/BusinessOwnershipSection';
-import BackgroundSection from './components/BackgroundSection';
-import ReferencesSection from './components/ReferencesSection';
-import FormsAssignmentSection from './components/FormsAssignmentSection';
+import { PersonalInfoSection } from './components/PersonalInfoSection';
+import { EmploymentSection } from './components/EmploymentSection';
+import { EducationSection } from './components/EducationSection';
+import { BusinessExperienceSection } from './components/BusinessExperienceSection';
+import { BusinessOwnershipSection } from './components/BusinessOwnershipSection';
+import { BackgroundSection } from './components/BackgroundSection';
+import { ReferencesSection } from './components/ReferencesSection';
+import { FormsAssignmentSection } from './components/FormsAssignmentSection';
 import { Button } from '@/components/ui/button';
 
 const personalInformationSchema = z.object({
@@ -54,6 +54,7 @@ const personalInformationSchema = z.object({
   graduationDate: z.date().optional(),
   degree: z.string().optional(),
   // Business Experience Section
+  business_experience: z.string().optional(),
   yearsOfExperience: z.number().optional(),
   industryExperience: z.string().optional(),
   // Business Ownership Section
@@ -121,6 +122,7 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
       schoolName: participant?.schoolName || "",
       graduationDate: participant?.graduationDate ? new Date(participant.graduationDate) : undefined,
       degree: participant?.degree || "",
+      business_experience: participant?.business_experience || "",
       yearsOfExperience: participant?.yearsOfExperience || 0,
       industryExperience: participant?.industryExperience || "",
       ownershipPercentage: participant?.ownershipPercentage || 0,
