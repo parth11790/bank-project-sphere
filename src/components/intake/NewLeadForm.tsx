@@ -17,6 +17,7 @@ import { sbaDropdownFields } from '@/lib/mockData/dropdownFields';
 import { useLenderDropdowns } from '@/hooks/useLenderDropdowns';
 import { IntakeFormData } from './types/intakeTypes';
 import { format } from 'date-fns';
+import { FundingPurposeSelection } from './forms/components/FundingPurposeSelection';
 
 const newLeadSchema = z.object({
   project_name: z.string().min(3, "Project name must be at least 3 characters."),
@@ -165,6 +166,13 @@ const NewLeadForm: React.FC<NewLeadFormProps> = ({ formData, updateFormData }) =
               )}
             />
           </div>
+
+          {/* Funding Purpose Selection */}
+          <FundingPurposeSelection 
+            form={form}
+            formData={formData}
+            updateFormData={updateFormData}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
