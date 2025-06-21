@@ -27,31 +27,49 @@ export interface IntakeFormData {
   city: string;
   state: string;
   
-  // Eligibility
-  business_in_operation: boolean;
-  time_in_business: string;
-  business_type: string;
-  annual_revenue: number;
-  credit_score_range: string;
-  industry: string;
-  employees_count: string;
-  collateral_available: boolean;
-  debt_service_coverage: string;
+  // Eligibility Fields
+  is_operating_business?: boolean | null;
+  is_for_profit?: boolean | null;
+  is_us_location?: boolean | null;
+  ineligible_business_types?: string[];
+  principal_status: {
+    is_incarcerated: boolean | null;
+    is_on_parole: boolean | null;
+    is_indicted: boolean | null;
+  };
+  has_prior_government_debt?: boolean | null;
+  has_robs_esop_involvement?: boolean | null;
+  pre_screening_status?: string;
+  eligibility_notes?: string;
   
-  // SBA Specific
-  sba_eligibility: string;
-  environmental_concerns: boolean;
-  government_contracting: boolean;
-  franchise_business: boolean;
-  real_estate_component: boolean;
+  // Legacy Eligibility (for compatibility)
+  business_in_operation?: boolean;
+  time_in_business?: string;
+  business_type?: string;
+  annual_revenue?: number;
+  credit_score_range?: string;
+  industry?: string;
+  employees_count?: string;
+  collateral_available?: boolean;
+  debt_service_coverage?: string;
+  sba_eligibility?: string;
+  environmental_concerns?: boolean;
+  government_contracting?: boolean;
+  franchise_business?: boolean;
+  real_estate_component?: boolean;
   
   // Ownership
   current_owners: CurrentOwner[];
   former_owners: FormerOwner[];
-  ownership_changes_last_2_years: boolean;
+  ownership_changes_last_2_years?: boolean;
   ownership_change_details?: string;
-  management_changes_last_2_years: boolean;
+  management_changes_last_2_years?: boolean;
   management_change_details?: string;
+  
+  // Pre-Approval
+  pre_approval_content?: string;
+  preliminary_conditions?: string[];
+  pre_approval_status?: string;
 }
 
 export interface CurrentOwner {
@@ -81,4 +99,16 @@ export interface FormerOwner {
   date_ownership_ended: string;
   current_involvement: string;
   settlement_terms: string;
+}
+
+// Add missing type exports
+export interface FormComponentProps {
+  formData: IntakeFormData;
+  updateFormData: (data: Partial<IntakeFormData>) => void;
+}
+
+export interface FormStep {
+  id: string;
+  title: string;
+  component: React.ComponentType<FormComponentProps>;
 }

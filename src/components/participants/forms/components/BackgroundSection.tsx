@@ -21,7 +21,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
       <CardContent className="space-y-6">
         <FormField
           control={form.control}
-          name="criminal_background"
+          name="background_information.criminal_background"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
@@ -31,6 +31,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
               <FormControl>
                 <Textarea 
                   {...field} 
+                  value={field.value || ''}
                   rows={4}
                   placeholder="Please provide details if applicable..."
                 />
@@ -42,7 +43,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
 
         <FormField
           control={form.control}
-          name="bankruptcy_history"
+          name="background_information.bankruptcy_history"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
@@ -52,6 +53,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
               <FormControl>
                 <Textarea 
                   {...field} 
+                  value={field.value || ''}
                   rows={4}
                   placeholder="Please provide details if applicable..."
                 />
@@ -63,7 +65,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
 
         <FormField
           control={form.control}
-          name="litigation_history"
+          name="background_information.litigation_history"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
@@ -73,6 +75,7 @@ export const BackgroundSection: React.FC<BackgroundSectionProps> = ({ form }) =>
               <FormControl>
                 <Textarea 
                   {...field} 
+                  value={field.value || ''}
                   rows={4}
                   placeholder="Please provide details if applicable..."
                 />

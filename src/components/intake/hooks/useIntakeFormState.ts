@@ -15,10 +15,10 @@ const defaultFormData: IntakeFormData = {
   primary_contact_email: "",
   requested_loan_amount: 0,
   loan_purpose: "",
-  lead_status: "New Lead",
   city: "",
   state: "",
   
+  // Eligibility fields
   is_operating_business: null,
   is_for_profit: null,
   is_us_location: null,
