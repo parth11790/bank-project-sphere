@@ -1,181 +1,303 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { personalInformationSchema, PersonalInformationFormValues } from './schemas/personalInformationSchema';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
-import { EmploymentSection } from './components/EmploymentSection';
-import { EducationSection } from './components/EducationSection';
-import { BusinessExperienceSection } from './components/BusinessExperienceSection';
 import BusinessOwnershipSection from './components/BusinessOwnershipSection';
 import { BackgroundSection } from './components/BackgroundSection';
-import { ReferencesSection } from './components/ReferencesSection';
-import FormsAssignmentSection from './components/FormsAssignmentSection';
-import { Button } from '@/components/ui/button';
+import { FormsAssignmentSection } from './components/FormsAssignmentSection';
+import { NetWorthSection } from './components/NetWorthSection';
+import { ArrowLeft, Save } from 'lucide-react';
+import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
+import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
+import { Participant } from '@/types/participant';
 
-const personalInformationSchema = z.object({
-  firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  middleName: z.string().optional(),
-  ssn: z.string().optional(),
-  dateOfBirth: z.date().optional(),
-  citizenship: z.string().optional(),
-  homeAddress: z.string().optional(),
-  homeCity: z.string().optional(),
-  homeState: z.string().optional(),
-  homeZipCode: z.string().optional(),
-  mailingAddress: z.string().optional(),
-  mailingCity: z.string().optional(),
-  mailingState: z.string().optional(),
-  mailingZipCode: z.string().optional(),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  phone: z.string().optional(),
-  cellPhone: z.string().optional(),
-  // Employment Section
-  employerName: z.string().optional(),
-  employerAddress: z.string().optional(),
-  employerCity: z.string().optional(),
-  employerState: z.string().optional(),
-  employerZipCode: z.string().optional(),
-  jobTitle: z.string().optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  // Education Section
-  highestEducation: z.string().optional(),
-  schoolName: z.string().optional(),
-  graduationDate: z.date().optional(),
-  degree: z.string().optional(),
-  // Business Experience Section
-  business_experience: z.string().optional(),
-  yearsOfExperience: z.number().optional(),
-  industryExperience: z.string().optional(),
-  // Business Ownership Section
-  ownershipPercentage: z.number().optional(),
-  businessName: z.string().optional(),
-  // Background Section
-  priorConvictions: z.boolean().optional(),
-  bankruptcyHistory: z.boolean().optional(),
-  pendingLawsuits: z.boolean().optional(),
-  // References Section
-  reference1Name: z.string().optional(),
-  reference1Phone: z.string().optional(),
-  reference1Email: z.string().optional(),
-  reference2Name: z.string().optional(),
-  reference2Phone: z.string().optional(),
-  reference2Email: z.string().optional(),
-  // Forms Assignment Section
-  assignedForms: z.array(z.string()).optional(),
-});
-
-export type PersonalInformationFormValues = z.infer<typeof personalInformationSchema>;
-
-interface PersonalInformationFormProps {
-  participant?: any;
-  onSave?: (values: PersonalInformationFormValues) => void;
-  onCancel?: () => void;
-  isEditing?: boolean;
-}
-
-const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({ 
-  participant, 
-  onSave = () => {}, 
-  onCancel = () => {},
-  isEditing = false 
-}) => {
+const PersonalInformationForm: React.FC = () => {
+  const {
+    projectId,
+    participantId
+  } = useParams<{
+    projectId: string;
+    participantId: string;
+  }>();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('personal');
+  const [participant, setParticipant] = useState<Participant | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const form = useForm<PersonalInformationFormValues>({
     resolver: zodResolver(personalInformationSchema),
     defaultValues: {
-      firstName: participant?.firstName || "",
-      lastName: participant?.lastName || "",
-      middleName: participant?.middleName || "",
-      ssn: participant?.ssn || "",
-      dateOfBirth: participant?.dateOfBirth ? new Date(participant.dateOfBirth) : undefined,
-      citizenship: participant?.citizenship || "",
-      homeAddress: participant?.homeAddress || "",
-      homeCity: participant?.homeCity || "",
-      homeState: participant?.homeState || "",
-      homeZipCode: participant?.homeZipCode || "",
-      mailingAddress: participant?.mailingAddress || "",
-      mailingCity: participant?.mailingCity || "",
-      mailingState: participant?.mailingState || "",
-      mailingZipCode: participant?.mailingZipCode || "",
-      email: participant?.email || "",
-      phone: participant?.phone || "",
-      cellPhone: participant?.cellPhone || "",
-      employerName: participant?.employerName || "",
-      employerAddress: participant?.employerAddress || "",
-      employerCity: participant?.employerCity || "",
-      employerState: participant?.employerState || "",
-      employerZipCode: participant?.employerZipCode || "",
-      jobTitle: participant?.jobTitle || "",
-      startDate: participant?.startDate ? new Date(participant.startDate) : undefined,
-      endDate: participant?.endDate ? new Date(participant.endDate) : undefined,
-      highestEducation: participant?.highestEducation || "",
-      schoolName: participant?.schoolName || "",
-      graduationDate: participant?.graduationDate ? new Date(participant.graduationDate) : undefined,
-      degree: participant?.degree || "",
-      business_experience: participant?.business_experience || "",
-      yearsOfExperience: participant?.yearsOfExperience || 0,
-      industryExperience: participant?.industryExperience || "",
-      ownershipPercentage: participant?.ownershipPercentage || 0,
-      businessName: participant?.businessName || "",
-      priorConvictions: participant?.priorConvictions || false,
-      bankruptcyHistory: participant?.bankruptcyHistory || false,
-      pendingLawsuits: participant?.pendingLawsuits || false,
-      reference1Name: participant?.reference1Name || "",
-      reference1Phone: participant?.reference1Phone || "",
-      reference1Email: participant?.reference1Email || "",
-      reference2Name: participant?.reference2Name || "",
-      reference2Phone: participant?.reference2Phone || "",
-      reference2Email: participant?.reference2Email || "",
-      assignedForms: participant?.assignedForms || [],
-    },
+      education: [{
+        school_name: '',
+        degree_certification: '',
+        area_of_study: '',
+        start_date: new Date()
+      }],
+      employment_history: [{
+        employer_name: '',
+        position_title: '',
+        start_date: new Date(),
+        responsibilities: '',
+        reason_for_leaving: ''
+      }],
+      professional_references: [{
+        reference_name: '',
+        relationship: '',
+        phone_number: '',
+        email_address: ''
+      }, {
+        reference_name: '',
+        relationship: '',
+        phone_number: '',
+        email_address: ''
+      }, {
+        reference_name: '',
+        relationship: '',
+        phone_number: '',
+        email_address: ''
+      }],
+      primary_phone_type: 'cell',
+      marital_status: 'unmarried',
+      liable_for_alimony: 'no',
+      delinquent_child_support: 'no',
+      us_government_employee: 'no',
+      us_citizen: 'yes',
+      assets_in_trust: 'no',
+      military_service: 'no',
+      declared_bankrupt: 'no',
+      criminal_charges: 'no',
+      federal_debt_delinquent: 'no',
+      unsatisfied_judgments: 'no',
+      foreclosure_party: 'no',
+      business_failure: 'no',
+      pledged_property: 'no'
+    }
   });
+  useEffect(() => {
+    const fetchParticipant = async () => {
+      if (projectId && participantId) {
+        try {
+          setIsLoading(true);
+          console.log('PersonalInfoForm: Fetching participant with ID:', participantId, 'for project:', projectId);
+          const participants = await getParticipantsWithDetailsData(projectId);
+          console.log('PersonalInfoForm: Available participants:', participants.map(p => ({
+            id: p.participant_id,
+            name: p.name
+          })));
+          let foundParticipant = null;
 
-  const onSubmit = (values: PersonalInformationFormValues) => {
-    console.log("Form values:", values);
-    onSave(values);
+          // If this is an owner ID, we need to find the corresponding participant
+          if (participantId.startsWith('owner_')) {
+            console.log('PersonalInfoForm: Handling owner ID:', participantId);
+
+            // For owner_5_1, we need to find the participant from project 5
+            // Extract project number from owner ID (owner_5_1 -> project 5)
+            const ownerIdMatch = participantId.match(/owner_(\d+)_(\d+)/);
+            if (ownerIdMatch) {
+              const ownerProjectNum = ownerIdMatch[1];
+              const ownerIndex = ownerIdMatch[2];
+              console.log('PersonalInfoForm: Owner project:', ownerProjectNum, 'Owner index:', ownerIndex);
+
+              // Find any participant from this project since we're just using it for display
+              // The actual data comes from the owner service
+              foundParticipant = participants.length > 0 ? participants[0] : null;
+              if (foundParticipant) {
+                // Create a mock participant for the owner
+                foundParticipant = {
+                  ...foundParticipant,
+                  participant_id: participantId,
+                  name: `Owner ${ownerIndex}` // Temporary name, will be overridden by form data
+                };
+              }
+            }
+          } else {
+            // Regular participant ID lookup
+            foundParticipant = participants.find(p => p.participant_id === participantId);
+          }
+          console.log('PersonalInfoForm: Found participant:', foundParticipant);
+          if (foundParticipant) {
+            setParticipant(foundParticipant);
+            setError(null);
+
+            // Load mock data for owner if this is an owner ID
+            if (participantId.startsWith('owner_')) {
+              console.log('PersonalInfoForm: Loading owner mock data for:', participantId);
+              const ownerData = getOwnerPersonalInformation(participantId);
+              form.reset(ownerData);
+              console.log('PersonalInfoForm: Loaded owner data:', ownerData);
+
+              // Update participant name with the actual owner name
+              setParticipant(prev => prev ? {
+                ...prev,
+                name: ownerData.first_name + ' ' + ownerData.last_name
+              } : null);
+            }
+          } else {
+            console.error('PersonalInfoForm: Participant not found with ID:', participantId);
+            setError(`Participant with ID "${participantId}" not found`);
+            toast.error('Participant not found');
+          }
+        } catch (error) {
+          console.error('PersonalInfoForm: Error fetching participant:', error);
+          setError('Failed to load participant information');
+          toast.error('Failed to load participant information');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchParticipant();
+  }, [projectId, participantId, form]);
+  const onSubmit = (data: PersonalInformationFormValues) => {
+    console.log('[AUDIT] Personal Information Form submitted:', {
+      participantId,
+      projectId,
+      timestamp: new Date().toISOString(),
+      userId: 'current_user', // Replace with actual user ID when auth is implemented
+      action: 'form_submit',
+      formType: 'personal_information'
+    });
+    console.log('Personal Information Form Data:', data);
+    toast.success('Personal information saved successfully');
   };
+  const handleBack = () => {
+    console.log('[AUDIT] User navigated back from personal information form:', {
+      participantId,
+      projectId,
+      timestamp: new Date().toISOString(),
+      userId: 'current_user'
+    });
+    navigate(`/project/participants/${projectId}`);
+  };
+  const tabs = [{
+    id: 'personal',
+    label: 'Personal Info',
+    component: PersonalInfoSection
+  }, {
+    id: 'background',
+    label: 'Background',
+    component: BackgroundSection
+  }];
 
-  return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>Personal Information</CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <PersonalInfoSection form={form} />
-            <EmploymentSection form={form} />
-            <EducationSection form={form} />
-            <BusinessExperienceSection form={form} />
-            <BusinessOwnershipSection form={form} />
-            <BackgroundSection form={form} />
-            <ReferencesSection form={form} />
-            <FormsAssignmentSection />
-
-            <div className="flex justify-between">
-              <Button variant="outline" onClick={onCancel}>
-                Cancel
+  if (isLoading) {
+    return <div className="w-[90%] mx-auto p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading participant information...</p>
+          </div>
+        </div>
+      </div>;
+  }
+  if (error) {
+    return <div className="w-[90%] mx-auto p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center space-y-4">
+            <p className="text-destructive mb-4">{error}</p>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>Debug info:</p>
+              <p>Project ID: {projectId}</p>
+              <p>Participant ID: {participantId}</p>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={handleBack}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Participants
               </Button>
-              <Button type="submit">
-                {isEditing ? "Update" : "Save"}
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Retry
               </Button>
             </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-  );
+          </div>
+        </div>
+      </div>;
+  }
+  if (!participant) {
+    return <div className="w-[90%] mx-auto p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <p className="mb-4">Participant not found</p>
+            <Button onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Participants
+            </Button>
+          </div>
+        </div>
+      </div>;
+  }
+  return <div className="w-[90%] mx-auto p-4 space-y-4">
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <Button variant="outline" onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Participants
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold">Personal Information Form</h1>
+              <p className="text-muted-foreground">Complete personal information for {participant?.name}</p>
+            </div>
+          </div>
+        </div>
+
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle>Personal Information - {participant?.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="grid grid-cols-2 w-full">
+                    {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
+                        {tab.label}
+                      </TabsTrigger>)}
+                  </TabsList>
+
+                  {tabs.map(tab => {
+                  const Component = tab.component;
+                  return <TabsContent key={tab.id} value={tab.id} className="mt-4">
+                        {tab.id === 'personal' ? (
+                          <Component form={form} participant={participant} />
+                        ) : (
+                          <Component form={form} />
+                        )}
+                      </TabsContent>;
+                })}
+                </Tabs>
+
+                <div className="flex justify-end space-x-2 pt-6 border-t">
+                  <Button type="button" variant="outline" onClick={handleBack}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Information
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>;
 };
 
 export default PersonalInformationForm;

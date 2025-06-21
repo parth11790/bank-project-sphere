@@ -8,44 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { 
-  ChevronRight, 
-  ChevronLeft, 
-  DollarSign, 
-  Target, 
-  User, 
-  Phone,
-  Building2,
-  Home,
-  Wrench,
-  Briefcase,
-  Banknote,
-  Repeat
-} from 'lucide-react';
+import { ChevronRight, ChevronLeft, DollarSign, Target, User, Phone, Mail } from 'lucide-react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-
-const fundPurposeOptions = [
-  { value: 'Buy a business', icon: Building2, label: 'Business Acquisition' },
-  { value: 'Purchase or Refinance Commercial Real Estate', icon: Home, label: 'Real Estate Purchase' },
-  { value: 'Constructions', icon: Wrench, label: 'Property Improvements' },
-  { value: 'Renovate', icon: Wrench, label: 'Equipment Purchase' },
-  { value: 'Working Capital', icon: DollarSign, label: 'Working Capital' },
-  { value: 'Business Expansion', icon: Building2, label: 'Business Expansion' },
-  { value: 'Equipment Purchase', icon: Wrench, label: 'Equipment Purchase' },
-  { value: 'Inventory', icon: Briefcase, label: 'Inventory' },
-  { value: 'Payroll', icon: User, label: 'Payroll' },
-  { value: 'Marketing / Sales', icon: Target, label: 'Marketing / Sales' },
-  { value: 'Refinance Debt', icon: Repeat, label: 'Refinance Debt' },
-  { value: 'Buy Out a partner', icon: User, label: 'Buy Out Partner' },
-  { value: 'Open a Franchise', icon: Building2, label: 'Open Franchise' },
-  { value: 'Other', icon: Banknote, label: 'Other' }
-];
+import { useLenderDropdowns } from '@/hooks/useLenderDropdowns';
 
 const leadCaptureSchema = z.object({
   loan_amount: z.coerce.number().min(1000, "Minimum loan amount is $1,000"),
-  funding_purposes: z.array(z.string()).min(1, "Please select at least one funding purpose"),
+  funding_purpose: z.string().min(1, "Please select a funding purpose"),
   first_name: z.string().min(2, "First name is required"),
   last_name: z.string().min(2, "Last name is required"),
   phone: z.string().min(10, "Valid phone number is required"),
@@ -56,13 +27,14 @@ type LeadCaptureFormValues = z.infer<typeof leadCaptureSchema>;
 
 const LeadCaptureSection: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const navigate = useNavigate();
+  const { getDropdownValues } = useLenderDropdowns();
+  const fundPurposeOptions = getDropdownValues('fundPurpose');
 
   const form = useForm<LeadCaptureFormValues>({
     resolver: zodResolver(leadCaptureSchema),
     defaultValues: {
       loan_amount: 0,
-      funding_purposes: [],
+      funding_purpose: '',
       first_name: '',
       last_name: '',
       phone: '',
@@ -81,7 +53,7 @@ const LeadCaptureSection: React.FC = () => {
       title: "Funding Purpose", 
       description: "What are you seeking funding for?",
       icon: Target,
-      fields: ['funding_purposes']
+      fields: ['funding_purpose']
     },
     {
       title: "Personal Information",
@@ -105,7 +77,7 @@ const LeadCaptureSection: React.FC = () => {
       if (currentStep < steps.length - 1) {
         setCurrentStep(currentStep + 1);
       } else {
-        handleFormSubmission();
+        handleSubmit();
       }
     }
   };
@@ -116,14 +88,14 @@ const LeadCaptureSection: React.FC = () => {
     }
   };
 
-  const handleFormSubmission = async () => {
+  const handleSubmit = () => {
     const values = form.getValues();
     console.log('Lead capture form submitted:', values);
+    toast.success('Thank you! We\'ll be in touch soon.');
     
-    toast.success('Information captured! Redirecting to complete your profile...');
-    setTimeout(() => {
-      navigate('/personal-information');
-    }, 1000);
+    // Reset form
+    form.reset();
+    setCurrentStep(0);
   };
 
   const formatCurrency = (value: number) => {
@@ -227,58 +199,24 @@ const LeadCaptureSection: React.FC = () => {
                   {currentStep === 1 && (
                     <FormField
                       control={form.control}
-                      name="funding_purposes"
-                      render={() => (
+                      name="funding_purpose"
+                      render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-lg mb-4 block">What are you seeking funding for?*</FormLabel>
-                          <div className="grid grid-cols-2 gap-3 mt-4">
-                            {fundPurposeOptions.map((purpose) => (
-                              <FormField
-                                key={purpose.value}
-                                control={form.control}
-                                name="funding_purposes"
-                                render={({ field }) => {
-                                  const isChecked = field.value?.includes(purpose.value);
-                                  const IconComponent = purpose.icon;
-                                  return (
-                                    <div
-                                      className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                                        isChecked 
-                                          ? 'border-blue-500 bg-blue-50' 
-                                          : 'border-gray-200 hover:border-gray-300'
-                                      }`}
-                                      onClick={() => {
-                                        const updatedValue = isChecked
-                                          ? field.value?.filter((value) => value !== purpose.value)
-                                          : [...(field.value || []), purpose.value];
-                                        field.onChange(updatedValue);
-                                      }}
-                                    >
-                                      <div className={`p-2 rounded-full ${
-                                        isChecked ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-                                      }`}>
-                                        <IconComponent className="h-5 w-5" />
-                                      </div>
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">
-                                          {purpose.label}
-                                        </div>
-                                      </div>
-                                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                                        isChecked 
-                                          ? 'bg-blue-500 border-blue-500' 
-                                          : 'border-gray-300'
-                                      }`}>
-                                        {isChecked && (
-                                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  );
-                                }}
-                              />
-                            ))}
-                          </div>
+                          <FormLabel className="text-lg">Funding Purpose*</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="text-lg h-12">
+                                <SelectValue placeholder="Select funding purpose" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {fundPurposeOptions.map((purpose) => (
+                                <SelectItem key={purpose} value={purpose}>
+                                  {purpose}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -356,12 +294,15 @@ const LeadCaptureSection: React.FC = () => {
                           <FormItem>
                             <FormLabel className="text-lg">Email Address*</FormLabel>
                             <FormControl>
-                              <Input
-                                type="email"
-                                placeholder="your@email.com"
-                                className="text-lg h-12"
-                                {...field}
-                              />
+                              <div className="relative">
+                                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                                <Input
+                                  type="email"
+                                  placeholder="your@email.com"
+                                  className="pl-10 text-lg h-12"
+                                  {...field}
+                                />
+                              </div>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -389,7 +330,7 @@ const LeadCaptureSection: React.FC = () => {
                     className="flex items-center space-x-2"
                   >
                     <span>
-                      {currentStep === steps.length - 1 ? 'Continue' : 'Next'}
+                      {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
                     </span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
