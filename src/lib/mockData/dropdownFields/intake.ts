@@ -1,78 +1,105 @@
 
-import { CustomizationLevel, DropdownField } from '../dropdownTypes';
+import { DropdownField } from '../dropdownTypes';
 
 export const intakeDropdownFields: DropdownField[] = [
   {
     id: 'leadSource',
     label: 'Lead Source',
-    description: 'Source of the loan lead or inquiry',
+    description: 'Source of the business lead or application',
+    module: 'Intake',
     customizationLevel: 'Lender Customizable',
-    module: 'Intake & Pre-Screening',
     initialValues: [
-      'Website Inquiry', 
-      'Phone Inquiry', 
-      'Email Inquiry', 
-      'Lender Event', 
-      'Existing Customer Referral', 
-      'External Referral (Broker)', 
-      'Internal Referral (Other Dept)', 
-      'Walk-in', 
-      'Marketing Campaign'
+      'Referral',
+      'Website',
+      'Cold Call',
+      'Trade Show',
+      'Social Media',
+      'Email Campaign',
+      'Print Advertisement',
+      'Radio',
+      'Television',
+      'Direct Mail',
+      'Other'
     ]
   },
   {
-    id: 'projectStatus_PreScreening',
-    label: 'Project Status (Pre-Screening)',
-    description: 'Current status of the project during pre-screening phase',
+    id: 'fundPurpose',
+    label: 'Fund Purpose',
+    description: 'Purpose for which the loan funds will be used',
+    module: 'Intake',
+    customizationLevel: 'SBA Influenced',
+    initialValues: [
+      'Buy a business',
+      'Purchase or Refinance Commercial Real Estate',
+      'Constructions',
+      'Renovate',
+      'Working Capital',
+      'Business Expansion',
+      'Equipment Purchase',
+      'Inventory',
+      'Payroll',
+      'Marketing / Sales',
+      'Refinance Debt',
+      'Buy Out a partner',
+      'Open a Franchise',
+      'Other'
+    ]
+  },
+  {
+    id: 'businessType',
+    label: 'Business Type',
+    description: 'Type or category of business',
+    module: 'Intake',
+    customizationLevel: 'SBA Influenced',
+    initialValues: [
+      'Retail',
+      'Restaurant',
+      'Manufacturing',
+      'Service',
+      'Professional Services',
+      'Healthcare',
+      'Technology',
+      'Construction',
+      'Real Estate',
+      'Agriculture',
+      'Transportation',
+      'Wholesale',
+      'Other'
+    ]
+  },
+  {
+    id: 'applicationStatus',
+    label: 'Application Status',
+    description: 'Current status of the loan application',
+    module: 'Intake',
     customizationLevel: 'Lender Customizable',
-    module: 'Intake & Pre-Screening',
     initialValues: [
-      'New Lead', 
-      'Contact Attempted', 
-      'Contact Made', 
-      'Pre-Screening Started', 
-      'Initial Docs Requested', 
-      'Initial Docs Received', 
-      'Pre-Qualified', 
-      'Pre-Approved', 
-      'Additional Info Needed', 
-      'Declined - Pre-Screening', 
-      'Withdrawn - Pre-Screening'
+      'New',
+      'In Review',
+      'Documentation Required',
+      'Under Review',
+      'Approved',
+      'Conditionally Approved',
+      'Declined',
+      'Withdrawn',
+      'Funded'
     ]
   },
   {
-    id: 'ineligibleBusinessType',
-    label: 'Ineligible Business Type',
-    description: 'Business types ineligible for SBA loans (SOP 50 10 8, Section A, Ch 1, E)',
-    customizationLevel: 'SBA Defined',
-    module: 'Intake & Pre-Screening',
+    id: 'loanOfficer',
+    label: 'Loan Officer',
+    description: 'Assigned loan officer for the application',
+    module: 'Intake',
+    customizationLevel: 'Lender Customizable',
     initialValues: [
-      'Lending/Investment (Primary Activity)', 
-      'Passive Business (Landlord/Developer - Non-EPC)', 
-      'Passive Business (Rental Model - Non-Compliant)', 
-      'Life Insurance Carrier', 
-      'Located Outside U.S.', 
-      'Pyramid/Multilevel Sales', 
-      'Gambling (>1/3 Revenue or Primary Purpose)', 
-      'Illegal Activity (Federal/State/Local)', 
-      'Discriminatory Practices (Patronage/Hiring)', 
-      'Government-Owned (Non-Tribal)', 
-      'Loan Packager (>1/3 Revenue)', 
-      'Speculative Activity', 
-      'Other (Specify)'
-    ]
-  },
-  {
-    id: 'citizenshipStatus',
-    label: 'Citizenship Status',
-    description: 'Citizenship status (SOP 50 10 8, Section A, Ch 1, F)',
-    customizationLevel: 'SBA Defined',
-    module: 'Intake & Pre-Screening',
-    initialValues: [
-      'U.S. Citizen', 
-      'Lawful Permanent Resident (LPR)', 
-      'U.S. National', 
-      'Other/Ineligible Person'
+      'John Smith',
+      'Sarah Johnson',
+      'Michael Brown',
+      'Jessica Williams',
+      'David Miller',
+      'Emily Davis',
+      'Robert Wilson',
+      'Lisa Anderson'
     ]
   }
 ];
