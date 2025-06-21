@@ -9,10 +9,10 @@ import { PersonalInfoSection } from './components/PersonalInfoSection';
 import { EmploymentSection } from './components/EmploymentSection';
 import { EducationSection } from './components/EducationSection';
 import { BusinessExperienceSection } from './components/BusinessExperienceSection';
-import { BusinessOwnershipSection } from './components/BusinessOwnershipSection';
+import BusinessOwnershipSection from './components/BusinessOwnershipSection';
 import { BackgroundSection } from './components/BackgroundSection';
 import { ReferencesSection } from './components/ReferencesSection';
-import { FormsAssignmentSection } from './components/FormsAssignmentSection';
+import FormsAssignmentSection from './components/FormsAssignmentSection';
 import { Button } from '@/components/ui/button';
 
 const personalInformationSchema = z.object({
@@ -161,7 +161,7 @@ const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({
             <BusinessOwnershipSection form={form} />
             <BackgroundSection form={form} />
             <ReferencesSection form={form} />
-            <FormsAssignmentSection form={form} />
+            <FormsAssignmentSection />
 
             <div className="flex justify-between">
               <Button variant="outline" onClick={onCancel}>

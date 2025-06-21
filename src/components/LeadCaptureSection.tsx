@@ -218,38 +218,43 @@ const LeadCaptureSection: React.FC = () => {
                       name="funding_purposes"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-lg">Funding Purpose* (Select all that apply)</FormLabel>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                          <FormLabel className="text-lg mb-4 block">Funding Purpose* (Select all that apply)</FormLabel>
+                          <div className="grid grid-cols-1 gap-4 mt-4">
                             {fundPurposeOptions.map((purpose) => (
                               <FormField
                                 key={purpose}
                                 control={form.control}
                                 name="funding_purposes"
                                 render={({ field }) => {
+                                  const isChecked = field.value?.includes(purpose);
                                   return (
-                                    <FormItem
-                                      key={purpose}
-                                      className="flex flex-row items-start space-x-3 space-y-0"
+                                    <div
+                                      className={`flex items-center space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                                        isChecked 
+                                          ? 'border-blue-500 bg-blue-50' 
+                                          : 'border-gray-200 hover:border-gray-300'
+                                      }`}
+                                      onClick={() => {
+                                        const updatedValue = isChecked
+                                          ? field.value?.filter((value) => value !== purpose)
+                                          : [...(field.value || []), purpose];
+                                        field.onChange(updatedValue);
+                                      }}
                                     >
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(purpose)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, purpose])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== purpose
-                                                  )
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer">
+                                      <Checkbox
+                                        checked={isChecked}
+                                        onCheckedChange={(checked) => {
+                                          const updatedValue = checked
+                                            ? [...(field.value || []), purpose]
+                                            : field.value?.filter((value) => value !== purpose);
+                                          field.onChange(updatedValue);
+                                        }}
+                                      />
+                                      <Label className="flex-1 font-medium cursor-pointer text-base">
                                         {purpose}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )
+                                      </Label>
+                                    </div>
+                                  );
                                 }}
                               />
                             ))}
