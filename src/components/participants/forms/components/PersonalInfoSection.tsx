@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -10,7 +11,7 @@ import { PersonalInformationFormValues } from '../schemas/personalInformationSch
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import BusinessOwnershipSection from './BusinessOwnershipSection';
-import { FormsAssignmentSection } from './FormsAssignmentSection';
+import FormsAssignmentSection from './FormsAssignmentSection';
 import { Participant } from '@/types/participant';
 
 interface PersonalInfoSectionProps {
