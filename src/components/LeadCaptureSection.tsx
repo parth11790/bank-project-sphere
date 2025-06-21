@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronRight, ChevronLeft, DollarSign, Target, User, Phone, Mail } from 'lucide-react';
+import { ChevronRight, ChevronLeft, DollarSign, Target, User, Phone, Mail, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const fundPurposeOptions = [
   'Buy a business',
@@ -37,12 +39,25 @@ const leadCaptureSchema = z.object({
   last_name: z.string().min(2, "Last name is required"),
   phone: z.string().min(10, "Valid phone number is required"),
   email: z.string().email("Valid email address is required"),
+  password: z.string().min(8, "Password must be at least 8 characters").optional(),
+  confirmPassword: z.string().optional(),
+}).refine((data) => {
+  if (data.password && data.confirmPassword) {
+    return data.password === data.confirmPassword;
+  }
+  return true;
+}, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type LeadCaptureFormValues = z.infer<typeof leadCaptureSchema>;
 
 const LeadCaptureSection: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isSignUp, setIsSignUp] = useState(true);
+  const { signUp, signIn } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<LeadCaptureFormValues>({
     resolver: zodResolver(leadCaptureSchema),
@@ -53,6 +68,8 @@ const LeadCaptureSection: React.FC = () => {
       last_name: '',
       phone: '',
       email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -80,6 +97,12 @@ const LeadCaptureSection: React.FC = () => {
       description: "How can we reach you?",
       icon: Phone,
       fields: ['phone', 'email']
+    },
+    {
+      title: "Create Account",
+      description: "Secure your application with an account",
+      icon: UserPlus,
+      fields: ['password', 'confirmPassword']
     }
   ];
 
@@ -91,7 +114,7 @@ const LeadCaptureSection: React.FC = () => {
       if (currentStep < steps.length - 1) {
         setCurrentStep(currentStep + 1);
       } else {
-        handleSubmit();
+        handleAccountCreation();
       }
     }
   };
@@ -102,14 +125,46 @@ const LeadCaptureSection: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleAccountCreation = async () => {
     const values = form.getValues();
     console.log('Lead capture form submitted:', values);
-    toast.success('Thank you! We\'ll be in touch soon.');
     
-    // Reset form
-    form.reset();
-    setCurrentStep(0);
+    try {
+      if (isSignUp) {
+        const { error } = await signUp(values.email, values.password!, {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          phone: values.phone,
+          loan_amount: values.loan_amount,
+          funding_purposes: values.funding_purposes
+        });
+        
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+        
+        toast.success('Account created successfully! Redirecting to complete your profile...');
+        setTimeout(() => {
+          navigate('/personal-information');
+        }, 1000);
+      } else {
+        const { error } = await signIn(values.email, values.password!);
+        
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+        
+        toast.success('Signed in successfully! Redirecting...');
+        setTimeout(() => {
+          navigate('/personal-information');
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      toast.error('An error occurred during authentication');
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -345,6 +400,90 @@ const LeadCaptureSection: React.FC = () => {
                       />
                     </div>
                   )}
+
+                  {currentStep === 4 && (
+                    <div className="space-y-6">
+                      <div className="flex justify-center space-x-4 mb-6">
+                        <Button
+                          type="button"
+                          variant={isSignUp ? "default" : "outline"}
+                          onClick={() => setIsSignUp(true)}
+                        >
+                          Create Account
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={!isSignUp ? "default" : "outline"}
+                          onClick={() => setIsSignUp(false)}
+                        >
+                          Sign In
+                        </Button>
+                      </div>
+
+                      {isSignUp && (
+                        <>
+                          <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-lg">Password*</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="password"
+                                    placeholder="Enter password (min. 8 characters)"
+                                    className="text-lg h-12"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="confirmPassword"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-lg">Confirm Password*</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="password"
+                                    placeholder="Confirm your password"
+                                    className="text-lg h-12"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
+
+                      {!isSignUp && (
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-lg">Password*</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="password"
+                                  placeholder="Enter your password"
+                                  className="text-lg h-12"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
+                  )}
                 </motion.div>
 
                 <div className="flex justify-between mt-8">
@@ -365,7 +504,7 @@ const LeadCaptureSection: React.FC = () => {
                     className="flex items-center space-x-2"
                   >
                     <span>
-                      {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
+                      {currentStep === steps.length - 1 ? (isSignUp ? 'Create Account' : 'Sign In') : 'Next'}
                     </span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>

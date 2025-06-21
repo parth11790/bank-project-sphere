@@ -1,17 +1,18 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import PersonalInfoSection from './sections/PersonalInfoSection';
-import EmploymentSection from './sections/EmploymentSection';
-import EducationSection from './sections/EducationSection';
-import BusinessExperienceSection from './sections/BusinessExperienceSection';
-import BusinessOwnershipSection from './sections/BusinessOwnershipSection';
-import BackgroundSection from './sections/BackgroundSection';
-import ReferencesSection from './sections/ReferencesSection';
-import FormsAssignmentSection from './sections/FormsAssignmentSection';
+import PersonalInfoSection from './components/PersonalInfoSection';
+import EmploymentSection from './components/EmploymentSection';
+import EducationSection from './components/EducationSection';
+import BusinessExperienceSection from './components/BusinessExperienceSection';
+import BusinessOwnershipSection from './components/BusinessOwnershipSection';
+import BackgroundSection from './components/BackgroundSection';
+import ReferencesSection from './components/ReferencesSection';
+import FormsAssignmentSection from './components/FormsAssignmentSection';
 import { Button } from '@/components/ui/button';
 
 const personalInformationSchema = z.object({
@@ -76,16 +77,16 @@ const personalInformationSchema = z.object({
 export type PersonalInformationFormValues = z.infer<typeof personalInformationSchema>;
 
 interface PersonalInformationFormProps {
-  participant: any;
-  onSave: (values: PersonalInformationFormValues) => void;
-  onCancel: () => void;
+  participant?: any;
+  onSave?: (values: PersonalInformationFormValues) => void;
+  onCancel?: () => void;
   isEditing?: boolean;
 }
 
 const PersonalInformationForm: React.FC<PersonalInformationFormProps> = ({ 
   participant, 
-  onSave, 
-  onCancel,
+  onSave = () => {}, 
+  onCancel = () => {},
   isEditing = false 
 }) => {
   const form = useForm<PersonalInformationFormValues>({
