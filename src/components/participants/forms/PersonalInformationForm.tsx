@@ -12,7 +12,6 @@ import { Separator } from '@/components/ui/separator';
 import { personalInformationSchema, PersonalInformationFormValues } from './schemas/personalInformationSchema';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
 import BusinessOwnershipSection from './components/BusinessOwnershipSection';
-import { BackgroundSection } from './components/BackgroundSection';
 import { FormsAssignmentSection } from './components/FormsAssignmentSection';
 import { NetWorthSection } from './components/NetWorthSection';
 import { ArrowLeft, Save } from 'lucide-react';
@@ -182,10 +181,6 @@ const PersonalInformationForm: React.FC = () => {
     id: 'personal',
     label: 'Personal Info',
     component: PersonalInfoSection
-  }, {
-    id: 'background',
-    label: 'Background',
-    component: BackgroundSection
   }];
 
   if (isLoading) {
@@ -264,24 +259,8 @@ const PersonalInformationForm: React.FC = () => {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid grid-cols-2 w-full">
-                    {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className="text-xs">
-                        {tab.label}
-                      </TabsTrigger>)}
-                  </TabsList>
-
-                  {tabs.map(tab => {
-                  const Component = tab.component;
-                  return <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                        {tab.id === 'personal' ? (
-                          <Component form={form} participant={participant} />
-                        ) : (
-                          <Component form={form} />
-                        )}
-                      </TabsContent>;
-                })}
-                </Tabs>
+                {/* Since there's only one tab now, render PersonalInfoSection directly */}
+                <PersonalInfoSection form={form} participant={participant} />
 
                 <div className="flex justify-end space-x-2 pt-6 border-t">
                   <Button type="button" variant="outline" onClick={handleBack}>
