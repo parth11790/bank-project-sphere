@@ -8,15 +8,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { ChevronRight, ChevronLeft, DollarSign, Target, User, Phone, Mail } from 'lucide-react';
 import { toast } from 'sonner';
-import { useLenderDropdowns } from '@/hooks/useLenderDropdowns';
+
+const fundPurposeOptions = [
+  'Buy a business',
+  'Purchase or Refinance Commercial Real Estate',
+  'Constructions',
+  'Renovate',
+  'Working Capital',
+  'Business Expansion',
+  'Equipment Purchase',
+  'Inventory',
+  'Payroll',
+  'Marketing / Sales',
+  'Refinance Debt',
+  'Buy Out a partner',
+  'Open a Franchise',
+  'Other'
+];
 
 const leadCaptureSchema = z.object({
   loan_amount: z.coerce.number().min(1000, "Minimum loan amount is $1,000"),
-  funding_purpose: z.string().min(1, "Please select a funding purpose"),
+  funding_purposes: z.array(z.string()).min(1, "Please select at least one funding purpose"),
   first_name: z.string().min(2, "First name is required"),
   last_name: z.string().min(2, "Last name is required"),
   phone: z.string().min(10, "Valid phone number is required"),
@@ -27,14 +43,12 @@ type LeadCaptureFormValues = z.infer<typeof leadCaptureSchema>;
 
 const LeadCaptureSection: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const { getDropdownValues } = useLenderDropdowns();
-  const fundPurposeOptions = getDropdownValues('fundPurpose');
 
   const form = useForm<LeadCaptureFormValues>({
     resolver: zodResolver(leadCaptureSchema),
     defaultValues: {
       loan_amount: 0,
-      funding_purpose: '',
+      funding_purposes: [],
       first_name: '',
       last_name: '',
       phone: '',
@@ -53,7 +67,7 @@ const LeadCaptureSection: React.FC = () => {
       title: "Funding Purpose", 
       description: "What are you seeking funding for?",
       icon: Target,
-      fields: ['funding_purpose']
+      fields: ['funding_purposes']
     },
     {
       title: "Personal Information",
@@ -199,24 +213,45 @@ const LeadCaptureSection: React.FC = () => {
                   {currentStep === 1 && (
                     <FormField
                       control={form.control}
-                      name="funding_purpose"
-                      render={({ field }) => (
+                      name="funding_purposes"
+                      render={() => (
                         <FormItem>
-                          <FormLabel className="text-lg">Funding Purpose*</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="text-lg h-12">
-                                <SelectValue placeholder="Select funding purpose" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {fundPurposeOptions.map((purpose) => (
-                                <SelectItem key={purpose} value={purpose}>
-                                  {purpose}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormLabel className="text-lg">Funding Purpose* (Select all that apply)</FormLabel>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                            {fundPurposeOptions.map((purpose) => (
+                              <FormField
+                                key={purpose}
+                                control={form.control}
+                                name="funding_purposes"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem
+                                      key={purpose}
+                                      className="flex flex-row items-start space-x-3 space-y-0"
+                                    >
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(purpose)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, purpose])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== purpose
+                                                  )
+                                                )
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="font-normal cursor-pointer">
+                                        {purpose}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))}
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
