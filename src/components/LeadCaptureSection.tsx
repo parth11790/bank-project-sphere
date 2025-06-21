@@ -8,27 +8,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronRight, ChevronLeft, DollarSign, Target, User, Phone } from 'lucide-react';
+import { 
+  ChevronRight, 
+  ChevronLeft, 
+  DollarSign, 
+  Target, 
+  User, 
+  Phone,
+  Building2,
+  Home,
+  Wrench,
+  Briefcase,
+  Banknote,
+  Repeat
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 const fundPurposeOptions = [
-  'Buy a business',
-  'Purchase or Refinance Commercial Real Estate',
-  'Constructions',
-  'Renovate',
-  'Working Capital',
-  'Business Expansion',
-  'Equipment Purchase',
-  'Inventory',
-  'Payroll',
-  'Marketing / Sales',
-  'Refinance Debt',
-  'Buy Out a partner',
-  'Open a Franchise',
-  'Other'
+  { value: 'Buy a business', icon: Building2, label: 'Business Acquisition' },
+  { value: 'Purchase or Refinance Commercial Real Estate', icon: Home, label: 'Real Estate Purchase' },
+  { value: 'Constructions', icon: Wrench, label: 'Property Improvements' },
+  { value: 'Renovate', icon: Wrench, label: 'Equipment Purchase' },
+  { value: 'Working Capital', icon: DollarSign, label: 'Working Capital' },
+  { value: 'Business Expansion', icon: Building2, label: 'Business Expansion' },
+  { value: 'Equipment Purchase', icon: Wrench, label: 'Equipment Purchase' },
+  { value: 'Inventory', icon: Briefcase, label: 'Inventory' },
+  { value: 'Payroll', icon: User, label: 'Payroll' },
+  { value: 'Marketing / Sales', icon: Target, label: 'Marketing / Sales' },
+  { value: 'Refinance Debt', icon: Repeat, label: 'Refinance Debt' },
+  { value: 'Buy Out a partner', icon: User, label: 'Buy Out Partner' },
+  { value: 'Open a Franchise', icon: Building2, label: 'Open Franchise' },
+  { value: 'Other', icon: Banknote, label: 'Other' }
 ];
 
 const leadCaptureSchema = z.object({
@@ -218,41 +230,49 @@ const LeadCaptureSection: React.FC = () => {
                       name="funding_purposes"
                       render={() => (
                         <FormItem>
-                          <FormLabel className="text-lg mb-4 block">Funding Purpose* (Select all that apply)</FormLabel>
-                          <div className="grid grid-cols-1 gap-4 mt-4">
+                          <FormLabel className="text-lg mb-4 block">What are you seeking funding for?*</FormLabel>
+                          <div className="grid grid-cols-2 gap-3 mt-4">
                             {fundPurposeOptions.map((purpose) => (
                               <FormField
-                                key={purpose}
+                                key={purpose.value}
                                 control={form.control}
                                 name="funding_purposes"
                                 render={({ field }) => {
-                                  const isChecked = field.value?.includes(purpose);
+                                  const isChecked = field.value?.includes(purpose.value);
+                                  const IconComponent = purpose.icon;
                                   return (
                                     <div
-                                      className={`flex items-center space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                                      className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
                                         isChecked 
                                           ? 'border-blue-500 bg-blue-50' 
                                           : 'border-gray-200 hover:border-gray-300'
                                       }`}
                                       onClick={() => {
                                         const updatedValue = isChecked
-                                          ? field.value?.filter((value) => value !== purpose)
-                                          : [...(field.value || []), purpose];
+                                          ? field.value?.filter((value) => value !== purpose.value)
+                                          : [...(field.value || []), purpose.value];
                                         field.onChange(updatedValue);
                                       }}
                                     >
-                                      <Checkbox
-                                        checked={isChecked}
-                                        onCheckedChange={(checked) => {
-                                          const updatedValue = checked
-                                            ? [...(field.value || []), purpose]
-                                            : field.value?.filter((value) => value !== purpose);
-                                          field.onChange(updatedValue);
-                                        }}
-                                      />
-                                      <Label className="flex-1 font-medium cursor-pointer text-base">
-                                        {purpose}
-                                      </Label>
+                                      <div className={`p-2 rounded-full ${
+                                        isChecked ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                                      }`}>
+                                        <IconComponent className="h-5 w-5" />
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="font-medium text-sm">
+                                          {purpose.label}
+                                        </div>
+                                      </div>
+                                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                        isChecked 
+                                          ? 'bg-blue-500 border-blue-500' 
+                                          : 'border-gray-300'
+                                      }`}>
+                                        {isChecked && (
+                                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                                        )}
+                                      </div>
                                     </div>
                                   );
                                 }}

@@ -12,7 +12,7 @@ import { BusinessExperienceSection } from './components/BusinessExperienceSectio
 import BusinessOwnershipSection from './components/BusinessOwnershipSection';
 import { BackgroundSection } from './components/BackgroundSection';
 import { ReferencesSection } from './components/ReferencesSection';
-import FormsAssignmentSection from './components/FormsAssignmentSection';
+import { FormsAssignmentSection } from './components/FormsAssignmentSection';
 import { Button } from '@/components/ui/button';
 
 const personalInformationSchema = z.object({
