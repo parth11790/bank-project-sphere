@@ -1,13 +1,8 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Participant } from '@/types/participant';
 
-interface FormsAssignmentSectionProps {
-  participant?: Participant;
-}
-
-const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ participant }) => {
+const FormsAssignmentSection: React.FC = () => {
   return (
     <Card>
       <CardHeader>
