@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Settings, FileText, Search, Filter, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Settings, FileText, Search, Filter, ExternalLink, TrendingUp } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -27,6 +27,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getFormTemplatesData } from '@/lib/mockDataServices/formService';
 import { FormTemplate } from '@/types/form';
 import { toast } from 'sonner';
+import { InterestRatesManager } from '@/components/admin/InterestRatesManager';
 
 const AdminSettings = () => {
   const navigate = useNavigate();
@@ -135,7 +136,7 @@ const AdminSettings = () => {
         <Separator className="my-6" />
         
         <Tabs defaultValue="dropdowns" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="dropdowns" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Dropdown Values
@@ -143,6 +144,10 @@ const AdminSettings = () => {
             <TabsTrigger value="forms" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Forms
+            </TabsTrigger>
+            <TabsTrigger value="interest-rates" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Interest Rates
             </TabsTrigger>
           </TabsList>
 
@@ -344,6 +349,10 @@ const AdminSettings = () => {
                 </TableBody>
               </Table>
             </div>
+          </TabsContent>
+
+          <TabsContent value="interest-rates" className="space-y-6">
+            <InterestRatesManager />
           </TabsContent>
         </Tabs>
       </div>
