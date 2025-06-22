@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +25,7 @@ const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const DropdownDetails = lazy(() => import("./pages/DropdownDetails"));
 const LenderSettings = lazy(() => import("./pages/LenderSettings"));
+const TemplateDetails = lazy(() => import("./pages/TemplateDetails"));
 const BusinessInformation = lazy(() => import("./pages/BusinessInformation"));
 const LoanDetails = lazy(() => import("./pages/LoanDetails"));
 
@@ -82,6 +84,7 @@ const App = () => (
                 <Route path="/admin-settings" element={<AdminSettings />} />
                 <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
                 <Route path="/lender-settings" element={<LenderSettings />} />
+                <Route path="/lender-settings/template/:templateId" element={<TemplateDetails />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

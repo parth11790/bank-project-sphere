@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { EditTemplateDialog } from './EditTemplateDialog';
+import { useNavigate } from 'react-router-dom';
 
 interface DocumentGatheringTemplatesListProps {
   templates: DocumentGatheringTemplate[];
@@ -33,20 +34,15 @@ export const DocumentGatheringTemplatesList = ({
   onDelete,
   onUpdate
 }: DocumentGatheringTemplatesListProps) => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [loanTypeFilter, setLoanTypeFilter] = useState<string>('all');
-  const [participantFilter, setParticipantFilter] = useState<string>('all');
   const [editingTemplate, setEditingTemplate] = useState<DocumentGatheringTemplate | null>(null);
 
-  // Get unique loan types and participants for filters
+  // Get unique loan types for filters
   const uniqueLoanTypes = useMemo(() => {
     const types = new Set(templates.map(t => t.loanType));
     return Array.from(types).sort();
-  }, [templates]);
-
-  const uniqueParticipants = useMemo(() => {
-    const participants = new Set(templates.map(t => t.participant));
-    return Array.from(participants).sort();
   }, [templates]);
 
   // Filter templates
@@ -54,10 +50,9 @@ export const DocumentGatheringTemplatesList = ({
     return templates.filter(template => {
       const nameMatch = template.templateName.toLowerCase().includes(searchTerm.toLowerCase());
       const loanTypeMatch = loanTypeFilter === 'all' || template.loanType === loanTypeFilter;
-      const participantMatch = participantFilter === 'all' || template.participant === participantFilter;
-      return nameMatch && loanTypeMatch && participantMatch;
+      return nameMatch && loanTypeMatch;
     });
-  }, [templates, searchTerm, loanTypeFilter, participantFilter]);
+  }, [templates, searchTerm, loanTypeFilter]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -68,18 +63,23 @@ export const DocumentGatheringTemplatesList = ({
     }).format(amount);
   };
 
-  const getParticipantLabel = (participant: string) => {
-    const labels: Record<string, string> = {
-      'borrowing_business': 'Borrowing Business',
-      'affiliated_business': 'Affiliated Business',
-      'owners': 'Owners',
-      'sellers': 'Sellers'
-    };
-    return labels[participant] || participant;
+  const handleToggleStatus = (template: DocumentGatheringTemplate, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUpdate(template.id, { isActive: !template.isActive });
   };
 
-  const handleToggleStatus = (template: DocumentGatheringTemplate) => {
-    onUpdate(template.id, { isActive: !template.isActive });
+  const handleEdit = (template: DocumentGatheringTemplate, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingTemplate(template);
+  };
+
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(id);
+  };
+
+  const handleRowClick = (templateId: string) => {
+    navigate(`/lender-settings/template/${templateId}`);
   };
 
   return (
@@ -106,19 +106,6 @@ export const DocumentGatheringTemplatesList = ({
             ))}
           </SelectContent>
         </Select>
-        <Select value={participantFilter} onValueChange={setParticipantFilter}>
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Filter by participant" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Participants</SelectItem>
-            {uniqueParticipants.map(participant => (
-              <SelectItem key={participant} value={participant}>
-                {getParticipantLabel(participant)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Table */}
@@ -129,7 +116,6 @@ export const DocumentGatheringTemplatesList = ({
               <TableHead>Template Name</TableHead>
               <TableHead>Loan Type</TableHead>
               <TableHead>Amount Range</TableHead>
-              <TableHead>Participant</TableHead>
               <TableHead>Forms Count</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
@@ -137,7 +123,11 @@ export const DocumentGatheringTemplatesList = ({
           </TableHeader>
           <TableBody>
             {filteredTemplates.map((template) => (
-              <TableRow key={template.id}>
+              <TableRow 
+                key={template.id} 
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => handleRowClick(template.id)}
+              >
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-primary" />
@@ -153,11 +143,6 @@ export const DocumentGatheringTemplatesList = ({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary">
-                    {getParticipantLabel(template.participant)}
-                  </Badge>
-                </TableCell>
-                <TableCell>
                   <Badge variant="outline" className="text-xs">
                     {template.forms.length} forms
                   </Badge>
@@ -166,7 +151,7 @@ export const DocumentGatheringTemplatesList = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleToggleStatus(template)}
+                    onClick={(e) => handleToggleStatus(template, e)}
                   >
                     <Badge 
                       variant={template.isActive ? 'default' : 'secondary'}
@@ -181,14 +166,14 @@ export const DocumentGatheringTemplatesList = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setEditingTemplate(template)}
+                      onClick={(e) => handleEdit(template, e)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => onDelete(template.id)}
+                      onClick={(e) => handleDelete(template.id, e)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

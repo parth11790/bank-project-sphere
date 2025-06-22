@@ -29,10 +29,10 @@ interface AddTemplateDialogProps {
 }
 
 const participantOptions = [
-  { value: 'borrowing_business', label: 'Borrowing Business' },
-  { value: 'affiliated_business', label: 'Affiliated Business' },
-  { value: 'owners', label: 'Owners' },
-  { value: 'sellers', label: 'Sellers' },
+  { value: 'borrowing_business' as const, label: 'Borrowing Business' },
+  { value: 'affiliated_business' as const, label: 'Affiliated Business' },
+  { value: 'owners' as const, label: 'Owners' },
+  { value: 'sellers' as const, label: 'Sellers' },
 ];
 
 const availableForms = [
@@ -59,7 +59,7 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
     loanType: '',
     amountMin: 0,
     amountMax: 1000000,
-    participant: '',
+    participant: '' as DocumentGatheringTemplate['participant'] | '',
     forms: [] as string[],
     createdBy: 'Current User',
     isActive: true
@@ -72,7 +72,16 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
       return;
     }
 
-    onAdd(formData);
+    onAdd({
+      templateName: formData.templateName,
+      loanType: formData.loanType,
+      amountMin: formData.amountMin,
+      amountMax: formData.amountMax,
+      participant: formData.participant as DocumentGatheringTemplate['participant'],
+      forms: formData.forms,
+      createdBy: formData.createdBy,
+      isActive: formData.isActive
+    });
     
     // Reset form
     setFormData({
@@ -129,7 +138,7 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
 
             <div className="space-y-2">
               <Label htmlFor="participant">Participant</Label>
-              <Select value={formData.participant} onValueChange={(value) => setFormData(prev => ({ ...prev, participant: value as any }))}>
+              <Select value={formData.participant} onValueChange={(value) => setFormData(prev => ({ ...prev, participant: value as DocumentGatheringTemplate['participant'] }))}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select participant" />
                 </SelectTrigger>
