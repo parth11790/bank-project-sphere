@@ -2,36 +2,23 @@
 import React, { useState } from 'react';
 import Layout from '@/components/Layout';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import LoanSettingsForm from '@/components/lenderSettings/LoanSettingsForm';
-import LoanSettingsList from '@/components/lenderSettings/LoanSettingsList';
-import DocumentRequirementsForm from '@/components/lenderSettings/DocumentRequirementsForm';
-import DocumentRequirementsList from '@/components/lenderSettings/DocumentRequirementsList';
-import ApprovalWorkflows from '@/components/lenderSettings/ApprovalWorkflows';
-import { loanTypes } from '@/lib/mockData/lenderSettings';
-import { useLenderSettings } from '@/hooks/useLenderSettings';
-import { LenderDropdownManager } from '@/components/lenderSettings/LenderDropdownManager';
+import { DocumentGatheringTemplatesList } from '@/components/documentTemplates/DocumentGatheringTemplatesList';
+import { AddTemplateDialog } from '@/components/documentTemplates/AddTemplateDialog';
+import { useDocumentTemplates } from '@/hooks/useDocumentTemplates';
 
 const LenderSettings = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("loan-settings");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const {
-    loanSettings,
-    documentRequirements,
-    newSetting,
-    newFormRequirement,
-    handleSettingChange,
-    handleFormChange,
-    handleAddSetting,
-    handleAddFormRequirement,
-    handleDeleteSetting,
-    handleDeleteRequirement
-  } = useLenderSettings();
+    templates,
+    addTemplate,
+    deleteTemplate,
+    updateTemplate
+  } = useDocumentTemplates();
 
   return (
     <Layout>
@@ -45,86 +32,39 @@ const LenderSettings = () => {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-2xl font-bold">Lender Settings</h1>
+            <div>
+              <h1 className="text-2xl font-bold">Document Gathering Templates</h1>
+              <p className="text-muted-foreground">
+                Manage document collection templates for different loan types and participants
+              </p>
+            </div>
           </div>
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Template
+          </Button>
         </div>
         
         <Separator className="my-6" />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-4 w-full max-w-2xl">
-            <TabsTrigger value="loan-settings">Loan Settings</TabsTrigger>
-            <TabsTrigger value="document-requirements">Document Requirements</TabsTrigger>
-            <TabsTrigger value="dropdown-values">Dropdown Values</TabsTrigger>
-            <TabsTrigger value="approval-workflows">Approval Workflows</TabsTrigger>
-          </TabsList>
+        <Card>
+          <CardHeader>
+            <CardTitle>Document Templates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DocumentGatheringTemplatesList
+              templates={templates}
+              onDelete={deleteTemplate}
+              onUpdate={updateTemplate}
+            />
+          </CardContent>
+        </Card>
 
-          <TabsContent value="loan-settings" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Loan Settings Configuration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <LoanSettingsForm
-                    newSetting={newSetting}
-                    loanTypes={loanTypes}
-                    onSettingChange={handleSettingChange}
-                    onAddSetting={handleAddSetting}
-                  />
-                  <LoanSettingsList
-                    settings={loanSettings}
-                    onDeleteSetting={handleDeleteSetting}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="document-requirements" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Document Requirements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <DocumentRequirementsForm
-                    newFormRequirement={newFormRequirement}
-                    loanTypes={loanTypes}
-                    onFormChange={handleFormChange}
-                    onAddForm={handleAddFormRequirement}
-                  />
-                  <DocumentRequirementsList
-                    requirements={documentRequirements}
-                    onDeleteRequirement={handleDeleteRequirement}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="dropdown-values" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Dropdown Values Configuration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LenderDropdownManager />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="approval-workflows" className="space-y-6 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Approval Workflow Configuration</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ApprovalWorkflows />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <AddTemplateDialog
+          open={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
+          onAdd={addTemplate}
+        />
       </div>
     </Layout>
   );
