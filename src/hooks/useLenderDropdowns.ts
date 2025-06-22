@@ -1,126 +1,86 @@
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { sbaDropdownFields, DropdownField } from '@/lib/mockData/dropdownFields';
 import { toast } from 'sonner';
-import { sbaDropdownFields, DropdownField, CustomizationLevel } from '@/lib/mockData/dropdownFields';
 
-export type LenderDropdownOverride = {
-  id: string;
+interface DropdownOverride {
   fieldId: string;
   fieldLabel: string;
-  values: string[];
-  timestamp: number;
-  user: string; // In a real app, this would be a user ID
-};
+  customValues: string[];
+  dateModified: string;
+  modifiedBy: string;
+}
 
 export const useLenderDropdowns = () => {
-  // In a real application, these would be loaded from the backend/database
-  const [lenderOverrides, setLenderOverrides] = useState<LenderDropdownOverride[]>([]);
-  
-  // Mock loading effect
-  useEffect(() => {
-    // Simulate loading from localStorage or API
-    const savedOverrides = localStorage.getItem('lenderDropdownOverrides');
-    if (savedOverrides) {
-      try {
-        const parsed = JSON.parse(savedOverrides);
-        setLenderOverrides(parsed);
-      } catch (error) {
-        console.error('Error loading lender dropdown overrides:', error);
-      }
-    }
-  }, []);
-  
-  // Save overrides to localStorage when they change
-  useEffect(() => {
-    if (lenderOverrides.length > 0) {
-      localStorage.setItem('lenderDropdownOverrides', JSON.stringify(lenderOverrides));
-    }
-  }, [lenderOverrides]);
-  
-  // Filter SBA dropdown fields for customizable fields
+  // State to store lender-specific dropdown overrides
+  const [dropdownOverrides, setDropdownOverrides] = useState<DropdownOverride[]>([]);
+
+  // Get only customizable dropdown fields
   const customizableDropdowns = useMemo(() => {
-    return sbaDropdownFields.filter(
-      dropdown => dropdown.customizationLevel === 'Lender Customizable' || 
-                 dropdown.customizationLevel === 'SBA Influenced'
-    );
+    return sbaDropdownFields.filter(field => field.customizationLevel === 'Lender Customizable');
   }, []);
 
-  // Check if a field has been overridden
-  const hasOverride = (fieldId: string) => {
-    return lenderOverrides.some(override => override.fieldId === fieldId);
+  // Check if a dropdown has an override
+  const hasOverride = (fieldId: string): boolean => {
+    return dropdownOverrides.some(override => override.fieldId === fieldId);
   };
 
-  // Get override values for a specific field
-  const getOverrideValues = (fieldId: string) => {
-    const override = lenderOverrides.find(o => o.fieldId === fieldId);
-    return override ? override.values : [];
-  };
-
-  // Get override metadata
-  const getOverrideMetadata = (fieldId: string) => {
-    const override = lenderOverrides.find(o => o.fieldId === fieldId);
-    if (!override) return null;
-    
-    return {
-      timestamp: override.timestamp,
-      user: override.user,
-      lastModified: new Date(override.timestamp).toLocaleDateString()
-    };
-  };
-
-  // Get original or overridden values for display
-  const getDropdownValues = (fieldId: string) => {
-    if (hasOverride(fieldId)) {
-      return getOverrideValues(fieldId);
+  // Get current values for a dropdown (override if exists, otherwise default)
+  const getDropdownValues = (fieldId: string): string[] => {
+    const override = dropdownOverrides.find(override => override.fieldId === fieldId);
+    if (override) {
+      return override.customValues;
     }
     
-    const originalField = sbaDropdownFields.find(field => field.id === fieldId);
-    return originalField ? originalField.initialValues : [];
+    const defaultField = sbaDropdownFields.find(field => field.id === fieldId);
+    return defaultField ? defaultField.initialValues : [];
   };
 
-  // Create or update an override
+  // Set custom values for a dropdown
   const setDropdownValues = (fieldId: string, fieldLabel: string, values: string[]) => {
-    setLenderOverrides(prev => {
-      const existingIndex = prev.findIndex(o => o.fieldId === fieldId);
-      
+    const newOverride: DropdownOverride = {
+      fieldId,
+      fieldLabel,
+      customValues: values,
+      dateModified: new Date().toISOString(),
+      modifiedBy: 'Current User' // In a real app, this would come from auth context
+    };
+
+    setDropdownOverrides(prev => {
+      const existingIndex = prev.findIndex(override => override.fieldId === fieldId);
       if (existingIndex >= 0) {
+        // Update existing override
         const updated = [...prev];
-        updated[existingIndex] = {
-          ...updated[existingIndex],
-          values: values,
-          timestamp: Date.now(),
-          user: 'Current User' // In a real app, get from auth context
-        };
+        updated[existingIndex] = newOverride;
         return updated;
       } else {
-        return [...prev, {
-          id: `override-${Date.now()}`,
-          fieldId,
-          fieldLabel,
-          values,
-          timestamp: Date.now(),
-          user: 'Current User' // In a real app, get from auth context
-        }];
+        // Add new override
+        return [...prev, newOverride];
       }
     });
-    
-    toast.success(`Dropdown values for "${fieldLabel}" saved successfully`);
+
+    toast.success(`Updated dropdown values for "${fieldLabel}"`);
+    console.log(`[AUDIT] Dropdown values updated: ${fieldId} by Current User at ${new Date().toISOString()}`);
   };
 
-  // Reset an overridden dropdown to SBA default values
+  // Reset a dropdown to its default values
   const resetToDefault = (fieldId: string, fieldLabel: string) => {
-    setLenderOverrides(prev => prev.filter(o => o.fieldId !== fieldId));
-    toast.success(`Dropdown "${fieldLabel}" reset to SBA default values`);
+    setDropdownOverrides(prev => prev.filter(override => override.fieldId !== fieldId));
+    toast.success(`Reset "${fieldLabel}" to SBA default values`);
+    console.log(`[AUDIT] Dropdown values reset to default: ${fieldId} by Current User at ${new Date().toISOString()}`);
+  };
+
+  // Get all overrides (for display purposes)
+  const getAllOverrides = (): DropdownOverride[] => {
+    return dropdownOverrides;
   };
 
   return {
     customizableDropdowns,
-    lenderOverrides,
     hasOverride,
-    getOverrideValues,
-    getOverrideMetadata,
     getDropdownValues,
     setDropdownValues,
-    resetToDefault
+    resetToDefault,
+    getAllOverrides
   };
 };

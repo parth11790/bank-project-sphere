@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Settings, FileText, Search, Filter } from 'lucide-react';
+import { ArrowLeft, Settings, FileText, Search, Filter, ExternalLink } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -110,6 +110,11 @@ const AdminSettings = () => {
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  // Handle dropdown row click
+  const handleDropdownRowClick = (dropdownId: string) => {
+    navigate(`/admin-settings/dropdown/${dropdownId}`);
+  };
   
   return (
     <Layout>
@@ -145,7 +150,7 @@ const AdminSettings = () => {
             <div className="flex flex-col gap-2">
               <h2 className="text-lg font-semibold">Dropdown Values Management</h2>
               <p className="text-muted-foreground">
-                Manage the values available in various dropdown menus throughout the application
+                Manage the values available in various dropdown menus throughout the application. Click on any row to view detailed options.
               </p>
             </div>
             
@@ -200,11 +205,16 @@ const AdminSettings = () => {
                     </TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Values Count</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredDropdowns.map((dropdown) => (
-                    <TableRow key={dropdown.id}>
+                    <TableRow 
+                      key={dropdown.id} 
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleDropdownRowClick(dropdown.id)}
+                    >
                       <TableCell className="font-medium">{dropdown.label}</TableCell>
                       <TableCell>
                         <Badge variant="outline">{dropdown.module}</Badge>
@@ -222,6 +232,9 @@ const AdminSettings = () => {
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary">{dropdown.initialValues.length}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <ExternalLink className="h-4 w-4 text-muted-foreground" />
                       </TableCell>
                     </TableRow>
                   ))}

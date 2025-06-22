@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,7 @@ const PersonalInformation = lazy(() => import("./pages/PersonalInformation"));
 const ProjectAnalysis = lazy(() => import("./pages/ProjectAnalysis"));
 const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const DropdownDetails = lazy(() => import("./pages/DropdownDetails"));
 const LenderSettings = lazy(() => import("./pages/LenderSettings"));
 const BusinessInformation = lazy(() => import("./pages/BusinessInformation"));
 const LoanDetails = lazy(() => import("./pages/LoanDetails"));
@@ -80,6 +80,7 @@ const App = () => (
                 {/* Redirect project dashboard to project detail */}
                 <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="/admin-settings" element={<AdminSettings />} />
+                <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
                 <Route path="/lender-settings" element={<LenderSettings />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DropdownValueEditor } from './DropdownValueEditor';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Settings, Lock } from 'lucide-react';
+import { DropdownValueEditor } from './DropdownValueEditor';
 import { CustomizationLevel } from '@/lib/mockData/dropdownFields';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DropdownCardProps {
   id: string;
@@ -16,73 +16,104 @@ interface DropdownCardProps {
   module?: string;
 }
 
-export const DropdownCard = ({
+export function DropdownCard({
   id,
   label,
   description,
   initialValues,
   customizationLevel,
   module
-}: DropdownCardProps) => {
+}: DropdownCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
   
-  const renderCustomizationLevelBadge = (level: CustomizationLevel) => {
-    let color = "bg-gray-100 text-gray-800";
-    if (level === "SBA Defined") color = "bg-red-100 text-red-800";
-    else if (level === "SBA Influenced") color = "bg-amber-100 text-amber-800";
-    else if (level === "Lender Customizable") color = "bg-green-100 text-green-800";
+  const isRestricted = customizationLevel === 'SBA Defined';
+  
+  const getBadgeColor = () => {
+    if (!customizationLevel) return 'bg-blue-100 text-blue-800';
     
-    return (
-      <Badge variant="outline" className={`${color} font-medium text-xs`}>
-        {level}
-      </Badge>
-    );
-  };
-
-  // Different border colors based on customization level
-  const getBorderStyle = () => {
-    if (!customizationLevel) return "";
-    
-    if (customizationLevel === "SBA Defined") 
-      return "border-red-200";
-    else if (customizationLevel === "SBA Influenced") 
-      return "border-amber-200";
-    else if (customizationLevel === "Lender Customizable") 
-      return "border-green-200";
-    
-    return "";
+    switch (customizationLevel) {
+      case 'SBA Defined':
+        return 'bg-red-100 text-red-800';
+      case 'Lender Customizable':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
-    <Card key={id} className={`w-full ${getBorderStyle()}`}>
-      <CardHeader className="pb-2">
+    <Card className="h-full">
+      <CardHeader>
         <div className="flex justify-between items-start">
-          <CardTitle>{label}</CardTitle>
-          {customizationLevel && renderCustomizationLevelBadge(customizationLevel)}
+          <CardTitle className="text-lg">{label}</CardTitle>
+          <div className="flex gap-1">
+            {module && (
+              <Badge variant="outline" className="text-xs">
+                {module}
+              </Badge>
+            )}
+            {customizationLevel && (
+              <Badge className={`text-xs ${getBadgeColor()}`}>
+                {customizationLevel}
+              </Badge>
+            )}
+          </div>
         </div>
-        <CardDescription className="mt-1">{description}</CardDescription>
-        {module && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="inline-flex items-center text-xs text-muted-foreground mt-1">
-                  <span className="mr-1">Module:</span> {module}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">This dropdown belongs to the {module} module</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <DropdownValueEditor
-          title={label}
-          description={description}
-          initialValues={initialValues}
-          isRestricted={customizationLevel === 'SBA Defined'}
-        />
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-muted-foreground">
+              {initialValues.length} values
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditing(!isEditing)}
+              disabled={isRestricted}
+            >
+              {isRestricted ? (
+                <Lock className="h-4 w-4 mr-2" />
+              ) : (
+                <Settings className="h-4 w-4 mr-2" />
+              )}
+              {isRestricted ? 'Locked' : 'Edit'}
+            </Button>
+          </div>
+          
+          {isEditing && (
+            <DropdownValueEditor
+              title={label}
+              description={description}
+              initialValues={initialValues}
+              isRestricted={isRestricted}
+              onSave={(values) => {
+                console.log('Saved values for', id, ':', values);
+                setIsEditing(false);
+              }}
+            />
+          )}
+          
+          {!isEditing && (
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground mb-2">Current values:</p>
+              <div className="flex flex-wrap gap-1">
+                {initialValues.slice(0, 3).map((value, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {value}
+                  </Badge>
+                ))}
+                {initialValues.length > 3 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{initialValues.length - 3} more
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
-};
+}
