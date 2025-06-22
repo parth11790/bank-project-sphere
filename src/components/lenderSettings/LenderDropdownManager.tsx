@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { 
   Tabs, 
@@ -104,13 +103,6 @@ export const LenderDropdownManager: React.FC = () => {
           </Button>
           <Button 
             size="sm" 
-            variant={filterLevel === 'SBA Influenced' ? 'default' : 'outline'}
-            onClick={() => setFilterLevel('SBA Influenced')}
-          >
-            SBA Influenced
-          </Button>
-          <Button 
-            size="sm" 
             variant={filterLevel === 'All' ? 'default' : 'outline'}
             onClick={() => setFilterLevel('All')}
           >
@@ -128,7 +120,6 @@ export const LenderDropdownManager: React.FC = () => {
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
               <p className="text-xs mb-2"><strong>Lender Customizable:</strong> Values that can be fully customized by lenders.</p>
-              <p className="text-xs mb-2"><strong>SBA Influenced:</strong> Values influenced by SBA guidance but can be extended.</p>
               <p className="text-xs"><strong>SBA Defined:</strong> Values defined by SBA SOPs. Cannot be modified.</p>
             </TooltipContent>
           </Tooltip>
@@ -158,8 +149,6 @@ export const LenderDropdownManager: React.FC = () => {
                 
                 // Set border color based on customization level
                 const getBorderStyle = () => {
-                  if (dropdown.customizationLevel === "SBA Influenced") 
-                    return "border-amber-200";
                   return isOverridden ? 'border-blue-300' : '';
                 };
                 
@@ -169,11 +158,6 @@ export const LenderDropdownManager: React.FC = () => {
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-lg">{dropdown.label}</CardTitle>
                         <div className="flex gap-1">
-                          {dropdown.customizationLevel === 'SBA Influenced' && (
-                            <Badge variant="outline" className="bg-amber-100 text-amber-800 font-medium text-xs">
-                              SBA Influenced
-                            </Badge>
-                          )}
                           {isOverridden && (
                             <Badge variant="outline" className="bg-blue-100 text-blue-800 font-medium text-xs">
                               Customized

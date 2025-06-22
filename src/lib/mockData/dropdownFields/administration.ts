@@ -6,7 +6,7 @@ export const administrationDropdownFields: DropdownField[] = [
     id: 'userRole',
     label: 'User Role',
     description: 'User role within the system',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Administration & Settings',
     initialValues: [
       'Loan Officer', 

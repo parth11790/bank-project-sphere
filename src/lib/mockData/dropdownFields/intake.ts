@@ -27,7 +27,7 @@ export const intakeDropdownFields: DropdownField[] = [
     label: 'Fund Purpose',
     description: 'Purpose for which the loan funds will be used',
     module: 'Intake',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     initialValues: [
       'Buy a business',
       'Purchase or Refinance Commercial Real Estate',
@@ -50,7 +50,7 @@ export const intakeDropdownFields: DropdownField[] = [
     label: 'Business Type',
     description: 'Type or category of business',
     module: 'Intake',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     initialValues: [
       'Retail',
       'Restaurant',

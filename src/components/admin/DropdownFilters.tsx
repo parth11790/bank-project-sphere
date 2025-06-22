@@ -29,7 +29,6 @@ export const DropdownFilters = ({ filterLevel, onFilterChange }: DropdownFilters
         <SelectContent>
           <SelectItem value="All">All Levels</SelectItem>
           <SelectItem value="SBA Defined">SBA Defined</SelectItem>
-          <SelectItem value="SBA Influenced">SBA Influenced</SelectItem>
           <SelectItem value="Lender Customizable">Lender Customizable</SelectItem>
         </SelectContent>
       </Select>

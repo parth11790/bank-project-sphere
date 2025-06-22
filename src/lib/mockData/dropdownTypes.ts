@@ -1,5 +1,5 @@
 
-export type CustomizationLevel = 'SBA Defined' | 'SBA Influenced' | 'Lender Customizable';
+export type CustomizationLevel = 'SBA Defined' | 'Lender Customizable';
 
 export interface DropdownField {
   id: string;

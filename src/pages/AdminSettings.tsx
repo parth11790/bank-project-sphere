@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Separator } from '@/components/ui/separator';
@@ -105,8 +104,6 @@ const AdminSettings = () => {
     switch (level) {
       case 'SBA Defined':
         return 'bg-red-100 text-red-800 border-red-200';
-      case 'SBA Influenced':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'Lender Customizable':
         return 'bg-green-100 text-green-800 border-green-200';
       default:
@@ -196,7 +193,6 @@ const AdminSettings = () => {
                           <SelectContent>
                             <SelectItem value="all">All Levels</SelectItem>
                             <SelectItem value="SBA Defined">SBA Defined</SelectItem>
-                            <SelectItem value="SBA Influenced">SBA Influenced</SelectItem>
                             <SelectItem value="Lender Customizable">Lender Customizable</SelectItem>
                           </SelectContent>
                         </Select>

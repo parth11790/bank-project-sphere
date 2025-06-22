@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Plus, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -52,7 +51,6 @@ const initialDropdownConfigs = [
 
 const customizationLevelInfo = {
   'SBA Defined': 'Values defined by SBA Standard Operating Procedures (SOP). Cannot be modified.',
-  'SBA Influenced': 'Values influenced by SBA guidance but can be extended by lenders with caution.',
   'Lender Customizable': 'Values that can be fully customized by lenders to meet their business needs.'
 };
 
@@ -106,7 +104,6 @@ export function DropdownManager() {
   const countByLevel = useMemo(() => {
     const counts = {
       'SBA Defined': 0,
-      'SBA Influenced': 0,
       'Lender Customizable': 0
     };
     
@@ -121,13 +118,11 @@ export function DropdownManager() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {Object.entries(customizationLevelInfo).map(([level, description]) => (
           <div key={level} className="flex items-start space-x-2">
             <div className={`w-3 h-3 mt-1 rounded-full ${
-              level === 'SBA Defined' ? 'bg-red-500' : 
-              level === 'SBA Influenced' ? 'bg-amber-500' : 
-              'bg-green-500'
+              level === 'SBA Defined' ? 'bg-red-500' : 'bg-green-500'
             }`} />
             <div>
               <div className="flex items-center">

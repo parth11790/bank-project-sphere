@@ -27,7 +27,7 @@ export const processingDropdownFields: DropdownField[] = [
     id: 'loanProgram',
     label: 'Loan Program',
     description: 'Primary SBA loan program',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Application Processing & Underwriting',
     initialValues: [
       'SBA 7(a)', 
@@ -60,7 +60,7 @@ export const processingDropdownFields: DropdownField[] = [
     id: 'businessStructure',
     label: 'Business Structure',
     description: 'Legal structure of the business',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Application Processing & Underwriting',
     initialValues: [
       'Sole Proprietorship', 

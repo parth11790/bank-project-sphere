@@ -33,7 +33,7 @@ export const reportingDropdownFields: DropdownField[] = [
     id: 'complianceMetric',
     label: 'Compliance Metrics',
     description: 'Metrics tracked for compliance reporting',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Reporting & Analytics',
     initialValues: [
       'Eligibility Verification',

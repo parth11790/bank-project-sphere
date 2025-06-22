@@ -6,7 +6,7 @@ export const auditTrailDropdownFields: DropdownField[] = [
     id: 'auditEventType',
     label: 'Audit Event Type',
     description: 'Types of events tracked in the audit trail',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Audit & Compliance',
     initialValues: [
       'Document Upload',

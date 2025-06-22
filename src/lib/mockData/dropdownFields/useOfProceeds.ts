@@ -6,7 +6,7 @@ export const useOfProceedsDropdownFields: DropdownField[] = [
     id: 'useOfProceedsCategory',
     label: 'Use of Proceeds Category',
     description: 'Categories for classifying loan proceeds usage (Based on SOP & Project Cost Worksheet)',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Application Processing & Underwriting',
     initialValues: [
       'Land Purchase',
@@ -36,7 +36,7 @@ export const useOfProceedsDropdownFields: DropdownField[] = [
     id: 'sourceFundsCategory',
     label: 'Source of Funds Category',
     description: 'Categories for classifying funding sources (Based on Project Structure & Funding Plan)',
-    customizationLevel: 'SBA Influenced',
+    customizationLevel: 'Lender Customizable',
     module: 'Application Processing & Underwriting',
     initialValues: [
       'Borrower Equity - Cash',
