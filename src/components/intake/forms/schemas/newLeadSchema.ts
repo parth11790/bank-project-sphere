@@ -14,6 +14,9 @@ export const newLeadSchema = z.object({
   }),
   business_legal_name: z.string().min(2, "Business legal name is required."),
   business_dba_name: z.string().optional(),
+  participant_type: z.string({
+    required_error: "Please select a participant type.",
+  }),
   primary_contact_name: z.string().min(2, "Primary contact name is required."),
   primary_contact_email: z.string().email("Invalid email address."),
   primary_contact_phone: z.string().min(10, "Valid phone number is required."),

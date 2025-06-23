@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const formSchema = z.object({
   name: z.string().min(2, { message: "Business name is required" }),
   entity_type: z.string().min(2, { message: "Entity type is required" }),
+  participant_type: z.string().min(2, { message: "Participant type is required" }),
   title: z.string().min(2, { message: "Your title is required" }),
   ownership_percentage: z.coerce
     .number()
@@ -29,6 +30,7 @@ const formSchema = z.object({
 export interface BusinessFormData {
   name: string;
   entity_type: string;
+  participant_type: string;
   title: string;
   ownership_percentage: number;
 }
@@ -47,6 +49,16 @@ const entityTypes = [
   "Sole Proprietorship"
 ];
 
+const participantTypes = [
+  "Primary Borrower",
+  "Co-Borrower", 
+  "Guarantor",
+  "Owner",
+  "Seller",
+  "Affiliated Business",
+  "Partner"
+];
+
 const BusinessDialog: React.FC<BusinessDialogProps> = ({ 
   open, 
   onOpenChange,
@@ -57,6 +69,7 @@ const BusinessDialog: React.FC<BusinessDialogProps> = ({
     defaultValues: {
       name: '',
       entity_type: '',
+      participant_type: '',
       title: '',
       ownership_percentage: 100,
     },
@@ -110,6 +123,32 @@ const BusinessDialog: React.FC<BusinessDialogProps> = ({
                     </FormControl>
                     <SelectContent>
                       {entityTypes.map((type) => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="participant_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Participant Type</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select participant type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {participantTypes.map((type) => (
                         <SelectItem key={type} value={type}>{type}</SelectItem>
                       ))}
                     </SelectContent>

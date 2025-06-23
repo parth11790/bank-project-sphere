@@ -18,19 +18,38 @@ import { toast } from 'sonner';
 
 interface TemplateSelectorProps {
   participantRole?: string;
+  participantType?: string;
   onAssignForms: (forms: FormTemplate[]) => void;
   availableForms: FormTemplate[];
 }
 
 export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   participantRole,
+  participantType,
   onAssignForms,
   availableForms
 }) => {
   const { templates } = useDocumentTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 
-  const getParticipantType = (role: string) => {
+  const getParticipantType = (role: string, type?: string) => {
+    // Use participant_type if provided, otherwise fallback to role mapping
+    if (type) {
+      switch (type.toLowerCase()) {
+        case 'primary borrower':
+        case 'co-borrower':
+          return 'borrowing_business';
+        case 'seller':
+          return 'sellers';
+        case 'owner':
+        case 'guarantor':
+          return 'owners';
+        default:
+          return 'borrowing_business';
+      }
+    }
+    
+    // Fallback to original role-based mapping
     switch (role?.toLowerCase()) {
       case 'buyer':
         return 'borrowing_business';
@@ -55,8 +74,8 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       return;
     }
 
-    const participantType = getParticipantType(participantRole || '');
-    const templateForms = template.participantForms[participantType as keyof typeof template.participantForms] || [];
+    const participantCategory = getParticipantType(participantRole || '', participantType);
+    const templateForms = template.participantForms[participantCategory as keyof typeof template.participantForms] || [];
 
     // Convert template form names to FormTemplate objects by matching with available forms
     const formsToAssign: FormTemplate[] = [];
@@ -73,7 +92,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     });
 
     if (formsToAssign.length === 0) {
-      toast.warning(`No matching forms found for ${participantType} in the selected template`);
+      toast.warning(`No matching forms found for ${participantCategory} in the selected template`);
       return;
     }
 
@@ -124,16 +143,21 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           </Button>
         </div>
         
-        {participantRole && (
-          <div className="mt-3 p-3 bg-muted/50 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              Forms will be assigned based on participant role: 
+        <div className="mt-3 p-3 bg-muted/50 rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            Forms will be assigned based on: 
+            {participantType && (
+              <Badge variant="outline" className="ml-1">
+                {participantType}
+              </Badge>
+            )}
+            {participantRole && !participantType && (
               <Badge variant="outline" className="ml-1">
                 {participantRole}
               </Badge>
-            </p>
-          </div>
-        )}
+            )}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

@@ -5,6 +5,7 @@ export interface Participant {
   name: string;
   email: string;
   role: string;
+  participant_type?: string;
   forms: Array<{
     form_id: string;
     name: string;
@@ -13,6 +14,7 @@ export interface Participant {
     business_id: string;
     name: string;
     entity_type: string;
+    participant_type?: string;
     title?: string;
     ownership_percentage?: number;
     forms: Array<{
@@ -27,6 +29,7 @@ export interface ParticipantWithDetails extends Participant {
     business_id: string;
     name: string;
     entity_type: string;
+    participant_type?: string;
     title?: string;
     ownership_percentage?: number;
     forms: Array<{

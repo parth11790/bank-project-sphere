@@ -18,6 +18,7 @@ import { useLenderDropdowns } from '@/hooks/useLenderDropdowns';
 import { IntakeFormData } from './types/intakeTypes';
 import { format } from 'date-fns';
 import { FundingPurposeSelection } from './forms/components/FundingPurposeSelection';
+import { BusinessInfoFields } from './forms/components/BusinessInfoFields';
 
 const newLeadSchema = z.object({
   project_name: z.string().min(3, "Project name must be at least 3 characters."),
@@ -32,6 +33,9 @@ const newLeadSchema = z.object({
   }),
   business_legal_name: z.string().min(2, "Business legal name is required."),
   business_dba_name: z.string().optional(),
+  participant_type: z.string({
+    required_error: "Please select a participant type.",
+  }),
   primary_contact_name: z.string().min(2, "Primary contact name is required."),
   primary_contact_email: z.string().email("Invalid email address."),
   primary_contact_phone: z.string().min(10, "Valid phone number is required."),
@@ -81,6 +85,7 @@ const NewLeadForm: React.FC<NewLeadFormProps> = ({ formData, updateFormData }) =
       assigned_loan_officer: formData.assigned_loan_officer,
       business_legal_name: formData.business_legal_name,
       business_dba_name: formData.business_dba_name || '',
+      participant_type: formData.participant_type || '',
       primary_contact_name: formData.primary_contact_name,
       primary_contact_email: formData.primary_contact_email,
       primary_contact_phone: formData.primary_contact_phone,
@@ -232,35 +237,8 @@ const NewLeadForm: React.FC<NewLeadFormProps> = ({ formData, updateFormData }) =
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FormField
-              control={form.control}
-              name="business_legal_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Business Legal Name*</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter legal business name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="business_dba_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Business DBA Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="DBA name (if applicable)" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {/* Business Information Fields */}
+          <BusinessInfoFields form={form} />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormField
