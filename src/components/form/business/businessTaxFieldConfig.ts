@@ -1,4 +1,5 @@
 
+
 export const fieldNotes: Record<string, string> = {
   'grossReceipts': 'Total gross receipts or sales (1120, line 1a or 1120S, line 1a)',
   'totalIncome': 'Total income (1120, line 11 or 1120S, line 11)',
@@ -14,6 +15,7 @@ export const fieldNotes: Record<string, string> = {
   'interestExpense': 'Interest (1120, line 18 or 1120S, line 13)',
   'charitableContributions': 'Charitable contributions (1120, line 19 or 1120S, line 14)',
   'depreciationDepletion': 'Depreciation and depletion (1120, line 20 or 1120S, line 15)',
+  'amortizationExp': 'Amortization expense (1120, line 20a or 1120S, line 15a)',
   'advertisingExpenses': 'Advertising (1120, line 21 or 1120S, line 16)',
   'pensionBenefits': 'Pension, profit-sharing plans (1120, line 22 or 1120S, line 17)',
   'employeeBenefits': 'Employee benefit programs (1120, line 23 or 1120S, line 18)',
@@ -50,6 +52,7 @@ export const formFields = [
   { fieldName: 'interestExpense', label: 'Interest Expense ($)', isExpense: true, category: 'Expense' },
   { fieldName: 'charitableContributions', label: 'Charitable Contributions ($)', isExpense: true, category: 'Expense' },
   { fieldName: 'depreciationDepletion', label: 'Depreciation and Depletion ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'amortizationExp', label: 'Amortization Exp ($)', isExpense: true, category: 'Expense' },
   { fieldName: 'advertisingExpenses', label: 'Advertising ($)', isExpense: true, category: 'Expense' },
   { fieldName: 'pensionBenefits', label: 'Pension, Profit-sharing Plans ($)', isExpense: true, category: 'Expense' },
   { fieldName: 'employeeBenefits', label: 'Employee Benefit Programs ($)', isExpense: true, category: 'Expense' },
@@ -69,3 +72,4 @@ export const formFields = [
   { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true, category: 'Distribution' },
   { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true, category: 'M-1 Adjusted Income' }
 ];
+
