@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Table, TableBody } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,7 +5,14 @@ import BusinessTaxReturnHeader from './business/BusinessTaxReturnHeader';
 import BusinessTaxReturnTableHeader from './business/BusinessTaxReturnTableHeader';
 import BusinessTaxReturnRow from './business/BusinessTaxReturnRow';
 import BusinessTaxSectionHeader from './business/BusinessTaxSectionHeader';
+import CustomAddBackManager from './business/CustomAddBackManager';
 import { fieldNotes, formFields } from './business/businessTaxFieldConfig';
+
+interface CustomAddBackRow {
+  id: string;
+  label: string;
+  fieldName: string;
+}
 
 interface BusinessTaxReturnsFormProps {
   formValues: Record<string, string>;
@@ -25,6 +31,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
 }) => {
   const [selectedYears, setSelectedYears] = useState<string[]>(['2023', '2022', '2021']);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File | null>>({});
+  const [customAddBackRows, setCustomAddBackRows] = useState<CustomAddBackRow[]>([]);
   const availableYears = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015'];
 
   const handleYearChange = (index: number, year: string) => {
@@ -52,6 +59,14 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
       ...prev,
       [year]: file
     }));
+  };
+
+  const handleAddCustomRow = (row: CustomAddBackRow) => {
+    setCustomAddBackRows(prev => [...prev, row]);
+  };
+
+  const handleRemoveCustomRow = (id: string) => {
+    setCustomAddBackRows(prev => prev.filter(row => row.id !== id));
   };
 
   // Group fields by section
@@ -92,7 +107,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                 />
               ))}
               
-              {addBackFields.length > 0 && (
+              {(addBackFields.length > 0 || customAddBackRows.length > 0) && (
                 <>
                   <BusinessTaxSectionHeader 
                     title="Add back / Adjustments" 
@@ -113,10 +128,31 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                       isCalculated={field.isCalculated}
                     />
                   ))}
+                  {customAddBackRows.map((customRow) => (
+                    <BusinessTaxReturnRow
+                      key={customRow.id}
+                      fieldName={customRow.fieldName}
+                      label={customRow.label}
+                      selectedYears={selectedYears}
+                      formValues={formValues}
+                      calculatedValues={calculatedValues}
+                      fieldNotes={{ [customRow.fieldName]: 'Custom add-back adjustment for cash flow analysis' }}
+                      onInputChange={onInputChange}
+                      isIncome={true}
+                      isExpense={false}
+                      isCalculated={false}
+                    />
+                  ))}
                 </>
               )}
             </TableBody>
           </Table>
+          
+          <CustomAddBackManager
+            customRows={customAddBackRows}
+            onAddRow={handleAddCustomRow}
+            onRemoveRow={handleRemoveCustomRow}
+          />
         </div>
       </CardContent>
     </Card>
