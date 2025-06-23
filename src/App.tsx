@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import IntegrationDetails from './pages/IntegrationDetails';
 
 // Lazy load pages to implement code-splitting (microservices approach)
 const Index = lazy(() => import("./pages/Index"));
@@ -85,6 +85,7 @@ const App = () => (
                 <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
                 <Route path="/lender-settings" element={<LenderSettings />} />
                 <Route path="/lender-settings/template/:templateId" element={<TemplateDetails />} />
+                <Route path="/lender-settings/integration/:integrationId" element={<IntegrationDetails />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
