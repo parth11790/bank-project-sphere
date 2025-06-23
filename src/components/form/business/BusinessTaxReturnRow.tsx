@@ -42,6 +42,16 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
 }) => {
   const getFieldKey = (fieldName: string, year: string) => `${fieldName}_${year}`;
 
+  const calculatePercentage = (value: number, year: string): string => {
+    const grossReceiptsKey = getFieldKey('grossReceipts', year);
+    const grossReceipts = parseFloat(formValues[grossReceiptsKey] || '0');
+    
+    if (grossReceipts === 0) return '0.0%';
+    
+    const percentage = (value / grossReceipts) * 100;
+    return `${percentage.toFixed(1)}%`;
+  };
+
   const renderInputCell = (fieldName: string, year: string, isReadOnly: boolean = false) => {
     const key = getFieldKey(fieldName, year);
     let value = formValues[key] || '';
@@ -64,16 +74,27 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
     const inputType = fieldName === 'grossMargin' ? 'text' : 'number';
     const displayValue = fieldName === 'grossMargin' && isReadOnly ? `${value}%` : value;
     
+    // Calculate percentage for display (skip for grossMargin as it's already a percentage)
+    const numericValue = parseFloat(value) || 0;
+    const percentageDisplay = fieldName === 'grossMargin' ? '' : calculatePercentage(numericValue, year);
+    
     return (
       <TableCell className="p-2">
-        <Input
-          type={inputType}
-          placeholder={fieldName === 'grossMargin' ? '0%' : '0'}
-          value={displayValue}
-          onChange={(e) => onInputChange(key, e.target.value)}
-          readOnly={isReadOnly}
-          className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
-        />
+        <div className="space-y-1">
+          <Input
+            type={inputType}
+            placeholder={fieldName === 'grossMargin' ? '0%' : '0'}
+            value={displayValue}
+            onChange={(e) => onInputChange(key, e.target.value)}
+            readOnly={isReadOnly}
+            className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
+          />
+          {fieldName !== 'grossMargin' && numericValue !== 0 && (
+            <div className="text-xs text-muted-foreground text-center">
+              {percentageDisplay}
+            </div>
+          )}
+        </div>
       </TableCell>
     );
   };
