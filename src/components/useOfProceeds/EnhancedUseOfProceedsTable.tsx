@@ -2,13 +2,14 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useEnhancedUseOfProceedsTable } from '@/hooks/useEnhancedUseOfProceedsTable';
+import { useQuery } from '@tanstack/react-query';
+import { getProjectById } from '@/lib/mockData/utilities';
 
 // Import components
-import AddEnhancedColumnDialog from './AddEnhancedColumnDialog';
 import AddEnhancedRowDialog from './AddEnhancedRowDialog';
+import ColumnSelectionDialog from './ColumnSelectionDialog';
 import ProceedsTable from './ProceedsTable';
 import LoanSummary from './LoanSummary';
-import { TableHeader } from '@/components/ui/table';
 import TableActions from './TableActions';
 import { categoryOptions } from './categoryOptions';
 
@@ -49,6 +50,13 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
   initialData,
   onSave
 }) => {
+  // Fetch project data to get loans
+  const { data: projectData } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => getProjectById(projectId),
+    enabled: !!projectId,
+  });
+
   const {
     editMode,
     columns,
@@ -77,8 +85,18 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
     onSave
   });
 
+  // Handle adding multiple columns from selection
+  const handleAddMultipleColumns = (newColumns: Partial<UseOfProceedsColumn>[]) => {
+    newColumns.forEach(column => {
+      handleAddColumn(column);
+    });
+  };
+
   // Get the existing row names
   const existingRows = rows.map(row => row.row_name);
+
+  // Get project loans for column selection
+  const projectLoans = projectData?.loans || [];
 
   return (
     <div className="space-y-4">
@@ -115,11 +133,13 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
       
       <LoanSummary columns={columns} formatCurrency={formatCurrency} />
       
-      {/* Column Dialog */}
-      <AddEnhancedColumnDialog 
+      {/* Updated Column Dialog with selection options */}
+      <ColumnSelectionDialog 
         isOpen={isAddColumnDialogOpen}
         setIsOpen={setIsAddColumnDialogOpen}
-        onAddColumn={handleAddColumn}
+        onAddColumns={handleAddMultipleColumns}
+        projectLoans={projectLoans}
+        existingColumns={columns}
       />
       
       {/* Row Dialog - Using our updated component with multiple selection */}
