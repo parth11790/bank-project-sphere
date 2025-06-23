@@ -63,6 +63,10 @@ export const DocumentGatheringTemplatesList = ({
     }).format(amount);
   };
 
+  const getTotalFormsCount = (template: DocumentGatheringTemplate) => {
+    return Object.values(template.participantForms).reduce((total, forms) => total + forms.length, 0);
+  };
+
   const handleToggleStatus = (template: DocumentGatheringTemplate, e: React.MouseEvent) => {
     e.stopPropagation();
     onUpdate(template.id, { isActive: !template.isActive });
@@ -116,7 +120,7 @@ export const DocumentGatheringTemplatesList = ({
               <TableHead>Template Name</TableHead>
               <TableHead>Loan Type</TableHead>
               <TableHead>Amount Range</TableHead>
-              <TableHead>Forms Count</TableHead>
+              <TableHead>Total Forms</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -144,7 +148,7 @@ export const DocumentGatheringTemplatesList = ({
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="text-xs">
-                    {template.forms.length} forms
+                    {getTotalFormsCount(template)} forms
                   </Badge>
                 </TableCell>
                 <TableCell>

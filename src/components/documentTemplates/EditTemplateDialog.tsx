@@ -60,8 +60,12 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
     loanType: '',
     amountMin: 0,
     amountMax: 1000000,
-    participant: '' as DocumentGatheringTemplate['participant'] | '',
-    forms: [] as string[],
+    participantForms: {
+      borrowing_business: [] as string[],
+      affiliated_business: [] as string[],
+      owners: [] as string[],
+      sellers: [] as string[]
+    },
     isActive: true
   });
 
@@ -72,8 +76,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
         loanType: template.loanType,
         amountMin: template.amountMin,
         amountMax: template.amountMax,
-        participant: template.participant,
-        forms: template.forms,
+        participantForms: template.participantForms,
         isActive: template.isActive
       });
     }
@@ -82,7 +85,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.templateName || !formData.loanType || !formData.participant) {
+    if (!formData.templateName || !formData.loanType) {
       return;
     }
 
@@ -91,17 +94,26 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       loanType: formData.loanType,
       amountMin: formData.amountMin,
       amountMax: formData.amountMax,
-      participant: formData.participant as DocumentGatheringTemplate['participant'],
-      forms: formData.forms,
+      participantForms: formData.participantForms,
       isActive: formData.isActive
     });
+  };
+
+  const updateParticipantForms = (participantType: keyof typeof formData.participantForms, forms: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      participantForms: {
+        ...prev.participantForms,
+        [participantType]: forms
+      }
+    }));
   };
 
   if (!template) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Document Gathering Template</DialogTitle>
           <DialogDescription>
@@ -109,7 +121,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="templateName">Template Name</Label>
@@ -138,22 +150,6 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="participant">Participant</Label>
-              <Select value={formData.participant} onValueChange={(value) => setFormData(prev => ({ ...prev, participant: value as DocumentGatheringTemplate['participant'] }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select participant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {participantOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="amountMin">Minimum Amount ($)</Label>
               <Input
                 id="amountMin"
@@ -176,14 +172,19 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Required Forms</Label>
-            <MultiSelectFormField
-              value={formData.forms}
-              onChange={(forms) => setFormData(prev => ({ ...prev, forms }))}
-              options={availableForms}
-              placeholder="Select required forms..."
-            />
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium">Forms by Participant Type</h3>
+            {participantOptions.map((participant) => (
+              <div key={participant.value} className="space-y-2">
+                <Label>{participant.label}</Label>
+                <MultiSelectFormField
+                  value={formData.participantForms[participant.value]}
+                  onChange={(forms) => updateParticipantForms(participant.value, forms)}
+                  options={availableForms}
+                  placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
+                />
+              </div>
+            ))}
           </div>
 
           <DialogFooter>

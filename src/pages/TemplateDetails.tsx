@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Edit, Save, X, Plus } from 'lucide-react';
+import { ArrowLeft, Edit, Save, X } from 'lucide-react';
 import { useDocumentTemplates } from '@/hooks/useDocumentTemplates';
 import { MultiSelectFormField } from '@/components/documentTemplates/MultiSelectFormField';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
@@ -61,8 +61,6 @@ const TemplateDetails = () => {
     loanType: '',
     amountMin: 0,
     amountMax: 0,
-    participant: '' as DocumentGatheringTemplate['participant'] | '',
-    forms: [] as string[],
     isActive: true,
     participantForms: {
       borrowing_business: [] as string[],
@@ -99,9 +97,8 @@ const TemplateDetails = () => {
     }).format(amount);
   };
 
-  const getParticipantLabel = (participant: string) => {
-    const option = participantOptions.find(p => p.value === participant);
-    return option?.label || participant;
+  const getTotalFormsCount = () => {
+    return Object.values(template.participantForms).reduce((total, forms) => total + forms.length, 0);
   };
 
   const handleEdit = () => {
@@ -110,15 +107,8 @@ const TemplateDetails = () => {
       loanType: template.loanType,
       amountMin: template.amountMin,
       amountMax: template.amountMax,
-      participant: template.participant,
-      forms: template.forms,
       isActive: template.isActive,
-      participantForms: {
-        borrowing_business: template.participant === 'borrowing_business' ? template.forms : [],
-        affiliated_business: template.participant === 'affiliated_business' ? template.forms : [],
-        owners: template.participant === 'owners' ? template.forms : [],
-        sellers: template.participant === 'sellers' ? template.forms : []
-      }
+      participantForms: { ...template.participantForms }
     });
     setIsEditing(true);
   };
@@ -129,8 +119,7 @@ const TemplateDetails = () => {
       loanType: editFormData.loanType,
       amountMin: editFormData.amountMin,
       amountMax: editFormData.amountMax,
-      participant: editFormData.participant as DocumentGatheringTemplate['participant'],
-      forms: editFormData.forms,
+      participantForms: editFormData.participantForms,
       isActive: editFormData.isActive
     };
     
@@ -142,7 +131,7 @@ const TemplateDetails = () => {
     setIsEditing(false);
   };
 
-  const updateParticipantForms = (participant: DocumentGatheringTemplate['participant'], forms: string[]) => {
+  const updateParticipantForms = (participant: keyof typeof editFormData.participantForms, forms: string[]) => {
     setEditFormData(prev => ({
       ...prev,
       participantForms: {
@@ -229,17 +218,14 @@ const TemplateDetails = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label>Primary Participant</Label>
-                        <Select value={editFormData.participant} onValueChange={(value) => setEditFormData(prev => ({ ...prev, participant: value as DocumentGatheringTemplate['participant'] }))}>
+                        <Label>Status</Label>
+                        <Select value={editFormData.isActive ? 'active' : 'inactive'} onValueChange={(value) => setEditFormData(prev => ({ ...prev, isActive: value === 'active' }))}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {participantOptions.map(option => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -272,18 +258,11 @@ const TemplateDetails = () => {
                       <p className="text-lg font-semibold">{template.templateName}</p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label className="text-sm font-medium">Loan Type</Label>
                         <div className="mt-1">
                           <Badge variant="outline">{template.loanType}</Badge>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <Label className="text-sm font-medium">Primary Participant</Label>
-                        <div className="mt-1">
-                          <Badge variant="secondary">{getParticipantLabel(template.participant)}</Badge>
                         </div>
                       </div>
                       
@@ -320,7 +299,7 @@ const TemplateDetails = () => {
                       <Badge variant="outline" className="text-xs">
                         {isEditing 
                           ? editFormData.participantForms[participant.value].length
-                          : (template.participant === participant.value ? template.forms.length : 0)
+                          : template.participantForms[participant.value].length
                         } forms
                       </Badge>
                     </div>
@@ -334,9 +313,9 @@ const TemplateDetails = () => {
                       />
                     ) : (
                       <div className="space-y-2">
-                        {template.participant === participant.value && template.forms.length > 0 ? (
+                        {template.participantForms[participant.value].length > 0 ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {template.forms.map((form, index) => (
+                            {template.participantForms[participant.value].map((form, index) => (
                               <div key={index} className="flex items-center gap-2 p-2 border rounded">
                                 <Badge variant="outline" className="text-xs">
                                   {index + 1}
@@ -382,7 +361,7 @@ const TemplateDetails = () => {
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Total Forms</Label>
-                  <p className="text-sm text-muted-foreground">{template.forms.length} forms</p>
+                  <p className="text-sm text-muted-foreground">{getTotalFormsCount()} forms</p>
                 </div>
               </CardContent>
             </Card>

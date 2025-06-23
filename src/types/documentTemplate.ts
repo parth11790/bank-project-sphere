@@ -5,8 +5,12 @@ export interface DocumentGatheringTemplate {
   loanType: string;
   amountMin: number;
   amountMax: number;
-  participant: 'borrowing_business' | 'affiliated_business' | 'owners' | 'sellers';
-  forms: string[];
+  participantForms: {
+    borrowing_business: string[];
+    affiliated_business: string[];
+    owners: string[];
+    sellers: string[];
+  };
   createdAt: string;
   updatedAt: string;
   createdBy: string;
