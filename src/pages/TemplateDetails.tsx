@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -368,23 +369,21 @@ const TemplateDetails = () => {
               </Card>
             )}
 
-            {/* Participant Forms Sections */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Forms by Participant Type</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {participantOptions.map(participant => {
-                  const isAssigned = isEditing 
-                    ? editFormData.assignedParticipants.includes(participant.value) 
-                    : displayAssignedParticipants.includes(participant.value);
-                  
-                  if (!isAssigned) return null;
+            {/* Participant Forms Sections - Changed to vertical layout */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Forms by Participant Type</h2>
+              {participantOptions.map(participant => {
+                const isAssigned = isEditing 
+                  ? editFormData.assignedParticipants.includes(participant.value) 
+                  : displayAssignedParticipants.includes(participant.value);
+                
+                if (!isAssigned) return null;
 
-                  return (
-                    <div key={participant.value} className="space-y-3 border rounded-lg p-4">
+                return (
+                  <Card key={participant.value}>
+                    <CardHeader>
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium">{participant.label}</h3>
+                        <CardTitle className="text-lg">{participant.label}</CardTitle>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="text-xs">
                             {isEditing 
@@ -402,7 +401,8 @@ const TemplateDetails = () => {
                           )}
                         </div>
                       </div>
-                      
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                       {participant.hasOwnership && isEditing && (
                         <div className="flex items-center gap-2">
                           <Label htmlFor={`ownership-${participant.value}`} className="text-sm">
@@ -435,13 +435,13 @@ const TemplateDetails = () => {
                       ) : (
                         <div className="space-y-2">
                           {(template.participantForms[participant.value as keyof typeof template.participantForms]?.length || 0) > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="space-y-2">
                               {(template.participantForms[participant.value as keyof typeof template.participantForms] || []).map((form, index) => (
-                                <div key={index} className="flex items-center gap-2 p-2 border rounded">
-                                  <Badge variant="outline" className="text-xs">
+                                <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30">
+                                  <Badge variant="outline" className="text-xs min-w-8 h-6 flex items-center justify-center">
                                     {index + 1}
                                   </Badge>
-                                  <span className="text-sm">{form}</span>
+                                  <span className="text-sm font-medium">{form}</span>
                                 </div>
                               ))}
                             </div>
@@ -452,17 +452,21 @@ const TemplateDetails = () => {
                           )}
                         </div>
                       )}
-                    </div>
-                  );
-                })}
-                
-                {!isEditing && displayAssignedParticipants.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    No participants assigned to this template.
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              
+              {!isEditing && displayAssignedParticipants.length === 0 && (
+                <Card>
+                  <CardContent className="py-8">
+                    <p className="text-sm text-muted-foreground text-center">
+                      No participants assigned to this template.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
 
           <div className="space-y-6">
