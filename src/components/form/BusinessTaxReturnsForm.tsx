@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Table, TableBody } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -70,8 +71,9 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
   };
 
   // Group fields by section
-  const regularFields = formFields.filter(field => !field.isSection);
+  const regularFields = formFields.filter(field => !field.isSection && field.fieldName !== 'operatingCashFlow');
   const addBackFields = formFields.filter(field => field.isSection === 'addback');
+  const cashFlowFields = formFields.filter(field => field.fieldName === 'operatingCashFlow');
 
   return (
     <Card>
@@ -145,6 +147,23 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                   ))}
                 </>
               )}
+
+              {/* Operating Cash Flow section - moved after add-back adjustments */}
+              {cashFlowFields.map((field) => (
+                <BusinessTaxReturnRow
+                  key={field.fieldName}
+                  fieldName={field.fieldName}
+                  label={field.label}
+                  selectedYears={selectedYears}
+                  formValues={formValues}
+                  calculatedValues={calculatedValues}
+                  fieldNotes={fieldNotes}
+                  onInputChange={onInputChange}
+                  isIncome={field.isIncome}
+                  isExpense={field.isExpense}
+                  isCalculated={field.isCalculated}
+                />
+              ))}
             </TableBody>
           </Table>
           

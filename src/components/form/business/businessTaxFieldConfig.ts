@@ -24,7 +24,7 @@ export const fieldNotes: Record<string, string> = {
   'cashDistributions': 'Cash distributions to shareholders/partners',
   'depreciation': 'Depreciation (add back for cash flow analysis)',
   'amortization': 'Amortization (add back for cash flow analysis)',
-  'operatingCashFlow': 'Operating cash flow (Net Income + Depreciation + Amortization - Distributions)',
+  'operatingCashFlow': 'Operating cash flow (Net Income + All Add-back Adjustments - Distributions)',
   'depreciationAddBack': 'Depreciation expense added back to net income for cash flow calculation',
   'amortizationAddBack': 'Amortization expense added back to net income for cash flow calculation'
 };
@@ -61,9 +61,7 @@ export const formFields = [
   { fieldName: 'depreciationAddBack', label: 'Depreciation (Add Back) ($)', isIncome: true, isSection: 'addback' },
   { fieldName: 'amortizationAddBack', label: 'Amortization (Add Back) ($)', isIncome: true, isSection: 'addback' },
 
-  // Cash Flow Analysis
+  // Cash Flow Analysis (moved after add-back section)
   { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true },
-  { fieldName: 'depreciation', label: 'Depreciation (Add Back) ($)', isIncome: true },
-  { fieldName: 'amortization', label: 'Amortization (Add Back) ($)', isIncome: true },
   { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true }
 ];

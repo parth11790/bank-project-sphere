@@ -63,11 +63,23 @@ export const useBusinessTaxReturnCalculations = (
       
       // Cash flow calculation values
       const cashDistributions = parseFloat(formValues[`cashDistributions_${currentYear}`] || '0');
-      const depreciation = parseFloat(formValues[`depreciation_${currentYear}`] || '0');
-      const amortization = parseFloat(formValues[`amortization_${currentYear}`] || '0');
       
-      // Operating Cash Flow = Net Income + Depreciation + Amortization - Cash Distributions
-      const operatingCashFlow = netIncome + depreciation + amortization - cashDistributions;
+      // Add-back adjustment fields (predefined)
+      const depreciationAddBack = parseFloat(formValues[`depreciationAddBack_${currentYear}`] || '0');
+      const amortizationAddBack = parseFloat(formValues[`amortizationAddBack_${currentYear}`] || '0');
+      
+      // Calculate custom add-back adjustments
+      let customAddBacks = 0;
+      Object.keys(formValues).forEach(key => {
+        if (key.startsWith('custom_') && key.endsWith(`_${currentYear}`)) {
+          const value = parseFloat(formValues[key] || '0');
+          customAddBacks += isNaN(value) ? 0 : value;
+        }
+      });
+      
+      // Operating Cash Flow = Net Income + All Add-back Adjustments - Cash Distributions
+      const totalAddBacks = depreciationAddBack + amortizationAddBack + customAddBacks;
+      const operatingCashFlow = netIncome + totalAddBacks - cashDistributions;
       
       setCalculatedValues({ 
         grossIncome: totalIncome,
