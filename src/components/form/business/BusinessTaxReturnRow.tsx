@@ -80,7 +80,7 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
     
     return (
       <TableCell className="p-2">
-        <div className="space-y-1">
+        <div className="flex items-center gap-2">
           <Input
             type={inputType}
             placeholder={fieldName === 'grossMargin' ? '0%' : '0'}
@@ -90,7 +90,7 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
             className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
           />
           {fieldName !== 'grossMargin' && numericValue !== 0 && (
-            <div className="text-xs text-muted-foreground text-center">
+            <div className="text-xs text-muted-foreground min-w-[3rem] text-right">
               {percentageDisplay}
             </div>
           )}
