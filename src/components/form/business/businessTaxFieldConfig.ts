@@ -37,8 +37,8 @@ export const formFields = [
 
   // COGS Section
   { fieldName: 'costOfGoodsSold', label: 'Cost of Goods Sold ($)', isExpense: true, category: 'COGS' },
-  { fieldName: 'grossProfit', label: 'Gross Profit ($)', isIncome: true, isCalculated: true, category: 'Revenue' },
-  { fieldName: 'grossMargin', label: 'Gross Margin (%)', isIncome: true, isCalculated: true, category: 'Revenue' },
+  { fieldName: 'grossProfit', label: 'Gross Profit ($)', isIncome: true, isCalculated: true, category: 'Gross Income' },
+  { fieldName: 'grossMargin', label: 'Gross Margin (%)', isIncome: true, isCalculated: true, category: 'Gross Income' },
 
   // Expense Section
   { fieldName: 'officerCompensation', label: 'Compensation of Officers ($)', isExpense: true, category: 'Expense' },
@@ -66,6 +66,6 @@ export const formFields = [
   { fieldName: 'amortizationAddBack', label: 'Amortization (Add Back) ($)', isIncome: true, isSection: 'addback', category: 'Adjustments' },
 
   // M-1 Adjusted Income Section
-  { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true, category: 'M-1 Adjusted Income' },
+  { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true, category: 'Distribution' },
   { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true, category: 'M-1 Adjusted Income' }
 ];
