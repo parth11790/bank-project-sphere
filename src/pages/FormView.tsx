@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { logAuditEvent } from '@/services/auditService';
 
@@ -103,40 +102,37 @@ const FormView: React.FC = () => {
           onSubmit={handleSubmit}
         />
 
-        <Tabs defaultValue="form">
-          <TabsList className="w-full">
-            <TabsTrigger value="form" className="flex-1">Form Questions</TabsTrigger>
-            <TabsTrigger value="analysis" className="flex-1">Analysis</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="form" className="mt-6 space-y-6">
-            <Card>
-              <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
-                <FormContent 
-                  formName={formName}
-                  entityType={entityType}
-                  formValues={formValues}
-                  calculatedValues={calculatedValues}
-                  businessCalculatedValues={businessCalculatedValues}
-                  onInputChange={handleInputChange}
-                />
-                
-                <FormNotesSection 
-                  shouldShow={shouldShowNotes}
-                  onInputChange={handleInputChange}
-                />
-              </CardContent>
-              <FormFooter 
-                shouldShow={shouldShowFooter}
-                onSubmit={handleSubmit}
+        {/* Analysis Section */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-foreground">Analysis</h2>
+          <FormAnalysis formName={formName} />
+        </div>
+
+        {/* Form Questions Section */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-foreground">Form Questions</h2>
+          <Card>
+            <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
+              <FormContent 
+                formName={formName}
+                entityType={entityType}
+                formValues={formValues}
+                calculatedValues={calculatedValues}
+                businessCalculatedValues={businessCalculatedValues}
+                onInputChange={handleInputChange}
               />
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="analysis" className="mt-6 space-y-6">
-            <FormAnalysis formName={formName} />
-          </TabsContent>
-        </Tabs>
+              
+              <FormNotesSection 
+                shouldShow={shouldShowNotes}
+                onInputChange={handleInputChange}
+              />
+            </CardContent>
+            <FormFooter 
+              shouldShow={shouldShowFooter}
+              onSubmit={handleSubmit}
+            />
+          </Card>
+        </div>
       </motion.div>
     </Layout>
   );
