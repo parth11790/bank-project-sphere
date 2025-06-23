@@ -46,8 +46,10 @@ const LoanDetails = () => {
   const [accrual, setAccrual] = useState('365');
   
   // Spread and Interest Rate
-  const [spread, setSpread] = useState('3.00');
-  const [intRate, setIntRate] = useState('10.75');
+  const [uwSpread, setUwSpread] = useState('3.00');
+  const [uwIntRate, setUwIntRate] = useState('10.75');
+  const [actualSpread, setActualSpread] = useState('2.75');
+  const [actualIntRate, setActualIntRate] = useState('10.25');
   
   // Payments
   const [uwRatePayment, setUwRatePayment] = useState('17807.29');
@@ -172,299 +174,344 @@ const LoanDetails = () => {
         <Card>
           <CardHeader>
             <CardTitle>Loan Information</CardTitle>
-            <CardDescription>Comprehensive loan details and terms</CardDescription>
+            <CardDescription>Comprehensive loan details organized by categories</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Basic Loan Details Row - 4 fields */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="loan-type">Loan Type</Label>
-                <Select value={loanType} onValueChange={setLoanType}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7(a) PLP">7(a) PLP</SelectItem>
-                    <SelectItem value="SBA 7(a)">SBA 7(a)</SelectItem>
-                    <SelectItem value="SBA 504 Debenture">SBA 504 Debenture</SelectItem>
-                    <SelectItem value="Commercial Real Estate">Commercial Real Estate</SelectItem>
-                    <SelectItem value="Business Acquisition">Business Acquisition</SelectItem>
-                    <SelectItem value="Equipment Financing">Equipment Financing</SelectItem>
-                    <SelectItem value="Working Capital">Working Capital</SelectItem>
-                    <SelectItem value="Line of Credit">Line of Credit</SelectItem>
-                  </SelectContent>
-                </Select>
+          <CardContent className="space-y-8">
+            {/* Basic Information Section */}
+            <div className="space-y-4">
+              <div className="border-b pb-2">
+                <h3 className="text-lg font-semibold text-primary">Basic Information</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="loan-amount">Loan Amount ($)</Label>
+                  <Input
+                    id="loan-amount"
+                    value={loanAmount}
+                    onChange={(e) => setLoanAmount(e.target.value)}
+                    placeholder="Enter loan amount"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="purpose">Purpose</Label>
+                  <Select value={purpose} onValueChange={setPurpose}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Real estate acquisition">Real estate acquisition</SelectItem>
+                      <SelectItem value="Business acquisition">Business acquisition</SelectItem>
+                      <SelectItem value="Equipment financing">Equipment financing</SelectItem>
+                      <SelectItem value="Working capital">Working capital</SelectItem>
+                      <SelectItem value="Manufacturing expansion">Manufacturing expansion</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="status-select">Status</Label>
+                  <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Underwriting">Underwriting</SelectItem>
+                      <SelectItem value="Approved">Approved</SelectItem>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Declined">Declined</SelectItem>
+                      <SelectItem value="Closed">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="as-of-date">As of Date</Label>
+                  <Input
+                    id="as-of-date"
+                    value={asOfDate}
+                    onChange={(e) => setAsOfDate(e.target.value)}
+                    placeholder="MM/DD/YY"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="loan-amount">Loan Amount ($)</Label>
-                <Input
-                  id="loan-amount"
-                  value={loanAmount}
-                  onChange={(e) => setLoanAmount(e.target.value)}
-                  placeholder="Enter loan amount"
-                />
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sba-guaranty-fee">SBA Guaranty Fee ($)</Label>
+                  <Input
+                    id="sba-guaranty-fee"
+                    value={sbaGuarantyFee}
+                    onChange={(e) => setSbaGuarantyFee(e.target.value)}
+                    placeholder="Enter SBA guaranty fee"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="purpose">Purpose</Label>
-                <Select value={purpose} onValueChange={setPurpose}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Real estate acquisition">Real estate acquisition</SelectItem>
-                    <SelectItem value="Business acquisition">Business acquisition</SelectItem>
-                    <SelectItem value="Equipment financing">Equipment financing</SelectItem>
-                    <SelectItem value="Working capital">Working capital</SelectItem>
-                    <SelectItem value="Manufacturing expansion">Manufacturing expansion</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lob-origination-fee">LOB Origination Fee ($)</Label>
+                  <Input
+                    id="lob-origination-fee"
+                    value={lobOriginationFee}
+                    onChange={(e) => setLobOriginationFee(e.target.value)}
+                    placeholder="Enter LOB origination fee"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="status-select">Status</Label>
-                <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Underwriting">Underwriting</SelectItem>
-                    <SelectItem value="Approved">Approved</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Declined">Declined</SelectItem>
-                    <SelectItem value="Closed">Closed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="index">Index</Label>
+                  <Select value={index} onValueChange={setIndex}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Wall Street Journal">Wall Street Journal</SelectItem>
+                      <SelectItem value="Prime Rate">Prime Rate</SelectItem>
+                      <SelectItem value="LIBOR">LIBOR</SelectItem>
+                      <SelectItem value="SOFR">SOFR</SelectItem>
+                      <SelectItem value="Treasury">Treasury</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Fees Row - 4 fields */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sba-guaranty-fee">SBA Guaranty Fee ($)</Label>
-                <Input
-                  id="sba-guaranty-fee"
-                  value={sbaGuarantyFee}
-                  onChange={(e) => setSbaGuarantyFee(e.target.value)}
-                  placeholder="Enter SBA guaranty fee"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lob-origination-fee">LOB Origination Fee ($)</Label>
-                <Input
-                  id="lob-origination-fee"
-                  value={lobOriginationFee}
-                  onChange={(e) => setLobOriginationFee(e.target.value)}
-                  placeholder="Enter LOB origination fee"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="index">Index</Label>
-                <Select value={index} onValueChange={setIndex}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Wall Street Journal">Wall Street Journal</SelectItem>
-                    <SelectItem value="Prime Rate">Prime Rate</SelectItem>
-                    <SelectItem value="LIBOR">LIBOR</SelectItem>
-                    <SelectItem value="SOFR">SOFR</SelectItem>
-                    <SelectItem value="Treasury">Treasury</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="adjustment">Adjustment</Label>
-                <Select value={adjustment} onValueChange={setAdjustment}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Adjusts every 5 years">Adjusts every 5 years</SelectItem>
-                    <SelectItem value="Adjusts annually">Adjusts annually</SelectItem>
-                    <SelectItem value="Fixed rate">Fixed rate</SelectItem>
-                    <SelectItem value="Adjusts every 3 years">Adjusts every 3 years</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  <Label htmlFor="adjustment">Adjustment</Label>
+                  <Select value={adjustment} onValueChange={setAdjustment}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Adjusts every 5 years">Adjusts every 5 years</SelectItem>
+                      <SelectItem value="Adjusts annually">Adjusts annually</SelectItem>
+                      <SelectItem value="Fixed rate">Fixed rate</SelectItem>
+                      <SelectItem value="Adjusts every 3 years">Adjusts every 3 years</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
-            {/* Interest Rates Row - 4 fields */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="uw-rate">UW Rate (%)</Label>
-                <Input
-                  id="uw-rate"
-                  value={uwRate}
-                  onChange={(e) => setUwRate(e.target.value)}
-                  placeholder="Enter UW rate"
-                />
+            {/* Loan Terms Section */}
+            <div className="space-y-4">
+              <div className="border-b pb-2">
+                <h3 className="text-lg font-semibold text-primary">Loan Terms</h3>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="loan-type">Loan Type</Label>
+                  <Select value={loanType} onValueChange={setLoanType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7(a) PLP">7(a) PLP</SelectItem>
+                      <SelectItem value="SBA 7(a)">SBA 7(a)</SelectItem>
+                      <SelectItem value="SBA 504 Debenture">SBA 504 Debenture</SelectItem>
+                      <SelectItem value="Commercial Real Estate">Commercial Real Estate</SelectItem>
+                      <SelectItem value="Business Acquisition">Business Acquisition</SelectItem>
+                      <SelectItem value="Equipment Financing">Equipment Financing</SelectItem>
+                      <SelectItem value="Working Capital">Working Capital</SelectItem>
+                      <SelectItem value="Line of Credit">Line of Credit</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="actual-rate">Actual Rate (%)</Label>
-                <Input
-                  id="actual-rate"
-                  value={actualRate}
-                  onChange={(e) => setActualRate(e.target.value)}
-                  placeholder="Enter actual rate"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="loan-term">Loan Terms (years)</Label>
+                  <Input
+                    id="loan-term"
+                    value={loanTerm}
+                    onChange={(e) => setLoanTerm(e.target.value)}
+                    placeholder="Years"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="spread">Spread (%)</Label>
-                <Input
-                  id="spread"
-                  value={spread}
-                  onChange={(e) => setSpread(e.target.value)}
-                  placeholder="Enter spread"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="interest-only">Interest Only (months)</Label>
+                  <Input
+                    id="interest-only"
+                    value={interestOnly}
+                    onChange={(e) => setInterestOnly(e.target.value)}
+                    placeholder="Months"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="as-of-date">As of Date</Label>
-                <Input
-                  id="as-of-date"
-                  value={asOfDate}
-                  onChange={(e) => setAsOfDate(e.target.value)}
-                  placeholder="MM/DD/YY"
-                />
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="amortization">Amortization (months)</Label>
+                  <Input
+                    id="amortization"
+                    value={amortization}
+                    onChange={(e) => setAmortization(e.target.value)}
+                    placeholder="Months excluding I/O"
+                  />
+                </div>
 
-            {/* Loan Terms Row - 5 fields */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="loan-term">Loan Term (years)</Label>
-                <Input
-                  id="loan-term"
-                  value={loanTerm}
-                  onChange={(e) => setLoanTerm(e.target.value)}
-                  placeholder="Years"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pmt-freq">Payment Frequency</Label>
+                  <Select value={pmtFreq} onValueChange={setPmtFreq}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Monthly">Monthly</SelectItem>
+                      <SelectItem value="Quarterly">Quarterly</SelectItem>
+                      <SelectItem value="Semi-Annual">Semi-Annual</SelectItem>
+                      <SelectItem value="Annual">Annual</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="interest-only">Interest Only (months)</Label>
-                <Input
-                  id="interest-only"
-                  value={interestOnly}
-                  onChange={(e) => setInterestOnly(e.target.value)}
-                  placeholder="Months"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amortization">Amortization (months)</Label>
-                <Input
-                  id="amortization"
-                  value={amortization}
-                  onChange={(e) => setAmortization(e.target.value)}
-                  placeholder="Months excluding I/O"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="pmt-freq">Payment Frequency</Label>
-                <Select value={pmtFreq} onValueChange={setPmtFreq}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Monthly">Monthly</SelectItem>
-                    <SelectItem value="Quarterly">Quarterly</SelectItem>
-                    <SelectItem value="Semi-Annual">Semi-Annual</SelectItem>
-                    <SelectItem value="Annual">Annual</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="accrual">Accrual</Label>
-                <Select value={accrual} onValueChange={setAccrual}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="365">365</SelectItem>
-                    <SelectItem value="360">360</SelectItem>
-                    <SelectItem value="Actual/365">Actual/365</SelectItem>
-                    <SelectItem value="30/360">30/360</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-2">
+                  <Label htmlFor="accrual">Accrual</Label>
+                  <Select value={accrual} onValueChange={setAccrual}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="365">365</SelectItem>
+                      <SelectItem value="360">360</SelectItem>
+                      <SelectItem value="Actual/365">Actual/365</SelectItem>
+                      <SelectItem value="30/360">30/360</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
-            {/* Payment Calculations Row - 4 fields */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="int-rate">Interest Rate (%)</Label>
-                <Input
-                  id="int-rate"
-                  value={intRate}
-                  onChange={(e) => setIntRate(e.target.value)}
-                  placeholder="Interest rate"
-                />
+            {/* Underwriter Rate Section */}
+            <div className="space-y-4">
+              <div className="border-b pb-2">
+                <h3 className="text-lg font-semibold text-primary">Underwriter Rate</h3>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="uw-rate">UW Rate (%)</Label>
+                  <Input
+                    id="uw-rate"
+                    value={uwRate}
+                    onChange={(e) => setUwRate(e.target.value)}
+                    placeholder="Enter UW rate"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="uw-rate-payment">UW Rate Payment ($)</Label>
-                <Input
-                  id="uw-rate-payment"
-                  value={uwRatePayment}
-                  onChange={(e) => setUwRatePayment(e.target.value)}
-                  placeholder="UW rate payment"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="uw-spread">Spread (%)</Label>
+                  <Input
+                    id="uw-spread"
+                    value={uwSpread}
+                    onChange={(e) => setUwSpread(e.target.value)}
+                    placeholder="Enter spread"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="uw-int-rate">Interest Rate (%)</Label>
+                  <Input
+                    id="uw-int-rate"
+                    value={uwIntRate}
+                    onChange={(e) => setUwIntRate(e.target.value)}
+                    placeholder="Interest rate"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="uw-rate-payment">Rate Payment ($)</Label>
+                  <Input
+                    id="uw-rate-payment"
+                    value={uwRatePayment}
+                    onChange={(e) => setUwRatePayment(e.target.value)}
+                    placeholder="UW rate payment"
+                  />
+                </div>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="actual-payment">Actual Payment ($)</Label>
-                <Input
-                  id="actual-payment"
-                  value={actualPayment}
-                  onChange={(e) => setActualPayment(e.target.value)}
-                  placeholder="Actual payment"
-                />
+            {/* Actual Rate Section */}
+            <div className="space-y-4">
+              <div className="border-b pb-2">
+                <h3 className="text-lg font-semibold text-primary">Actual Rate</h3>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="actual-rate">Actual Rate (%)</Label>
+                  <Input
+                    id="actual-rate"
+                    value={actualRate}
+                    onChange={(e) => setActualRate(e.target.value)}
+                    placeholder="Enter actual rate"
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="interest-only-payment">Interest Only Payment ($)</Label>
-                <Input
-                  id="interest-only-payment"
-                  value={interestOnlyPayment}
-                  onChange={(e) => setInterestOnlyPayment(e.target.value)}
-                  placeholder="Interest only payment"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="actual-spread">Spread (%)</Label>
+                  <Input
+                    id="actual-spread"
+                    value={actualSpread}
+                    onChange={(e) => setActualSpread(e.target.value)}
+                    placeholder="Enter spread"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="actual-int-rate">Interest Rate (%)</Label>
+                  <Input
+                    id="actual-int-rate"
+                    value={actualIntRate}
+                    onChange={(e) => setActualIntRate(e.target.value)}
+                    placeholder="Interest rate"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="actual-payment">Rate Payment ($)</Label>
+                  <Input
+                    id="actual-payment"
+                    value={actualPayment}
+                    onChange={(e) => setActualPayment(e.target.value)}
+                    placeholder="Actual payment"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="interest-only-payment">Interest Only Payment ($)</Label>
+                  <Input
+                    id="interest-only-payment"
+                    value={interestOnlyPayment}
+                    onChange={(e) => setInterestOnlyPayment(e.target.value)}
+                    placeholder="Interest only payment"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Notes Section */}
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Enter notes about the loan"
-                className="min-h-24"
-              />
-            </div>
+            <div className="space-y-4">
+              <div className="border-b pb-2">
+                <h3 className="text-lg font-semibold text-primary">Additional Information</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Notes</Label>
+                  <Textarea
+                    id="notes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Enter notes about the loan"
+                    className="min-h-24"
+                  />
+                </div>
 
-            {/* Prepayment Penalty Section */}
-            <div className="space-y-2">
-              <Label htmlFor="prepayment-penalty">Prepayment Penalty</Label>
-              <Textarea
-                id="prepayment-penalty"
-                value={prepaymentPenalty}
-                onChange={(e) => setPrepaymentPenalty(e.target.value)}
-                placeholder="Enter prepayment penalty details"
-                className="min-h-20"
-              />
+                <div className="space-y-2">
+                  <Label htmlFor="prepayment-penalty">Prepayment Penalty</Label>
+                  <Textarea
+                    id="prepayment-penalty"
+                    value={prepaymentPenalty}
+                    onChange={(e) => setPrepaymentPenalty(e.target.value)}
+                    placeholder="Enter prepayment penalty details"
+                    className="min-h-20"
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
