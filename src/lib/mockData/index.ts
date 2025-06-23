@@ -11,6 +11,13 @@ import {
   businessDocumentsData 
 } from './forms';
 import {
+  individualTaxReturnsData,
+  businessTaxReturnsData,
+  getBusinessTaxDataById,
+  getIndividualTaxDataById
+} from './individualTaxReturns';
+import { businessTaxReturnsData as businessTaxData } from './businessTaxReturns';
+import {
   getUserById,
   getBusinessById,
   getProjectById,
@@ -33,6 +40,11 @@ export {
   businessFormsData,
   individualDocumentsData,
   businessDocumentsData,
+  individualTaxReturnsData,
+  businessTaxReturnsData,
+  businessTaxData,
+  getBusinessTaxDataById,
+  getIndividualTaxDataById,
   getUserById,
   getBusinessById,
   getProjectById,
@@ -45,3 +57,5 @@ export {
 
 // Export types
 export * from './types';
+export * from './individualTaxReturns';
+export * from './businessTaxReturns';
