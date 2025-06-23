@@ -112,7 +112,7 @@ const FormView: React.FC = () => {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Form Questions</h2>
           <Card>
-            <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
+            <CardContent className="pb-8">
               <FormContent 
                 formName={formName}
                 entityType={entityType}
