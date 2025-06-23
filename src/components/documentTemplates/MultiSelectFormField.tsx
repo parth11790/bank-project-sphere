@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -25,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { getFormsByEntityType, getFormEntityType } from '@/lib/utils/formCategorization';
+import { getFormsByEntityType, getFormEntityType, getEntityTypeForParticipant } from '@/lib/utils/formCategorization';
 
 interface MultiSelectFormFieldProps {
   value: string[];
@@ -34,6 +33,7 @@ interface MultiSelectFormFieldProps {
   placeholder?: string;
   entityTypeFilter?: 'Business' | 'Individual' | 'All';
   showEntityTypeFilter?: boolean;
+  participantType?: string;
 }
 
 export const MultiSelectFormField: React.FC<MultiSelectFormFieldProps> = ({
@@ -42,10 +42,17 @@ export const MultiSelectFormField: React.FC<MultiSelectFormFieldProps> = ({
   options,
   placeholder = 'Select forms...',
   entityTypeFilter = 'All',
-  showEntityTypeFilter = true
+  showEntityTypeFilter = true,
+  participantType
 }) => {
   const [open, setOpen] = useState(false);
-  const [localEntityFilter, setLocalEntityFilter] = useState<'Business' | 'Individual' | 'All'>(entityTypeFilter);
+  
+  // Use participant type to determine default entity filter if provided
+  const defaultEntityFilter = participantType 
+    ? getEntityTypeForParticipant(participantType)
+    : entityTypeFilter;
+    
+  const [localEntityFilter, setLocalEntityFilter] = useState<'Business' | 'Individual' | 'All'>(defaultEntityFilter);
 
   // Filter options based on entity type
   const filteredOptions = useMemo(() => {

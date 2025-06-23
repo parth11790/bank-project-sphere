@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { Button } from '@/components/ui/button';
@@ -182,7 +181,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
                   onChange={(forms) => updateParticipantForms(participant.value, forms)}
                   options={availableForms}
                   placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
-                  entityTypeFilter={getEntityTypeForParticipant(participant.value)}
+                  participantType={participant.value}
                   showEntityTypeFilter={true}
                 />
               </div>

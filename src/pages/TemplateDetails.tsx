@@ -369,7 +369,7 @@ const TemplateDetails = () => {
                           onChange={(forms) => updateParticipantForms(participant.value, forms)}
                           options={availableForms}
                           placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
-                          entityTypeFilter={getEntityTypeForParticipant(participant.value)}
+                          participantType={participant.value}
                           showEntityTypeFilter={true}
                         />
                       ) : (

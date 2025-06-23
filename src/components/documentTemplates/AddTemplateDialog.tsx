@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { Button } from '@/components/ui/button';
@@ -101,20 +100,6 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
     }));
   };
 
-  // Determine entity type filter based on participant
-  const getEntityTypeForParticipant = (participantType: string): 'Business' | 'Individual' | 'All' => {
-    switch (participantType) {
-      case 'borrowing_business':
-      case 'affiliated_business':
-        return 'Business';
-      case 'owners':
-      case 'sellers':
-        return 'All'; // Owners and sellers can have both business and individual forms
-      default:
-        return 'All';
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -126,6 +111,8 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
+          
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="templateName">Template Name</Label>
@@ -186,7 +173,7 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
                   onChange={(forms) => updateParticipantForms(participant.value, forms)}
                   options={availableForms}
                   placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
-                  entityTypeFilter={getEntityTypeForParticipant(participant.value)}
+                  participantType={participant.value}
                   showEntityTypeFilter={true}
                 />
               </div>
