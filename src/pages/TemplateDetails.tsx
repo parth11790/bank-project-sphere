@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Edit, Save, X, Plus } from 'lucide-react';
 import { useDocumentTemplates } from '@/hooks/useDocumentTemplates';
 import { MultiSelectFormField } from '@/components/documentTemplates/MultiSelectFormField';
+import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import {
   Select,
   SelectContent,
@@ -21,10 +22,10 @@ import {
 import { loanTypes } from '@/lib/mockData/lenderSettings';
 
 const participantOptions = [
-  { value: 'borrowing_business', label: 'Borrowing Business' },
-  { value: 'affiliated_business', label: 'Affiliated Business' },
-  { value: 'owners', label: 'Owners' },
-  { value: 'sellers', label: 'Sellers' },
+  { value: 'borrowing_business' as const, label: 'Borrowing Business' },
+  { value: 'affiliated_business' as const, label: 'Affiliated Business' },
+  { value: 'owners' as const, label: 'Owners' },
+  { value: 'sellers' as const, label: 'Sellers' },
 ];
 
 const availableForms = [
@@ -60,9 +61,15 @@ const TemplateDetails = () => {
     loanType: '',
     amountMin: 0,
     amountMax: 0,
-    participant: '',
+    participant: '' as DocumentGatheringTemplate['participant'] | '',
     forms: [] as string[],
-    isActive: true
+    isActive: true,
+    participantForms: {
+      borrowing_business: [] as string[],
+      affiliated_business: [] as string[],
+      owners: [] as string[],
+      sellers: [] as string[]
+    }
   });
 
   const template = templates.find(t => t.id === templateId);
@@ -105,18 +112,44 @@ const TemplateDetails = () => {
       amountMax: template.amountMax,
       participant: template.participant,
       forms: template.forms,
-      isActive: template.isActive
+      isActive: template.isActive,
+      participantForms: {
+        borrowing_business: template.participant === 'borrowing_business' ? template.forms : [],
+        affiliated_business: template.participant === 'affiliated_business' ? template.forms : [],
+        owners: template.participant === 'owners' ? template.forms : [],
+        sellers: template.participant === 'sellers' ? template.forms : []
+      }
     });
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    updateTemplate(template.id, editFormData);
+    const updates: Partial<DocumentGatheringTemplate> = {
+      templateName: editFormData.templateName,
+      loanType: editFormData.loanType,
+      amountMin: editFormData.amountMin,
+      amountMax: editFormData.amountMax,
+      participant: editFormData.participant as DocumentGatheringTemplate['participant'],
+      forms: editFormData.forms,
+      isActive: editFormData.isActive
+    };
+    
+    updateTemplate(template.id, updates);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+  };
+
+  const updateParticipantForms = (participant: DocumentGatheringTemplate['participant'], forms: string[]) => {
+    setEditFormData(prev => ({
+      ...prev,
+      participantForms: {
+        ...prev.participantForms,
+        [participant]: forms
+      }
+    }));
   };
 
   return (
@@ -196,8 +229,8 @@ const TemplateDetails = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label>Participant</Label>
-                        <Select value={editFormData.participant} onValueChange={(value) => setEditFormData(prev => ({ ...prev, participant: value }))}>
+                        <Label>Primary Participant</Label>
+                        <Select value={editFormData.participant} onValueChange={(value) => setEditFormData(prev => ({ ...prev, participant: value as DocumentGatheringTemplate['participant'] }))}>
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -248,7 +281,7 @@ const TemplateDetails = () => {
                       </div>
                       
                       <div>
-                        <Label className="text-sm font-medium">Participant</Label>
+                        <Label className="text-sm font-medium">Primary Participant</Label>
                         <div className="mt-1">
                           <Badge variant="secondary">{getParticipantLabel(template.participant)}</Badge>
                         </div>
@@ -274,36 +307,53 @@ const TemplateDetails = () => {
               </CardContent>
             </Card>
 
+            {/* Participant Forms Sections */}
             <Card>
               <CardHeader>
-                <CardTitle>Required Forms</CardTitle>
+                <CardTitle>Forms by Participant Type</CardTitle>
               </CardHeader>
-              <CardContent>
-                {isEditing ? (
-                  <MultiSelectFormField
-                    value={editFormData.forms}
-                    onChange={(forms) => setEditFormData(prev => ({ ...prev, forms }))}
-                    options={availableForms}
-                    placeholder="Select required forms..."
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    {template.forms.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {template.forms.map((form, index) => (
-                          <div key={index} className="flex items-center gap-2 p-2 border rounded">
-                            <Badge variant="outline" className="text-xs">
-                              {index + 1}
-                            </Badge>
-                            <span className="text-sm">{form}</span>
-                          </div>
-                        ))}
-                      </div>
+              <CardContent className="space-y-6">
+                {participantOptions.map((participant) => (
+                  <div key={participant.value} className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-medium">{participant.label}</h3>
+                      <Badge variant="outline" className="text-xs">
+                        {isEditing 
+                          ? editFormData.participantForms[participant.value].length
+                          : (template.participant === participant.value ? template.forms.length : 0)
+                        } forms
+                      </Badge>
+                    </div>
+                    
+                    {isEditing ? (
+                      <MultiSelectFormField
+                        value={editFormData.participantForms[participant.value]}
+                        onChange={(forms) => updateParticipantForms(participant.value, forms)}
+                        options={availableForms}
+                        placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
+                      />
                     ) : (
-                      <p className="text-muted-foreground">No forms assigned to this template.</p>
+                      <div className="space-y-2">
+                        {template.participant === participant.value && template.forms.length > 0 ? (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {template.forms.map((form, index) => (
+                              <div key={index} className="flex items-center gap-2 p-2 border rounded">
+                                <Badge variant="outline" className="text-xs">
+                                  {index + 1}
+                                </Badge>
+                                <span className="text-sm">{form}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            No forms assigned for {participant.label.toLowerCase()}.
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
+                ))}
               </CardContent>
             </Card>
           </div>
@@ -331,7 +381,7 @@ const TemplateDetails = () => {
                   </p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Forms Count</Label>
+                  <Label className="text-sm font-medium">Total Forms</Label>
                   <p className="text-sm text-muted-foreground">{template.forms.length} forms</p>
                 </div>
               </CardContent>
