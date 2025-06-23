@@ -3,7 +3,6 @@ export const fieldNotes: Record<string, string> = {
   'grossReceipts': 'Total gross receipts or sales (1120, line 1a or 1120S, line 1a)',
   'costOfGoodsSold': 'Cost of goods sold (1120, line 2 or 1120S, line 2)',
   'grossProfit': 'Gross profit (line 1c minus line 2)',
-  'grossMargin': 'Gross margin percentage (Gross Profit / Gross Receipts × 100)',
   'officerCompensation': 'Compensation of officers (1120, line 12 or 1120S, line 7)',
   'salariesWages': 'Salaries and wages (1120, line 13 or 1120S, line 8)',
   'repairsDeductions': 'Repairs and maintenance (1120, line 14 or 1120S, line 9)',
@@ -19,8 +18,6 @@ export const fieldNotes: Record<string, string> = {
   'employeeBenefits': 'Employee benefit programs (1120, line 23 or 1120S, line 18)',
   'otherDeductions': 'Other deductions (1120, line 24 or 1120S, line 19)',
   'totalDeductions': 'Total deductions (1120, line 25 or 1120S, line 20)',
-  'taxableIncome': 'Taxable income before NOL (1120, line 26 or 1120S, line 21)',
-  'ordinaryBusinessIncome': 'Ordinary business income (loss) - S Corp only',
   'netIncome': 'Net income after all deductions',
   'cashDistributions': 'Cash distributions to shareholders/partners',
   'depreciation': 'Depreciation (add back for cash flow analysis)',
@@ -56,8 +53,6 @@ export const formFields = [
 
   // Net Income Book M-1 Section
   { fieldName: 'totalDeductions', label: 'Total Deductions ($)', isExpense: true, isCalculated: true, category: 'Net Income Book M-1' },
-  { fieldName: 'taxableIncome', label: 'Taxable Income Before NOL ($)', isIncome: true, isCalculated: true, category: 'Net Income Book M-1' },
-  { fieldName: 'ordinaryBusinessIncome', label: 'Ordinary Business Income (S-Corp) ($)', isIncome: true, category: 'Net Income Book M-1' },
   { fieldName: 'netIncome', label: 'Net Income ($)', isIncome: true, isCalculated: true, category: 'Net Income Book M-1' },
 
   // Adjustments Section
