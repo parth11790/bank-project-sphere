@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Wand2 } from 'lucide-react';
+import { FileTemplate, Wand2 } from 'lucide-react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { useDocumentTemplates } from '@/hooks/useDocumentTemplates';
 import { FormTemplate } from '@/types/form';
@@ -85,7 +86,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     <Card className="mb-6">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
+          <FileTemplate className="h-5 w-5" />
           Apply Template
         </CardTitle>
       </CardHeader>

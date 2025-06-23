@@ -61,7 +61,7 @@ export const useUseOfProceedsColumns = ({
 
   // Add a new column
   const handleAddColumn = (newColumn: Partial<UseOfProceedsColumn>) => {
-    const columnId = `col_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const columnId = `col_${Date.now()}`;
     
     const column: UseOfProceedsColumn = {
       column_id: columnId,
@@ -75,24 +75,6 @@ export const useUseOfProceedsColumns = ({
     setColumns(prev => [...prev, column]);
   };
 
-  // Add multiple columns
-  const handleAddMultipleColumns = (newColumns: Partial<UseOfProceedsColumn>[]) => {
-    const columnsToAdd = newColumns.map(newColumn => {
-      const columnId = `col_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      return {
-        column_id: columnId,
-        column_name: newColumn.column_name || 'New Column',
-        is_loan: newColumn.is_loan || false,
-        interest_rate: newColumn.interest_rate,
-        term_years: newColumn.term_years,
-        amortization_months: newColumn.amortization_months,
-      };
-    });
-    
-    setColumns(prev => [...prev, ...columnsToAdd]);
-  };
-
   // Delete a column
   const handleDeleteColumn = (columnId: string) => {
     setColumns(columns.filter(col => col.column_id !== columnId));
@@ -102,7 +84,6 @@ export const useUseOfProceedsColumns = ({
     columns,
     setColumns,
     handleAddColumn,
-    handleAddMultipleColumns,
     handleDeleteColumn
   };
 };
