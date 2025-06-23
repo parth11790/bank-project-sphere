@@ -7,13 +7,13 @@ interface BusinessTaxSectionHeaderProps {
   colSpan: number;
 }
 
-const BusinessTaxSectionHeader: React.FC<BusinessTaxSectionHeaderProps> = ({ title, colSpan }) => {
+const BusinessTaxSectionHeader: React.FC<BusinessTaxSectionHeaderProps> = ({
+  title,
+  colSpan
+}) => {
   return (
-    <TableRow className="bg-primary/5 border-b-2 border-primary/20">
-      <TableCell 
-        colSpan={colSpan} 
-        className="font-bold text-primary text-center py-3 text-sm uppercase tracking-wide"
-      >
+    <TableRow className="bg-muted/50">
+      <TableCell colSpan={colSpan} className="font-bold text-lg p-4 text-center">
         {title}
       </TableCell>
     </TableRow>

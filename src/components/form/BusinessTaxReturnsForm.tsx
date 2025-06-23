@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Table, TableBody } from '@/components/ui/table';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,6 +20,9 @@ interface BusinessTaxReturnsFormProps {
     grossIncome: number;
     netIncome: number;
     totalDeductions: number;
+    grossProfit: number;
+    grossMargin: number;
+    operatingCashFlow: number;
   };
   onInputChange: (field: string, value: string) => void;
 }
@@ -106,6 +108,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                   isIncome={field.isIncome}
                   isExpense={field.isExpense}
                   isCalculated={field.isCalculated}
+                  category={field.category}
                 />
               ))}
               
@@ -113,7 +116,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                 <>
                   <BusinessTaxSectionHeader 
                     title="Add back / Adjustments" 
-                    colSpan={selectedYears.length + 1} 
+                    colSpan={selectedYears.length + 2}
                   />
                   {addBackFields.map((field) => (
                     <BusinessTaxReturnRow
@@ -128,6 +131,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                       isIncome={field.isIncome}
                       isExpense={field.isExpense}
                       isCalculated={field.isCalculated}
+                      category={field.category}
                     />
                   ))}
                   {customAddBackRows.map((customRow) => (
@@ -143,6 +147,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                       isIncome={true}
                       isExpense={false}
                       isCalculated={false}
+                      category="Adjustments"
                     />
                   ))}
                 </>
@@ -162,6 +167,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                   isIncome={field.isIncome}
                   isExpense={field.isExpense}
                   isCalculated={field.isCalculated}
+                  category={field.category}
                 />
               ))}
             </TableBody>

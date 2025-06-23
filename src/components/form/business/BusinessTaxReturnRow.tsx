@@ -24,6 +24,7 @@ interface BusinessTaxReturnRowProps {
   isIncome?: boolean;
   isExpense?: boolean;
   isCalculated?: boolean;
+  category?: string;
 }
 
 const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
@@ -36,7 +37,8 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
   onInputChange,
   isIncome = false,
   isExpense = false,
-  isCalculated = false
+  isCalculated = false,
+  category = ''
 }) => {
   const getFieldKey = (fieldName: string, year: string) => `${fieldName}_${year}`;
 
@@ -82,6 +84,9 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
   
   return (
     <TableRow className={isCalculated ? "bg-muted font-semibold" : ""}>
+      <TableCell className="font-medium w-32 p-3 text-xs">
+        <span className="text-muted-foreground">{category}</span>
+      </TableCell>
       <TableCell className="font-medium w-1/3 p-3">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">

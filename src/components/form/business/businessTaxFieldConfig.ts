@@ -31,39 +31,41 @@ export const fieldNotes: Record<string, string> = {
 };
 
 export const formFields = [
-  // Income Section
-  { fieldName: 'grossReceipts', label: 'Gross Receipts or Sales ($)', isIncome: true },
-  { fieldName: 'costOfGoodsSold', label: 'Cost of Goods Sold ($)', isExpense: true },
-  { fieldName: 'grossProfit', label: 'Gross Profit ($)', isIncome: true, isCalculated: true },
-  { fieldName: 'grossMargin', label: 'Gross Margin (%)', isIncome: true, isCalculated: true },
-  { fieldName: 'totalIncome', label: 'Total Income ($)', isIncome: true },
+  // Revenue Section
+  { fieldName: 'grossReceipts', label: 'Gross Receipts or Sales ($)', isIncome: true, category: 'Revenue' },
+  { fieldName: 'totalIncome', label: 'Total Income ($)', isIncome: true, category: 'Revenue' },
 
-  // Deductions Section
-  { fieldName: 'officerCompensation', label: 'Compensation of Officers ($)', isExpense: true },
-  { fieldName: 'salariesWages', label: 'Salaries and Wages ($)', isExpense: true },
-  { fieldName: 'repairsDeductions', label: 'Repairs and Maintenance ($)', isExpense: true },
-  { fieldName: 'badDebts', label: 'Bad Debts ($)', isExpense: true },
-  { fieldName: 'rentsExpenses', label: 'Rent or Lease ($)', isExpense: true },
-  { fieldName: 'taxesLicenses', label: 'Taxes and Licenses ($)', isExpense: true },
-  { fieldName: 'interestExpense', label: 'Interest Expense ($)', isExpense: true },
-  { fieldName: 'charitableContributions', label: 'Charitable Contributions ($)', isExpense: true },
-  { fieldName: 'depreciationDepletion', label: 'Depreciation and Depletion ($)', isExpense: true },
-  { fieldName: 'advertisingExpenses', label: 'Advertising ($)', isExpense: true },
-  { fieldName: 'pensionBenefits', label: 'Pension, Profit-sharing Plans ($)', isExpense: true },
-  { fieldName: 'employeeBenefits', label: 'Employee Benefit Programs ($)', isExpense: true },
-  { fieldName: 'otherDeductions', label: 'Other Deductions ($)', isExpense: true },
+  // COGS Section
+  { fieldName: 'costOfGoodsSold', label: 'Cost of Goods Sold ($)', isExpense: true, category: 'COGS' },
+  { fieldName: 'grossProfit', label: 'Gross Profit ($)', isIncome: true, isCalculated: true, category: 'Revenue' },
+  { fieldName: 'grossMargin', label: 'Gross Margin (%)', isIncome: true, isCalculated: true, category: 'Revenue' },
 
-  // Calculated Fields
-  { fieldName: 'totalDeductions', label: 'Total Deductions ($)', isExpense: true, isCalculated: true },
-  { fieldName: 'taxableIncome', label: 'Taxable Income Before NOL ($)', isIncome: true, isCalculated: true },
-  { fieldName: 'ordinaryBusinessIncome', label: 'Ordinary Business Income (S-Corp) ($)', isIncome: true },
-  { fieldName: 'netIncome', label: 'Net Income ($)', isIncome: true, isCalculated: true },
+  // Expense Section
+  { fieldName: 'officerCompensation', label: 'Compensation of Officers ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'salariesWages', label: 'Salaries and Wages ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'repairsDeductions', label: 'Repairs and Maintenance ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'badDebts', label: 'Bad Debts ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'rentsExpenses', label: 'Rent or Lease ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'taxesLicenses', label: 'Taxes and Licenses ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'interestExpense', label: 'Interest Expense ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'charitableContributions', label: 'Charitable Contributions ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'depreciationDepletion', label: 'Depreciation and Depletion ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'advertisingExpenses', label: 'Advertising ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'pensionBenefits', label: 'Pension, Profit-sharing Plans ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'employeeBenefits', label: 'Employee Benefit Programs ($)', isExpense: true, category: 'Expense' },
+  { fieldName: 'otherDeductions', label: 'Other Deductions ($)', isExpense: true, category: 'Expense' },
 
-  // Add back / Adjustments Section
-  { fieldName: 'depreciationAddBack', label: 'Depreciation (Add Back) ($)', isIncome: true, isSection: 'addback' },
-  { fieldName: 'amortizationAddBack', label: 'Amortization (Add Back) ($)', isIncome: true, isSection: 'addback' },
+  // Net Income Book M-1 Section
+  { fieldName: 'totalDeductions', label: 'Total Deductions ($)', isExpense: true, isCalculated: true, category: 'Net Income Book M-1' },
+  { fieldName: 'taxableIncome', label: 'Taxable Income Before NOL ($)', isIncome: true, isCalculated: true, category: 'Net Income Book M-1' },
+  { fieldName: 'ordinaryBusinessIncome', label: 'Ordinary Business Income (S-Corp) ($)', isIncome: true, category: 'Net Income Book M-1' },
+  { fieldName: 'netIncome', label: 'Net Income ($)', isIncome: true, isCalculated: true, category: 'Net Income Book M-1' },
 
-  // Cash Flow Analysis (moved after add-back section)
-  { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true },
-  { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true }
+  // Adjustments Section
+  { fieldName: 'depreciationAddBack', label: 'Depreciation (Add Back) ($)', isIncome: true, isSection: 'addback', category: 'Adjustments' },
+  { fieldName: 'amortizationAddBack', label: 'Amortization (Add Back) ($)', isIncome: true, isSection: 'addback', category: 'Adjustments' },
+
+  // M-1 Adjusted Income Section
+  { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true, category: 'M-1 Adjusted Income' },
+  { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true, category: 'M-1 Adjusted Income' }
 ];
