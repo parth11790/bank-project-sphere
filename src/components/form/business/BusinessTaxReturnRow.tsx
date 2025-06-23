@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,15 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
 }) => {
   const getFieldKey = (fieldName: string, year: string) => `${fieldName}_${year}`;
 
+  const formatCurrency = (value: number): string => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
   const calculatePercentage = (value: number, year: string): string => {
     const grossReceiptsKey = getFieldKey('grossReceipts', year);
     const grossReceipts = parseFloat(formValues[grossReceiptsKey] || '0');
@@ -51,37 +61,60 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
     return `${percentage.toFixed(1)}%`;
   };
 
+  const formatInputValue = (value: string): string => {
+    if (!value || value === '0') return '';
+    const numericValue = parseFloat(value);
+    if (isNaN(numericValue)) return value;
+    return formatCurrency(numericValue);
+  };
+
+  const parseInputValue = (value: string): string => {
+    // Remove currency formatting and return raw number
+    if (!value) return '';
+    const cleanValue = value.replace(/[$,]/g, '');
+    return cleanValue;
+  };
+
   const renderInputCell = (fieldName: string, year: string, isReadOnly: boolean = false) => {
     const key = getFieldKey(fieldName, year);
-    let value = formValues[key] || '';
+    let rawValue = formValues[key] || '';
     
     // For calculated fields, use the calculated values for the current year (2023)
     if (isReadOnly && year === '2023') {
       if (fieldName === 'grossProfit') {
-        value = calculatedValues.grossProfit.toFixed(2);
+        rawValue = calculatedValues.grossProfit.toFixed(2);
       } else if (fieldName === 'netIncome') {
-        value = calculatedValues.netIncome.toFixed(2);
+        rawValue = calculatedValues.netIncome.toFixed(2);
       } else if (fieldName === 'totalDeductions') {
-        value = calculatedValues.totalDeductions.toFixed(2);
+        rawValue = calculatedValues.totalDeductions.toFixed(2);
       } else if (fieldName === 'operatingCashFlow') {
-        value = calculatedValues.operatingCashFlow.toFixed(2);
+        rawValue = calculatedValues.operatingCashFlow.toFixed(2);
       }
     }
     
-    const numericValue = parseFloat(value) || 0;
+    const numericValue = parseFloat(rawValue) || 0;
+    const displayValue = isReadOnly ? formatCurrency(numericValue) : formatInputValue(rawValue);
     const percentageDisplay = calculatePercentage(numericValue, year);
     
     return (
       <TableCell className="p-2">
         <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            placeholder="0"
-            value={value}
-            onChange={(e) => onInputChange(key, e.target.value)}
-            readOnly={isReadOnly}
-            className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
-          />
+          {isReadOnly ? (
+            <div className="flex-1 text-center bg-muted-foreground/10 px-3 py-2 rounded border">
+              {displayValue}
+            </div>
+          ) : (
+            <Input
+              type="text"
+              placeholder="$0"
+              value={displayValue}
+              onChange={(e) => {
+                const cleanValue = parseInputValue(e.target.value);
+                onInputChange(key, cleanValue);
+              }}
+              className="text-center"
+            />
+          )}
           {numericValue !== 0 && (
             <div className="text-xs text-muted-foreground min-w-[3rem] text-right">
               {percentageDisplay}
