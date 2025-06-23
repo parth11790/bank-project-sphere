@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -63,9 +62,9 @@ const TemplateDetails = () => {
       acquisition_business: [] as string[]
     },
     ownershipThresholds: {
-      affiliated_business: 0,
-      owners: 0,
-      sellers: 0
+      affiliated_business: { min: 0, max: 100 },
+      owners: { min: 0, max: 100 },
+      sellers: { min: 0, max: 100 }
     }
   });
 
@@ -122,9 +121,9 @@ const TemplateDetails = () => {
         acquisition_business: template.participantForms.acquisition_business || []
       },
       ownershipThresholds: template.ownershipThresholds || {
-        affiliated_business: 0,
-        owners: 0,
-        sellers: 0
+        affiliated_business: { min: 0, max: 100 },
+        owners: { min: 0, max: 100 },
+        sellers: { min: 0, max: 100 }
       }
     });
     setIsEditing(true);
@@ -177,12 +176,15 @@ const TemplateDetails = () => {
     }));
   };
 
-  const updateOwnershipThreshold = (participant: keyof typeof editFormData.ownershipThresholds, value: number) => {
+  const updateOwnershipThreshold = (participant: keyof typeof editFormData.ownershipThresholds, field: 'min' | 'max', value: number) => {
     setEditFormData(prev => ({
       ...prev,
       ownershipThresholds: {
         ...prev.ownershipThresholds,
-        [participant]: value
+        [participant]: {
+          ...prev.ownershipThresholds[participant],
+          [field]: value
+        }
       }
     }));
   };
@@ -393,10 +395,12 @@ const TemplateDetails = () => {
                           </Badge>
                           {participant.hasOwnership && (
                             <Badge variant="secondary" className="text-xs">
-                              Min {isEditing 
-                                ? editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds]
-                                : (template.ownershipThresholds?.[participant.value as keyof typeof template.ownershipThresholds] || 0)
-                              }% ownership
+                              {isEditing 
+                                ? `${editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].min}% - ${editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].max}%`
+                                : template.ownershipThresholds?.[participant.value as keyof typeof template.ownershipThresholds] 
+                                  ? `${template.ownershipThresholds[participant.value as keyof typeof template.ownershipThresholds].min}% - ${template.ownershipThresholds[participant.value as keyof typeof template.ownershipThresholds].max}%`
+                                  : '0% - 100%'
+                              } ownership
                             </Badge>
                           )}
                         </div>
@@ -404,22 +408,38 @@ const TemplateDetails = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {participant.hasOwnership && isEditing && (
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor={`ownership-${participant.value}`} className="text-sm">
-                            Minimum Ownership %:
-                          </Label>
-                          <Input
-                            id={`ownership-${participant.value}`}
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds]}
-                            onChange={(e) => updateOwnershipThreshold(
-                              participant.value as keyof typeof editFormData.ownershipThresholds, 
-                              Number(e.target.value)
-                            )}
-                            className="w-20"
-                          />
+                        <div className="flex items-center gap-4">
+                          <Label className="text-sm">Ownership Range:</Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].min}
+                              onChange={(e) => updateOwnershipThreshold(
+                                participant.value as keyof typeof editFormData.ownershipThresholds, 
+                                'min',
+                                Number(e.target.value)
+                              )}
+                              className="w-20"
+                              placeholder="0"
+                            />
+                            <span className="text-sm text-muted-foreground">% to</span>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].max}
+                              onChange={(e) => updateOwnershipThreshold(
+                                participant.value as keyof typeof editFormData.ownershipThresholds, 
+                                'max',
+                                Number(e.target.value)
+                              )}
+                              className="w-20"
+                              placeholder="100"
+                            />
+                            <span className="text-sm text-muted-foreground">%</span>
+                          </div>
                         </div>
                       )}
                       

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { toast } from 'sonner';
@@ -18,9 +19,9 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       acquisition_business: ['Personal Financial Statement', 'Personal Guarantee']
     },
     ownershipThresholds: {
-      affiliated_business: 10,
-      owners: 20,
-      sellers: 25
+      affiliated_business: { min: 10, max: 50 },
+      owners: { min: 20, max: 100 },
+      sellers: { min: 25, max: 100 }
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
@@ -41,9 +42,9 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       acquisition_business: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization']
     },
     ownershipThresholds: {
-      affiliated_business: 5,
-      owners: 20,
-      sellers: 15
+      affiliated_business: { min: 5, max: 30 },
+      owners: { min: 20, max: 100 },
+      sellers: { min: 15, max: 100 }
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
@@ -64,9 +65,9 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       acquisition_business: ['Personal Financial Statement', 'Personal Guarantee']
     },
     ownershipThresholds: {
-      affiliated_business: 15,
-      owners: 25,
-      sellers: 50
+      affiliated_business: { min: 15, max: 75 },
+      owners: { min: 25, max: 100 },
+      sellers: { min: 50, max: 100 }
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',

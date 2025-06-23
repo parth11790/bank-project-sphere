@@ -13,9 +13,9 @@ export interface DocumentGatheringTemplate {
     acquisition_business: string[];
   };
   ownershipThresholds?: {
-    affiliated_business: number;
-    owners: number;
-    sellers: number;
+    affiliated_business: { min: number; max: number };
+    owners: { min: number; max: number };
+    sellers: { min: number; max: number };
   };
   createdAt: string;
   updatedAt: string;

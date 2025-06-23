@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { Button } from '@/components/ui/button';
@@ -55,9 +54,9 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       acquisition_business: [] as string[]
     },
     ownershipThresholds: {
-      affiliated_business: 0,
-      owners: 0,
-      sellers: 0
+      affiliated_business: { min: 0, max: 100 },
+      owners: { min: 0, max: 100 },
+      sellers: { min: 0, max: 100 }
     },
     isActive: true
   });
@@ -74,9 +73,9 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
           acquisition_business: template.participantForms.acquisition_business || []
         },
         ownershipThresholds: template.ownershipThresholds || {
-          affiliated_business: 0,
-          owners: 0,
-          sellers: 0
+          affiliated_business: { min: 0, max: 100 },
+          owners: { min: 0, max: 100 },
+          sellers: { min: 0, max: 100 }
         },
         isActive: template.isActive
       });
@@ -111,12 +110,15 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
     }));
   };
 
-  const updateOwnershipThreshold = (participantType: keyof typeof formData.ownershipThresholds, value: number) => {
+  const updateOwnershipThreshold = (participantType: keyof typeof formData.ownershipThresholds, field: 'min' | 'max', value: number) => {
     setFormData(prev => ({
       ...prev,
       ownershipThresholds: {
         ...prev.ownershipThresholds,
-        [participantType]: value
+        [participantType]: {
+          ...prev.ownershipThresholds[participantType],
+          [field]: value
+        }
       }
     }));
   };
@@ -206,23 +208,38 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
                 <div className="flex items-center justify-between">
                   <Label className="text-base font-medium">{participant.label}</Label>
                   {participant.hasOwnership && (
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={`ownership-${participant.value}`} className="text-sm">
-                        Min Ownership %:
-                      </Label>
-                      <Input
-                        id={`ownership-${participant.value}`}
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds]}
-                        onChange={(e) => updateOwnershipThreshold(
-                          participant.value as keyof typeof formData.ownershipThresholds, 
-                          Number(e.target.value)
-                        )}
-                        className="w-20"
-                        placeholder="0"
-                      />
+                    <div className="flex items-center gap-4">
+                      <Label className="text-sm">Ownership Range:</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].min}
+                          onChange={(e) => updateOwnershipThreshold(
+                            participant.value as keyof typeof formData.ownershipThresholds, 
+                            'min',
+                            Number(e.target.value)
+                          )}
+                          className="w-20"
+                          placeholder="0"
+                        />
+                        <span className="text-sm text-muted-foreground">% to</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].max}
+                          onChange={(e) => updateOwnershipThreshold(
+                            participant.value as keyof typeof formData.ownershipThresholds, 
+                            'max',
+                            Number(e.target.value)
+                          )}
+                          className="w-20"
+                          placeholder="100"
+                        />
+                        <span className="text-sm text-muted-foreground">%</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -236,7 +253,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
                 />
                 {participant.hasOwnership && (
                   <p className="text-xs text-muted-foreground">
-                    Forms will be required when {participant.label.toLowerCase()} ownership is {formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds]}% or higher
+                    Forms will be required when {participant.label.toLowerCase()} ownership is between {formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].min}% and {formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].max}%
                   </p>
                 )}
               </div>
