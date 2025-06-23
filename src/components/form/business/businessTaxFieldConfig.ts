@@ -67,5 +67,5 @@ export const formFields = [
 
   // M-1 Adjusted Income Section
   { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true, category: 'Distribution' },
-  { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow / M-1 Adjusted Income ($)', isIncome: true, isCalculated: true, category: 'M-1 Adjusted Income' }
+  { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true, category: 'M-1 Adjusted Income' }
 ];
