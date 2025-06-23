@@ -3,103 +3,106 @@ import { DropdownField } from '../dropdownTypes';
 
 export const intakeDropdownFields: DropdownField[] = [
   {
-    id: 'leadSource',
-    label: 'Lead Source',
-    description: 'Source of the business lead or application',
-    module: 'Intake',
+    id: 'entity_type',
+    label: 'Entity Type',
+    description: 'Classification of participant entity (Business or Individual)',
     customizationLevel: 'Lender Customizable',
-    initialValues: [
-      'Referral',
-      'Website',
-      'Cold Call',
-      'Trade Show',
-      'Social Media',
-      'Email Campaign',
-      'Print Advertisement',
-      'Radio',
-      'Television',
-      'Direct Mail',
-      'Other'
-    ]
+    module: 'Intake',
+    initialValues: ['Business', 'Individual']
   },
   {
-    id: 'fundPurpose',
-    label: 'Fund Purpose',
-    description: 'Purpose for which the loan funds will be used',
-    module: 'Intake',
-    customizationLevel: 'Lender Customizable',
-    initialValues: [
-      'Buy a business',
-      'Purchase or Refinance Commercial Real Estate',
-      'Constructions',
-      'Renovate',
-      'Working Capital',
-      'Business Expansion',
-      'Equipment Purchase',
-      'Inventory',
-      'Payroll',
-      'Marketing / Sales',
-      'Refinance Debt',
-      'Buy Out a partner',
-      'Open a Franchise',
-      'Other'
-    ]
-  },
-  {
-    id: 'businessType',
+    id: 'business_type',
     label: 'Business Type',
-    description: 'Type or category of business',
+    description: 'Type of business entity for loan applications',
+    customizationLevel: 'SBA Defined',
     module: 'Intake',
-    customizationLevel: 'Lender Customizable',
     initialValues: [
-      'Retail',
-      'Restaurant',
-      'Manufacturing',
-      'Service',
+      'Sole Proprietorship',
+      'Partnership',
+      'Limited Liability Company (LLC)',
+      'Corporation (C-Corp)',
+      'S-Corporation',
+      'Professional Corporation',
+      'Limited Partnership',
+      'Limited Liability Partnership'
+    ]
+  },
+  {
+    id: 'loan_purpose',
+    label: 'Loan Purpose',
+    description: 'Primary purpose for the SBA loan request',
+    customizationLevel: 'SBA Defined',
+    module: 'Intake',
+    initialValues: [
+      'Business Acquisition',
+      'Working Capital',
+      'Equipment Purchase',
+      'Real Estate Purchase',
+      'Refinancing',
+      'Startup Costs',
+      'Franchise Fee',
+      'Inventory Purchase',
+      'Construction/Renovation',
+      'Debt Consolidation'
+    ]
+  },
+  {
+    id: 'industry_type',
+    label: 'Industry Type',
+    description: 'NAICS industry classification for the business',
+    customizationLevel: 'SBA Defined',
+    module: 'Intake',
+    initialValues: [
+      'Retail Trade',
+      'Accommodation and Food Services',
       'Professional Services',
-      'Healthcare',
-      'Technology',
       'Construction',
-      'Real Estate',
-      'Agriculture',
+      'Manufacturing',
+      'Healthcare',
       'Transportation',
-      'Wholesale',
-      'Other'
+      'Real Estate',
+      'Finance and Insurance',
+      'Information Technology',
+      'Agriculture',
+      'Arts and Entertainment',
+      'Educational Services',
+      'Other Services'
     ]
   },
   {
-    id: 'applicationStatus',
-    label: 'Application Status',
-    description: 'Current status of the loan application',
-    module: 'Intake',
+    id: 'applicant_status',
+    label: 'Applicant Status',
+    description: 'Current status of the loan applicant in the process',
     customizationLevel: 'Lender Customizable',
+    module: 'Intake',
     initialValues: [
-      'New',
-      'In Review',
-      'Documentation Required',
+      'New Inquiry',
+      'Pre-Qualified',
+      'Application Submitted',
       'Under Review',
+      'Additional Info Required',
       'Approved',
-      'Conditionally Approved',
       'Declined',
-      'Withdrawn',
-      'Funded'
+      'Withdrawn'
     ]
   },
   {
-    id: 'loanOfficer',
-    label: 'Loan Officer',
-    description: 'Assigned loan officer for the application',
-    module: 'Intake',
+    id: 'lead_source',
+    label: 'Lead Source',
+    description: 'How the applicant learned about or was referred to the lender',
     customizationLevel: 'Lender Customizable',
+    module: 'Intake',
     initialValues: [
-      'John Smith',
-      'Sarah Johnson',
-      'Michael Brown',
-      'Jessica Williams',
-      'David Miller',
-      'Emily Davis',
-      'Robert Wilson',
-      'Lisa Anderson'
+      'Website',
+      'Referral Partner',
+      'Existing Customer',
+      'Marketing Campaign',
+      'Trade Show',
+      'Cold Call',
+      'Social Media',
+      'Search Engine',
+      'Print Advertisement',
+      'Other'
     ]
   }
 ];

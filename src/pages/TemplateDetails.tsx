@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { loanTypes } from '@/lib/mockData/lenderSettings';
+import { getFormsByEntityType } from '@/lib/utils/formCategorization';
 
 // Participant options in the specified hierarchy
 const participantOptions = [
@@ -29,28 +30,8 @@ const participantOptions = [
   { value: 'sellers' as const, label: 'Sellers' },
 ];
 
-const availableForms = [
-  'Personal Financial Statement',
-  'Business Financial Statement',
-  'Tax Returns',
-  'Business Plan',
-  'Personal Guarantee',
-  'Background Check Authorization',
-  'Business Sale Agreement',
-  'Asset Listing',
-  'Credit Report Authorization',
-  'Bank Statements',
-  'Profit & Loss Statement',
-  'Balance Sheet',
-  'Cash Flow Projection',
-  'Lease Agreement',
-  'Insurance Documentation',
-  'Articles of Incorporation',
-  'Operating Agreement',
-  'Partnership Agreement',
-  'Real Estate Purchase Agreement',
-  'Environmental Assessment'
-];
+// Get all available forms (both business and individual)
+const availableForms = getFormsByEntityType('All');
 
 const TemplateDetails = () => {
   const { templateId } = useParams();
@@ -170,6 +151,20 @@ const TemplateDetails = () => {
 
   const displayAssignedParticipants = getAssignedParticipants();
 
+  // Determine entity type filter based on participant
+  const getEntityTypeForParticipant = (participantType: string): 'Business' | 'Individual' | 'All' => {
+    switch (participantType) {
+      case 'borrowing_business':
+      case 'affiliated_business':
+        return 'Business';
+      case 'owners':
+      case 'sellers':
+        return 'All'; // Owners and sellers can have both business and individual forms
+      default:
+        return 'All';
+    }
+  };
+
   return (
     <Layout>
       <div className="container mx-auto py-6 space-y-6">
@@ -230,7 +225,7 @@ const TemplateDetails = () => {
                       />
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                       <div className="space-y-2">
                         <Label>Loan Type</Label>
                         <Select value={editFormData.loanType} onValueChange={(value) => setEditFormData(prev => ({ ...prev, loanType: value }))}>
@@ -285,7 +280,7 @@ const TemplateDetails = () => {
                       <p className="text-lg font-semibold">{template.templateName}</p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                       <div>
                         <Label className="text-sm font-medium">Loan Type</Label>
                         <div className="mt-1">
@@ -325,7 +320,7 @@ const TemplateDetails = () => {
                   <CardTitle>Assigned Participants</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-4 gap-4">
                     {participantOptions.map((participant) => (
                       <div key={participant.value} className="flex items-center space-x-2">
                         <Checkbox
@@ -374,6 +369,8 @@ const TemplateDetails = () => {
                           onChange={(forms) => updateParticipantForms(participant.value, forms)}
                           options={availableForms}
                           placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
+                          entityTypeFilter={getEntityTypeForParticipant(participant.value)}
+                          showEntityTypeFilter={true}
                         />
                       ) : (
                         <div className="space-y-2">

@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { MultiSelectFormField } from './MultiSelectFormField';
 import { loanTypes } from '@/lib/mockData/lenderSettings';
+import { getFormsByEntityType } from '@/lib/utils/formCategorization';
 
 interface AddTemplateDialogProps {
   open: boolean;
@@ -35,23 +36,8 @@ const participantOptions = [
   { value: 'sellers' as const, label: 'Sellers' },
 ];
 
-const availableForms = [
-  'Personal Financial Statement',
-  'Business Financial Statement',
-  'Tax Returns',
-  'Business Plan',
-  'Personal Guarantee',
-  'Background Check Authorization',
-  'Business Sale Agreement',
-  'Asset Listing',
-  'Credit Report Authorization',
-  'Bank Statements',
-  'Profit & Loss Statement',
-  'Balance Sheet',
-  'Cash Flow Projection',
-  'Lease Agreement',
-  'Insurance Documentation'
-];
+// Get all available forms (both business and individual)
+const availableForms = getFormsByEntityType('All');
 
 export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDialogProps) => {
   const [formData, setFormData] = useState({
@@ -113,6 +99,20 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
         [participantType]: forms
       }
     }));
+  };
+
+  // Determine entity type filter based on participant
+  const getEntityTypeForParticipant = (participantType: string): 'Business' | 'Individual' | 'All' => {
+    switch (participantType) {
+      case 'borrowing_business':
+      case 'affiliated_business':
+        return 'Business';
+      case 'owners':
+      case 'sellers':
+        return 'All'; // Owners and sellers can have both business and individual forms
+      default:
+        return 'All';
+    }
   };
 
   return (
@@ -186,6 +186,8 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
                   onChange={(forms) => updateParticipantForms(participant.value, forms)}
                   options={availableForms}
                   placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
+                  entityTypeFilter={getEntityTypeForParticipant(participant.value)}
+                  showEntityTypeFilter={true}
                 />
               </div>
             ))}
