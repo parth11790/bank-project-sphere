@@ -5,6 +5,9 @@ import BusinessTaxReturnsForm from './BusinessTaxReturnsForm';
 import PersonalFinancialStatementForm from './PersonalFinancialStatementForm';
 import BalanceSheetForm from './BalanceSheetForm';
 import BusinessBalanceSheetForm from './BusinessBalanceSheetForm';
+import ProfitLossStatementForm from './ProfitLossStatementForm';
+import AccountsReceivablePayableForm from './AccountsReceivablePayableForm';
+import BusinessDebtScheduleForm from './BusinessDebtScheduleForm';
 import GenericForm from './GenericForm';
 import DebtSummaryForm from './DebtSummaryForm';
 import ProfessionalReferencesForm from './ProfessionalReferencesForm';
@@ -67,6 +70,33 @@ const FormContent: React.FC<FormContentProps> = ({
   
   if (formName === 'Balance Sheet') {
     return <BalanceSheetForm />;
+  }
+
+  if (formName === 'Profit & Loss Statement') {
+    return (
+      <ProfitLossStatementForm
+        formValues={formValues}
+        onInputChange={onInputChange}
+      />
+    );
+  }
+
+  if (formName === 'Accounts Receivable & Accounts Payable' || formName === 'Accounts Receivable & Payable') {
+    return (
+      <AccountsReceivablePayableForm
+        formValues={formValues}
+        onInputChange={onInputChange}
+      />
+    );
+  }
+
+  if (formName === 'Business Debt Schedule') {
+    return (
+      <BusinessDebtScheduleForm
+        formValues={formValues}
+        onInputChange={onInputChange}
+      />
+    );
   }
 
   if (formName === 'Professional References Form') {
