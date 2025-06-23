@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import BusinessTaxReturnHeader from './business/BusinessTaxReturnHeader';
 import BusinessTaxReturnTableHeader from './business/BusinessTaxReturnTableHeader';
 import BusinessTaxReturnRow from './business/BusinessTaxReturnRow';
+import BusinessTaxSectionHeader from './business/BusinessTaxSectionHeader';
 import { fieldNotes, formFields } from './business/businessTaxFieldConfig';
 
 interface BusinessTaxReturnsFormProps {
@@ -53,6 +54,10 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
     }));
   };
 
+  // Group fields by section
+  const regularFields = formFields.filter(field => !field.isSection);
+  const addBackFields = formFields.filter(field => field.isSection === 'addback');
+
   return (
     <Card>
       <BusinessTaxReturnHeader 
@@ -71,7 +76,7 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
               onFileUpload={handleFileUpload}
             />
             <TableBody>
-              {formFields.map((field) => (
+              {regularFields.map((field) => (
                 <BusinessTaxReturnRow
                   key={field.fieldName}
                   fieldName={field.fieldName}
@@ -86,6 +91,30 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
                   isCalculated={field.isCalculated}
                 />
               ))}
+              
+              {addBackFields.length > 0 && (
+                <>
+                  <BusinessTaxSectionHeader 
+                    title="Add back / Adjustments" 
+                    colSpan={selectedYears.length + 1} 
+                  />
+                  {addBackFields.map((field) => (
+                    <BusinessTaxReturnRow
+                      key={field.fieldName}
+                      fieldName={field.fieldName}
+                      label={field.label}
+                      selectedYears={selectedYears}
+                      formValues={formValues}
+                      calculatedValues={calculatedValues}
+                      fieldNotes={fieldNotes}
+                      onInputChange={onInputChange}
+                      isIncome={field.isIncome}
+                      isExpense={field.isExpense}
+                      isCalculated={field.isCalculated}
+                    />
+                  ))}
+                </>
+              )}
             </TableBody>
           </Table>
         </div>
