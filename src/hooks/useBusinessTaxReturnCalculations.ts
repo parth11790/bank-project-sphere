@@ -31,7 +31,6 @@ export const useBusinessTaxReturnCalculations = (
       // Get basic values
       const grossReceipts = parseFloat(formValues[`grossReceipts_${currentYear}`] || '0');
       const costOfGoodsSold = parseFloat(formValues[`costOfGoodsSold_${currentYear}`] || '0');
-      const totalIncome = parseFloat(formValues[`totalIncome_${currentYear}`] || '0');
       
       // Calculate Gross Profit (Gross Receipts - Cost of Goods Sold)
       const grossProfit = grossReceipts - costOfGoodsSold;
@@ -50,6 +49,7 @@ export const useBusinessTaxReturnCalculations = (
         'interestExpense',
         'charitableContributions',
         'depreciationDepletion',
+        'amortizationExp',
         'advertisingExpenses',
         'pensionBenefits',
         'employeeBenefits',
@@ -63,8 +63,8 @@ export const useBusinessTaxReturnCalculations = (
         return sum + (isNaN(value) ? 0 : value);
       }, 0);
       
-      // Calculate Net Income (Total Income - Total Deductions)
-      const netIncome = totalIncome - totalDeductions;
+      // Calculate Net Income (Gross Profit - Total Deductions)
+      const netIncome = grossProfit - totalDeductions;
       
       // Cash flow calculation values
       const cashDistributions = parseFloat(formValues[`cashDistributions_${currentYear}`] || '0');
@@ -91,7 +91,6 @@ export const useBusinessTaxReturnCalculations = (
         costOfGoodsSold,
         grossProfit,
         grossMargin: grossMargin.toFixed(2) + '%',
-        totalIncome,
         totalDeductions,
         netIncome,
         depreciationAddBack,
@@ -103,7 +102,7 @@ export const useBusinessTaxReturnCalculations = (
       });
       
       setCalculatedValues({ 
-        grossIncome: totalIncome,
+        grossIncome: grossProfit, // Changed from totalIncome to grossProfit
         netIncome, 
         totalDeductions,
         grossProfit,

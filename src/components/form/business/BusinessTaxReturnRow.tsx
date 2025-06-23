@@ -48,14 +48,12 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
     
     // For calculated fields, use the calculated values for the current year (2023)
     if (isReadOnly && year === '2023') {
-      if (fieldName === 'grossIncome') {
-        value = calculatedValues.grossIncome.toFixed(2);
+      if (fieldName === 'grossProfit') {
+        value = calculatedValues.grossProfit.toFixed(2);
       } else if (fieldName === 'netIncome') {
         value = calculatedValues.netIncome.toFixed(2);
       } else if (fieldName === 'totalDeductions') {
         value = calculatedValues.totalDeductions.toFixed(2);
-      } else if (fieldName === 'grossProfit') {
-        value = calculatedValues.grossProfit.toFixed(2);
       } else if (fieldName === 'grossMargin') {
         value = calculatedValues.grossMargin.toFixed(2);
       } else if (fieldName === 'operatingCashFlow') {
