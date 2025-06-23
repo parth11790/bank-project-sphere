@@ -1,5 +1,3 @@
-
-
 export const fieldNotes: Record<string, string> = {
   'grossReceipts': 'Total gross receipts or sales (1120, line 1a or 1120S, line 1a)',
   'totalIncome': 'Total income (1120, line 11 or 1120S, line 11)',
@@ -70,6 +68,5 @@ export const formFields = [
 
   // M-1 Adjusted Income Section
   { fieldName: 'cashDistributions', label: 'Cash Distributions ($)', isExpense: true, category: 'Distribution' },
-  { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true, category: 'M-1 Adjusted Income' }
+  { fieldName: 'operatingCashFlow', label: 'Operating Cash Flow ($)', isIncome: true, isCalculated: true, category: 'Cash Flow' }
 ];
-
