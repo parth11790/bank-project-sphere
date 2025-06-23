@@ -1,10 +1,13 @@
-
 import { 
   individualTaxReturnsData, 
-  businessTaxReturnsData, 
   IndividualTaxReturnData, 
-  BusinessTaxReturnData 
+  getIndividualTaxDataById
 } from '../mockData/individualTaxReturns';
+import { 
+  businessTaxReturnsData, 
+  BusinessTaxReturnData,
+  getBusinessTaxDataById 
+} from '../mockData/businessTaxReturns';
 
 export const getIndividualTaxReturnData = async (participantId: string): Promise<IndividualTaxReturnData | null> => {
   // Simulate API delay

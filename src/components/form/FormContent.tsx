@@ -4,7 +4,7 @@ import TaxReturnsForm from './TaxReturnsForm';
 import BusinessTaxReturnsForm from './BusinessTaxReturnsForm';
 import PersonalFinancialStatementForm from './PersonalFinancialStatementForm';
 import BalanceSheetForm from './BalanceSheetForm';
-import BusinessBalanceSheetForm from './BusinessBalanceSheetForm';
+import BusinessBalanceSheetMultiYear from './BusinessBalanceSheetMultiYear';
 import ProfitLossStatementForm from './ProfitLossStatementForm';
 import AccountsReceivablePayableForm from './AccountsReceivablePayableForm';
 import BusinessDebtScheduleForm from './BusinessDebtScheduleForm';
@@ -65,7 +65,12 @@ const FormContent: React.FC<FormContentProps> = ({
   }
   
   if (formName === 'Balance Sheet' && entityType === 'business') {
-    return <BusinessBalanceSheetForm />;
+    return (
+      <BusinessBalanceSheetMultiYear 
+        formValues={formValues}
+        onInputChange={onInputChange}
+      />
+    );
   }
   
   if (formName === 'Balance Sheet') {

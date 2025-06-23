@@ -12,11 +12,14 @@ import {
 } from './forms';
 import {
   individualTaxReturnsData,
-  businessTaxReturnsData,
-  getBusinessTaxDataById,
+  IndividualTaxReturnData,
   getIndividualTaxDataById
 } from './individualTaxReturns';
-import { businessTaxReturnsData as businessTaxData } from './businessTaxReturns';
+import { 
+  businessTaxReturnsData,
+  BusinessTaxReturnData,
+  getBusinessTaxDataById 
+} from './businessTaxReturns';
 import {
   getUserById,
   getBusinessById,
@@ -42,7 +45,6 @@ export {
   businessDocumentsData,
   individualTaxReturnsData,
   businessTaxReturnsData,
-  businessTaxData,
   getBusinessTaxDataById,
   getIndividualTaxDataById,
   getUserById,

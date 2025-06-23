@@ -1,4 +1,3 @@
-
 export interface BusinessTaxReturnData {
   business_id: string;
   business_name: string;
@@ -448,9 +447,4 @@ export const businessTaxReturnsData: BusinessTaxReturnData[] = [
 // Utility function to get business tax data by business ID
 export const getBusinessTaxDataById = (businessId: string): BusinessTaxReturnData | undefined => {
   return businessTaxReturnsData.find(data => data.business_id === businessId);
-};
-
-// Utility function to get individual tax data by participant ID
-export const getIndividualTaxDataById = (participantId: string): IndividualTaxReturnData | undefined => {
-  return individualTaxReturnsData.find(data => data.participant_id === participantId);
 };
