@@ -31,14 +31,57 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
 
   // Fetch project data to get available loans
-  const { data: projectData } = useQuery({
+  const { data: projectData, isLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId,
   });
 
   const project: Project | null = projectData && isProject(projectData) ? projectData : null;
-  const projectLoans = project?.loans || [];
+  
+  // Get loans from the project - check both loans array and loan_types for compatibility
+  const projectLoans: Loan[] = React.useMemo(() => {
+    if (!project) return [];
+    
+    console.log('Project data:', project);
+    console.log('Project loans:', project.loans);
+    console.log('Project loan_types:', project.loan_types);
+    
+    // First try to get from the loans array (new structure)
+    if (project.loans && Array.isArray(project.loans)) {
+      return project.loans;
+    }
+    
+    // Fallback to loan_types if loans array doesn't exist (legacy structure)
+    if (project.loan_types && Array.isArray(project.loan_types)) {
+      return project.loan_types.map((loanType, index) => {
+        // Handle both string and object loan types
+        if (typeof loanType === 'string') {
+          return {
+            loan_id: `loan_${index}`,
+            loan_type: loanType,
+            amount: 0,
+            business_id: project.main_business?.business_id || '',
+            status: 'active' as const
+          };
+        } else {
+          return {
+            loan_id: `loan_${index}`,
+            loan_type: loanType.type,
+            amount: loanType.amount,
+            rate: loanType.rate,
+            term: loanType.term,
+            payment: loanType.payment,
+            description: loanType.description,
+            business_id: project.main_business?.business_id || '',
+            status: 'active' as const
+          };
+        }
+      });
+    }
+    
+    return [];
+  }, [project]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -119,6 +162,16 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
     return null;
   }
 
+  if (isLoading) {
+    return (
+      <dialog open={isOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6">
+          <p>Loading project data...</p>
+        </div>
+      </dialog>
+    );
+  }
+
   return (
     <>
       <dialog open={isOpen} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -165,7 +218,7 @@ const AddEnhancedColumnDialog: React.FC<AddEnhancedColumnDialogProps> = ({
                         disabled={projectLoans.length === 0}
                       />
                       <label htmlFor="selectLoan" className="text-sm">
-                        Select from project loans {projectLoans.length === 0 && '(No loans available)'}
+                        Select from project loans {projectLoans.length === 0 ? '(No loans available)' : `(${projectLoans.length} available)`}
                       </label>
                     </div>
                     <div className="flex items-center space-x-2">
