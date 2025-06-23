@@ -3,28 +3,17 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Save } from 'lucide-react';
 import { logAuditEvent } from '@/services/auditService';
 
 // Import custom components
 import FormHeader from '@/components/form/FormHeader';
-import TaxReturnsForm from '@/components/form/TaxReturnsForm';
-import BusinessTaxReturnsForm from '@/components/form/BusinessTaxReturnsForm';
-import PersonalFinancialStatementForm from '@/components/form/PersonalFinancialStatementForm';
-import BalanceSheetForm from '@/components/form/BalanceSheetForm';
-import BusinessBalanceSheetForm from '@/components/form/BusinessBalanceSheetForm';
-import GenericForm from '@/components/form/GenericForm';
+import FormContent from '@/components/form/FormContent';
+import FormNotesSection from '@/components/form/FormNotesSection';
+import FormFooter from '@/components/form/FormFooter';
 import FormAnalysis from '@/components/form/FormAnalysis';
-import DebtSummaryForm from '@/components/form/DebtSummaryForm';
-import ProfessionalReferencesForm from '@/components/form/ProfessionalReferencesForm';
-import ProfessionalResumeForm from '@/components/form/ProfessionalResumeForm';
-import NetWorthForm from '@/components/participants/forms/NetWorthForm';
 
 // Import custom hooks
 import { useTaxReturnCalculations } from '@/hooks/useTaxReturnCalculations';
@@ -86,73 +75,6 @@ const FormView: React.FC = () => {
     toast("Form submitted successfully");
   };
 
-  const renderFormContent = () => {
-    if (formName === 'Tax Returns') {
-      return (
-        <TaxReturnsForm 
-          formValues={formValues}
-          calculatedValues={calculatedValues}
-          onInputChange={handleInputChange}
-        />
-      );
-    }
-    
-    if (formName === 'Business Tax Returns' || formName === 'Business Tax Returns (3 years)') {
-      return (
-        <BusinessTaxReturnsForm 
-          formValues={formValues}
-          calculatedValues={businessCalculatedValues}
-          onInputChange={handleInputChange}
-        />
-      );
-    }
-    
-    if (formName === 'Personal Debt Summary') {
-      return (
-        <DebtSummaryForm 
-          formValues={formValues}
-          onInputChange={handleInputChange}
-        />
-      );
-    }
-    
-    if (formName === 'Personal Financial Statement') {
-      return <PersonalFinancialStatementForm />;
-    }
-    
-    if (formName === 'Balance Sheet' && entityType === 'business') {
-      return <BusinessBalanceSheetForm />;
-    }
-    
-    if (formName === 'Balance Sheet') {
-      return <BalanceSheetForm />;
-    }
-
-    if (formName === 'Professional References Form') {
-      return (
-        <ProfessionalReferencesForm 
-          formValues={formValues}
-          onInputChange={handleInputChange}
-        />
-      );
-    }
-
-    if (formName === 'Professional Resume') {
-      return (
-        <ProfessionalResumeForm 
-          formValues={formValues}
-          onInputChange={handleInputChange}
-        />
-      );
-    }
-
-    if (formName === 'Net worth assessment') {
-      return <NetWorthForm />;
-    }
-    
-    return <GenericForm />;
-  };
-
   const shouldShowNotes = ![
     'Professional References Form',
     'Professional Resume',
@@ -190,28 +112,24 @@ const FormView: React.FC = () => {
           <TabsContent value="form" className="mt-6 space-y-6">
             <Card>
               <CardContent className="max-h-[70vh] overflow-y-auto pb-8">
-                {renderFormContent()}
+                <FormContent 
+                  formName={formName}
+                  entityType={entityType}
+                  formValues={formValues}
+                  calculatedValues={calculatedValues}
+                  businessCalculatedValues={businessCalculatedValues}
+                  onInputChange={handleInputChange}
+                />
                 
-                {shouldShowNotes && (
-                  <div className="mt-6">
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea 
-                      id="notes" 
-                      placeholder="Enter any additional information" 
-                      className="mt-2"
-                      onChange={(e) => handleInputChange('notes', e.target.value)}
-                    />
-                  </div>
-                )}
+                <FormNotesSection 
+                  shouldShow={shouldShowNotes}
+                  onInputChange={handleInputChange}
+                />
               </CardContent>
-              {shouldShowFooter && (
-                <CardFooter className="flex justify-end">
-                  <Button onClick={handleSubmit}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Form
-                  </Button>
-                </CardFooter>
-              )}
+              <FormFooter 
+                shouldShow={shouldShowFooter}
+                onSubmit={handleSubmit}
+              />
             </Card>
           </TabsContent>
           
