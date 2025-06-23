@@ -11,7 +11,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Edit, Save, X } from 'lucide-react';
 import { useDocumentTemplates } from '@/hooks/useDocumentTemplates';
 import { MultiSelectFormField } from '@/components/documentTemplates/MultiSelectFormField';
-import { DocumentGatheringTemplate } from '@/types/documentTemplate';
+import { OwnershipRangeManager } from '@/components/documentTemplates/OwnershipRangeManager';
+import { DocumentGatheringTemplate, OwnershipRange } from '@/types/documentTemplate';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { loanTypes } from '@/lib/mockData/lenderSettings';
 import { getFormsByEntityType } from '@/lib/utils/formCategorization';
@@ -61,10 +62,10 @@ const TemplateDetails = () => {
       sellers: [] as string[],
       acquisition_business: [] as string[]
     },
-    ownershipThresholds: {
-      affiliated_business: { min: 0, max: 100 },
-      owners: { min: 0, max: 100 },
-      sellers: { min: 0, max: 100 }
+    ownershipRanges: {
+      affiliated_business: [] as OwnershipRange[],
+      owners: [] as OwnershipRange[],
+      sellers: [] as OwnershipRange[]
     }
   });
 
@@ -96,7 +97,18 @@ const TemplateDetails = () => {
   };
 
   const getTotalFormsCount = () => {
-    return Object.values(template.participantForms).reduce((total, forms) => total + forms.length, 0);
+    let total = Object.values(template.participantForms).reduce((total, forms) => total + forms.length, 0);
+    
+    // Add forms from ownership ranges
+    if (template.ownershipRanges) {
+      Object.values(template.ownershipRanges).forEach(ranges => {
+        ranges.forEach(range => {
+          total += range.forms.length;
+        });
+      });
+    }
+    
+    return total;
   };
 
   const getAssignedParticipants = () => {
@@ -120,10 +132,10 @@ const TemplateDetails = () => {
         ...template.participantForms,
         acquisition_business: template.participantForms.acquisition_business || []
       },
-      ownershipThresholds: template.ownershipThresholds || {
-        affiliated_business: { min: 0, max: 100 },
-        owners: { min: 0, max: 100 },
-        sellers: { min: 0, max: 100 }
+      ownershipRanges: template.ownershipRanges || {
+        affiliated_business: [],
+        owners: [],
+        sellers: []
       }
     });
     setIsEditing(true);
@@ -145,7 +157,7 @@ const TemplateDetails = () => {
       amountMin: editFormData.amountMin,
       amountMax: editFormData.amountMax,
       participantForms: cleanedParticipantForms,
-      ownershipThresholds: editFormData.ownershipThresholds,
+      ownershipRanges: editFormData.ownershipRanges,
       isActive: editFormData.isActive
     };
 
@@ -176,34 +188,22 @@ const TemplateDetails = () => {
     }));
   };
 
-  const updateOwnershipThreshold = (participant: keyof typeof editFormData.ownershipThresholds, field: 'min' | 'max', value: number) => {
+  const updateOwnershipRanges = (participant: keyof typeof editFormData.ownershipRanges, ranges: OwnershipRange[]) => {
     setEditFormData(prev => ({
       ...prev,
-      ownershipThresholds: {
-        ...prev.ownershipThresholds,
-        [participant]: {
-          ...prev.ownershipThresholds[participant],
-          [field]: value
-        }
+      ownershipRanges: {
+        ...prev.ownershipRanges,
+        [participant]: ranges
       }
     }));
   };
 
   const displayAssignedParticipants = getAssignedParticipants();
 
-  // Determine entity type filter based on participant
-  const getEntityTypeForParticipant = (participantType: string): 'Business' | 'Individual' | 'All' => {
-    switch (participantType) {
-      case 'borrowing_business':
-      case 'affiliated_business':
-        return 'Business';
-      case 'owners':
-      case 'sellers':
-        return 'All';
-      // Owners and sellers can have both business and individual forms
-      default:
-        return 'All';
-    }
+  const getOwnershipRangesSummary = (participantType: string) => {
+    const ranges = template.ownershipRanges?.[participantType as keyof typeof template.ownershipRanges] || [];
+    if (ranges.length === 0) return 'No ranges defined';
+    return `${ranges.length} range${ranges.length === 1 ? '' : 's'}`;
   };
 
   return (
@@ -251,27 +251,37 @@ const TemplateDetails = () => {
                 <CardTitle>Template Configuration</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {isEditing ? <>
+                {isEditing ? (
+                  <>
                     <div className="space-y-2">
                       <Label htmlFor="templateName">Template Name</Label>
-                      <Input id="templateName" value={editFormData.templateName} onChange={e => setEditFormData(prev => ({
-                    ...prev,
-                    templateName: e.target.value
-                  }))} />
+                      <Input 
+                        id="templateName" 
+                        value={editFormData.templateName} 
+                        onChange={e => setEditFormData(prev => ({
+                          ...prev,
+                          templateName: e.target.value
+                        }))} 
+                      />
                     </div>
                     
                     <div className="grid grid-cols-4 gap-4">
                       <div className="space-y-2">
                         <Label>Loan Type</Label>
-                        <Select value={editFormData.loanType} onValueChange={value => setEditFormData(prev => ({
-                      ...prev,
-                      loanType: value
-                    }))}>
+                        <Select 
+                          value={editFormData.loanType} 
+                          onValueChange={value => setEditFormData(prev => ({
+                            ...prev,
+                            loanType: value
+                          }))}
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {loanTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+                            {loanTypes.map(type => (
+                              <SelectItem key={type} value={type}>{type}</SelectItem>
+                            ))}
                             <SelectItem value="All Types">All Types</SelectItem>
                           </SelectContent>
                         </Select>
@@ -279,10 +289,13 @@ const TemplateDetails = () => {
                       
                       <div className="space-y-2">
                         <Label>Status</Label>
-                        <Select value={editFormData.isActive ? 'active' : 'inactive'} onValueChange={value => setEditFormData(prev => ({
-                      ...prev,
-                      isActive: value === 'active'
-                    }))}>
+                        <Select 
+                          value={editFormData.isActive ? 'active' : 'inactive'} 
+                          onValueChange={value => setEditFormData(prev => ({
+                            ...prev,
+                            isActive: value === 'active'
+                          }))}
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -295,21 +308,31 @@ const TemplateDetails = () => {
 
                       <div className="space-y-2">
                         <Label>Minimum Amount ($)</Label>
-                        <Input type="number" value={editFormData.amountMin} onChange={e => setEditFormData(prev => ({
-                      ...prev,
-                      amountMin: Number(e.target.value)
-                    }))} />
+                        <Input 
+                          type="number" 
+                          value={editFormData.amountMin} 
+                          onChange={e => setEditFormData(prev => ({
+                            ...prev,
+                            amountMin: Number(e.target.value)
+                          }))} 
+                        />
                       </div>
                       
                       <div className="space-y-2">
                         <Label>Maximum Amount ($)</Label>
-                        <Input type="number" value={editFormData.amountMax} onChange={e => setEditFormData(prev => ({
-                      ...prev,
-                      amountMax: Number(e.target.value)
-                    }))} />
+                        <Input 
+                          type="number" 
+                          value={editFormData.amountMax} 
+                          onChange={e => setEditFormData(prev => ({
+                            ...prev,
+                            amountMax: Number(e.target.value)
+                          }))} 
+                        />
                       </div>
                     </div>
-                  </> : <>
+                  </>
+                ) : (
+                  <>
                     <div>
                       <Label className="text-sm font-medium">Template Name</Label>
                       <p className="text-lg font-semibold">{template.templateName}</p>
@@ -342,7 +365,8 @@ const TemplateDetails = () => {
                         <p className="text-sm">{formatCurrency(template.amountMax)}</p>
                       </div>
                     </div>
-                  </>}
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -382,98 +406,109 @@ const TemplateDetails = () => {
                 if (!isAssigned) return null;
 
                 return (
-                  <Card key={participant.value}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">{participant.label}</CardTitle>
-                        <div className="flex items-center gap-2">
+                  <div key={participant.value} className="space-y-4">
+                    {/* Basic Forms Section */}
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">{participant.label} - Basic Forms</CardTitle>
                           <Badge variant="outline" className="text-xs">
                             {isEditing 
                               ? editFormData.participantForms[participant.value].length 
                               : (template.participantForms[participant.value as keyof typeof template.participantForms]?.length || 0)
                             } forms
                           </Badge>
-                          {participant.hasOwnership && (
-                            <Badge variant="secondary" className="text-xs">
-                              {isEditing 
-                                ? `${editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].min}% - ${editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].max}%`
-                                : template.ownershipThresholds?.[participant.value as keyof typeof template.ownershipThresholds] 
-                                  ? `${template.ownershipThresholds[participant.value as keyof typeof template.ownershipThresholds].min}% - ${template.ownershipThresholds[participant.value as keyof typeof template.ownershipThresholds].max}%`
-                                  : '0% - 100%'
-                              } ownership
-                            </Badge>
-                          )}
                         </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {participant.hasOwnership && isEditing && (
-                        <div className="flex items-center gap-4">
-                          <Label className="text-sm">Ownership Range:</Label>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              value={editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].min}
-                              onChange={(e) => updateOwnershipThreshold(
-                                participant.value as keyof typeof editFormData.ownershipThresholds, 
-                                'min',
-                                Number(e.target.value)
-                              )}
-                              className="w-20"
-                              placeholder="0"
-                            />
-                            <span className="text-sm text-muted-foreground">% to</span>
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              value={editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds].max}
-                              onChange={(e) => updateOwnershipThreshold(
-                                participant.value as keyof typeof editFormData.ownershipThresholds, 
-                                'max',
-                                Number(e.target.value)
-                              )}
-                              className="w-20"
-                              placeholder="100"
-                            />
-                            <span className="text-sm text-muted-foreground">%</span>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {isEditing ? (
+                          <MultiSelectFormField
+                            value={editFormData.participantForms[participant.value]}
+                            onChange={(forms) => updateParticipantForms(participant.value, forms)}
+                            options={availableForms}
+                            placeholder={`Select basic forms for ${participant.label.toLowerCase()}...`}
+                            participantType={participant.value}
+                            showEntityTypeFilter={true}
+                          />
+                        ) : (
+                          <div className="space-y-2">
+                            {(template.participantForms[participant.value as keyof typeof template.participantForms]?.length || 0) > 0 ? (
+                              <div className="space-y-2">
+                                {(template.participantForms[participant.value as keyof typeof template.participantForms] || []).map((form, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30">
+                                    <Badge variant="outline" className="text-xs min-w-8 h-6 flex items-center justify-center">
+                                      {index + 1}
+                                    </Badge>
+                                    <span className="text-sm font-medium">{form}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">
+                                No basic forms assigned for {participant.label.toLowerCase()}.
+                              </p>
+                            )}
                           </div>
-                        </div>
-                      )}
-                      
-                      {isEditing ? (
-                        <MultiSelectFormField
-                          value={editFormData.participantForms[participant.value]}
-                          onChange={(forms) => updateParticipantForms(participant.value, forms)}
-                          options={availableForms}
-                          placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Ownership Ranges Section */}
+                    {participant.hasOwnership && (
+                      isEditing ? (
+                        <OwnershipRangeManager
                           participantType={participant.value}
-                          showEntityTypeFilter={true}
+                          participantLabel={participant.label}
+                          ranges={editFormData.ownershipRanges[participant.value as keyof typeof editFormData.ownershipRanges]}
+                          onChange={(ranges) => updateOwnershipRanges(participant.value as keyof typeof editFormData.ownershipRanges, ranges)}
                         />
                       ) : (
-                        <div className="space-y-2">
-                          {(template.participantForms[participant.value as keyof typeof template.participantForms]?.length || 0) > 0 ? (
-                            <div className="space-y-2">
-                              {(template.participantForms[participant.value as keyof typeof template.participantForms] || []).map((form, index) => (
-                                <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-muted/30">
-                                  <Badge variant="outline" className="text-xs min-w-8 h-6 flex items-center justify-center">
-                                    {index + 1}
-                                  </Badge>
-                                  <span className="text-sm font-medium">{form}</span>
-                                </div>
-                              ))}
+                        <Card>
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-lg">{participant.label} - Ownership-Based Forms</CardTitle>
+                              <Badge variant="secondary" className="text-xs">
+                                {getOwnershipRangesSummary(participant.value)}
+                              </Badge>
                             </div>
-                          ) : (
-                            <p className="text-sm text-muted-foreground">
-                              No forms assigned for {participant.label.toLowerCase()}.
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                          </CardHeader>
+                          <CardContent>
+                            {template.ownershipRanges?.[participant.value as keyof typeof template.ownershipRanges]?.length > 0 ? (
+                              <div className="space-y-3">
+                                {template.ownershipRanges[participant.value as keyof typeof template.ownershipRanges].map((range, index) => (
+                                  <div key={range.id} className="border rounded-lg p-3 bg-muted/30">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <Badge variant="outline" className="text-xs">
+                                        {range.min}% - {range.max}% ownership
+                                      </Badge>
+                                      <Badge variant="secondary" className="text-xs">
+                                        {range.forms.length} form(s)
+                                      </Badge>
+                                    </div>
+                                    {range.forms.length > 0 ? (
+                                      <div className="space-y-1">
+                                        {range.forms.map((form, formIndex) => (
+                                          <div key={formIndex} className="text-sm text-muted-foreground">
+                                            • {form}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="text-xs text-muted-foreground">No forms assigned to this range</p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">
+                                No ownership ranges defined for {participant.label.toLowerCase()}.
+                              </p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )
+                    )}
+                  </div>
                 );
               })}
               
@@ -491,7 +526,6 @@ const TemplateDetails = () => {
 
           <div className="space-y-6">
             <Card>
-              
               <CardContent className="space-y-3">
                 <div>
                   <Label className="text-sm font-medium">Created By</Label>
@@ -517,11 +551,15 @@ const TemplateDetails = () => {
                   <Label className="text-sm font-medium">Participants</Label>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {displayAssignedParticipants.length > 0 ? displayAssignedParticipants.map(participantValue => {
-                    const participant = participantOptions.find(p => p.value === participantValue);
-                    return <Badge key={participantValue} variant="outline" className="text-xs">
-                            {participant?.label}
-                          </Badge>;
-                  }) : <p className="text-xs text-muted-foreground">None assigned</p>}
+                      const participant = participantOptions.find(p => p.value === participantValue);
+                      return (
+                        <Badge key={participantValue} variant="outline" className="text-xs">
+                          {participant?.label}
+                        </Badge>
+                      );
+                    }) : (
+                      <p className="text-xs text-muted-foreground">None assigned</p>
+                    )}
                   </div>
                 </div>
               </CardContent>

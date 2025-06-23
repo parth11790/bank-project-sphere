@@ -18,10 +18,37 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       sellers: [],
       acquisition_business: ['Personal Financial Statement', 'Personal Guarantee']
     },
-    ownershipThresholds: {
-      affiliated_business: { min: 10, max: 50 },
-      owners: { min: 20, max: 100 },
-      sellers: { min: 25, max: 100 }
+    ownershipRanges: {
+      affiliated_business: [
+        {
+          id: '1',
+          min: 10,
+          max: 50,
+          forms: ['Business Certificate', 'Financial Disclosure']
+        }
+      ],
+      owners: [
+        {
+          id: '2',
+          min: 20,
+          max: 49,
+          forms: ['Background Check Authorization', 'Credit Report Authorization']
+        },
+        {
+          id: '3',
+          min: 50,
+          max: 100,
+          forms: ['Background Check Authorization', 'Credit Report Authorization', 'Personal Guarantee', 'Collateral Documentation']
+        }
+      ],
+      sellers: [
+        {
+          id: '4',
+          min: 25,
+          max: 100,
+          forms: ['Business Sale Agreement', 'Asset Valuation', 'Financial History']
+        }
+      ]
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
@@ -41,10 +68,31 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       sellers: [],
       acquisition_business: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization']
     },
-    ownershipThresholds: {
-      affiliated_business: { min: 5, max: 30 },
-      owners: { min: 20, max: 100 },
-      sellers: { min: 15, max: 100 }
+    ownershipRanges: {
+      affiliated_business: [
+        {
+          id: '5',
+          min: 5,
+          max: 30,
+          forms: ['Enhanced Due Diligence', 'Regulatory Compliance Check']
+        }
+      ],
+      owners: [
+        {
+          id: '6',
+          min: 20,
+          max: 100,
+          forms: ['Enhanced Background Check', 'Financial History Analysis', 'Collateral Assessment']
+        }
+      ],
+      sellers: [
+        {
+          id: '7',
+          min: 15,
+          max: 100,
+          forms: ['Comprehensive Business Valuation', 'Legal Due Diligence', 'Environmental Assessment']
+        }
+      ]
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
@@ -64,10 +112,31 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       sellers: ['Business Sale Agreement', 'Financial Statements', 'Asset Listing'],
       acquisition_business: ['Personal Financial Statement', 'Personal Guarantee']
     },
-    ownershipThresholds: {
-      affiliated_business: { min: 15, max: 75 },
-      owners: { min: 25, max: 100 },
-      sellers: { min: 50, max: 100 }
+    ownershipRanges: {
+      affiliated_business: [
+        {
+          id: '8',
+          min: 15,
+          max: 75,
+          forms: ['Acquisition Due Diligence', 'Integration Planning Documents']
+        }
+      ],
+      owners: [
+        {
+          id: '9',
+          min: 25,
+          max: 100,
+          forms: ['Acquisition Financing Documentation', 'Management Transition Plan']
+        }
+      ],
+      sellers: [
+        {
+          id: '10',
+          min: 50,
+          max: 100,
+          forms: ['Complete Business Records', 'Transition Documentation', 'Warranty and Indemnification']
+        }
+      ]
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',

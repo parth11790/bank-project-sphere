@@ -1,4 +1,11 @@
 
+export interface OwnershipRange {
+  id: string;
+  min: number;
+  max: number;
+  forms: string[];
+}
+
 export interface DocumentGatheringTemplate {
   id: string;
   templateName: string;
@@ -12,10 +19,10 @@ export interface DocumentGatheringTemplate {
     sellers: string[];
     acquisition_business: string[];
   };
-  ownershipThresholds?: {
-    affiliated_business: { min: number; max: number };
-    owners: { min: number; max: number };
-    sellers: { min: number; max: number };
+  ownershipRanges?: {
+    affiliated_business: OwnershipRange[];
+    owners: OwnershipRange[];
+    sellers: OwnershipRange[];
   };
   createdAt: string;
   updatedAt: string;

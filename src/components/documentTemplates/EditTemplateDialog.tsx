@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { DocumentGatheringTemplate } from '@/types/documentTemplate';
+import { DocumentGatheringTemplate, OwnershipRange } from '@/types/documentTemplate';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MultiSelectFormField } from './MultiSelectFormField';
+import { OwnershipRangeManager } from './OwnershipRangeManager';
 import { loanTypes } from '@/lib/mockData/lenderSettings';
 import { getFormsByEntityType } from '@/lib/utils/formCategorization';
 
@@ -53,10 +55,10 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       sellers: [] as string[],
       acquisition_business: [] as string[]
     },
-    ownershipThresholds: {
-      affiliated_business: { min: 0, max: 100 },
-      owners: { min: 0, max: 100 },
-      sellers: { min: 0, max: 100 }
+    ownershipRanges: {
+      affiliated_business: [] as OwnershipRange[],
+      owners: [] as OwnershipRange[],
+      sellers: [] as OwnershipRange[]
     },
     isActive: true
   });
@@ -72,10 +74,10 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
           ...template.participantForms,
           acquisition_business: template.participantForms.acquisition_business || []
         },
-        ownershipThresholds: template.ownershipThresholds || {
-          affiliated_business: { min: 0, max: 100 },
-          owners: { min: 0, max: 100 },
-          sellers: { min: 0, max: 100 }
+        ownershipRanges: template.ownershipRanges || {
+          affiliated_business: [],
+          owners: [],
+          sellers: []
         },
         isActive: template.isActive
       });
@@ -95,7 +97,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       amountMin: formData.amountMin,
       amountMax: formData.amountMax,
       participantForms: formData.participantForms,
-      ownershipThresholds: formData.ownershipThresholds,
+      ownershipRanges: formData.ownershipRanges,
       isActive: formData.isActive
     });
   };
@@ -110,32 +112,14 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
     }));
   };
 
-  const updateOwnershipThreshold = (participantType: keyof typeof formData.ownershipThresholds, field: 'min' | 'max', value: number) => {
+  const updateOwnershipRanges = (participantType: keyof typeof formData.ownershipRanges, ranges: OwnershipRange[]) => {
     setFormData(prev => ({
       ...prev,
-      ownershipThresholds: {
-        ...prev.ownershipThresholds,
-        [participantType]: {
-          ...prev.ownershipThresholds[participantType],
-          [field]: value
-        }
+      ownershipRanges: {
+        ...prev.ownershipRanges,
+        [participantType]: ranges
       }
     }));
-  };
-
-  // Determine entity type filter based on participant
-  const getEntityTypeForParticipant = (participantType: string): 'Business' | 'Individual' | 'All' => {
-    switch (participantType) {
-      case 'borrowing_business':
-      case 'affiliated_business':
-        return 'Business';
-      case 'owners':
-      case 'sellers':
-      case 'guarantors':
-        return 'All'; // These can have both business and individual forms
-      default:
-        return 'All';
-    }
   };
 
   if (!template) return null;
@@ -207,54 +191,32 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
               <div key={participant.value} className="space-y-4 border rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-base font-medium">{participant.label}</Label>
-                  {participant.hasOwnership && (
-                    <div className="flex items-center gap-4">
-                      <Label className="text-sm">Ownership Range:</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].min}
-                          onChange={(e) => updateOwnershipThreshold(
-                            participant.value as keyof typeof formData.ownershipThresholds, 
-                            'min',
-                            Number(e.target.value)
-                          )}
-                          className="w-20"
-                          placeholder="0"
-                        />
-                        <span className="text-sm text-muted-foreground">% to</span>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].max}
-                          onChange={(e) => updateOwnershipThreshold(
-                            participant.value as keyof typeof formData.ownershipThresholds, 
-                            'max',
-                            Number(e.target.value)
-                          )}
-                          className="w-20"
-                          placeholder="100"
-                        />
-                        <span className="text-sm text-muted-foreground">%</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
-                <MultiSelectFormField
-                  value={formData.participantForms[participant.value]}
-                  onChange={(forms) => updateParticipantForms(participant.value, forms)}
-                  options={availableForms}
-                  placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
-                  participantType={participant.value}
-                  showEntityTypeFilter={true}
-                />
+                
+                {/* Basic Forms */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Basic Forms (always required)</Label>
+                  <MultiSelectFormField
+                    value={formData.participantForms[participant.value]}
+                    onChange={(forms) => updateParticipantForms(participant.value, forms)}
+                    options={availableForms}
+                    placeholder={`Select basic forms for ${participant.label.toLowerCase()}...`}
+                    participantType={participant.value}
+                    showEntityTypeFilter={true}
+                  />
+                </div>
+
+                {/* Ownership-based Forms */}
                 {participant.hasOwnership && (
-                  <p className="text-xs text-muted-foreground">
-                    Forms will be required when {participant.label.toLowerCase()} ownership is between {formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].min}% and {formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds].max}%
-                  </p>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Ownership-Based Forms</Label>
+                    <OwnershipRangeManager
+                      participantType={participant.value}
+                      participantLabel={participant.label}
+                      ranges={formData.ownershipRanges[participant.value as keyof typeof formData.ownershipRanges]}
+                      onChange={(ranges) => updateOwnershipRanges(participant.value as keyof typeof formData.ownershipRanges, ranges)}
+                    />
+                  </div>
                 )}
               </div>
             ))}
