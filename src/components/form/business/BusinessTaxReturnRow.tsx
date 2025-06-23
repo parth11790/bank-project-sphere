@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -64,32 +63,26 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
         value = calculatedValues.netIncome.toFixed(2);
       } else if (fieldName === 'totalDeductions') {
         value = calculatedValues.totalDeductions.toFixed(2);
-      } else if (fieldName === 'grossMargin') {
-        value = calculatedValues.grossMargin.toFixed(2);
       } else if (fieldName === 'operatingCashFlow') {
         value = calculatedValues.operatingCashFlow.toFixed(2);
       }
     }
     
-    const inputType = fieldName === 'grossMargin' ? 'text' : 'number';
-    const displayValue = fieldName === 'grossMargin' && isReadOnly ? `${value}%` : value;
-    
-    // Calculate percentage for display (skip for grossMargin as it's already a percentage)
     const numericValue = parseFloat(value) || 0;
-    const percentageDisplay = fieldName === 'grossMargin' ? '' : calculatePercentage(numericValue, year);
+    const percentageDisplay = calculatePercentage(numericValue, year);
     
     return (
       <TableCell className="p-2">
         <div className="flex items-center gap-2">
           <Input
-            type={inputType}
-            placeholder={fieldName === 'grossMargin' ? '0%' : '0'}
-            value={displayValue}
+            type="number"
+            placeholder="0"
+            value={value}
             onChange={(e) => onInputChange(key, e.target.value)}
             readOnly={isReadOnly}
             className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}
           />
-          {fieldName !== 'grossMargin' && numericValue !== 0 && (
+          {numericValue !== 0 && (
             <div className="text-xs text-muted-foreground min-w-[3rem] text-right">
               {percentageDisplay}
             </div>

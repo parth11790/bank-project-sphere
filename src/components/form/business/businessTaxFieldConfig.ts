@@ -37,7 +37,6 @@ export const formFields = [
   // COGS Section
   { fieldName: 'costOfGoodsSold', label: 'Cost of Goods Sold ($)', isExpense: true, category: 'COGS' },
   { fieldName: 'grossProfit', label: 'Gross Profit ($)', isIncome: true, isCalculated: true, category: 'Gross Income' },
-  { fieldName: 'grossMargin', label: 'Gross Margin (%)', isIncome: true, isCalculated: true, category: 'Gross Income' },
 
   // Expense Section
   { fieldName: 'officerCompensation', label: 'Compensation of Officers ($)', isExpense: true, category: 'Expense' },
