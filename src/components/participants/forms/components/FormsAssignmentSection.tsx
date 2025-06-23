@@ -7,6 +7,7 @@ import { Plus, FileText, Check, Clock, X } from 'lucide-react';
 import { useFormDocumentData } from '@/hooks/useFormDocumentData';
 import { FormTemplate } from '@/types/form';
 import AssignmentDialog from '@/components/AssignmentDialog';
+import { TemplateSelector } from './TemplateSelector';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -74,6 +75,20 @@ export const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ 
     toast.success(`Assigned ${forms.length} form(s) to ${participant?.name || 'participant'}`);
   };
 
+  const handleTemplateAssignment = (forms: FormTemplate[]) => {
+    // Filter out forms that are already assigned
+    const newForms = forms.filter(form => 
+      !assignedForms.some(assigned => assigned.form_id === form.form_id)
+    );
+
+    if (newForms.length === 0) {
+      toast.info('All forms from the template are already assigned');
+      return;
+    }
+
+    handleAssignForms(newForms);
+  };
+
   const handleRemoveForm = (assignmentId: string) => {
     setAssignedForms(prev => prev.filter(form => form.assignment_id !== assignmentId));
     toast.success('Form assignment removed');
@@ -107,6 +122,12 @@ export const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ 
 
   return (
     <div className="space-y-6">
+      <TemplateSelector
+        participantRole={participant?.role}
+        onAssignForms={handleTemplateAssignment}
+        availableForms={individualForms}
+      />
+
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -122,7 +143,7 @@ export const FormsAssignmentSection: React.FC<FormsAssignmentSectionProps> = ({ 
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No forms assigned yet</p>
-              <p className="text-sm">Click "Assign Forms" to get started</p>
+              <p className="text-sm">Use a template or click "Assign Forms" to get started</p>
             </div>
           ) : (
             <div className="space-y-4">
