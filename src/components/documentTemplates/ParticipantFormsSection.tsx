@@ -118,8 +118,8 @@ export const ParticipantFormsSection = ({
                 <OwnershipRangeManager
                   participantType={participant.value}
                   participantLabel={participant.label}
-                  ranges={editFormData.ownershipRanges[participant.value as keyof typeof editFormData.ownershipRanges]}
-                  onChange={(ranges) => updateOwnershipRanges(participant.value as keyof typeof editFormData.ownershipRanges, ranges)}
+                  ranges={editFormData.ownershipRanges[participant.value]}
+                  onChange={(ranges) => updateOwnershipRanges(participant.value, ranges)}
                 />
               ) : (
                 <Card>
