@@ -35,7 +35,7 @@ const participantOptions = [
   { value: 'affiliated_business' as const, label: 'Affiliated Business', hasOwnership: true },
   { value: 'owners' as const, label: 'Owners', hasOwnership: true },
   { value: 'sellers' as const, label: 'Sellers', hasOwnership: true },
-  { value: 'guarantors' as const, label: 'Guarantors', hasOwnership: false },
+  { value: 'acquisition_business' as const, label: 'Acquisition Business', hasOwnership: false },
 ];
 
 // Get all available forms (both business and individual)
@@ -52,7 +52,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       affiliated_business: [] as string[],
       owners: [] as string[],
       sellers: [] as string[],
-      guarantors: [] as string[]
+      acquisition_business: [] as string[]
     },
     ownershipThresholds: {
       affiliated_business: 0,
@@ -71,7 +71,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
         amountMax: template.amountMax,
         participantForms: {
           ...template.participantForms,
-          guarantors: template.participantForms.guarantors || []
+          acquisition_business: template.participantForms.acquisition_business || []
         },
         ownershipThresholds: template.ownershipThresholds || {
           affiliated_business: 0,

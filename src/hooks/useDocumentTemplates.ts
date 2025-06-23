@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { toast } from 'sonner';
@@ -16,7 +15,7 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       affiliated_business: ['Business Financial Statement', 'Tax Returns'],
       owners: ['Personal Financial Statement', 'Personal Guarantee'],
       sellers: [],
-      guarantors: ['Personal Financial Statement', 'Personal Guarantee']
+      acquisition_business: ['Personal Financial Statement', 'Personal Guarantee']
     },
     ownershipThresholds: {
       affiliated_business: 10,
@@ -39,7 +38,7 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       affiliated_business: ['Business Financial Statement', 'Tax Returns'],
       owners: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization'],
       sellers: [],
-      guarantors: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization']
+      acquisition_business: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization']
     },
     ownershipThresholds: {
       affiliated_business: 5,
@@ -62,7 +61,7 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       affiliated_business: ['Business Financial Statement'],
       owners: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization'],
       sellers: ['Business Sale Agreement', 'Financial Statements', 'Asset Listing'],
-      guarantors: ['Personal Financial Statement', 'Personal Guarantee']
+      acquisition_business: ['Personal Financial Statement', 'Personal Guarantee']
     },
     ownershipThresholds: {
       affiliated_business: 15,

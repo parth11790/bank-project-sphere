@@ -10,7 +10,7 @@ export interface DocumentGatheringTemplate {
     affiliated_business: string[];
     owners: string[];
     sellers: string[];
-    guarantors: string[];
+    acquisition_business: string[];
   };
   ownershipThresholds?: {
     affiliated_business: number;

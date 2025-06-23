@@ -34,8 +34,8 @@ const participantOptions = [{
   label: 'Sellers',
   hasOwnership: true
 }, {
-  value: 'guarantors' as const,
-  label: 'Guarantors',
+  value: 'acquisition_business' as const,
+  label: 'Acquisition Business',
   hasOwnership: false
 }];
 
@@ -59,7 +59,7 @@ const TemplateDetails = () => {
       affiliated_business: [] as string[],
       owners: [] as string[],
       sellers: [] as string[],
-      guarantors: [] as string[]
+      acquisition_business: [] as string[]
     },
     ownershipThresholds: {
       affiliated_business: 0,
@@ -118,7 +118,7 @@ const TemplateDetails = () => {
       assignedParticipants: getAssignedParticipants(),
       participantForms: {
         ...template.participantForms,
-        guarantors: template.participantForms.guarantors || []
+        acquisition_business: template.participantForms.acquisition_business || []
       },
       ownershipThresholds: template.ownershipThresholds || {
         affiliated_business: 0,

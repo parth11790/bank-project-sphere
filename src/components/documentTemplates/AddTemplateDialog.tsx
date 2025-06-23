@@ -33,6 +33,7 @@ const participantOptions = [
   { value: 'affiliated_business' as const, label: 'Affiliated Business' },
   { value: 'owners' as const, label: 'Owners' },
   { value: 'sellers' as const, label: 'Sellers' },
+  { value: 'acquisition_business' as const, label: 'Acquisition Business' },
 ];
 
 // Get all available forms (both business and individual)
@@ -48,7 +49,8 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
       borrowing_business: [] as string[],
       affiliated_business: [] as string[],
       owners: [] as string[],
-      sellers: [] as string[]
+      sellers: [] as string[],
+      acquisition_business: [] as string[]
     },
     createdBy: 'Current User',
     isActive: true
@@ -81,7 +83,8 @@ export const AddTemplateDialog = ({ open, onOpenChange, onAdd }: AddTemplateDial
         borrowing_business: [],
         affiliated_business: [],
         owners: [],
-        sellers: []
+        sellers: [],
+        acquisition_business: []
       },
       createdBy: 'Current User',
       isActive: true
