@@ -41,7 +41,7 @@ export const formFields = [
   { fieldName: 'salariesWages', label: 'Salaries and Wages ($)', isExpense: true },
   { fieldName: 'repairsDeductions', label: 'Repairs and Maintenance ($)', isExpense: true },
   { fieldName: 'badDebts', label: 'Bad Debts ($)', isExpense: true },
-  { fieldName: 'rentsExpenses', label: 'Rents ($)', isExpense: true },
+  { fieldName: 'rentsExpenses', label: 'Rent or Lease ($)', isExpense: true },
   { fieldName: 'taxesLicenses', label: 'Taxes and Licenses ($)', isExpense: true },
   { fieldName: 'interestExpense', label: 'Interest Expense ($)', isExpense: true },
   { fieldName: 'charitableContributions', label: 'Charitable Contributions ($)', isExpense: true },
