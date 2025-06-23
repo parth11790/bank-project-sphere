@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Plus, Eye, Edit } from 'lucide-react';
+import { DollarSign, Plus, Eye, Edit, FileText } from 'lucide-react';
 import { Project } from '@/types/project';
 
 interface LoansSectionProps {
@@ -66,6 +65,10 @@ const LoansSection: React.FC<LoansSectionProps> = ({
     navigate(`/project/${project.project_id}/loan/${loanId}`);
   };
 
+  const handleUseOfProceeds = () => {
+    navigate(`/project/use-of-proceeds/${project.project_id}`);
+  };
+
   // Get loans from both the legacy loan_types and new loans structure
   const getAllLoans = () => {
     const loans = [];
@@ -124,10 +127,16 @@ const LoansSection: React.FC<LoansSectionProps> = ({
             <CardTitle>Project Loans</CardTitle>
             <CardDescription>All loans associated with this project</CardDescription>
           </div>
-          <Button size="sm" onClick={handleAddLoan}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Loan
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleUseOfProceeds}>
+              <FileText className="h-4 w-4 mr-2" />
+              Use of Proceeds
+            </Button>
+            <Button size="sm" onClick={handleAddLoan}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Loan
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -197,7 +206,13 @@ const LoansSection: React.FC<LoansSectionProps> = ({
           <div className="text-center py-8">
             <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">No loans configured</p>
-            <Button className="mt-4" onClick={handleAddLoan}>Add Loan</Button>
+            <div className="flex gap-2 justify-center mt-4">
+              <Button variant="outline" onClick={handleUseOfProceeds}>
+                <FileText className="h-4 w-4 mr-2" />
+                Use of Proceeds
+              </Button>
+              <Button onClick={handleAddLoan}>Add Loan</Button>
+            </div>
           </div>
         )}
       </CardContent>
