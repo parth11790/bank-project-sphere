@@ -15,6 +15,9 @@ interface BusinessTaxReturnRowProps {
     grossIncome: number;
     netIncome: number;
     totalDeductions: number;
+    grossProfit: number;
+    grossMargin: number;
+    operatingCashFlow: number;
   };
   fieldNotes: Record<string, string>;
   onInputChange: (field: string, value: string) => void;
@@ -49,15 +52,24 @@ const BusinessTaxReturnRow: React.FC<BusinessTaxReturnRowProps> = ({
         value = calculatedValues.netIncome.toFixed(2);
       } else if (fieldName === 'totalDeductions') {
         value = calculatedValues.totalDeductions.toFixed(2);
+      } else if (fieldName === 'grossProfit') {
+        value = calculatedValues.grossProfit.toFixed(2);
+      } else if (fieldName === 'grossMargin') {
+        value = calculatedValues.grossMargin.toFixed(2);
+      } else if (fieldName === 'operatingCashFlow') {
+        value = calculatedValues.operatingCashFlow.toFixed(2);
       }
     }
+    
+    const inputType = fieldName === 'grossMargin' ? 'text' : 'number';
+    const displayValue = fieldName === 'grossMargin' && isReadOnly ? `${value}%` : value;
     
     return (
       <TableCell className="p-2">
         <Input
-          type="number"
-          placeholder="0"
-          value={value}
+          type={inputType}
+          placeholder={fieldName === 'grossMargin' ? '0%' : '0'}
+          value={displayValue}
           onChange={(e) => onInputChange(key, e.target.value)}
           readOnly={isReadOnly}
           className={`text-center ${isReadOnly ? "bg-muted-foreground/10" : ""}`}

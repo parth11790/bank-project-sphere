@@ -6,6 +6,7 @@ interface BusinessCalculatedValues {
   netIncome: number;
   totalDeductions: number;
   grossProfit: number;
+  grossMargin: number;
   operatingCashFlow: number;
 }
 
@@ -18,6 +19,7 @@ export const useBusinessTaxReturnCalculations = (
     netIncome: 0,
     totalDeductions: 0,
     grossProfit: 0,
+    grossMargin: 0,
     operatingCashFlow: 0
   });
 
@@ -33,6 +35,9 @@ export const useBusinessTaxReturnCalculations = (
       
       // Calculate Gross Profit (Gross Receipts - Cost of Goods Sold)
       const grossProfit = grossReceipts - costOfGoodsSold;
+      
+      // Calculate Gross Margin (Gross Profit / Gross Receipts * 100)
+      const grossMargin = grossReceipts > 0 ? (grossProfit / grossReceipts) * 100 : 0;
       
       // Deduction fields that contribute to Total Deductions
       const deductionFields = [
@@ -81,11 +86,28 @@ export const useBusinessTaxReturnCalculations = (
       const totalAddBacks = depreciationAddBack + amortizationAddBack + customAddBacks;
       const operatingCashFlow = netIncome + totalAddBacks - cashDistributions;
       
+      console.log('Business Tax Calculations Debug:', {
+        grossReceipts,
+        costOfGoodsSold,
+        grossProfit,
+        grossMargin: grossMargin.toFixed(2) + '%',
+        totalIncome,
+        totalDeductions,
+        netIncome,
+        depreciationAddBack,
+        amortizationAddBack,
+        customAddBacks,
+        totalAddBacks,
+        cashDistributions,
+        operatingCashFlow
+      });
+      
       setCalculatedValues({ 
         grossIncome: totalIncome,
         netIncome, 
         totalDeductions,
         grossProfit,
+        grossMargin,
         operatingCashFlow
       });
     }

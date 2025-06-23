@@ -4,6 +4,7 @@ export const fieldNotes: Record<string, string> = {
   'totalIncome': 'Total income (1120, line 11 or 1120S, line 11)',
   'costOfGoodsSold': 'Cost of goods sold (1120, line 2 or 1120S, line 2)',
   'grossProfit': 'Gross profit (line 1c minus line 2)',
+  'grossMargin': 'Gross margin percentage (Gross Profit / Gross Receipts × 100)',
   'officerCompensation': 'Compensation of officers (1120, line 12 or 1120S, line 7)',
   'salariesWages': 'Salaries and wages (1120, line 13 or 1120S, line 8)',
   'repairsDeductions': 'Repairs and maintenance (1120, line 14 or 1120S, line 9)',
@@ -34,6 +35,7 @@ export const formFields = [
   { fieldName: 'grossReceipts', label: 'Gross Receipts or Sales ($)', isIncome: true },
   { fieldName: 'costOfGoodsSold', label: 'Cost of Goods Sold ($)', isExpense: true },
   { fieldName: 'grossProfit', label: 'Gross Profit ($)', isIncome: true, isCalculated: true },
+  { fieldName: 'grossMargin', label: 'Gross Margin (%)', isIncome: true, isCalculated: true },
   { fieldName: 'totalIncome', label: 'Total Income ($)', isIncome: true },
 
   // Deductions Section
