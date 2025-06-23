@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getFormTemplatesData } from '@/lib/mockDataServices/formService';
 import AssignmentDialog from '@/components/AssignmentDialog';
 import { toast } from 'sonner';
+import { useNavigate, useParams } from 'react-router-dom';
 import BusinessFormsList from './forms/BusinessFormsList';
 
 interface EditableBusinessFormsSectionProps {
@@ -15,6 +16,8 @@ interface EditableBusinessFormsSectionProps {
 }
 
 const EditableBusinessFormsSection: React.FC<EditableBusinessFormsSectionProps> = ({ business }) => {
+  const navigate = useNavigate();
+  const { projectId } = useParams();
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedForms, setEditedForms] = useState(business.forms || []);
@@ -39,8 +42,9 @@ const EditableBusinessFormsSection: React.FC<EditableBusinessFormsSectionProps> 
 
   const handleFormClick = (formId: string, formName: string) => {
     if (!isEditing) {
-      console.log(`Clicked form: ${formId} - ${formName}`);
-      toast(`Opening form: ${formName}`);
+      console.log(`Navigating to form: ${formId} - ${formName}`);
+      // Navigate to the form with proper query parameters for business forms
+      navigate(`/form/${formId}?name=${encodeURIComponent(formName)}&participant=${encodeURIComponent(business.name)}&projectId=${projectId}&entityType=business`);
     }
   };
 

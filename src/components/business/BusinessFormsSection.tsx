@@ -10,12 +10,15 @@ import { useQuery } from '@tanstack/react-query';
 import { getFormTemplatesData } from '@/lib/mockDataServices/formService';
 import AssignmentDialog from '@/components/AssignmentDialog';
 import { toast } from 'sonner';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface BusinessFormsSectionProps {
   business: Business;
 }
 
 const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business }) => {
+  const navigate = useNavigate();
+  const { projectId } = useParams();
   const [isAssignmentDialogOpen, setIsAssignmentDialogOpen] = useState(false);
 
   // Fetch available business forms for assignment
@@ -79,7 +82,7 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
             variant="outline" 
             className={cn(
               "text-xs px-2 py-0",
-              "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400"
+              "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 red:text-red-400"
             )}
           >
             Pending
@@ -103,9 +106,9 @@ const BusinessFormsSection: React.FC<BusinessFormsSectionProps> = ({ business })
   ];
 
   const handleFormClick = (formId: string, formName: string) => {
-    console.log(`Clicked form: ${formId} - ${formName}`);
-    toast(`Opening form: ${formName}`);
-    // Navigate to form details or handle form interaction
+    console.log(`Navigating to form: ${formId} - ${formName}`);
+    // Navigate to the form with proper query parameters for business forms
+    navigate(`/form/${formId}?name=${encodeURIComponent(formName)}&participant=${encodeURIComponent(business.name)}&projectId=${projectId}&entityType=business`);
   };
 
   const handleAssignForms = (selectedForms: any[]) => {
