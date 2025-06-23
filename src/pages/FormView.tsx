@@ -15,6 +15,7 @@ import { logAuditEvent } from '@/services/auditService';
 // Import custom components
 import FormHeader from '@/components/form/FormHeader';
 import TaxReturnsForm from '@/components/form/TaxReturnsForm';
+import BusinessTaxReturnsForm from '@/components/form/BusinessTaxReturnsForm';
 import PersonalFinancialStatementForm from '@/components/form/PersonalFinancialStatementForm';
 import BalanceSheetForm from '@/components/form/BalanceSheetForm';
 import BusinessBalanceSheetForm from '@/components/form/BusinessBalanceSheetForm';
@@ -27,6 +28,7 @@ import NetWorthForm from '@/components/participants/forms/NetWorthForm';
 
 // Import custom hooks
 import { useTaxReturnCalculations } from '@/hooks/useTaxReturnCalculations';
+import { useBusinessTaxReturnCalculations } from '@/hooks/useBusinessTaxReturnCalculations';
 
 const FormView: React.FC = () => {
   const { formId } = useParams<{ formId: string }>();
@@ -40,6 +42,7 @@ const FormView: React.FC = () => {
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   
   const calculatedValues = useTaxReturnCalculations(formValues, formName);
+  const businessCalculatedValues = useBusinessTaxReturnCalculations(formValues, formName);
   
   const handleInputChange = (field: string, value: string) => {
     setFormValues(prev => ({
@@ -94,6 +97,16 @@ const FormView: React.FC = () => {
       );
     }
     
+    if (formName === 'Business Tax Returns' || formName === 'Business Tax Returns (3 years)') {
+      return (
+        <BusinessTaxReturnsForm 
+          formValues={formValues}
+          calculatedValues={businessCalculatedValues}
+          onInputChange={handleInputChange}
+        />
+      );
+    }
+    
     if (formName === 'Personal Debt Summary') {
       return (
         <DebtSummaryForm 
@@ -143,13 +156,15 @@ const FormView: React.FC = () => {
   const shouldShowNotes = ![
     'Professional References Form',
     'Professional Resume',
-    'Net worth assessment'
+    'Net worth assessment',
+    'Business Tax Returns'
   ].includes(formName);
 
   const shouldShowFooter = ![
     'Professional References Form',
     'Professional Resume',
-    'Net worth assessment'
+    'Net worth assessment',
+    'Business Tax Returns'
   ].includes(formName);
 
   return (
