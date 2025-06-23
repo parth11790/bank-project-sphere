@@ -15,7 +15,13 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       borrowing_business: ['Personal Financial Statement', 'Business Financial Statement', 'Tax Returns'],
       affiliated_business: ['Business Financial Statement', 'Tax Returns'],
       owners: ['Personal Financial Statement', 'Personal Guarantee'],
-      sellers: []
+      sellers: [],
+      guarantors: ['Personal Financial Statement', 'Personal Guarantee']
+    },
+    ownershipThresholds: {
+      affiliated_business: 10,
+      owners: 20,
+      sellers: 25
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
@@ -32,7 +38,13 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       borrowing_business: ['Personal Financial Statement', 'Business Financial Statement', 'Tax Returns', 'Business Plan'],
       affiliated_business: ['Business Financial Statement', 'Tax Returns'],
       owners: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization'],
-      sellers: []
+      sellers: [],
+      guarantors: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization']
+    },
+    ownershipThresholds: {
+      affiliated_business: 5,
+      owners: 20,
+      sellers: 15
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
@@ -49,7 +61,13 @@ const initialTemplates: DocumentGatheringTemplate[] = [
       borrowing_business: ['Personal Financial Statement', 'Business Plan'],
       affiliated_business: ['Business Financial Statement'],
       owners: ['Personal Financial Statement', 'Personal Guarantee', 'Background Check Authorization'],
-      sellers: ['Business Sale Agreement', 'Financial Statements', 'Asset Listing']
+      sellers: ['Business Sale Agreement', 'Financial Statements', 'Asset Listing'],
+      guarantors: ['Personal Financial Statement', 'Personal Guarantee']
+    },
+    ownershipThresholds: {
+      affiliated_business: 15,
+      owners: 25,
+      sellers: 50
     },
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',

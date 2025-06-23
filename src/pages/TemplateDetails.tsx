@@ -19,29 +19,33 @@ import { getFormsByEntityType } from '@/lib/utils/formCategorization';
 // Participant options in the specified hierarchy
 const participantOptions = [{
   value: 'borrowing_business' as const,
-  label: 'Borrowing Business'
+  label: 'Borrowing Business',
+  hasOwnership: false
 }, {
   value: 'owners' as const,
-  label: 'Owners'
+  label: 'Owners',
+  hasOwnership: true
 }, {
   value: 'affiliated_business' as const,
-  label: 'Affiliated Business'
+  label: 'Affiliated Business',
+  hasOwnership: true
 }, {
   value: 'sellers' as const,
-  label: 'Sellers'
+  label: 'Sellers',
+  hasOwnership: true
+}, {
+  value: 'guarantors' as const,
+  label: 'Guarantors',
+  hasOwnership: false
 }];
 
 // Get all available forms (both business and individual)
 const availableForms = getFormsByEntityType('All');
+
 const TemplateDetails = () => {
-  const {
-    templateId
-  } = useParams();
+  const { templateId } = useParams();
   const navigate = useNavigate();
-  const {
-    templates,
-    updateTemplate
-  } = useDocumentTemplates();
+  const { templates, updateTemplate } = useDocumentTemplates();
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState({
     templateName: '',
@@ -54,12 +58,21 @@ const TemplateDetails = () => {
       borrowing_business: [] as string[],
       affiliated_business: [] as string[],
       owners: [] as string[],
-      sellers: [] as string[]
+      sellers: [] as string[],
+      guarantors: [] as string[]
+    },
+    ownershipThresholds: {
+      affiliated_business: 0,
+      owners: 0,
+      sellers: 0
     }
   });
+
   const template = templates.find(t => t.id === templateId);
+
   if (!template) {
-    return <Layout>
+    return (
+      <Layout>
         <div className="container mx-auto py-6">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Template Not Found</h1>
@@ -69,8 +82,10 @@ const TemplateDetails = () => {
             </Button>
           </div>
         </div>
-      </Layout>;
+      </Layout>
+    );
   }
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -79,12 +94,20 @@ const TemplateDetails = () => {
       maximumFractionDigits: 0
     }).format(amount);
   };
+
   const getTotalFormsCount = () => {
     return Object.values(template.participantForms).reduce((total, forms) => total + forms.length, 0);
   };
+
   const getAssignedParticipants = () => {
-    return participantOptions.filter(p => Object.keys(template.participantForms).includes(p.value) && template.participantForms[p.value].length > 0).map(p => p.value);
+    return participantOptions
+      .filter(p => 
+        Object.keys(template.participantForms).includes(p.value) && 
+        template.participantForms[p.value as keyof typeof template.participantForms]?.length > 0
+      )
+      .map(p => p.value);
   };
+
   const handleEdit = () => {
     setEditFormData({
       templateName: template.templateName,
@@ -94,41 +117,55 @@ const TemplateDetails = () => {
       isActive: template.isActive,
       assignedParticipants: getAssignedParticipants(),
       participantForms: {
-        ...template.participantForms
+        ...template.participantForms,
+        guarantors: template.participantForms.guarantors || []
+      },
+      ownershipThresholds: template.ownershipThresholds || {
+        affiliated_business: 0,
+        owners: 0,
+        sellers: 0
       }
     });
     setIsEditing(true);
   };
+
   const handleSave = () => {
     // Clean up participant forms - only keep forms for assigned participants
-    const cleanedParticipantForms = {
-      ...editFormData.participantForms
-    };
+    const cleanedParticipantForms = { ...editFormData.participantForms };
+    
     participantOptions.forEach(participant => {
       if (!editFormData.assignedParticipants.includes(participant.value)) {
         cleanedParticipantForms[participant.value] = [];
       }
     });
+
     const updates: Partial<DocumentGatheringTemplate> = {
       templateName: editFormData.templateName,
       loanType: editFormData.loanType,
       amountMin: editFormData.amountMin,
       amountMax: editFormData.amountMax,
       participantForms: cleanedParticipantForms,
+      ownershipThresholds: editFormData.ownershipThresholds,
       isActive: editFormData.isActive
     };
+
     updateTemplate(template.id, updates);
     setIsEditing(false);
   };
+
   const handleCancel = () => {
     setIsEditing(false);
   };
+
   const handleParticipantToggle = (participantValue: string, checked: boolean) => {
     setEditFormData(prev => ({
       ...prev,
-      assignedParticipants: checked ? [...prev.assignedParticipants, participantValue] : prev.assignedParticipants.filter(p => p !== participantValue)
+      assignedParticipants: checked 
+        ? [...prev.assignedParticipants, participantValue] 
+        : prev.assignedParticipants.filter(p => p !== participantValue)
     }));
   };
+
   const updateParticipantForms = (participant: keyof typeof editFormData.participantForms, forms: string[]) => {
     setEditFormData(prev => ({
       ...prev,
@@ -138,6 +175,17 @@ const TemplateDetails = () => {
       }
     }));
   };
+
+  const updateOwnershipThreshold = (participant: keyof typeof editFormData.ownershipThresholds, value: number) => {
+    setEditFormData(prev => ({
+      ...prev,
+      ownershipThresholds: {
+        ...prev.ownershipThresholds,
+        [participant]: value
+      }
+    }));
+  };
+
   const displayAssignedParticipants = getAssignedParticipants();
 
   // Determine entity type filter based on participant
@@ -154,7 +202,9 @@ const TemplateDetails = () => {
         return 'All';
     }
   };
-  return <Layout>
+
+  return (
+    <Layout>
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -169,7 +219,8 @@ const TemplateDetails = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            {isEditing ? <>
+            {isEditing ? (
+              <>
                 <Button variant="outline" onClick={handleCancel}>
                   <X className="h-4 w-4 mr-2" />
                   Cancel
@@ -178,10 +229,13 @@ const TemplateDetails = () => {
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
-              </> : <Button onClick={handleEdit}>
+              </>
+            ) : (
+              <Button onClick={handleEdit}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Template
-              </Button>}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -290,21 +344,29 @@ const TemplateDetails = () => {
             </Card>
 
             {/* Participant Assignment */}
-            {isEditing && <Card>
+            {isEditing && (
+              <Card>
                 <CardHeader>
                   <CardTitle>Assigned Participants</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-4 gap-4">
-                    {participantOptions.map(participant => <div key={participant.value} className="flex items-center space-x-2">
-                        <Checkbox id={participant.value} checked={editFormData.assignedParticipants.includes(participant.value)} onCheckedChange={checked => handleParticipantToggle(participant.value, checked as boolean)} />
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {participantOptions.map(participant => (
+                      <div key={participant.value} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={participant.value}
+                          checked={editFormData.assignedParticipants.includes(participant.value)}
+                          onCheckedChange={(checked) => handleParticipantToggle(participant.value, checked as boolean)}
+                        />
                         <Label htmlFor={participant.value} className="text-sm font-medium">
                           {participant.label}
                         </Label>
-                      </div>)}
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
-              </Card>}
+              </Card>
+            )}
 
             {/* Participant Forms Sections */}
             <Card>
@@ -313,34 +375,92 @@ const TemplateDetails = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {participantOptions.map(participant => {
-                const isAssigned = isEditing ? editFormData.assignedParticipants.includes(participant.value) : displayAssignedParticipants.includes(participant.value);
-                if (!isAssigned) return null;
-                return <div key={participant.value} className="space-y-3">
+                  const isAssigned = isEditing 
+                    ? editFormData.assignedParticipants.includes(participant.value) 
+                    : displayAssignedParticipants.includes(participant.value);
+                  
+                  if (!isAssigned) return null;
+
+                  return (
+                    <div key={participant.value} className="space-y-3 border rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-medium">{participant.label}</h3>
-                        <Badge variant="outline" className="text-xs">
-                          {isEditing ? editFormData.participantForms[participant.value].length : template.participantForms[participant.value].length} forms
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {isEditing 
+                              ? editFormData.participantForms[participant.value].length 
+                              : (template.participantForms[participant.value as keyof typeof template.participantForms]?.length || 0)
+                            } forms
+                          </Badge>
+                          {participant.hasOwnership && (
+                            <Badge variant="secondary" className="text-xs">
+                              Min {isEditing 
+                                ? editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds]
+                                : (template.ownershipThresholds?.[participant.value as keyof typeof template.ownershipThresholds] || 0)
+                              }% ownership
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       
-                      {isEditing ? <MultiSelectFormField value={editFormData.participantForms[participant.value]} onChange={forms => updateParticipantForms(participant.value, forms)} options={availableForms} placeholder={`Select forms for ${participant.label.toLowerCase()}...`} participantType={participant.value} showEntityTypeFilter={true} /> : <div className="space-y-2">
-                          {template.participantForms[participant.value].length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                              {template.participantForms[participant.value].map((form, index) => <div key={index} className="flex items-center gap-2 p-2 border rounded">
+                      {participant.hasOwnership && isEditing && (
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor={`ownership-${participant.value}`} className="text-sm">
+                            Minimum Ownership %:
+                          </Label>
+                          <Input
+                            id={`ownership-${participant.value}`}
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={editFormData.ownershipThresholds[participant.value as keyof typeof editFormData.ownershipThresholds]}
+                            onChange={(e) => updateOwnershipThreshold(
+                              participant.value as keyof typeof editFormData.ownershipThresholds, 
+                              Number(e.target.value)
+                            )}
+                            className="w-20"
+                          />
+                        </div>
+                      )}
+                      
+                      {isEditing ? (
+                        <MultiSelectFormField
+                          value={editFormData.participantForms[participant.value]}
+                          onChange={(forms) => updateParticipantForms(participant.value, forms)}
+                          options={availableForms}
+                          placeholder={`Select forms for ${participant.label.toLowerCase()}...`}
+                          participantType={participant.value}
+                          showEntityTypeFilter={true}
+                        />
+                      ) : (
+                        <div className="space-y-2">
+                          {(template.participantForms[participant.value as keyof typeof template.participantForms]?.length || 0) > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {(template.participantForms[participant.value as keyof typeof template.participantForms] || []).map((form, index) => (
+                                <div key={index} className="flex items-center gap-2 p-2 border rounded">
                                   <Badge variant="outline" className="text-xs">
                                     {index + 1}
                                   </Badge>
                                   <span className="text-sm">{form}</span>
-                                </div>)}
-                            </div> : <p className="text-sm text-muted-foreground">
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-muted-foreground">
                               No forms assigned for {participant.label.toLowerCase()}.
-                            </p>}
-                        </div>}
-                    </div>;
-              })}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 
-                {!isEditing && displayAssignedParticipants.length === 0 && <p className="text-sm text-muted-foreground">
+                {!isEditing && displayAssignedParticipants.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
                     No participants assigned to this template.
-                  </p>}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -385,6 +505,8 @@ const TemplateDetails = () => {
           </div>
         </div>
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default TemplateDetails;

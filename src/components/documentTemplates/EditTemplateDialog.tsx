@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DocumentGatheringTemplate } from '@/types/documentTemplate';
 import { Button } from '@/components/ui/button';
@@ -30,10 +31,11 @@ interface EditTemplateDialogProps {
 }
 
 const participantOptions = [
-  { value: 'borrowing_business' as const, label: 'Borrowing Business' },
-  { value: 'affiliated_business' as const, label: 'Affiliated Business' },
-  { value: 'owners' as const, label: 'Owners' },
-  { value: 'sellers' as const, label: 'Sellers' },
+  { value: 'borrowing_business' as const, label: 'Borrowing Business', hasOwnership: false },
+  { value: 'affiliated_business' as const, label: 'Affiliated Business', hasOwnership: true },
+  { value: 'owners' as const, label: 'Owners', hasOwnership: true },
+  { value: 'sellers' as const, label: 'Sellers', hasOwnership: true },
+  { value: 'guarantors' as const, label: 'Guarantors', hasOwnership: false },
 ];
 
 // Get all available forms (both business and individual)
@@ -49,7 +51,13 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       borrowing_business: [] as string[],
       affiliated_business: [] as string[],
       owners: [] as string[],
-      sellers: [] as string[]
+      sellers: [] as string[],
+      guarantors: [] as string[]
+    },
+    ownershipThresholds: {
+      affiliated_business: 0,
+      owners: 0,
+      sellers: 0
     },
     isActive: true
   });
@@ -61,7 +69,15 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
         loanType: template.loanType,
         amountMin: template.amountMin,
         amountMax: template.amountMax,
-        participantForms: template.participantForms,
+        participantForms: {
+          ...template.participantForms,
+          guarantors: template.participantForms.guarantors || []
+        },
+        ownershipThresholds: template.ownershipThresholds || {
+          affiliated_business: 0,
+          owners: 0,
+          sellers: 0
+        },
         isActive: template.isActive
       });
     }
@@ -80,6 +96,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
       amountMin: formData.amountMin,
       amountMax: formData.amountMax,
       participantForms: formData.participantForms,
+      ownershipThresholds: formData.ownershipThresholds,
       isActive: formData.isActive
     });
   };
@@ -94,6 +111,16 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
     }));
   };
 
+  const updateOwnershipThreshold = (participantType: keyof typeof formData.ownershipThresholds, value: number) => {
+    setFormData(prev => ({
+      ...prev,
+      ownershipThresholds: {
+        ...prev.ownershipThresholds,
+        [participantType]: value
+      }
+    }));
+  };
+
   // Determine entity type filter based on participant
   const getEntityTypeForParticipant = (participantType: string): 'Business' | 'Individual' | 'All' => {
     switch (participantType) {
@@ -102,7 +129,8 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
         return 'Business';
       case 'owners':
       case 'sellers':
-        return 'All'; // Owners and sellers can have both business and individual forms
+      case 'guarantors':
+        return 'All'; // These can have both business and individual forms
       default:
         return 'All';
     }
@@ -112,7 +140,7 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Document Gathering Template</DialogTitle>
           <DialogDescription>
@@ -174,8 +202,30 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
           <div className="space-y-6">
             <h3 className="text-lg font-medium">Forms by Participant Type</h3>
             {participantOptions.map((participant) => (
-              <div key={participant.value} className="space-y-2">
-                <Label>{participant.label}</Label>
+              <div key={participant.value} className="space-y-4 border rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-base font-medium">{participant.label}</Label>
+                  {participant.hasOwnership && (
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={`ownership-${participant.value}`} className="text-sm">
+                        Min Ownership %:
+                      </Label>
+                      <Input
+                        id={`ownership-${participant.value}`}
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds]}
+                        onChange={(e) => updateOwnershipThreshold(
+                          participant.value as keyof typeof formData.ownershipThresholds, 
+                          Number(e.target.value)
+                        )}
+                        className="w-20"
+                        placeholder="0"
+                      />
+                    </div>
+                  )}
+                </div>
                 <MultiSelectFormField
                   value={formData.participantForms[participant.value]}
                   onChange={(forms) => updateParticipantForms(participant.value, forms)}
@@ -184,6 +234,11 @@ export const EditTemplateDialog = ({ template, open, onOpenChange, onUpdate }: E
                   participantType={participant.value}
                   showEntityTypeFilter={true}
                 />
+                {participant.hasOwnership && (
+                  <p className="text-xs text-muted-foreground">
+                    Forms will be required when {participant.label.toLowerCase()} ownership is {formData.ownershipThresholds[participant.value as keyof typeof formData.ownershipThresholds]}% or higher
+                  </p>
+                )}
               </div>
             ))}
           </div>
