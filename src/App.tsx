@@ -1,80 +1,98 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from '@/components/ui/sonner';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { AlertProvider } from '@/components/alerts/AlertContext';
-import { QueryClient } from '@tanstack/react-query';
-import RequireAuth from '@/components/RequireAuth';
-import Home from '@/pages/Home';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import Dashboard from '@/pages/Dashboard';
-import Public from '@/pages/Public';
-import Profile from '@/pages/Profile';
-import Admin from '@/pages/Admin';
-import Unauthorized from '@/pages/Unauthorized';
-import Missing from '@/pages/Missing';
-import Editor from '@/pages/Editor';
-import LinkPage from '@/pages/LinkPage';
-import Lounge from '@/pages/Lounge';
-import Layout from '@/components/Layout';
-import LenderSettings from '@/pages/LenderSettings';
-import TemplateDetails from '@/pages/TemplateDetails';
-import IntegrationDetails from '@/pages/IntegrationDetails';
 
-function App() {
-  return (
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load pages to implement code-splitting (microservices approach)
+const Index = lazy(() => import("./pages/Index"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Project = lazy(() => import("./pages/Project"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const CreateProject = lazy(() => import("./pages/CreateProject"));
+const UseOfProceeds = lazy(() => import("./pages/UseOfProceeds"));
+const CashFlowAnalysis = lazy(() => import("./pages/CashFlowAnalysis"));
+const FormView = lazy(() => import("./pages/FormView"));
+const PersonalInformation = lazy(() => import("./pages/PersonalInformation"));
+// Add new page imports here
+const ProjectAnalysis = lazy(() => import("./pages/ProjectAnalysis"));
+const ProjectDocumentation = lazy(() => import("./pages/ProjectDocumentation"));
+const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const DropdownDetails = lazy(() => import("./pages/DropdownDetails"));
+const LenderSettings = lazy(() => import("./pages/LenderSettings"));
+const TemplateDetails = lazy(() => import("./pages/TemplateDetails"));
+const BusinessInformation = lazy(() => import("./pages/BusinessInformation"));
+const LoanDetails = lazy(() => import("./pages/LoanDetails"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="container py-20 px-4">
+    <div className="space-y-8 max-w-6xl mx-auto">
+      <Skeleton className="h-12 w-3/4" />
+      <Skeleton className="h-72 w-full" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    </div>
+  </div>
+);
+
+// Create a new QueryClient with specific settings for better error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <AlertProvider>
-        <QueryClient>
-          <Router>
-            <div className="min-h-screen bg-background">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AnimatePresence mode="wait">
+            <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route path="/" element={<Layout />} >
-                  {/* public routes */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="login" element={<Login />} />
-                  <Route path="register" element={<Register />} />
-                  <Route path="linkpage" element={<LinkPage />} />
-                  <Route path="unauthorized" element={<Unauthorized />} />
-
-                  {/* we want to protect these routes */}
-                  <Route element={<RequireAuth allowedRoles={['User', 'Editor', 'Admin']} />}>
-                    <Route path="dashboard" element={<Dashboard />} />
-                  </Route>
-
-                  <Route element={<RequireAuth allowedRoles={['Admin']} />}>
-                    <Route path="admin" element={<Admin />} />
-                  </Route>
-
-                  <Route element={<RequireAuth allowedRoles={['Editor']} />}>
-                    <Route path="editor" element={<Editor />} />
-                  </Route>
-
-                  <Route element={<RequireAuth allowedRoles={['Lender']} />}>
-                    <Route path="lender" element={<Lounge />} />
-                  </Route>
-
-                  <Route element={<RequireAuth allowedRoles={['Editor', 'Admin']} />}>
-                    <Route path="lounge" element={<Lounge />} />
-                  </Route>
-
-                  {/* Catch all */}
-                  <Route path="*" element={<Missing />} />
-                </Route>
-                <Route path="/public" element={<Public />} />
-                <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-                <Route path="/lender-settings" element={<RequireAuth><LenderSettings /></RequireAuth>} />
-                <Route path="/lender-settings/integrations/:integrationId" element={<RequireAuth><IntegrationDetails /></RequireAuth>} />
-                <Route path="/lender-settings/template/:templateId" element={<RequireAuth><TemplateDetails /></RequireAuth>} />
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={<Navigate to="/projects" replace />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/project/:projectId" element={<Project />} />
+                <Route path="/create-project" element={<CreateProject />} />
+                <Route path="/project/participants/:projectId/personal-info/:participantId" element={<PersonalInformation />} />
+                <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
+                <Route path="/project/cash-flow/:projectId" element={<CashFlowAnalysis />} />
+                <Route path="/form/:formId" element={<FormView />} />
+                {/* Add new routes for our sections */}
+                <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
+                <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
+                <Route path="/business/:projectId" element={<BusinessInformation />} />
+                <Route path="/project/:projectId/loan/:loanId" element={<LoanDetails />} />
+                {/* Redirect project dashboard to project detail */}
+                <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
+                <Route path="/admin-settings" element={<AdminSettings />} />
+                <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
+                <Route path="/lender-settings" element={<LenderSettings />} />
+                <Route path="/lender-settings/template/:templateId" element={<TemplateDetails />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
-              <Toaster />
-            </div>
-          </Router>
-        </QueryClient>
-      </AlertProvider>
+            </Suspense>
+          </AnimatePresence>
+        </BrowserRouter>
+      </TooltipProvider>
     </AuthProvider>
-  );
-}
+  </QueryClientProvider>
+);
 
 export default App;
