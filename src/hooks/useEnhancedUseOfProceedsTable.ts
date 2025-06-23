@@ -1,11 +1,15 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { UseOfProceedsColumn, UseOfProceedsRow } from '@/components/useOfProceeds/EnhancedUseOfProceedsTable';
 import { useTableData } from '@/hooks/useTableData';
 import { useUseOfProceedsColumns } from '@/hooks/useUseOfProceedsColumns';
 import { useUseOfProceedsRows } from '@/hooks/useUseOfProceedsRows';
 import { useUseOfProceedsEditData } from '@/hooks/useUseOfProceedsEditData';
 import { categoryOptions } from '@/components/useOfProceeds/categoryOptions';
+import { useQuery } from '@tanstack/react-query';
+import { getProjectById } from '@/lib/mockData/utilities';
+import { useParams } from 'react-router-dom';
+import { Project, isProject, Loan } from '@/types/project';
 
 interface UseEnhancedUseOfProceedsTableProps {
   projectId: string;
@@ -26,17 +30,74 @@ export const useEnhancedUseOfProceedsTable = ({
   initialData,
   onSave
 }: UseEnhancedUseOfProceedsTableProps) => {
-  // Initialize with all default columns
-  const initialColumns: UseOfProceedsColumn[] = [
-    { column_id: 'col_1', column_name: 'Borrower Equity', is_loan: false },
-    { column_id: 'col_2', column_name: 'Borrower Contribution', is_loan: false },
-    { column_id: 'col_3', column_name: 'Seller or Participant', is_loan: true, interest_rate: 5, term_years: 10, amortization_months: 120 },
-    { column_id: 'col_4', column_name: 'Seller (Standby)', is_loan: true, interest_rate: 5, term_years: 10, amortization_months: 120 },
-    { column_id: 'col_5', column_name: '7(a)', is_loan: true, interest_rate: 6, term_years: 25, amortization_months: 300 },
-    { column_id: 'col_6', column_name: '504', is_loan: true, interest_rate: 5.5, term_years: 25, amortization_months: 300 },
-    { column_id: 'col_7', column_name: 'Express', is_loan: true, interest_rate: 7, term_years: 10, amortization_months: 120 },
-    { column_id: 'col_8', column_name: 'Loan 4', is_loan: true, interest_rate: 6, term_years: 15, amortization_months: 180 }
-  ];
+  // Fetch project data to get available loans
+  const { data: projectData } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => getProjectById(projectId || ''),
+    enabled: !!projectId,
+  });
+
+  const project: Project | null = projectData && isProject(projectData) ? projectData : null;
+  
+  // Get loans from the project - check both loans array and loan_types for compatibility
+  const projectLoans: Loan[] = useMemo(() => {
+    if (!project) return [];
+    
+    // First try to get from the loans array (new structure)
+    if (project.loans && Array.isArray(project.loans)) {
+      return project.loans;
+    }
+    
+    // Fallback to loan_types if loans array doesn't exist (legacy structure)
+    if (project.loan_types && Array.isArray(project.loan_types)) {
+      return project.loan_types.map((loanType, index) => {
+        // Handle both string and object loan types
+        if (typeof loanType === 'string') {
+          return {
+            loan_id: `loan_${index}`,
+            loan_type: loanType,
+            amount: 0,
+            business_id: project.main_business?.business_id || '',
+            status: 'active' as const
+          };
+        } else {
+          return {
+            loan_id: `loan_${index}`,
+            loan_type: loanType.type,
+            amount: loanType.amount,
+            rate: loanType.rate,
+            term: loanType.term,
+            payment: loanType.payment,
+            description: loanType.description,
+            business_id: project.main_business?.business_id || '',
+            status: 'active' as const
+          };
+        }
+      });
+    }
+    
+    return [];
+  }, [project]);
+
+  // Create initial columns with default columns + project loan columns
+  const initialColumns: UseOfProceedsColumn[] = useMemo(() => {
+    const defaultColumns: UseOfProceedsColumn[] = [
+      { column_id: 'col_borrower_equity', column_name: 'Borrower Equity', is_loan: false },
+      { column_id: 'col_borrower_contribution', column_name: 'Borrower Contribution', is_loan: false }
+    ];
+
+    // Add columns for each project loan
+    const loanColumns: UseOfProceedsColumn[] = projectLoans.map((loan, index) => ({
+      column_id: `col_loan_${loan.loan_id}`,
+      column_name: loan.loan_type,
+      is_loan: true,
+      interest_rate: loan.rate,
+      term_years: loan.term,
+      amortization_months: loan.term ? loan.term * 12 : undefined,
+    }));
+
+    return [...defaultColumns, ...loanColumns];
+  }, [projectLoans]);
 
   // Initialize with all category options as rows
   const initialRows: UseOfProceedsRow[] = [
