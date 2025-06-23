@@ -29,6 +29,7 @@ export interface Business {
   business_id: string;
   name: string;
   entity_type: string;
+  participant_type?: string; // Added this property
   description?: string;
   website?: string;
   founding_date?: string;

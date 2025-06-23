@@ -1,4 +1,3 @@
-
 export interface IntakeFormData {
   // Project Information
   project_name: string;
@@ -12,6 +11,7 @@ export interface IntakeFormData {
   // Business Information
   business_legal_name: string;
   business_dba_name?: string;
+  participant_type?: string; // Added this property
   
   // Contact Information
   primary_contact_name: string;
