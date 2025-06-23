@@ -1,16 +1,10 @@
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { useEnhancedUseOfProceedsTable } from '@/hooks/useEnhancedUseOfProceedsTable';
-
-// Import components
-import AddEnhancedColumnDialog from './AddEnhancedColumnDialog';
-import AddEnhancedRowDialog from './AddEnhancedRowDialog';
-import ProceedsTable from './ProceedsTable';
+import UseOfProceedsTableHeader from './UseOfProceedsTableHeader';
+import UseOfProceedsTableContent from './UseOfProceedsTableContent';
 import LoanSummary from './LoanSummary';
-import { TableHeader } from '@/components/ui/table';
-import TableActions from './TableActions';
-import { categoryOptions } from './categoryOptions';
+import UseOfProceedsDialogs from './UseOfProceedsDialogs';
 
 // Enhanced types
 export type UseOfProceedsColumn = {
@@ -82,54 +76,40 @@ const EnhancedUseOfProceedsTable: React.FC<EnhancedUseOfProceedsTableProps> = ({
 
   return (
     <div className="space-y-4">
-      <Card className="w-full overflow-hidden border-border/50">
-        <div className="p-4 flex justify-between items-center">
-          <h3 className="text-lg font-medium">Use of Proceeds</h3>
-          <TableActions 
-            editMode={editMode}
-            onEdit={() => setEditMode(true)}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            onAddColumn={() => setIsAddColumnDialogOpen(true)}
-            onAddRow={() => setIsAddRowDialogOpen(true)}
-          />
-        </div>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <ProceedsTable 
-              columns={columns}
-              rows={rows}
-              tableData={tableData}
-              editMode={editMode}
-              getCellValue={getCellValue}
-              handleValueChange={handleValueChange}
-              calculateColumnTotal={calculateColumnTotal}
-              calculateRowTotal={calculateRowTotal}
-              formatCurrency={formatCurrency}
-              handleDeleteColumn={handleDeleteColumn}
-              handleDeleteRow={handleDeleteRow}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="w-full overflow-hidden border-border/50">
+        <UseOfProceedsTableHeader 
+          editMode={editMode}
+          onEdit={() => setEditMode(true)}
+          onSave={handleSave}
+          onCancel={handleCancel}
+          onAddColumn={() => setIsAddColumnDialogOpen(true)}
+          onAddRow={() => setIsAddRowDialogOpen(true)}
+        />
+        <UseOfProceedsTableContent 
+          columns={columns}
+          rows={rows}
+          tableData={tableData}
+          editMode={editMode}
+          getCellValue={getCellValue}
+          handleValueChange={handleValueChange}
+          calculateColumnTotal={calculateColumnTotal}
+          calculateRowTotal={calculateRowTotal}
+          formatCurrency={formatCurrency}
+          handleDeleteColumn={handleDeleteColumn}
+          handleDeleteRow={handleDeleteRow}
+        />
+      </div>
       
       <LoanSummary columns={columns} formatCurrency={formatCurrency} />
       
-      {/* Column Dialog */}
-      <AddEnhancedColumnDialog 
-        isOpen={isAddColumnDialogOpen}
-        setIsOpen={setIsAddColumnDialogOpen}
-        onAddColumn={handleAddColumn}
-      />
-      
-      {/* Row Dialog - Using our updated component with multiple selection */}
-      <AddEnhancedRowDialog 
-        isOpen={isAddRowDialogOpen}
-        setIsOpen={setIsAddRowDialogOpen}
-        onAddRow={handleAddRow}
-        onAddMultipleRows={handleAddMultipleRows}
-        uniqueOverallCategories={[...new Set(categoryOptions.map(item => item.overall))]}
-        categoryOptions={categoryOptions}
+      <UseOfProceedsDialogs 
+        isAddColumnDialogOpen={isAddColumnDialogOpen}
+        isAddRowDialogOpen={isAddRowDialogOpen}
+        setIsAddColumnDialogOpen={setIsAddColumnDialogOpen}
+        setIsAddRowDialogOpen={setIsAddRowDialogOpen}
+        handleAddColumn={handleAddColumn}
+        handleAddRow={handleAddRow}
+        handleAddMultipleRows={handleAddMultipleRows}
         existingRows={existingRows}
       />
     </div>
