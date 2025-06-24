@@ -1,268 +1,193 @@
 
 export interface IndividualTaxReturnData {
   participant_id: string;
-  name: string;
+  participant_name: string;
   years: {
     [year: string]: {
-      adjustedGrossIncome: number;
-      householdMembers: number;
       wages: number;
-      interestDividend: number;
-      alimonyReceived: number;
-      iraDistributions: number;
-      pensionsAnnuities: number;
-      socialSecurityBenefits: number;
-      scheduleCIncome: number;
-      scheduleCDepreciation: number;
-      scheduleCInterest: number;
-      scheduleERentalIncome: number;
-      scheduleERentalInterest: number;
-      scheduleERentalDepreciation: number;
-      scheduleFIncome: number;
-      scheduleFInterest: number;
-      scheduleFDepreciation: number;
-      partnershipDistributions: number;
-      capitalContributions: number;
-      otherCashIncome: number;
-      federalStateTaxes: number;
-      otherExpenses: number;
+      interestDividends: number;
+      businessIncome: number;
+      capitalGains: number;
+      otherIncome: number;
+      adjustedGrossIncome: number;
+      itemizedDeductions: number;
+      taxableIncome: number;
+      federalTaxWithheld: number;
+      estimatedTaxPayments: number;
+      refundableCredits: number;
+      totalPayments: number;
+      balanceDue: number;
+      refund: number;
     };
   };
 }
 
 export const individualTaxReturnsData: IndividualTaxReturnData[] = [
   {
-    participant_id: "participant_1",
-    name: "John Thompson",
+    participant_id: "part_1",
+    participant_name: "Michael Chen",
     years: {
       "2023": {
-        adjustedGrossIncome: 185000,
-        householdMembers: 4,
-        wages: 165000,
-        interestDividend: 8500,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 0,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 45000,
-        scheduleCDepreciation: 12000,
-        scheduleCInterest: 2800,
-        scheduleERentalIncome: 28000,
-        scheduleERentalInterest: 5200,
-        scheduleERentalDepreciation: 8500,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 15000,
-        capitalContributions: -25000,
-        otherCashIncome: 8000,
-        federalStateTaxes: 42000,
-        otherExpenses: 18500
-      },
-      "2022": {
-        adjustedGrossIncome: 172000,
-        householdMembers: 4,
-        wages: 158000,
-        interestDividend: 6200,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 0,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 38000,
-        scheduleCDepreciation: 11500,
-        scheduleCInterest: 2600,
-        scheduleERentalIncome: 26400,
-        scheduleERentalInterest: 4800,
-        scheduleERentalDepreciation: 8200,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 12000,
-        capitalContributions: -20000,
-        otherCashIncome: 6500,
-        federalStateTaxes: 38500,
-        otherExpenses: 16800
-      },
-      "2021": {
-        adjustedGrossIncome: 168000,
-        householdMembers: 4,
-        wages: 155000,
-        interestDividend: 5800,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 0,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 32000,
-        scheduleCDepreciation: 10800,
-        scheduleCInterest: 2400,
-        scheduleERentalIncome: 25200,
-        scheduleERentalInterest: 4600,
-        scheduleERentalDepreciation: 7900,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 10000,
-        capitalContributions: -15000,
-        otherCashIncome: 5200,
-        federalStateTaxes: 36800,
-        otherExpenses: 15200
-      }
-    }
-  },
-  {
-    participant_id: "participant_2",
-    name: "Sarah Mitchell",
-    years: {
-      "2023": {
-        adjustedGrossIncome: 245000,
-        householdMembers: 2,
-        wages: 195000,
-        interestDividend: 15000,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 12000,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 85000,
-        scheduleCDepreciation: 18000,
-        scheduleCInterest: 4200,
-        scheduleERentalIncome: 0,
-        scheduleERentalInterest: 0,
-        scheduleERentalDepreciation: 0,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 35000,
-        capitalContributions: -45000,
-        otherCashIncome: 12000,
-        federalStateTaxes: 68000,
-        otherExpenses: 25000
-      },
-      "2022": {
-        adjustedGrossIncome: 232000,
-        householdMembers: 2,
         wages: 185000,
-        interestDividend: 12500,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 11500,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 78000,
-        scheduleCDepreciation: 16500,
-        scheduleCInterest: 3800,
-        scheduleERentalIncome: 0,
-        scheduleERentalInterest: 0,
-        scheduleERentalDepreciation: 0,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 32000,
-        capitalContributions: -40000,
-        otherCashIncome: 10500,
-        federalStateTaxes: 62000,
-        otherExpenses: 22500
+        interestDividends: 12500,
+        businessIncome: 45000,
+        capitalGains: 8500,
+        otherIncome: 3200,
+        adjustedGrossIncome: 254200,
+        itemizedDeductions: 28500,
+        taxableIncome: 225700,
+        federalTaxWithheld: 38500,
+        estimatedTaxPayments: 12000,
+        refundableCredits: 2500,
+        totalPayments: 53000,
+        balanceDue: 0,
+        refund: 1250
+      },
+      "2022": {
+        wages: 175000,
+        interestDividends: 9800,
+        businessIncome: 38000,
+        capitalGains: 15200,
+        otherIncome: 2800,
+        adjustedGrossIncome: 240800,
+        itemizedDeductions: 26800,
+        taxableIncome: 214000,
+        federalTaxWithheld: 35500,
+        estimatedTaxPayments: 10500,
+        refundableCredits: 2200,
+        totalPayments: 48200,
+        balanceDue: 2850,
+        refund: 0
       },
       "2021": {
-        adjustedGrossIncome: 218000,
-        householdMembers: 2,
-        wages: 175000,
-        interestDividend: 11000,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 11000,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 72000,
-        scheduleCDepreciation: 15000,
-        scheduleCInterest: 3500,
-        scheduleERentalIncome: 0,
-        scheduleERentalInterest: 0,
-        scheduleERentalDepreciation: 0,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 28000,
-        capitalContributions: -35000,
-        otherCashIncome: 9500,
-        federalStateTaxes: 58000,
-        otherExpenses: 20000
+        wages: 165000,
+        interestDividends: 8200,
+        businessIncome: 32000,
+        capitalGains: 6800,
+        otherIncome: 1500,
+        adjustedGrossIncome: 213500,
+        itemizedDeductions: 24500,
+        taxableIncome: 189000,
+        federalTaxWithheld: 32800,
+        estimatedTaxPayments: 8500,
+        refundableCredits: 1800,
+        totalPayments: 43100,
+        balanceDue: 0,
+        refund: 850
       }
     }
   },
   {
-    participant_id: "participant_3",
-    name: "Michael Chen",
+    participant_id: "part_2", 
+    participant_name: "Sarah Johnson",
     years: {
       "2023": {
-        adjustedGrossIncome: 125000,
-        householdMembers: 3,
-        wages: 95000,
-        interestDividend: 3200,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 0,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 45000,
-        scheduleCDepreciation: 8500,
-        scheduleCInterest: 1800,
-        scheduleERentalIncome: 0,
-        scheduleERentalInterest: 0,
-        scheduleERentalDepreciation: 0,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 0,
-        capitalContributions: 0,
-        otherCashIncome: 5000,
-        federalStateTaxes: 28000,
-        otherExpenses: 12000
+        wages: 125000,
+        interestDividends: 5500,
+        businessIncome: 0,
+        capitalGains: 3200,
+        otherIncome: 1800,
+        adjustedGrossIncome: 135500,
+        itemizedDeductions: 18500,
+        taxableIncome: 117000,
+        federalTaxWithheld: 22500,
+        estimatedTaxPayments: 3500,
+        refundableCredits: 1200,
+        totalPayments: 27200,
+        balanceDue: 0,
+        refund: 2850
       },
       "2022": {
-        adjustedGrossIncome: 118000,
-        householdMembers: 3,
-        wages: 92000,
-        interestDividend: 2800,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 0,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 38000,
-        scheduleCDepreciation: 7800,
-        scheduleCInterest: 1600,
-        scheduleERentalIncome: 0,
-        scheduleERentalInterest: 0,
-        scheduleERentalDepreciation: 0,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 0,
-        capitalContributions: 0,
-        otherCashIncome: 4200,
-        federalStateTaxes: 25500,
-        otherExpenses: 11000
+        wages: 118000,
+        interestDividends: 4800,
+        businessIncome: 0,
+        capitalGains: 2500,
+        otherIncome: 1200,
+        adjustedGrossIncome: 126500,
+        itemizedDeductions: 16800,
+        taxableIncome: 109700,
+        federalTaxWithheld: 21200,
+        estimatedTaxPayments: 2800,
+        refundableCredits: 1100,
+        totalPayments: 25100,
+        balanceDue: 0,
+        refund: 1950
       },
       "2021": {
-        adjustedGrossIncome: 112000,
-        householdMembers: 3,
-        wages: 88000,
-        interestDividend: 2500,
-        alimonyReceived: 0,
-        iraDistributions: 0,
-        pensionsAnnuities: 0,
-        socialSecurityBenefits: 0,
-        scheduleCIncome: 35000,
-        scheduleCDepreciation: 7200,
-        scheduleCInterest: 1500,
-        scheduleERentalIncome: 0,
-        scheduleERentalInterest: 0,
-        scheduleERentalDepreciation: 0,
-        scheduleFIncome: 0,
-        scheduleFInterest: 0,
-        scheduleFDepreciation: 0,
-        partnershipDistributions: 0,
-        capitalContributions: 0,
-        otherCashIncome: 3800,
-        federalStateTaxes: 23500,
-        otherExpenses: 10200
+        wages: 112000,
+        interestDividends: 3900,
+        businessIncome: 0,
+        capitalGains: 1800,
+        otherIncome: 900,
+        adjustedGrossIncome: 118600,
+        itemizedDeductions: 15200,
+        taxableIncome: 103400,
+        federalTaxWithheld: 19800,
+        estimatedTaxPayments: 2200,
+        refundableCredits: 950,
+        totalPayments: 22950,
+        balanceDue: 0,
+        refund: 1650
+      }
+    }
+  },
+  {
+    participant_id: "part_3",
+    participant_name: "David Rodriguez", 
+    years: {
+      "2023": {
+        wages: 295000,
+        interestDividends: 25500,
+        businessIncome: 125000,
+        capitalGains: 45800,
+        otherIncome: 8500,
+        adjustedGrossIncome: 499800,
+        itemizedDeductions: 65000,
+        taxableIncome: 434800,
+        federalTaxWithheld: 85500,
+        estimatedTaxPayments: 35000,
+        refundableCredits: 0,
+        totalPayments: 120500,
+        balanceDue: 18500,
+        refund: 0
+      },
+      "2022": {
+        wages: 285000,
+        interestDividends: 22800,
+        businessIncome: 98000,
+        capitalGains: 38200,
+        otherIncome: 6500,
+        adjustedGrossIncome: 450500,
+        itemizedDeductions: 58500,
+        taxableIncome: 392000,
+        federalTaxWithheld: 78500,
+        estimatedTaxPayments: 28000,
+        refundableCredits: 0,
+        totalPayments: 106500,
+        balanceDue: 12800,
+        refund: 0
+      },
+      "2021": {
+        wages: 275000,
+        interestDividends: 18500,
+        businessIncome: 85000,
+        capitalGains: 28900,
+        otherIncome: 4200,
+        adjustedGrossIncome: 411600,
+        itemizedDeductions: 52000,
+        taxableIncome: 359600,
+        federalTaxWithheld: 72500,
+        estimatedTaxPayments: 22000,
+        refundableCredits: 0,
+        totalPayments: 94500,
+        balanceDue: 8950,
+        refund: 0
       }
     }
   }
 ];
+
+// Utility function to get individual tax data by participant ID
+export const getIndividualTaxDataById = (participantId: string): IndividualTaxReturnData | undefined => {
+  return individualTaxReturnsData.find(data => data.participant_id === participantId);
+};
