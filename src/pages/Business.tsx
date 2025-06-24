@@ -91,14 +91,12 @@ const Business = () => {
         <div className="min-h-[400px]">
           {activeTab === 'info' && (
             <EditableBusinessInfoSection
-              projectId={projectId || ''}
               business={project.main_business}
             />
           )}
           
           {activeTab === 'forms' && (
             <EditableBusinessFormsSection
-              projectId={projectId || ''}
               business={project.main_business}
             />
           )}
