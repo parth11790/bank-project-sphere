@@ -12,11 +12,12 @@ const SellerBusiness = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // Mock business data
+  // Mock business data matching the correct Business interface
   const mockBusiness = {
-    id: 'seller-business-1',
+    business_id: 'seller-business-1',
     name: 'Seller Enterprises Inc',
-    entityType: 'Corporation',
+    entity_type: 'Corporation',
+    owner_id: 'user_3',
     ein: '11-2233445',
     dateEstablished: '2015-07-20',
     industryNaicsCode: '423450',
@@ -27,7 +28,18 @@ const SellerBusiness = () => {
     zipCode: '92101',
     phone: '(619) 555-0177',
     email: 'info@sellerenterprises.com',
-    website: 'www.sellerenterprises.com'
+    website: 'www.sellerenterprises.com',
+    financial_data: {
+      '2023': {
+        revenue: 1200000,
+        wages: 480000,
+        cogs: 520000,
+        gross_profit: 680000,
+        other_expenses: 180000,
+        total_noi: 220000,
+        nom_percentage: 18.3
+      }
+    }
   };
 
   // Mock owners data

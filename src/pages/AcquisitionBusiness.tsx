@@ -11,11 +11,12 @@ const AcquisitionBusiness = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // Mock business data
+  // Mock business data matching the correct Business interface
   const mockBusiness = {
-    id: 'acquisition-business-1',
+    business_id: 'acquisition-business-1',
     name: 'Target Acquisition Corp',
-    entityType: 'Corporation',
+    entity_type: 'Corporation',
+    owner_id: 'user_1',
     ein: '12-3456789',
     dateEstablished: '2020-01-15',
     industryNaicsCode: '541511',
@@ -26,7 +27,8 @@ const AcquisitionBusiness = () => {
     zipCode: '94105',
     phone: '(415) 555-0199',
     email: 'info@targetacquisition.com',
-    website: 'www.targetacquisition.com'
+    website: 'www.targetacquisition.com',
+    financial_data: {}
   };
 
   return (

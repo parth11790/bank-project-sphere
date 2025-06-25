@@ -13,11 +13,12 @@ const AffiliatedBusiness = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // Mock business data
+  // Mock business data matching the correct Business interface
   const mockBusiness = {
-    id: 'affiliated-business-1',
+    business_id: 'affiliated-business-1',
     name: 'Affiliated Ventures LLC',
-    entityType: 'LLC',
+    entity_type: 'LLC',
+    owner_id: 'user_4',
     ein: '55-6677889',
     dateEstablished: '2019-11-05',
     industryNaicsCode: '541990',
@@ -28,7 +29,18 @@ const AffiliatedBusiness = () => {
     zipCode: '95814',
     phone: '(916) 555-0166',
     email: 'info@affiliatedventures.com',
-    website: 'www.affiliatedventures.com'
+    website: 'www.affiliatedventures.com',
+    financial_data: {
+      '2023': {
+        revenue: 720000,
+        wages: 280000,
+        cogs: 240000,
+        gross_profit: 480000,
+        other_expenses: 140000,
+        total_noi: 160000,
+        nom_percentage: 22.2
+      }
+    }
   };
 
   // Mock owners data

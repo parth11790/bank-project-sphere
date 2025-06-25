@@ -12,11 +12,12 @@ const OwnerBusiness = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // Mock business data
+  // Mock business data matching the correct Business interface
   const mockBusiness = {
-    id: 'owner-business-1',
+    business_id: 'owner-business-1',
     name: 'Owner Holdings LLC',
-    entityType: 'LLC',
+    entity_type: 'LLC',
+    owner_id: 'user_2',
     ein: '98-7654321',
     dateEstablished: '2018-03-10',
     industryNaicsCode: '531120',
@@ -27,7 +28,18 @@ const OwnerBusiness = () => {
     zipCode: '90210',
     phone: '(310) 555-0188',
     email: 'contact@ownerholdings.com',
-    website: 'www.ownerholdings.com'
+    website: 'www.ownerholdings.com',
+    financial_data: {
+      '2022': {
+        revenue: 850000,
+        wages: 320000,
+        cogs: 370000,
+        gross_profit: 480000,
+        other_expenses: 110000,
+        total_noi: 120000,
+        nom_percentage: 14.1
+      }
+    }
   };
 
   // Mock owners data

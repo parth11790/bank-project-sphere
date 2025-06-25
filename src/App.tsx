@@ -99,6 +99,8 @@ const App = () => (
                 <Route path="/lender-settings" element={<LenderSettings />} />
                 <Route path="/lender-settings/template/:templateId" element={<TemplateDetails />} />
                 <Route path="/lender-settings/integration/:integrationId" element={<IntegrationDetails />} />
+                {/* Add settings route redirect */}
+                <Route path="/settings" element={<Navigate to="/admin-settings" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
