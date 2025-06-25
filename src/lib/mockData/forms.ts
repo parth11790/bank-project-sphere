@@ -1,20 +1,9 @@
-
 import { FormTemplate, Document } from '@/types/form';
 
 export const individualFormsData: FormTemplate[] = [
   { 
-    form_id: "pif_001", 
-    name: "Personal Information Form", 
-    entity_type: "individual" 
-  },
-  { 
     form_id: "networth_001", 
     name: "Net Worth Assessment", 
-    entity_type: "individual" 
-  },
-  { 
-    form_id: "pfs_001", 
-    name: "Personal Financial Statement", 
     entity_type: "individual" 
   },
   { 
