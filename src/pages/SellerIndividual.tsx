@@ -21,7 +21,7 @@ const SellerIndividual = () => {
       first_name: 'John',
       last_name: 'Seller',
       middle_name: 'Michael',
-      phone: '(555) 123-4567',
+      primary_phone_number: '(555) 123-4567',
       email: 'john.seller@email.com',
       address: '789 Seller Street',
       city: 'Los Angeles',

@@ -7,6 +7,7 @@ import { ArrowLeft, Building2 } from 'lucide-react';
 import BusinessInfoSection from '@/components/business/BusinessInfoSection';
 import BusinessOwnershipSection from '@/components/business/BusinessOwnershipSection';
 import BusinessFormsSection from '@/components/business/BusinessFormsSection';
+import AffiliatedBusinessOwnershipSection from '@/components/business/AffiliatedBusinessOwnershipSection';
 
 const OwnerBusiness = () => {
   const { projectId } = useParams();
@@ -87,6 +88,7 @@ const OwnerBusiness = () => {
           <BusinessInfoSection business={mockBusiness} />
           <BusinessFormsSection business={mockBusiness} />
           <BusinessOwnershipSection projectId={projectId || ''} owners={mockOwners} />
+          <AffiliatedBusinessOwnershipSection projectId={projectId || ''} owners={mockOwners} />
         </div>
       </div>
     </Layout>
