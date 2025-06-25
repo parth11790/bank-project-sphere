@@ -28,6 +28,12 @@ const LenderSettings = lazy(() => import("./pages/LenderSettings"));
 const TemplateDetails = lazy(() => import("./pages/TemplateDetails"));
 const BusinessInformation = lazy(() => import("./pages/BusinessInformation"));
 const LoanDetails = lazy(() => import("./pages/LoanDetails"));
+// New pages for "To Be Created" status
+const OwnerBusiness = lazy(() => import("./pages/OwnerBusiness"));
+const AffiliatedBusiness = lazy(() => import("./pages/AffiliatedBusiness"));
+const AcquisitionBusiness = lazy(() => import("./pages/AcquisitionBusiness"));
+const SellerIndividual = lazy(() => import("./pages/SellerIndividual"));
+const SellerBusiness = lazy(() => import("./pages/SellerBusiness"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -79,6 +85,12 @@ const App = () => (
                 <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
                 <Route path="/business/:projectId" element={<BusinessInformation />} />
                 <Route path="/project/:projectId/loan/:loanId" element={<LoanDetails />} />
+                {/* New routes for "To Be Created" pages */}
+                <Route path="/owner-business/:projectId" element={<OwnerBusiness />} />
+                <Route path="/affiliated-business/:projectId" element={<AffiliatedBusiness />} />
+                <Route path="/acquisition-business/:projectId" element={<AcquisitionBusiness />} />
+                <Route path="/seller-individual/:projectId" element={<SellerIndividual />} />
+                <Route path="/seller-business/:projectId" element={<SellerBusiness />} />
                 {/* Redirect project dashboard to project detail */}
                 <Route path="/project/dashboard/:projectId" element={<Navigate to="/project/:projectId" replace />} />
                 <Route path="/admin-settings" element={<AdminSettings />} />

@@ -35,7 +35,7 @@ export const pageConfigurations: PageConfiguration[] = [
     route: '/owner-business',
     entityType: 'business',
     assignedSections: ['business_information', 'forms', 'business_ownership'],
-    exists: false
+    exists: true
   },
   {
     id: 'affiliated_business',
@@ -44,7 +44,7 @@ export const pageConfigurations: PageConfiguration[] = [
     route: '/affiliated-business',
     entityType: 'business',
     assignedSections: ['business_information', 'forms', 'business_ownership', 'affiliated_business_ownership'],
-    exists: false
+    exists: true
   },
   {
     id: 'acquisition_business',
@@ -53,7 +53,7 @@ export const pageConfigurations: PageConfiguration[] = [
     route: '/acquisition-business',
     entityType: 'business',
     assignedSections: ['business_information', 'forms'],
-    exists: false
+    exists: true
   },
   {
     id: 'seller_individual',
@@ -62,7 +62,7 @@ export const pageConfigurations: PageConfiguration[] = [
     route: '/seller-individual',
     entityType: 'individual',
     assignedSections: ['personal_information', 'personal_details', 'forms'],
-    exists: false
+    exists: true
   },
   {
     id: 'seller_business',
@@ -71,6 +71,6 @@ export const pageConfigurations: PageConfiguration[] = [
     route: '/seller-business',
     entityType: 'business',
     assignedSections: ['business_information', 'forms', 'business_ownership'],
-    exists: false
+    exists: true
   }
 ];
