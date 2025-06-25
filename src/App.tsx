@@ -13,6 +13,8 @@ import ParticipantDetails from '@/pages/ParticipantDetails';
 const queryClient = new QueryClient();
 
 function App() {
+  console.log('App component rendered - Routes configured');
+  
   return (
     <Router>
       <QueryClientProvider client={queryClient}>
@@ -22,7 +24,14 @@ function App() {
             <Routes>
               <Route path="/" element={<Projects />} />
               <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
-              <Route path="/project/:projectId" element={<RequireAuth><Project /></RequireAuth>} />
+              <Route 
+                path="/project/:projectId" 
+                element={
+                  <RequireAuth>
+                    <Project />
+                  </RequireAuth>
+                } 
+              />
               <Route path="/business/:projectId" element={<RequireAuth><Business /></RequireAuth>} />
               
               {/* Add new participant details route */}

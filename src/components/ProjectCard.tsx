@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -28,12 +27,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   // Calculate time since last update
   const updatedTimeAgo = formatDistanceToNow(new Date(project.updated_at), { addSuffix: true });
 
-  // Handle card click with better error handling
+  // Handle card click with enhanced debugging
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('ProjectCard clicked, navigating to:', `/project/${project.project_id}`);
+    e.stopPropagation();
+    
+    const targetRoute = `/project/${project.project_id}`;
+    console.log('ProjectCard clicked!');
+    console.log('Project ID:', project.project_id);
+    console.log('Target route:', targetRoute);
+    console.log('Current location:', window.location.href);
+    
     try {
-      navigate(`/project/${project.project_id}`);
+      console.log('Attempting navigation...');
+      navigate(targetRoute);
+      console.log('Navigate function called successfully');
+      
+      // Add a small delay to check if navigation happened
+      setTimeout(() => {
+        console.log('After navigation - Current location:', window.location.href);
+      }, 100);
+      
     } catch (error) {
       console.error('Navigation error:', error);
     }
