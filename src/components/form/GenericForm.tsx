@@ -9,22 +9,22 @@ const GenericForm: React.FC = () => {
     <>
       <div>
         <Label htmlFor="full-name">Full Name</Label>
-        <Input id="full-name" name="full-name" placeholder="Enter your full name" />
+        <Input id="full-name" placeholder="Enter your full name" />
       </div>
       
       <div>
         <Label htmlFor="email">Email Address</Label>
-        <Input id="email" name="email" type="email" placeholder="Enter your email" />
+        <Input id="email" type="email" placeholder="Enter your email" />
       </div>
       
       <div>
         <Label htmlFor="phone">Phone Number</Label>
-        <Input id="phone" name="phone" placeholder="Enter your phone number" />
+        <Input id="phone" placeholder="Enter your phone number" />
       </div>
       
       <div>
         <Label htmlFor="address">Address</Label>
-        <Textarea id="address" name="address" placeholder="Enter your address" />
+        <Textarea id="address" placeholder="Enter your address" />
       </div>
     </>
   );

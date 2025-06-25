@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -27,30 +28,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   // Calculate time since last update
   const updatedTimeAgo = formatDistanceToNow(new Date(project.updated_at), { addSuffix: true });
 
-  // Handle card click with enhanced debugging
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const targetRoute = `/project/${project.project_id}`;
-    console.log('ProjectCard clicked!');
-    console.log('Project ID:', project.project_id);
-    console.log('Target route:', targetRoute);
-    console.log('Current location:', window.location.href);
-    
-    try {
-      console.log('Attempting navigation...');
-      navigate(targetRoute);
-      console.log('Navigate function called successfully');
-      
-      // Add a small delay to check if navigation happened
-      setTimeout(() => {
-        console.log('After navigation - Current location:', window.location.href);
-      }, 100);
-      
-    } catch (error) {
-      console.error('Navigation error:', error);
-    }
+  // Handle card click
+  const handleCardClick = () => {
+    navigate(`/project/${project.project_id}`);
   };
 
   const location = project.city && project.state 
@@ -64,7 +44,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   return (
     <Card 
-      className="overflow-hidden border-border/30 hover:border-border transition-colors duration-200 cursor-pointer hover:shadow-md"
+      className="overflow-hidden border-border/30 hover:border-border transition-colors duration-200 cursor-pointer"
       onClick={handleCardClick}
     >
       <CardHeader className="pb-2">

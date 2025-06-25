@@ -19,7 +19,6 @@ import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
 import BorrowerOwnershipSection from '@/components/project/BorrowerOwnershipSection';
 import { ReferralSection } from '@/components/referral/ReferralSection';
-import ProjectParticipantStructure from '@/components/project/ProjectParticipantStructure';
 
 const Project = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -27,9 +26,7 @@ const Project = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [showReferralSection, setShowReferralSection] = useState(false);
   
-  console.log('Project page loaded with projectId:', projectId);
-  
-  const { data: project, isLoading: projectLoading, error: projectError } = useQuery({
+  const { data: project, isLoading: projectLoading } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId
@@ -49,26 +46,13 @@ const Project = () => {
 
   const isLoading = projectLoading || participantsLoading || referralLoading;
 
-  console.log('Project query state:', { 
-    projectId, 
-    isLoading, 
-    project: !!project, 
-    projectError,
-    projectLoading,
-    participantsLoading,
-    referralLoading 
-  });
-
   if (isLoading) {
     return <ProjectLoadingState />;
   }
 
   if (!project) {
-    console.log('No project found for ID:', projectId);
     return <ProjectNotFound onBackToProjects={() => navigate('/projects')} />;
   }
-
-  console.log('Project loaded successfully:', project.project_name);
 
   const projectData = project as ProjectType;
   const participantsData = participants || [] as ParticipantWithDetails[];
@@ -129,11 +113,6 @@ const Project = () => {
         {/* Borrower and Ownership Information Section */}
         <div className="space-y-6">
           <BorrowerOwnershipSection project={projectData} />
-        </div>
-
-        {/* Add Systematic Participant Structure Section */}
-        <div className="space-y-6">
-          <ProjectParticipantStructure project={projectData} />
         </div>
 
         {/* Business Structure Section */}
