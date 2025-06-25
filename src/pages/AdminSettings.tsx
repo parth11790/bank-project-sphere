@@ -28,6 +28,7 @@ import { getFormTemplatesData } from '@/lib/mockDataServices/formService';
 import { FormTemplate } from '@/types/form';
 import { toast } from 'sonner';
 import { InterestRatesManager } from '@/components/admin/InterestRatesManager';
+import { SectionConfigurationManager } from '@/components/admin/SectionConfigurationManager';
 
 const AdminSettings = () => {
   const navigate = useNavigate();
@@ -136,7 +137,7 @@ const AdminSettings = () => {
         <Separator className="my-6" />
         
         <Tabs defaultValue="dropdowns" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="dropdowns" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Dropdown Values
@@ -144,6 +145,10 @@ const AdminSettings = () => {
             <TabsTrigger value="forms" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Forms
+            </TabsTrigger>
+            <TabsTrigger value="sections" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Section Configuration
             </TabsTrigger>
             <TabsTrigger value="interest-rates" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -349,6 +354,10 @@ const AdminSettings = () => {
                 </TableBody>
               </Table>
             </div>
+          </TabsContent>
+
+          <TabsContent value="sections" className="space-y-6">
+            <SectionConfigurationManager />
           </TabsContent>
 
           <TabsContent value="interest-rates" className="space-y-6">
