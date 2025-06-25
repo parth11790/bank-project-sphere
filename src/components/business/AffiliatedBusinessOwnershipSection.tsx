@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -162,7 +161,7 @@ const AffiliatedBusinessOwnershipSection: React.FC<AffiliatedBusinessOwnershipSe
   };
 
   const handleBusinessClick = (businessId: string) => {
-    navigate(`/business/${businessId}`);
+    navigate(`/affiliated-business/${projectId}`);
   };
 
   const handleAddBusiness = () => {

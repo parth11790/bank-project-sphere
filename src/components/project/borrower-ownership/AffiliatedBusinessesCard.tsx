@@ -29,7 +29,7 @@ const AffiliatedBusinessesCard: React.FC<AffiliatedBusinessesCardProps> = ({ pro
   };
 
   const handleAffiliatedBusinessClick = (businessId: string) => {
-    navigate(`/business/${businessId}`);
+    navigate(`/affiliated-business/${project.project_id}`);
   };
 
   return (
