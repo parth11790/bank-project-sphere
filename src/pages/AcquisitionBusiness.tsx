@@ -11,6 +11,24 @@ const AcquisitionBusiness = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
+  // Mock business data
+  const mockBusiness = {
+    id: 'acquisition-business-1',
+    name: 'Target Acquisition Corp',
+    entityType: 'Corporation',
+    ein: '12-3456789',
+    dateEstablished: '2020-01-15',
+    industryNaicsCode: '541511',
+    description: 'Technology consulting and software development services',
+    address: '789 Innovation Drive',
+    city: 'San Francisco',
+    state: 'CA',
+    zipCode: '94105',
+    phone: '(415) 555-0199',
+    email: 'info@targetacquisition.com',
+    website: 'www.targetacquisition.com'
+  };
+
   return (
     <Layout>
       <div className="container mx-auto py-6 space-y-8">
@@ -31,8 +49,8 @@ const AcquisitionBusiness = () => {
         </div>
 
         <div className="space-y-6">
-          <BusinessInfoSection />
-          <BusinessFormsSection />
+          <BusinessInfoSection business={mockBusiness} />
+          <BusinessFormsSection business={mockBusiness} />
         </div>
       </div>
     </Layout>

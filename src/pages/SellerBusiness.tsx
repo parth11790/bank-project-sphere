@@ -12,6 +12,44 @@ const SellerBusiness = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
+  // Mock business data
+  const mockBusiness = {
+    id: 'seller-business-1',
+    name: 'Seller Enterprises Inc',
+    entityType: 'Corporation',
+    ein: '11-2233445',
+    dateEstablished: '2015-07-20',
+    industryNaicsCode: '423450',
+    description: 'Medical equipment and supplies distribution',
+    address: '123 Commerce Street',
+    city: 'San Diego',
+    state: 'CA',
+    zipCode: '92101',
+    phone: '(619) 555-0177',
+    email: 'info@sellerenterprises.com',
+    website: 'www.sellerenterprises.com'
+  };
+
+  // Mock owners data
+  const mockOwners = [
+    {
+      id: 'seller-owner-1',
+      name: 'Robert Davis',
+      entityType: 'Individual' as const,
+      ownershipPercentage: 55.0,
+      title: 'CEO & President',
+      email: 'robert.davis@sellerenterprises.com'
+    },
+    {
+      id: 'seller-owner-2',
+      name: 'Jennifer Martinez',
+      entityType: 'Individual' as const,
+      ownershipPercentage: 45.0,
+      title: 'COO & Vice President',
+      email: 'jennifer.martinez@sellerenterprises.com'
+    }
+  ];
+
   return (
     <Layout>
       <div className="container mx-auto py-6 space-y-8">
@@ -32,9 +70,9 @@ const SellerBusiness = () => {
         </div>
 
         <div className="space-y-6">
-          <BusinessInfoSection />
-          <BusinessFormsSection />
-          <BusinessOwnershipSection />
+          <BusinessInfoSection business={mockBusiness} />
+          <BusinessFormsSection business={mockBusiness} />
+          <BusinessOwnershipSection projectId={projectId || ''} owners={mockOwners} />
         </div>
       </div>
     </Layout>
