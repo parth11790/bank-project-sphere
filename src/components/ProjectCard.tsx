@@ -28,9 +28,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   // Calculate time since last update
   const updatedTimeAgo = formatDistanceToNow(new Date(project.updated_at), { addSuffix: true });
 
-  // Handle card click
-  const handleCardClick = () => {
-    navigate(`/project/${project.project_id}`);
+  // Handle card click with better error handling
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('ProjectCard clicked, navigating to:', `/project/${project.project_id}`);
+    try {
+      navigate(`/project/${project.project_id}`);
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
   };
 
   const location = project.city && project.state 
@@ -44,7 +50,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
   return (
     <Card 
-      className="overflow-hidden border-border/30 hover:border-border transition-colors duration-200 cursor-pointer"
+      className="overflow-hidden border-border/30 hover:border-border transition-colors duration-200 cursor-pointer hover:shadow-md"
       onClick={handleCardClick}
     >
       <CardHeader className="pb-2">

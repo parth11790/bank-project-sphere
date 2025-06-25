@@ -27,7 +27,9 @@ const Project = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [showReferralSection, setShowReferralSection] = useState(false);
   
-  const { data: project, isLoading: projectLoading } = useQuery({
+  console.log('Project page loaded with projectId:', projectId);
+  
+  const { data: project, isLoading: projectLoading, error: projectError } = useQuery({
     queryKey: ['project', projectId],
     queryFn: () => getProjectById(projectId || ''),
     enabled: !!projectId
@@ -47,13 +49,26 @@ const Project = () => {
 
   const isLoading = projectLoading || participantsLoading || referralLoading;
 
+  console.log('Project query state:', { 
+    projectId, 
+    isLoading, 
+    project: !!project, 
+    projectError,
+    projectLoading,
+    participantsLoading,
+    referralLoading 
+  });
+
   if (isLoading) {
     return <ProjectLoadingState />;
   }
 
   if (!project) {
+    console.log('No project found for ID:', projectId);
     return <ProjectNotFound onBackToProjects={() => navigate('/projects')} />;
   }
+
+  console.log('Project loaded successfully:', project.project_name);
 
   const projectData = project as ProjectType;
   const participantsData = participants || [] as ParticipantWithDetails[];
