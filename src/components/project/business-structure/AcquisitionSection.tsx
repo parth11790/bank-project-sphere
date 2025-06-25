@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Building2, MapPin, DollarSign, Globe, Plus } from 'lucide-react';
 import { Project } from '@/types/project';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 interface AcquisitionSectionProps {
   project: Project;
@@ -13,6 +15,8 @@ interface AcquisitionSectionProps {
 const AcquisitionSection: React.FC<AcquisitionSectionProps> = ({
   project
 }) => {
+  const navigate = useNavigate();
+
   // Mock data for acquired businesses - in real app this would come from project data
   const acquiredBusinesses = [{
     id: 'acq_1',
@@ -56,6 +60,10 @@ const AcquisitionSection: React.FC<AcquisitionSectionProps> = ({
     // This would typically open a dialog or navigate to an add business page
   };
 
+  const handleRowClick = (businessId: string) => {
+    navigate(`/acquisition-business/${project.project_id}`);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -90,7 +98,11 @@ const AcquisitionSection: React.FC<AcquisitionSectionProps> = ({
               </TableHeader>
               <TableBody>
                 {acquiredBusinesses.map(business => (
-                  <TableRow key={business.id}>
+                  <TableRow 
+                    key={business.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleRowClick(business.id)}
+                  >
                     <TableCell className="font-medium">{business.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{business.type}</Badge>
@@ -117,6 +129,7 @@ const AcquisitionSection: React.FC<AcquisitionSectionProps> = ({
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-sm text-primary hover:underline"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {business.website}
                           </a>
