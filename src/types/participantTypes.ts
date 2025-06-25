@@ -26,6 +26,9 @@ export interface ParticipantClassification {
   // Navigation and display
   info_route: string; // Where to navigate for this participant's info
   display_section: 'business' | 'personal';
+  
+  // Add metadata property to hold business/individual data
+  metadata?: any;
 }
 
 // Helper functions for participant classification
@@ -52,6 +55,7 @@ export const createParticipantClassification = (
     ownership_percentage?: number;
     parent_business_id?: string;
     affiliated_to_owner_id?: string;
+    metadata?: any;
   }
 ): ParticipantClassification => {
   const infoRoute = entityType === 'business' 
@@ -68,6 +72,7 @@ export const createParticipantClassification = (
     parent_business_id: options?.parent_business_id,
     affiliated_to_owner_id: options?.affiliated_to_owner_id,
     info_route: infoRoute,
-    display_section: getDisplaySection(entityType)
+    display_section: getDisplaySection(entityType),
+    metadata: options?.metadata
   };
 };

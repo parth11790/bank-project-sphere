@@ -16,7 +16,10 @@ export const useParticipantClassification = (project: Project) => {
           'borrowing_business',
           'business',
           project.project_id,
-          { email: project.main_business.email }
+          { 
+            email: project.main_business.email,
+            metadata: project.main_business
+          }
         )
       );
     }
@@ -34,7 +37,8 @@ export const useParticipantClassification = (project: Project) => {
             {
               email: owner.email,
               ownership_percentage: owner.ownership_percentage,
-              parent_business_id: project.main_business?.business_id
+              parent_business_id: project.main_business?.business_id,
+              metadata: owner
             }
           )
         );
@@ -51,7 +55,8 @@ export const useParticipantClassification = (project: Project) => {
                 project.project_id,
                 {
                   email: affiliatedBusiness.email,
-                  affiliated_to_owner_id: owner.owner_id
+                  affiliated_to_owner_id: owner.owner_id,
+                  metadata: affiliatedBusiness
                 }
               )
             );
