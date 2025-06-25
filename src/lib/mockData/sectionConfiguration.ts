@@ -1,4 +1,3 @@
-
 export interface FieldConfiguration {
   id: string;
   name: string;
@@ -155,30 +154,12 @@ export const sectionConfigurations: SectionConfiguration[] = [
     ]
   },
   {
-    id: 'forms',
-    name: 'Forms',
-    description: 'This section provides a list of forms respective entity is assigned to fill out',
-    category: 'both',
-    visible: true,
-    order: 2,
-    fields: [
-      {
-        id: 'assigned_forms',
-        name: 'assigned_forms',
-        type: 'checkbox',
-        label: 'Assigned Forms',
-        required: false,
-        visible: true
-      }
-    ]
-  },
-  {
     id: 'business_ownership',
     name: 'Business Ownership',
     description: 'This section only appears on business entity pages. This section provides information of individuals and businesses who own the business. Entity Type, Ownership %, Name, Title, Email Address',
     category: 'business',
     visible: true,
-    order: 3,
+    order: 2,
     fields: [
       {
         id: 'entity_type',
@@ -228,67 +209,12 @@ export const sectionConfigurations: SectionConfiguration[] = [
     ]
   },
   {
-    id: 'affiliated_business_ownership',
-    name: 'Affiliated Business Ownership',
-    description: 'This section shows what other businesses are owned by respective participant such as owners and acquisition business. Tabular layout of information. Content redirects to affiliated business page. Entity Type, Ownership %, Name, Title, Email Address',
-    category: 'both',
-    visible: true,
-    order: 4,
-    fields: [
-      {
-        id: 'affiliated_entity_type',
-        name: 'affiliated_entity_type',
-        type: 'select',
-        label: 'Entity Type',
-        required: true,
-        visible: true,
-        options: ['Individual', 'Business']
-      },
-      {
-        id: 'affiliated_ownership_percentage',
-        name: 'affiliated_ownership_percentage',
-        type: 'number',
-        label: 'Ownership %',
-        required: true,
-        visible: true,
-        placeholder: '0-100'
-      },
-      {
-        id: 'affiliated_name',
-        name: 'affiliated_name',
-        type: 'text',
-        label: 'Name',
-        required: true,
-        visible: true,
-        placeholder: 'Enter name'
-      },
-      {
-        id: 'affiliated_title',
-        name: 'affiliated_title',
-        type: 'text',
-        label: 'Title',
-        required: true,
-        visible: true,
-        placeholder: 'Enter title'
-      },
-      {
-        id: 'affiliated_email',
-        name: 'affiliated_email',
-        type: 'email',
-        label: 'Email Address',
-        required: true,
-        visible: true,
-        placeholder: 'affiliated@example.com'
-      }
-    ]
-  },
-  {
     id: 'personal_information',
     name: 'Personal Information',
     description: 'This section captures personal information of an individual. First Name, Middle Name, Last Name, Date of Birth, Social Security Number, Phone, Home Address (street, city, state, zip), Mailing Address (if different), Email Address',
     category: 'individual',
     visible: true,
-    order: 5,
+    order: 3,
     fields: [
       {
         id: 'first_name',
@@ -404,7 +330,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
     description: 'This section captures additional personal information of an individual. Marital Status (married/unmarried/divorced/separated/widowed), Number of Dependents, Liable for Alimony (yes/no), Delinquent Child Support (yes/no)',
     category: 'individual',
     visible: true,
-    order: 6,
+    order: 4,
     fields: [
       {
         id: 'marital_status',
@@ -441,6 +367,79 @@ export const sectionConfigurations: SectionConfiguration[] = [
         required: true,
         visible: true,
         options: ['yes', 'no']
+      }
+    ]
+  },
+  {
+    id: 'affiliated_business_ownership',
+    name: 'Affiliated Business Ownership',
+    description: 'This section shows what other businesses are owned by respective participant such as owners and acquisition business. Tabular layout of information. Content redirects to affiliated business page. Entity Type, Ownership %, Name, Title, Email Address',
+    category: 'both',
+    visible: true,
+    order: 5,
+    fields: [
+      {
+        id: 'affiliated_entity_type',
+        name: 'affiliated_entity_type',
+        type: 'select',
+        label: 'Entity Type',
+        required: true,
+        visible: true,
+        options: ['Individual', 'Business']
+      },
+      {
+        id: 'affiliated_ownership_percentage',
+        name: 'affiliated_ownership_percentage',
+        type: 'number',
+        label: 'Ownership %',
+        required: true,
+        visible: true,
+        placeholder: '0-100'
+      },
+      {
+        id: 'affiliated_name',
+        name: 'affiliated_name',
+        type: 'text',
+        label: 'Name',
+        required: true,
+        visible: true,
+        placeholder: 'Enter name'
+      },
+      {
+        id: 'affiliated_title',
+        name: 'affiliated_title',
+        type: 'text',
+        label: 'Title',
+        required: true,
+        visible: true,
+        placeholder: 'Enter title'
+      },
+      {
+        id: 'affiliated_email',
+        name: 'affiliated_email',
+        type: 'email',
+        label: 'Email Address',
+        required: true,
+        visible: true,
+        placeholder: 'affiliated@example.com'
+      }
+    ]
+  },
+  {
+    id: 'forms',
+    name: 'Forms',
+    description: 'This section provides a list of forms respective entity is assigned to fill out',
+    category: 'both',
+    visible: true,
+    order: 6,
+    fields: [
+      {
+        id: 'assigned_forms',
+        name: 'assigned_forms',
+        type: 'checkbox',
+        label: 'Assigned Forms',
+        required: false,
+        visible: true
       }
     ]
   }
