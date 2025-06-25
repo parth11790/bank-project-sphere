@@ -133,6 +133,7 @@ export const SectionConfigurationManager: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Section Name</TableHead>
+              <TableHead>Description</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Fields Count</TableHead>
               <TableHead>Visible</TableHead>
@@ -152,6 +153,11 @@ export const SectionConfigurationManager: React.FC = () => {
                       <Settings2 className="h-4 w-4 text-primary" />
                       {section.name}
                     </div>
+                  </TableCell>
+                  <TableCell className="max-w-[300px]">
+                    <p className="text-sm text-muted-foreground truncate">
+                      {section.description}
+                    </p>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">
@@ -181,7 +187,7 @@ export const SectionConfigurationManager: React.FC = () => {
                 {/* Expanded Fields */}
                 {expandedSection === section.id && (
                   <TableRow>
-                    <TableCell colSpan={6} className="p-0">
+                    <TableCell colSpan={7} className="p-0">
                       <div className="p-4 bg-muted/20 border-t">
                         <h4 className="font-medium mb-3">Fields Configuration</h4>
                         <div className="space-y-3">
@@ -202,7 +208,6 @@ export const SectionConfigurationManager: React.FC = () => {
                                   <Switch
                                     checked={field.required}
                                     onCheckedChange={(checked) => handleFieldRequiredToggle(section.id, field.id, checked)}
-                                    size="sm"
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -210,7 +215,6 @@ export const SectionConfigurationManager: React.FC = () => {
                                   <Switch
                                     checked={field.visible}
                                     onCheckedChange={(checked) => handleFieldVisibilityToggle(section.id, field.id, checked)}
-                                    size="sm"
                                   />
                                 </div>
                               </div>

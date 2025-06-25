@@ -1,4 +1,3 @@
-
 export interface FieldConfiguration {
   id: string;
   name: string;
@@ -19,6 +18,7 @@ export interface FieldConfiguration {
 export interface SectionConfiguration {
   id: string;
   name: string;
+  description: string;
   category: 'individual' | 'business';
   visible: boolean;
   order: number;
@@ -30,6 +30,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'basic_information',
     name: 'Basic Information & Address',
+    description: 'Core personal details and contact information including name, email, phone, and residential address',
     category: 'individual',
     visible: true,
     order: 1,
@@ -120,6 +121,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'personal_details',
     name: 'Personal Details',
+    description: 'Sensitive personal information including date of birth, SSN, marital status, and legal obligations',
     category: 'individual',
     visible: true,
     order: 2,
@@ -173,6 +175,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'forms_assignment',
     name: 'Forms Assignment',
+    description: 'Assignment and management of required documentation and forms for the individual participant',
     category: 'individual',
     visible: true,
     order: 3,
@@ -190,6 +193,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'business_ownership',
     name: 'Business Ownership',
+    description: 'Individual ownership stake and percentage in business entities related to the loan application',
     category: 'individual',
     visible: true,
     order: 4,
@@ -209,6 +213,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'business_basic_info',
     name: 'Business Basic Information',
+    description: 'Essential business identification including legal name, DBA, business structure, and federal tax ID',
     category: 'business',
     visible: true,
     order: 1,
@@ -263,6 +268,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'business_address',
     name: 'Business Address',
+    description: 'Physical location and mailing address of the business operations and headquarters',
     category: 'business',
     visible: true,
     order: 2,
@@ -308,6 +314,7 @@ export const sectionConfigurations: SectionConfiguration[] = [
   {
     id: 'business_ownership_structure',
     name: 'Ownership Structure',
+    description: 'Detailed breakdown of business ownership percentages and stakeholder information',
     category: 'business',
     visible: true,
     order: 3,
