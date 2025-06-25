@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Settings, FileText, Search, Filter, ExternalLink, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Settings, FileText, Search, Filter, ExternalLink, TrendingUp, Layout as LayoutIcon } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -29,6 +29,7 @@ import { FormTemplate } from '@/types/form';
 import { toast } from 'sonner';
 import { InterestRatesManager } from '@/components/admin/InterestRatesManager';
 import { SectionConfigurationManager } from '@/components/admin/SectionConfigurationManager';
+import { PageConfigurationManager } from '@/components/admin/PageConfigurationManager';
 
 const AdminSettings = () => {
   const navigate = useNavigate();
@@ -137,7 +138,7 @@ const AdminSettings = () => {
         <Separator className="my-6" />
         
         <Tabs defaultValue="dropdowns" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dropdowns" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Dropdown Values
@@ -149,6 +150,10 @@ const AdminSettings = () => {
             <TabsTrigger value="sections" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Section Configuration
+            </TabsTrigger>
+            <TabsTrigger value="pages" className="flex items-center gap-2">
+              <LayoutIcon className="h-4 w-4" />
+              Pages
             </TabsTrigger>
             <TabsTrigger value="interest-rates" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -358,6 +363,10 @@ const AdminSettings = () => {
 
           <TabsContent value="sections" className="space-y-6">
             <SectionConfigurationManager />
+          </TabsContent>
+
+          <TabsContent value="pages" className="space-y-6">
+            <PageConfigurationManager />
           </TabsContent>
 
           <TabsContent value="interest-rates" className="space-y-6">
