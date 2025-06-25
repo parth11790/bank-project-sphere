@@ -95,35 +95,35 @@ export const personalInformationSchema = z.object({
   networth_margin_accounts: z.string().optional(),
   networth_other_liabilities: z.string().optional(),
   
-  // Education (repeatable)
+  // Education (now optional)
   education: z.array(z.object({
-    school_name: z.string().min(2, "School name is required"),
-    degree_certification: z.string().min(2, "Degree/certification is required"),
-    area_of_study: z.string().min(2, "Area of study is required"),
-    start_date: z.date({ required_error: "Start date is required" }),
+    school_name: z.string().optional(),
+    degree_certification: z.string().optional(),
+    area_of_study: z.string().optional(),
+    start_date: z.date().optional(),
     end_date: z.date().optional(),
     graduated: z.boolean().optional(),
-  })).min(1, "At least one education entry is required"),
+  })).optional(),
   
-  // Employment History (repeatable)
+  // Employment History (now optional)
   employment_history: z.array(z.object({
-    employer_name: z.string().min(2, "Employer name is required"),
-    position_title: z.string().min(2, "Position/title is required"),
-    start_date: z.date({ required_error: "Start date is required" }),
+    employer_name: z.string().optional(),
+    position_title: z.string().optional(),
+    start_date: z.date().optional(),
     end_date: z.date().optional(),
     current_position: z.boolean().optional(),
-    responsibilities: z.string().min(10, "Responsibilities are required"),
+    responsibilities: z.string().optional(),
     annual_salary: z.number().optional(),
     reason_for_leaving: z.string().optional(),
-  })).min(1, "At least one employment entry is required"),
+  })).optional(),
   
-  // Professional References (repeatable, min 3)
+  // Professional References (now optional)
   professional_references: z.array(z.object({
-    reference_name: z.string().min(2, "Reference name is required"),
-    relationship: z.string().min(2, "Relationship is required"),
-    phone_number: z.string().min(10, "Phone number is required"),
-    email_address: z.string().email("Valid email is required"),
-  })).min(3, "Minimum of 3 professional references required"),
+    reference_name: z.string().optional(),
+    relationship: z.string().optional(),
+    phone_number: z.string().optional(),
+    email_address: z.string().optional(),
+  })).optional(),
   
   // Business Ownership
   business_ownership: z.array(z.object({

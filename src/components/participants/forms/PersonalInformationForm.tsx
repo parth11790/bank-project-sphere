@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,13 +8,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { personalInformationSchema, PersonalInformationFormValues } from './schemas/personalInformationSchema';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
-import BusinessOwnershipSection from './components/BusinessOwnershipSection';
-import { FormsAssignmentSection } from './components/FormsAssignmentSection';
-import { NetWorthSection } from './components/NetWorthSection';
 import { ArrowLeft, Save } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
@@ -28,42 +24,12 @@ const PersonalInformationForm: React.FC = () => {
     participantId: string;
   }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('personal');
   const [participant, setParticipant] = useState<Participant | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<PersonalInformationFormValues>({
     resolver: zodResolver(personalInformationSchema),
     defaultValues: {
-      education: [{
-        school_name: '',
-        degree_certification: '',
-        area_of_study: '',
-        start_date: new Date()
-      }],
-      employment_history: [{
-        employer_name: '',
-        position_title: '',
-        start_date: new Date(),
-        responsibilities: '',
-        reason_for_leaving: ''
-      }],
-      professional_references: [{
-        reference_name: '',
-        relationship: '',
-        phone_number: '',
-        email_address: ''
-      }, {
-        reference_name: '',
-        relationship: '',
-        phone_number: '',
-        email_address: ''
-      }, {
-        reference_name: '',
-        relationship: '',
-        phone_number: '',
-        email_address: ''
-      }],
       primary_phone_type: 'cell',
       marital_status: 'unmarried',
       liable_for_alimony: 'no',
@@ -81,6 +47,7 @@ const PersonalInformationForm: React.FC = () => {
       pledged_property: 'no'
     }
   });
+  
   useEffect(() => {
     const fetchParticipant = async () => {
       if (projectId && participantId) {
@@ -156,6 +123,7 @@ const PersonalInformationForm: React.FC = () => {
     };
     fetchParticipant();
   }, [projectId, participantId, form]);
+  
   const onSubmit = (data: PersonalInformationFormValues) => {
     console.log('[AUDIT] Personal Information Form submitted:', {
       participantId,
@@ -168,6 +136,7 @@ const PersonalInformationForm: React.FC = () => {
     console.log('Personal Information Form Data:', data);
     toast.success('Personal information saved successfully');
   };
+  
   const handleBack = () => {
     console.log('[AUDIT] User navigated back from personal information form:', {
       participantId,
@@ -177,11 +146,6 @@ const PersonalInformationForm: React.FC = () => {
     });
     navigate(`/project/participants/${projectId}`);
   };
-  const tabs = [{
-    id: 'personal',
-    label: 'Personal Info',
-    component: PersonalInfoSection
-  }];
 
   if (isLoading) {
     return <div className="w-[90%] mx-auto p-4">
