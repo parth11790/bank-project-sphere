@@ -23,10 +23,12 @@ const AffiliatedBusiness = () => {
     dateEstablished: '2019-11-05',
     industryNaicsCode: '541990',
     description: 'Business consulting and advisory services',
-    address: '321 Partnership Avenue',
-    city: 'Sacramento',
-    state: 'CA',
-    zipCode: '95814',
+    address: {
+      street: '321 Partnership Avenue',
+      city: 'Sacramento',
+      state: 'CA',
+      zip_code: '95814'
+    },
     phone: '(916) 555-0166',
     email: 'info@affiliatedventures.com',
     website: 'www.affiliatedventures.com',

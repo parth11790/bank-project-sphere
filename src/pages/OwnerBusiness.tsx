@@ -22,10 +22,12 @@ const OwnerBusiness = () => {
     dateEstablished: '2018-03-10',
     industryNaicsCode: '531120',
     description: 'Real estate investment and property management',
-    address: '456 Business Park Drive',
-    city: 'Los Angeles',
-    state: 'CA',
-    zipCode: '90210',
+    address: {
+      street: '456 Business Park Drive',
+      city: 'Los Angeles',
+      state: 'CA',
+      zip_code: '90210'
+    },
     phone: '(310) 555-0188',
     email: 'contact@ownerholdings.com',
     website: 'www.ownerholdings.com',

@@ -22,10 +22,12 @@ const SellerBusiness = () => {
     dateEstablished: '2015-07-20',
     industryNaicsCode: '423450',
     description: 'Medical equipment and supplies distribution',
-    address: '123 Commerce Street',
-    city: 'San Diego',
-    state: 'CA',
-    zipCode: '92101',
+    address: {
+      street: '123 Commerce Street',
+      city: 'San Diego',
+      state: 'CA',
+      zip_code: '92101'
+    },
     phone: '(619) 555-0177',
     email: 'info@sellerenterprises.com',
     website: 'www.sellerenterprises.com',
