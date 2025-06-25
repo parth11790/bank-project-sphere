@@ -19,6 +19,7 @@ import ProjectNotFound from '@/components/project/ProjectNotFound';
 import ProjectOverviewEnhanced from '@/components/project/ProjectOverviewEnhanced';
 import BorrowerOwnershipSection from '@/components/project/BorrowerOwnershipSection';
 import { ReferralSection } from '@/components/referral/ReferralSection';
+import ProjectParticipantStructure from '@/components/project/ProjectParticipantStructure';
 
 const Project = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -113,6 +114,11 @@ const Project = () => {
         {/* Borrower and Ownership Information Section */}
         <div className="space-y-6">
           <BorrowerOwnershipSection project={projectData} />
+        </div>
+
+        {/* Add Systematic Participant Structure Section */}
+        <div className="space-y-6">
+          <ProjectParticipantStructure project={projectData} />
         </div>
 
         {/* Business Structure Section */}
