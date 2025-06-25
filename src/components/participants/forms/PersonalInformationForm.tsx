@@ -1,16 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { personalInformationSchema, PersonalInformationFormValues } from './schemas/personalInformationSchema';
 import { PersonalInfoSection } from './components/PersonalInfoSection';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { getParticipantsWithDetailsData } from '@/lib/mockDataProvider';
 import { getOwnerPersonalInformation } from '@/lib/mockDataServices/ownerService';
 import { Participant } from '@/types/participant';
@@ -110,12 +108,10 @@ const PersonalInformationForm: React.FC = () => {
           } else {
             console.error('PersonalInfoForm: Participant not found with ID:', participantId);
             setError(`Participant with ID "${participantId}" not found`);
-            toast.error('Participant not found');
           }
         } catch (error) {
           console.error('PersonalInfoForm: Error fetching participant:', error);
           setError('Failed to load participant information');
-          toast.error('Failed to load participant information');
         } finally {
           setIsLoading(false);
         }
@@ -123,19 +119,6 @@ const PersonalInformationForm: React.FC = () => {
     };
     fetchParticipant();
   }, [projectId, participantId, form]);
-  
-  const onSubmit = (data: PersonalInformationFormValues) => {
-    console.log('[AUDIT] Personal Information Form submitted:', {
-      participantId,
-      projectId,
-      timestamp: new Date().toISOString(),
-      userId: 'current_user', // Replace with actual user ID when auth is implemented
-      action: 'form_submit',
-      formType: 'personal_information'
-    });
-    console.log('Personal Information Form Data:', data);
-    toast.success('Personal information saved successfully');
-  };
   
   const handleBack = () => {
     console.log('[AUDIT] User navigated back from personal information form:', {
@@ -193,16 +176,18 @@ const PersonalInformationForm: React.FC = () => {
         </div>
       </div>;
   }
-  return <div className="w-[90%] mx-auto p-4 space-y-4">
+  
+  return (
+    <div className="w-[90%] mx-auto p-4 space-y-4">
       <motion.div initial={{
-      opacity: 0,
-      y: 20
-    }} animate={{
-      opacity: 1,
-      y: 0
-    }} transition={{
-      duration: 0.5
-    }}>
+        opacity: 0,
+        y: 20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} transition={{
+        duration: 0.5
+      }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <Button variant="outline" onClick={handleBack}>
@@ -219,20 +204,19 @@ const PersonalInformationForm: React.FC = () => {
         <Card>
           <CardHeader className="pb-4">
             <CardTitle>Personal Information - {participant?.name}</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Each section can be saved individually. Changes are automatically validated.
+            </p>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Since there's only one tab now, render PersonalInfoSection directly */}
+              <form className="space-y-6">
                 <PersonalInfoSection form={form} participant={participant} />
-
-                <div className="flex justify-end space-x-2 pt-6 border-t">
+                
+                <div className="flex justify-start pt-6 border-t">
                   <Button type="button" variant="outline" onClick={handleBack}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Information
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Participants
                   </Button>
                 </div>
               </form>
@@ -240,7 +224,8 @@ const PersonalInformationForm: React.FC = () => {
           </CardContent>
         </Card>
       </motion.div>
-    </div>;
+    </div>
+  );
 };
 
 export default PersonalInformationForm;
