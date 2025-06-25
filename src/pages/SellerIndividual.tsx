@@ -4,13 +4,42 @@ import Layout from '@/components/Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, User } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { PersonalInfoSection } from '@/components/participants/forms/components/PersonalInfoSection';
 import { PersonalDetailsSection } from '@/components/participants/forms/components/PersonalDetailsSection';
 import { FormsAssignmentSection } from '@/components/participants/forms/components/FormsAssignmentSection';
+import { personalInformationSchema, PersonalInformationFormValues } from '@/components/participants/forms/schemas/personalInformationSchema';
 
 const SellerIndividual = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+
+  const form = useForm<PersonalInformationFormValues>({
+    resolver: zodResolver(personalInformationSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      middle_name: '',
+      suffix: '',
+      title: '',
+      phone: '',
+      email: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      date_of_birth: undefined,
+      ssn: '',
+      marital_status: '',
+      us_citizen: '',
+      liable_for_alimony: '',
+      delinquent_child_support: '',
+      us_government_employee: '',
+      assets_in_trust: '',
+      military_service: ''
+    }
+  });
 
   return (
     <Layout>
@@ -32,8 +61,8 @@ const SellerIndividual = () => {
         </div>
 
         <div className="space-y-6">
-          <PersonalInfoSection />
-          <PersonalDetailsSection />
+          <PersonalInfoSection form={form} />
+          <PersonalDetailsSection form={form} />
           <FormsAssignmentSection />
         </div>
       </div>

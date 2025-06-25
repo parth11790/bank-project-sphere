@@ -4,10 +4,10 @@ import Layout from '@/components/Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Building2 } from 'lucide-react';
-import { BusinessInfoSection } from '@/components/business/BusinessInfoSection';
-import { BusinessOwnershipSection } from '@/components/business/BusinessOwnershipSection';
-import { BusinessFormsSection } from '@/components/business/BusinessFormsSection';
-import { AffiliatedBusinessOwnershipSection } from '@/components/business/AffiliatedBusinessOwnershipSection';
+import BusinessInfoSection from '@/components/business/BusinessInfoSection';
+import BusinessOwnershipSection from '@/components/business/BusinessOwnershipSection';
+import BusinessFormsSection from '@/components/business/BusinessFormsSection';
+import AffiliatedBusinessOwnershipSection from '@/components/business/AffiliatedBusinessOwnershipSection';
 
 const AffiliatedBusiness = () => {
   const { projectId } = useParams();

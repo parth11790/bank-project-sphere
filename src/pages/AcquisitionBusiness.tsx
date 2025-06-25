@@ -4,8 +4,8 @@ import Layout from '@/components/Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Building2 } from 'lucide-react';
-import { BusinessInfoSection } from '@/components/business/BusinessInfoSection';
-import { BusinessFormsSection } from '@/components/business/BusinessFormsSection';
+import BusinessInfoSection from '@/components/business/BusinessInfoSection';
+import BusinessFormsSection from '@/components/business/BusinessFormsSection';
 
 const AcquisitionBusiness = () => {
   const { projectId } = useParams();
