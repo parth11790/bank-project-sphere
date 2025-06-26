@@ -396,7 +396,7 @@ const ConsolidatedCashFlowTable: React.FC<ConsolidatedCashFlowTableProps> = ({
         <p><strong>DSCR Guidelines:</strong></p>
         <p>• <span className="text-green-600">≥ 1.25x</span> - Strong cash flow coverage</p>
         <p>• <span className="text-yellow-600">1.00x - 1.24x</span> - Adequate coverage</p>
-        <p>• <span className="text-red-600">< 1.00x</span> - Insufficient coverage</p>
+        <p>• <span className="text-red-600">&lt; 1.00x</span> - Insufficient coverage</p>
       </div>
     </div>
   );
