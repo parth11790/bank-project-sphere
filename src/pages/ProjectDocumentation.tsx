@@ -266,7 +266,7 @@ const ProjectDocumentation: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="pre-approval" className="space-y-6">
-            <PreApprovalLetterGenerator />
+            <PreApprovalLetterGenerator project={project} />
           </TabsContent>
         </Tabs>
       </motion.div>

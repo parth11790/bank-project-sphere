@@ -4,13 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { FileText } from 'lucide-react';
 import { useLender } from '@/contexts/LenderContext';
+import { Project } from '@/types/project';
 import { PreApprovalFormData } from './preApproval/PreApprovalFormData';
 import { LenderInfoDisplay } from './preApproval/LenderInfoDisplay';
 import { PreApprovalLetterActions } from './preApproval/PreApprovalLetterActions';
 import { PreApprovalLetterPreview } from './preApproval/PreApprovalLetterPreview';
+import { PreApprovalLetterHistory } from './preApproval/PreApprovalLetterHistory';
 import { usePreApprovalLetter } from './preApproval/usePreApprovalLetter';
 
-const PreApprovalLetterGenerator: React.FC = () => {
+interface PreApprovalLetterGeneratorProps {
+  project?: Project;
+}
+
+const PreApprovalLetterGenerator: React.FC<PreApprovalLetterGeneratorProps> = ({ project }) => {
   const { lenderInfo } = useLender();
   const {
     formData,
@@ -19,8 +25,11 @@ const PreApprovalLetterGenerator: React.FC = () => {
     handleInputChange,
     getCurrentRate,
     generateLetter,
-    handleDownload
-  } = usePreApprovalLetter();
+    handleDownload,
+    saveLetter,
+    savedLetters,
+    deleteLetter
+  } = usePreApprovalLetter(project);
 
   return (
     <div className="space-y-6">
@@ -32,6 +41,7 @@ const PreApprovalLetterGenerator: React.FC = () => {
           </div>
           <p className="text-sm text-muted-foreground">
             Generate professional pre-approval letters using {lenderInfo.name} branding
+            {project && ` for ${project.project_name}`}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -40,6 +50,7 @@ const PreApprovalLetterGenerator: React.FC = () => {
               formData={formData}
               onInputChange={handleInputChange}
               getCurrentRate={getCurrentRate}
+              project={project}
             />
             <LenderInfoDisplay />
           </div>
@@ -50,6 +61,7 @@ const PreApprovalLetterGenerator: React.FC = () => {
             showPreview={showPreview}
             onTogglePreview={() => setShowPreview(!showPreview)}
             onDownload={handleDownload}
+            onSave={saveLetter}
           />
           
           {showPreview && (
@@ -57,6 +69,24 @@ const PreApprovalLetterGenerator: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {savedLetters.length > 0 && (
+        <PreApprovalLetterHistory
+          letters={savedLetters}
+          onDelete={deleteLetter}
+          onDownload={(letterContent, applicantName, date) => {
+            const blob = new Blob([letterContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Pre-Approval-Letter-${applicantName.replace(/\s+/g, '-')}-${date}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }}
+        />
+      )}
     </div>
   );
 };

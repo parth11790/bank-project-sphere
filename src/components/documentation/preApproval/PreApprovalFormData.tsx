@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Project } from '@/types/project';
 
 interface PreApprovalData {
   applicantName: string;
@@ -26,18 +27,53 @@ interface PreApprovalFormDataProps {
   formData: PreApprovalData;
   onInputChange: (field: keyof PreApprovalData, value: string) => void;
   getCurrentRate: () => string;
+  project?: Project;
 }
 
 export const PreApprovalFormData: React.FC<PreApprovalFormDataProps> = ({
   formData,
   onInputChange,
-  getCurrentRate
+  getCurrentRate,
+  project
 }) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
         Loan Information
       </h3>
+      
+      {project?.loans && project.loans.length > 0 && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">Project Loans ({project.loans.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {project.loans.map((loan, index) => (
+              <div key={loan.loan_id} className="flex items-center justify-between text-sm">
+                <span className="font-medium">{loan.loan_type}</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">{formatCurrency(loan.amount)}</Badge>
+                  {loan.rate && <Badge variant="secondary">{loan.rate}%</Badge>}
+                </div>
+              </div>
+            ))}
+            <div className="pt-2 border-t border-blue-200">
+              <div className="flex justify-between font-semibold">
+                <span>Total Loan Amount:</span>
+                <span>{formatCurrency(project.loans.reduce((sum, loan) => sum + loan.amount, 0))}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       
       <div className="space-y-3">
         <div>

@@ -1,6 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLender } from '@/contexts/LenderContext';
+import { Project } from '@/types/project';
+import { useLoanCalculator } from '@/hooks/useLoanCalculator';
 
 export interface PreApprovalData {
   applicantName: string;
@@ -17,8 +19,24 @@ export interface PreApprovalData {
   currentPrimeRate: string;
 }
 
-export const usePreApprovalLetter = () => {
+export interface SavedPreApprovalLetter {
+  letter_id: string;
+  project_id: string;
+  letter_content: string;
+  generated_date: string;
+  applicant_name: string;
+  total_loan_amount: number;
+  loans_included: Array<{
+    loan_type: string;
+    amount: number;
+    term?: number;
+    rate?: string;
+  }>;
+}
+
+export const usePreApprovalLetter = (project?: Project) => {
   const { lenderInfo } = useLender();
+  const { calculateLoanPayment } = useLoanCalculator();
   
   const [formData, setFormData] = useState<PreApprovalData>({
     applicantName: '',
@@ -36,6 +54,55 @@ export const usePreApprovalLetter = () => {
   });
 
   const [showPreview, setShowPreview] = useState(false);
+  const [savedLetters, setSavedLetters] = useState<SavedPreApprovalLetter[]>([]);
+
+  // Auto-fill form data from project
+  useEffect(() => {
+    if (project) {
+      const primaryOwner = project.owners?.[0];
+      const mainBusiness = project.main_business;
+      const projectLoans = project.loans || [];
+      
+      // Calculate total loan amounts by type
+      const sbaLoans = projectLoans.filter(loan => 
+        loan.loan_type.toLowerCase().includes('sba')
+      );
+      const conventionalLoans = projectLoans.filter(loan => 
+        !loan.loan_type.toLowerCase().includes('sba')
+      );
+      
+      const totalSBAAmount = sbaLoans.reduce((sum, loan) => sum + loan.amount, 0);
+      const totalConventionalAmount = conventionalLoans.reduce((sum, loan) => sum + loan.amount, 0);
+      
+      // Determine primary loan program
+      const primaryLoanProgram = sbaLoans.length > 0 ? 
+        (sbaLoans[0].loan_type.includes('504') ? 'SBA 504 Real Estate Financing' : 'SBA 7(a) Business Purchase Financing') :
+        'Conventional Business Acquisition';
+
+      // Build guarantors list from owners
+      const guarantorsList = project.owners?.filter(owner => owner.type === 'individual')
+        .map(owner => owner.name).join(' and ') || '';
+
+      setFormData(prev => ({
+        ...prev,
+        applicantName: primaryOwner?.name || '',
+        loanProgram: primaryLoanProgram,
+        subjectBusiness: mainBusiness?.name || project.project_name,
+        purchasePrice: project.loan_amount.toString(),
+        borrowerEntity: mainBusiness?.name || 'New Entity to be determined',
+        guarantors: guarantorsList,
+        sbaLoanAmount: totalSBAAmount.toString(),
+        conventionalLoanAmount: totalConventionalAmount.toString()
+      }));
+    }
+  }, [project]);
+
+  // Load saved letters for the project
+  useEffect(() => {
+    if (project?.project_id) {
+      loadSavedLetters(project.project_id);
+    }
+  }, [project?.project_id]);
 
   const handleInputChange = (field: keyof PreApprovalData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -55,9 +122,41 @@ export const usePreApprovalLetter = () => {
     return (prime + spread).toFixed(2);
   };
 
+  const getProjectLoansSection = () => {
+    if (!project?.loans || project.loans.length === 0) {
+      return `
+LOAN STRUCTURE
+
+Loan 1 - SBA 7(a):        Up to $${formData.sbaLoanAmount} of Total Project Cost (TPC)
+                          (${lenderInfo.name} is an SBA preferred lender)
+
+${formData.conventionalLoanAmount ? `Loan 2 - Conventional:    $${formData.conventionalLoanAmount} (amount above SBA limit)` : ''}`;
+    }
+
+    let loansSection = '\nLOAN STRUCTURE\n\n';
+    project.loans.forEach((loan, index) => {
+      const loanNumber = index + 1;
+      const payment = loan.rate ? calculateLoanPayment(
+        loan.amount, 
+        loan.rate, 
+        (loan.term || 25) * 12
+      ).monthlyPayment : 0;
+
+      loansSection += `Loan ${loanNumber} - ${loan.loan_type}:    $${loan.amount.toLocaleString()}
+                          Term: ${loan.term || 'TBD'} years
+                          Rate: ${loan.rate ? `${loan.rate}%` : 'TBD'}
+                          ${payment > 0 ? `Est. Payment: $${payment.toLocaleString()}/month` : ''}
+
+`;
+    });
+
+    return loansSection;
+  };
+
   const generateLetter = () => {
     const currentDate = getCurrentDate();
     const totalRate = getCurrentRate();
+    const loansSection = getProjectLoansSection();
     
     return `
 ${lenderInfo.name}
@@ -83,14 +182,7 @@ Purchase Price:            Up to $${formData.purchasePrice}
 Borrower:                  ${formData.borrowerEntity}
 Guarantor(s):              ${formData.guarantors}
                           (Any owner with 20% or more stake will be required to provide full personal guarantee)
-
-LOAN STRUCTURE
-
-Loan 1 - SBA 7(a):        Up to $${formData.sbaLoanAmount} of Total Project Cost (TPC)
-                          (${lenderInfo.name} is an SBA preferred lender)
-
-${formData.conventionalLoanAmount ? `Loan 2 - Conventional:    $${formData.conventionalLoanAmount} (amount above SBA limit)` : ''}
-
+${loansSection}
 Cash Equity Injection:     ${formData.cashEquityPercentage}% or more of TPC (SBA minimum requirement)
 Seller Note:              To be Determined (must be subordinated, terms subject to lender approval)
 
@@ -145,11 +237,53 @@ ${lenderInfo.complianceStatement}
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Pre-Approval-Letter-${formData.applicantName.replace(/\s+/g, '-')}.txt`;
+    a.download = `Pre-Approval-Letter-${formData.applicantName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const saveLetter = async () => {
+    if (!project?.project_id) return false;
+
+    const letterContent = generateLetter();
+    const totalLoanAmount = project.loans?.reduce((sum, loan) => sum + loan.amount, 0) || 
+                          parseInt(formData.sbaLoanAmount || '0') + parseInt(formData.conventionalLoanAmount || '0');
+
+    const savedLetter: SavedPreApprovalLetter = {
+      letter_id: `letter_${Date.now()}`,
+      project_id: project.project_id,
+      letter_content: letterContent,
+      generated_date: new Date().toISOString(),
+      applicant_name: formData.applicantName,
+      total_loan_amount: totalLoanAmount,
+      loans_included: project.loans?.map(loan => ({
+        loan_type: loan.loan_type,
+        amount: loan.amount,
+        term: loan.term,
+        rate: loan.rate ? `${loan.rate}%` : undefined
+      })) || []
+    };
+
+    // In a real implementation, this would save to the database
+    // For now, we'll store in component state
+    setSavedLetters(prev => [savedLetter, ...prev]);
+    
+    console.log('Letter saved:', savedLetter);
+    return true;
+  };
+
+  const loadSavedLetters = async (projectId: string) => {
+    // In a real implementation, this would load from the database
+    // For now, we'll use mock data
+    const mockSavedLetters: SavedPreApprovalLetter[] = [];
+    setSavedLetters(mockSavedLetters);
+  };
+
+  const deleteLetter = async (letterId: string) => {
+    setSavedLetters(prev => prev.filter(letter => letter.letter_id !== letterId));
+    return true;
   };
 
   return {
@@ -159,6 +293,9 @@ ${lenderInfo.complianceStatement}
     handleInputChange,
     getCurrentRate,
     generateLetter,
-    handleDownload
+    handleDownload,
+    saveLetter,
+    savedLetters,
+    deleteLetter
   };
 };
