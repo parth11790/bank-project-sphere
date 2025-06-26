@@ -1,9 +1,9 @@
 
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
-import RequireAuth from '@/components/RequireAuth';
 import Index from '@/pages/Index';
 import Projects from '@/pages/Projects';
 import Project from '@/pages/Project';
@@ -31,21 +31,21 @@ function App() {
           <div className="min-h-screen bg-background">
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/projects" element={<RequireAuth><Projects /></RequireAuth>} />
-              <Route path="/project/:projectId" element={<RequireAuth><Project /></RequireAuth>} />
-              <Route path="/project/consolidated-cash-flow/:projectId" element={<RequireAuth><ConsolidatedCashFlow /></RequireAuth>} />
-              <Route path="/create-project" element={<RequireAuth><CreateProject /></RequireAuth>} />
-              <Route path="/users" element={<RequireAuth><Users /></RequireAuth>} />
-              <Route path="/admin-settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
-              <Route path="/project/analysis/:projectId" element={<RequireAuth><ProjectAnalysis /></RequireAuth>} />
-              <Route path="/project/documentation/:projectId" element={<RequireAuth><ProjectDocumentation /></RequireAuth>} />
-              <Route path="/project/use-of-proceeds/:projectId" element={<RequireAuth><UseOfProceeds /></RequireAuth>} />
-              <Route path="/seller-individual/:projectId" element={<RequireAuth><SellerIndividual /></RequireAuth>} />
-              <Route path="/acquisition-business/:projectId" element={<RequireAuth><AcquisitionBusiness /></RequireAuth>} />
-              <Route path="/seller-business/:projectId" element={<RequireAuth><SellerBusiness /></RequireAuth>} />
-              <Route path="/owner-business/:projectId" element={<RequireAuth><OwnerBusiness /></RequireAuth>} />
-              <Route path="/affiliated-business/:projectId" element={<RequireAuth><AffiliatedBusiness /></RequireAuth>} />
-              <Route path="/lender-settings" element={<RequireAuth><LenderSettings /></RequireAuth>} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/project/:projectId" element={<Project />} />
+              <Route path="/project/consolidated-cash-flow/:projectId" element={<ConsolidatedCashFlow />} />
+              <Route path="/create-project" element={<CreateProject />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/admin-settings" element={<AdminSettings />} />
+              <Route path="/project/analysis/:projectId" element={<ProjectAnalysis />} />
+              <Route path="/project/documentation/:projectId" element={<ProjectDocumentation />} />
+              <Route path="/project/use-of-proceeds/:projectId" element={<UseOfProceeds />} />
+              <Route path="/seller-individual/:projectId" element={<SellerIndividual />} />
+              <Route path="/acquisition-business/:projectId" element={<AcquisitionBusiness />} />
+              <Route path="/seller-business/:projectId" element={<SellerBusiness />} />
+              <Route path="/owner-business/:projectId" element={<OwnerBusiness />} />
+              <Route path="/affiliated-business/:projectId" element={<AffiliatedBusiness />} />
+              <Route path="/lender-settings" element={<LenderSettings />} />
             </Routes>
             <Toaster />
           </div>
@@ -56,3 +56,4 @@ function App() {
 }
 
 export default App;
+
