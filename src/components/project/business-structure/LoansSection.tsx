@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Plus, Eye, Edit, FileText } from 'lucide-react';
+import { DollarSign, Plus, Eye, Edit, FileText, BarChart3 } from 'lucide-react';
 import { Project } from '@/types/project';
 
 interface LoansSectionProps {
@@ -69,6 +69,10 @@ const LoansSection: React.FC<LoansSectionProps> = ({
     navigate(`/project/use-of-proceeds/${project.project_id}`);
   };
 
+  const handleConsolidatedCashFlow = () => {
+    navigate(`/project/consolidated-cash-flow/${project.project_id}`);
+  };
+
   // Get loans from both the legacy loan_types and new loans structure
   const getAllLoans = () => {
     const loans = [];
@@ -128,6 +132,10 @@ const LoansSection: React.FC<LoansSectionProps> = ({
             <CardDescription>All loans associated with this project</CardDescription>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleConsolidatedCashFlow}>
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Consolidated Cash Flow
+            </Button>
             <Button variant="outline" size="sm" onClick={handleUseOfProceeds}>
               <FileText className="h-4 w-4 mr-2" />
               Use of Proceeds
@@ -207,6 +215,10 @@ const LoansSection: React.FC<LoansSectionProps> = ({
             <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">No loans configured</p>
             <div className="flex gap-2 justify-center mt-4">
+              <Button variant="outline" onClick={handleConsolidatedCashFlow}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Consolidated Cash Flow
+              </Button>
               <Button variant="outline" onClick={handleUseOfProceeds}>
                 <FileText className="h-4 w-4 mr-2" />
                 Use of Proceeds
