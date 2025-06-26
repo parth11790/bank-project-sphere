@@ -6,11 +6,13 @@ import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, FileText, FilePlus, Check, Folder } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Layout from '@/components/Layout';
 import { getProjectById } from '@/services';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import ProjectBreadcrumb from '@/components/project/ProjectBreadcrumb';
+import PreApprovalLetterGenerator from '@/components/documentation/PreApprovalLetterGenerator';
 import { Project, isProject } from '@/types/project';
 
 const ProjectDocumentation: React.FC = () => {
@@ -115,145 +117,158 @@ const ProjectDocumentation: React.FC = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Folder className="h-5 w-5 text-blue-500" />
-                <CardTitle>Underwriting Documents</CardTitle>
-              </div>
-              <CardDescription>Documents used in the underwriting process</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mockDocuments
-                .filter(doc => doc.type === 'underwriting')
-                .map(doc => (
-                  <div key={doc.id} className="flex items-center justify-between border-b pb-2">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-gray-500" />
-                      <span>{doc.name}</span>
-                    </div>
-                    <div className="flex items-center">
-                      {doc.status === 'completed' ? (
-                        <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded flex items-center">
-                          <Check className="h-3 w-3 mr-1" />
-                          Generated
-                        </span>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleGenerateDocument(doc.name)}
-                        >
-                          Generate
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => handleGenerateDocument('underwriting')}
-              >
-                <FilePlus className="h-4 w-4 mr-2" />
-                Generate New Underwriting Document
-              </Button>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="documents" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="documents">Document Library</TabsTrigger>
+            <TabsTrigger value="pre-approval">Pre-Approval Letter</TabsTrigger>
+          </TabsList>
           
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Folder className="h-5 w-5 text-violet-500" />
-                <CardTitle>Analysis Documents</CardTitle>
-              </div>
-              <CardDescription>Financial analysis and projections</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mockDocuments
-                .filter(doc => doc.type === 'analysis')
-                .map(doc => (
-                  <div key={doc.id} className="flex items-center justify-between border-b pb-2">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-gray-500" />
-                      <span>{doc.name}</span>
-                    </div>
-                    <div className="flex items-center">
-                      {doc.status === 'completed' ? (
-                        <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded flex items-center">
-                          <Check className="h-3 w-3 mr-1" />
-                          Generated
-                        </span>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleGenerateDocument(doc.name)}
-                        >
-                          Generate
-                        </Button>
-                      )}
-                    </div>
+          <TabsContent value="documents" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Folder className="h-5 w-5 text-blue-500" />
+                    <CardTitle>Underwriting Documents</CardTitle>
                   </div>
-                ))}
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => handleGenerateDocument('analysis')}
-              >
-                <FilePlus className="h-4 w-4 mr-2" />
-                Generate New Analysis Document
-              </Button>
-            </CardContent>
-          </Card>
+                  <CardDescription>Documents used in the underwriting process</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mockDocuments
+                    .filter(doc => doc.type === 'underwriting')
+                    .map(doc => (
+                      <div key={doc.id} className="flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-gray-500" />
+                          <span>{doc.name}</span>
+                        </div>
+                        <div className="flex items-center">
+                          {doc.status === 'completed' ? (
+                            <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded flex items-center">
+                              <Check className="h-3 w-3 mr-1" />
+                              Generated
+                            </span>
+                          ) : (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleGenerateDocument(doc.name)}
+                            >
+                              Generate
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => handleGenerateDocument('underwriting')}
+                  >
+                    <FilePlus className="h-4 w-4 mr-2" />
+                    Generate New Underwriting Document
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Folder className="h-5 w-5 text-violet-500" />
+                    <CardTitle>Analysis Documents</CardTitle>
+                  </div>
+                  <CardDescription>Financial analysis and projections</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mockDocuments
+                    .filter(doc => doc.type === 'analysis')
+                    .map(doc => (
+                      <div key={doc.id} className="flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-gray-500" />
+                          <span>{doc.name}</span>
+                        </div>
+                        <div className="flex items-center">
+                          {doc.status === 'completed' ? (
+                            <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded flex items-center">
+                              <Check className="h-3 w-3 mr-1" />
+                              Generated
+                            </span>
+                          ) : (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleGenerateDocument(doc.name)}
+                            >
+                              Generate
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => handleGenerateDocument('analysis')}
+                  >
+                    <FilePlus className="h-4 w-4 mr-2" />
+                    Generate New Analysis Document
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Folder className="h-5 w-5 text-amber-500" />
+                    <CardTitle>Closing Documents</CardTitle>
+                  </div>
+                  <CardDescription>Documents for loan closing process</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mockDocuments
+                    .filter(doc => doc.type === 'closing')
+                    .map(doc => (
+                      <div key={doc.id} className="flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-gray-500" />
+                          <span>{doc.name}</span>
+                        </div>
+                        <div className="flex items-center">
+                          {doc.status === 'completed' ? (
+                            <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded flex items-center">
+                              <Check className="h-3 w-3 mr-1" />
+                              Generated
+                            </span>
+                          ) : (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleGenerateDocument(doc.name)}
+                            >
+                              Generate
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => handleGenerateDocument('closing')}
+                  >
+                    <FilePlus className="h-4 w-4 mr-2" />
+                    Generate New Closing Document
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
           
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Folder className="h-5 w-5 text-amber-500" />
-                <CardTitle>Closing Documents</CardTitle>
-              </div>
-              <CardDescription>Documents for loan closing process</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mockDocuments
-                .filter(doc => doc.type === 'closing')
-                .map(doc => (
-                  <div key={doc.id} className="flex items-center justify-between border-b pb-2">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-gray-500" />
-                      <span>{doc.name}</span>
-                    </div>
-                    <div className="flex items-center">
-                      {doc.status === 'completed' ? (
-                        <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded flex items-center">
-                          <Check className="h-3 w-3 mr-1" />
-                          Generated
-                        </span>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleGenerateDocument(doc.name)}
-                        >
-                          Generate
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => handleGenerateDocument('closing')}
-              >
-                <FilePlus className="h-4 w-4 mr-2" />
-                Generate New Closing Document
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="pre-approval" className="space-y-6">
+            <PreApprovalLetterGenerator />
+          </TabsContent>
+        </Tabs>
       </motion.div>
     </Layout>
   );
