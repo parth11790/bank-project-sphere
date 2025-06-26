@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -26,7 +25,6 @@ const PreApprovalLetterGenerator: React.FC<PreApprovalLetterGeneratorProps> = ({
     getCurrentRate,
     generateLetter,
     handleDownload,
-    saveLetter,
     savedLetters,
     deleteLetter
   } = usePreApprovalLetter(project);
@@ -61,7 +59,6 @@ const PreApprovalLetterGenerator: React.FC<PreApprovalLetterGeneratorProps> = ({
             showPreview={showPreview}
             onTogglePreview={() => setShowPreview(!showPreview)}
             onDownload={handleDownload}
-            onSave={saveLetter}
           />
           
           {showPreview && (

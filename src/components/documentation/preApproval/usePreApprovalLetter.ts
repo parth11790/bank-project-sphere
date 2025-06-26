@@ -1,8 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { useLender } from '@/contexts/LenderContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Project } from '@/types/project';
 import { useLoanCalculator } from '@/hooks/useLoanCalculator';
+import { logAuditEvent } from '@/services/auditService';
+import { toast } from 'sonner';
 
 export interface PreApprovalData {
   applicantName: string;
@@ -32,10 +34,14 @@ export interface SavedPreApprovalLetter {
     term?: number;
     rate?: string;
   }>;
+  downloaded_by: string;
+  downloaded_by_name: string;
+  download_timestamp: string;
 }
 
 export const usePreApprovalLetter = (project?: Project) => {
   const { lenderInfo } = useLender();
+  const { user } = useAuth();
   const { calculateLoanPayment } = useLoanCalculator();
   
   const [formData, setFormData] = useState<PreApprovalData>({
@@ -231,8 +237,54 @@ ${lenderInfo.complianceStatement}
     `.trim();
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const letter = generateLetter();
+    
+    // Auto-save the letter when downloaded
+    if (project?.project_id && user) {
+      const totalLoanAmount = project.loans?.reduce((sum, loan) => sum + loan.amount, 0) || 
+                            parseInt(formData.sbaLoanAmount || '0') + parseInt(formData.conventionalLoanAmount || '0');
+
+      const savedLetter: SavedPreApprovalLetter = {
+        letter_id: `letter_${Date.now()}`,
+        project_id: project.project_id,
+        letter_content: letter,
+        generated_date: new Date().toISOString(),
+        applicant_name: formData.applicantName,
+        total_loan_amount: totalLoanAmount,
+        loans_included: project.loans?.map(loan => ({
+          loan_type: loan.loan_type,
+          amount: loan.amount,
+          term: loan.term,
+          rate: loan.rate ? `${loan.rate}%` : undefined
+        })) || [],
+        downloaded_by: user.id,
+        downloaded_by_name: user.email || 'Unknown User',
+        download_timestamp: new Date().toISOString()
+      };
+
+      // Save to local state (in real app, this would save to database)
+      setSavedLetters(prev => [savedLetter, ...prev]);
+
+      // Log audit event
+      logAuditEvent({
+        userId: user.id,
+        userName: user.email || 'Unknown User',
+        projectId: project.project_id,
+        action: 'pre_approval_letter_downloaded',
+        category: 'document',
+        details: {
+          letterId: savedLetter.letter_id,
+          applicantName: formData.applicantName,
+          totalLoanAmount: totalLoanAmount,
+          loansCount: project.loans?.length || 0
+        }
+      });
+
+      toast.success('Pre-approval letter downloaded and saved to project history');
+    }
+
+    // Download the file
     const blob = new Blob([letter], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -242,36 +294,6 @@ ${lenderInfo.complianceStatement}
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
-
-  const saveLetter = async () => {
-    if (!project?.project_id) return false;
-
-    const letterContent = generateLetter();
-    const totalLoanAmount = project.loans?.reduce((sum, loan) => sum + loan.amount, 0) || 
-                          parseInt(formData.sbaLoanAmount || '0') + parseInt(formData.conventionalLoanAmount || '0');
-
-    const savedLetter: SavedPreApprovalLetter = {
-      letter_id: `letter_${Date.now()}`,
-      project_id: project.project_id,
-      letter_content: letterContent,
-      generated_date: new Date().toISOString(),
-      applicant_name: formData.applicantName,
-      total_loan_amount: totalLoanAmount,
-      loans_included: project.loans?.map(loan => ({
-        loan_type: loan.loan_type,
-        amount: loan.amount,
-        term: loan.term,
-        rate: loan.rate ? `${loan.rate}%` : undefined
-      })) || []
-    };
-
-    // In a real implementation, this would save to the database
-    // For now, we'll store in component state
-    setSavedLetters(prev => [savedLetter, ...prev]);
-    
-    console.log('Letter saved:', savedLetter);
-    return true;
   };
 
   const loadSavedLetters = async (projectId: string) => {
@@ -294,7 +316,6 @@ ${lenderInfo.complianceStatement}
     getCurrentRate,
     generateLetter,
     handleDownload,
-    saveLetter,
     savedLetters,
     deleteLetter
   };

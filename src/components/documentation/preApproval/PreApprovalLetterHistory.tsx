@@ -87,7 +87,8 @@ export const PreApprovalLetterHistory: React.FC<PreApprovalLetterHistoryProps> =
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date Generated</TableHead>
+                <TableHead>Date Downloaded</TableHead>
+                <TableHead>Downloaded By</TableHead>
                 <TableHead>Applicant</TableHead>
                 <TableHead>Total Amount</TableHead>
                 <TableHead>Loans Included</TableHead>
@@ -98,7 +99,12 @@ export const PreApprovalLetterHistory: React.FC<PreApprovalLetterHistoryProps> =
               {letters.map((letter) => (
                 <TableRow key={letter.letter_id}>
                   <TableCell className="font-mono text-sm">
-                    {formatDate(letter.generated_date)}
+                    {formatDate(letter.download_timestamp || letter.generated_date)}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    <Badge variant="outline">
+                      {letter.downloaded_by_name || 'System'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="font-medium">
                     {letter.applicant_name}
@@ -133,7 +139,7 @@ export const PreApprovalLetterHistory: React.FC<PreApprovalLetterHistoryProps> =
                         onClick={() => onDownload(
                           letter.letter_content,
                           letter.applicant_name,
-                          letter.generated_date.split('T')[0]
+                          (letter.download_timestamp || letter.generated_date).split('T')[0]
                         )}
                         title="Download Letter"
                       >
