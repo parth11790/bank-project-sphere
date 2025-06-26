@@ -1,5 +1,4 @@
 
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/sonner';
@@ -20,6 +19,15 @@ import OwnerBusiness from '@/pages/OwnerBusiness';
 import AffiliatedBusiness from '@/pages/AffiliatedBusiness';
 import LenderSettings from '@/pages/LenderSettings';
 import ConsolidatedCashFlow from '@/pages/ConsolidatedCashFlow';
+import BusinessInformation from '@/pages/BusinessInformation';
+import LoanDetails from '@/pages/LoanDetails';
+import CashFlowAnalysis from '@/pages/CashFlowAnalysis';
+import FormView from '@/pages/FormView';
+import TemplateDetails from '@/pages/TemplateDetails';
+import IntegrationDetails from '@/pages/IntegrationDetails';
+import DropdownDetails from '@/pages/DropdownDetails';
+import PersonalInformation from '@/pages/PersonalInformation';
+import NetWorth from '@/pages/NetWorth';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +54,20 @@ function App() {
               <Route path="/owner-business/:projectId" element={<OwnerBusiness />} />
               <Route path="/affiliated-business/:projectId" element={<AffiliatedBusiness />} />
               <Route path="/lender-settings" element={<LenderSettings />} />
+              
+              {/* Missing Pages - Now Added */}
+              <Route path="/business/:projectId" element={<BusinessInformation />} />
+              <Route path="/project/:projectId/business" element={<BusinessInformation />} />
+              <Route path="/project/:projectId/loan/:loanId" element={<LoanDetails />} />
+              <Route path="/project/:projectId/loan/new" element={<LoanDetails />} />
+              <Route path="/project/participants/:projectId/personal-info/:participantId" element={<PersonalInformation />} />
+              <Route path="/project/participants/:projectId/net-worth/:participantId" element={<NetWorth />} />
+              <Route path="/project/:projectId/cash-flow-analysis" element={<CashFlowAnalysis />} />
+              <Route path="/project/cash-flow-analysis/:projectId" element={<CashFlowAnalysis />} />
+              <Route path="/form/:formId" element={<FormView />} />
+              <Route path="/template/:templateId" element={<TemplateDetails />} />
+              <Route path="/integration/:integrationId" element={<IntegrationDetails />} />
+              <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
             </Routes>
             <Toaster />
           </div>
@@ -56,4 +78,3 @@ function App() {
 }
 
 export default App;
-

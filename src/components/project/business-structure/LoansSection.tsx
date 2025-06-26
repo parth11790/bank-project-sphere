@@ -73,7 +73,6 @@ const LoansSection: React.FC<LoansSectionProps> = ({
     navigate(`/project/consolidated-cash-flow/${project.project_id}`);
   };
 
-  // Get loans from both the legacy loan_types and new loans structure
   const getAllLoans = () => {
     const loans = [];
 
