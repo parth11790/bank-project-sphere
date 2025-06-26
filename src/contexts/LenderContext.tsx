@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface LenderInfo {
+export interface LenderInfo {
   name: string;
   logoUrl?: string;
   primaryColor: string;
