@@ -9,11 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { FileText, Download, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useLender } from '@/contexts/LenderContext';
 
 interface PreApprovalData {
-  lenderName: string;
-  lenderRepName: string;
-  lenderRepTitle: string;
   applicantName: string;
   loanProgram: string;
   subjectBusiness: string;
@@ -26,16 +24,12 @@ interface PreApprovalData {
   termMonths: string;
   interestRateSpread: string;
   currentPrimeRate: string;
-  lenderAddress: string;
-  lenderPhone: string;
-  lenderEmail: string;
 }
 
 const PreApprovalLetterGenerator: React.FC = () => {
+  const { lenderInfo } = useLender();
+  
   const [formData, setFormData] = useState<PreApprovalData>({
-    lenderName: 'First National Bank',
-    lenderRepName: 'John Anderson',
-    lenderRepTitle: 'Senior Vice President, Commercial Lending',
     applicantName: '',
     loanProgram: 'SBA 7(a) Business Purchase Financing',
     subjectBusiness: 'To be determined',
@@ -47,10 +41,7 @@ const PreApprovalLetterGenerator: React.FC = () => {
     cashEquityPercentage: '10',
     termMonths: '300',
     interestRateSpread: '2.75',
-    currentPrimeRate: '8.50',
-    lenderAddress: '123 Main Street, Financial District, NY 10005',
-    lenderPhone: '(555) 123-4567',
-    lenderEmail: 'john.anderson@firstnational.com'
+    currentPrimeRate: '8.50'
   });
 
   const [showPreview, setShowPreview] = useState(false);
@@ -78,8 +69,9 @@ const PreApprovalLetterGenerator: React.FC = () => {
     const totalRate = getCurrentRate();
     
     return `
-${formData.lenderName}
-${formData.lenderAddress}
+${lenderInfo.name}
+${lenderInfo.contactPhone}
+${lenderInfo.contactEmail}
 
 ${currentDate}
 
@@ -104,7 +96,7 @@ Guarantor(s):              ${formData.guarantors}
 LOAN STRUCTURE
 
 Loan 1 - SBA 7(a):        Up to $${formData.sbaLoanAmount} of Total Project Cost (TPC)
-                          (First National Bank is an SBA preferred lender)
+                          (${lenderInfo.name} is an SBA preferred lender)
 
 ${formData.conventionalLoanAmount ? `Loan 2 - Conventional:    $${formData.conventionalLoanAmount} (amount above SBA limit)` : ''}
 
@@ -144,16 +136,15 @@ IMPORTANT DISCLAIMERS
 
 This analysis is not all-inclusive. Final approval is subject to the preceding conditions and any other conditions deemed necessary by the lender in its sole judgment. All numbers and interest rates are estimates and are only effective as of the date of this letter.
 
-We are excited about the opportunity to work with you on this acquisition. Should you have any questions, please contact me at ${formData.lenderPhone} or ${formData.lenderEmail}.
+We are excited about the opportunity to work with you on this acquisition. Should you have any questions, please contact me at ${lenderInfo.contactPhone} or ${lenderInfo.contactEmail}.
 
 Sincerely,
 
-${formData.lenderRepName}
-${formData.lenderRepTitle}
-${formData.lenderName}
+${lenderInfo.name}
+${lenderInfo.website}
 
-${formData.lenderAddress}
-©${new Date().getFullYear()} ${formData.lenderName}. All rights reserved. Member FDIC. Equal Housing Lender.
+${lenderInfo.complianceStatement}
+©${new Date().getFullYear()} ${lenderInfo.name}. All rights reserved.
     `.trim();
   };
 
@@ -178,74 +169,12 @@ ${formData.lenderAddress}
             <FileText className="h-5 w-5 text-blue-500" />
             <CardTitle>Pre-Approval Letter Generator</CardTitle>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Generate professional pre-approval letters using {lenderInfo.name} branding
+          </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Lender Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                Lender Information
-              </h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="lenderName">Lender Name</Label>
-                  <Input
-                    id="lenderName"
-                    value={formData.lenderName}
-                    onChange={(e) => handleInputChange('lenderName', e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="lenderRepName">Representative Name</Label>
-                  <Input
-                    id="lenderRepName"
-                    value={formData.lenderRepName}
-                    onChange={(e) => handleInputChange('lenderRepName', e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="lenderRepTitle">Representative Title</Label>
-                  <Input
-                    id="lenderRepTitle"
-                    value={formData.lenderRepTitle}
-                    onChange={(e) => handleInputChange('lenderRepTitle', e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="lenderAddress">Lender Address</Label>
-                  <Textarea
-                    id="lenderAddress"
-                    value={formData.lenderAddress}
-                    onChange={(e) => handleInputChange('lenderAddress', e.target.value)}
-                    rows={2}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label htmlFor="lenderPhone">Phone</Label>
-                    <Input
-                      id="lenderPhone"
-                      value={formData.lenderPhone}
-                      onChange={(e) => handleInputChange('lenderPhone', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lenderEmail">Email</Label>
-                    <Input
-                      id="lenderEmail"
-                      value={formData.lenderEmail}
-                      onChange={(e) => handleInputChange('lenderEmail', e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Loan Information */}
             <div className="space-y-4">
               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
@@ -346,6 +275,32 @@ ${formData.lenderAddress}
                   </Badge>
                 </div>
               </div>
+            </div>
+
+            {/* Lender Information Display */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+                Lender Information
+              </h3>
+              
+              <Card className="bg-gray-50">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    {lenderInfo.logoUrl && (
+                      <img src={lenderInfo.logoUrl} alt="Lender Logo" className="h-8 w-auto" />
+                    )}
+                    <div>
+                      <h4 className="font-semibold">{lenderInfo.name}</h4>
+                      <p className="text-sm text-muted-foreground">{lenderInfo.nmlsId}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <p>{lenderInfo.contactPhone}</p>
+                    <p>{lenderInfo.contactEmail}</p>
+                    <p className="text-muted-foreground">{lenderInfo.complianceStatement}</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
           

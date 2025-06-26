@@ -8,61 +8,31 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Upload, Save, Edit, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
-
-interface LenderProfile {
-  lenderName: string;
-  logoUrl: string;
-  primaryColor: string;
-  secondaryColor: string;
-  contactEmail: string;
-  contactPhone: string;
-  website: string;
-  privacyPolicyUrl: string;
-  termsOfServiceUrl: string;
-  userAgreementUrl: string;
-  complianceStatement: string;
-  nmlsId: string;
-  equalHousingLender: boolean;
-}
+import { useLender } from '@/contexts/LenderContext';
 
 export const LenderProfileTab: React.FC = () => {
+  const { lenderInfo, updateLenderInfo } = useLender();
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState<LenderProfile>({
-    lenderName: 'Community First Bank',
-    logoUrl: '',
-    primaryColor: '#1e40af',
-    secondaryColor: '#3b82f6',
-    contactEmail: 'support@communityfirstbank.com',
-    contactPhone: '(555) 123-4567',
-    website: 'https://www.communityfirstbank.com',
-    privacyPolicyUrl: 'https://www.communityfirstbank.com/privacy',
-    termsOfServiceUrl: 'https://www.communityfirstbank.com/terms',
-    userAgreementUrl: 'https://www.communityfirstbank.com/agreement',
-    complianceStatement: 'Member FDIC. Equal Housing Lender.',
-    nmlsId: 'NMLS# 123456',
-    equalHousingLender: true
-  });
-
-  const [editForm, setEditForm] = useState<LenderProfile>(profile);
+  const [editForm, setEditForm] = useState(lenderInfo);
 
   const handleEdit = () => {
-    setEditForm(profile);
+    setEditForm(lenderInfo);
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    setProfile(editForm);
+    updateLenderInfo(editForm);
     setIsEditing(false);
     toast.success('Lender profile updated successfully');
     console.log('[AUDIT] Lender profile updated by Current User at', new Date().toISOString());
   };
 
   const handleCancel = () => {
-    setEditForm(profile);
+    setEditForm(lenderInfo);
     setIsEditing(false);
   };
 
-  const handleInputChange = (field: keyof LenderProfile, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setEditForm(prev => ({
       ...prev,
       [field]: value
@@ -108,15 +78,15 @@ export const LenderProfileTab: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="lenderName">Lender Name</Label>
+              <Label htmlFor="name">Lender Name</Label>
               {isEditing ? (
                 <Input
-                  id="lenderName"
-                  value={editForm.lenderName}
-                  onChange={(e) => handleInputChange('lenderName', e.target.value)}
+                  id="name"
+                  value={editForm.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
                 />
               ) : (
-                <p className="text-sm">{profile.lenderName}</p>
+                <p className="text-sm">{lenderInfo.name}</p>
               )}
             </div>
 
@@ -129,7 +99,7 @@ export const LenderProfileTab: React.FC = () => {
                   onChange={(e) => handleInputChange('nmlsId', e.target.value)}
                 />
               ) : (
-                <p className="text-sm">{profile.nmlsId}</p>
+                <p className="text-sm">{lenderInfo.nmlsId}</p>
               )}
             </div>
 
@@ -143,7 +113,7 @@ export const LenderProfileTab: React.FC = () => {
                   onChange={(e) => handleInputChange('contactEmail', e.target.value)}
                 />
               ) : (
-                <p className="text-sm">{profile.contactEmail}</p>
+                <p className="text-sm">{lenderInfo.contactEmail}</p>
               )}
             </div>
 
@@ -157,7 +127,7 @@ export const LenderProfileTab: React.FC = () => {
                   onChange={(e) => handleInputChange('contactPhone', e.target.value)}
                 />
               ) : (
-                <p className="text-sm">{profile.contactPhone}</p>
+                <p className="text-sm">{lenderInfo.contactPhone}</p>
               )}
             </div>
 
@@ -172,8 +142,8 @@ export const LenderProfileTab: React.FC = () => {
                 />
               ) : (
                 <p className="text-sm">
-                  <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {profile.website}
+                  <a href={lenderInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    {lenderInfo.website}
                   </a>
                 </p>
               )}
@@ -196,8 +166,8 @@ export const LenderProfileTab: React.FC = () => {
                 </div>
               ) : (
                 <div className="border rounded-lg p-4 text-center">
-                  {profile.logoUrl ? (
-                    <img src={profile.logoUrl} alt="Lender Logo" className="h-16 mx-auto" />
+                  {lenderInfo.logoUrl ? (
+                    <img src={lenderInfo.logoUrl} alt="Lender Logo" className="h-16 mx-auto" />
                   ) : (
                     <div className="h-16 bg-gray-100 rounded flex items-center justify-center">
                       <span className="text-gray-500 text-sm">No logo uploaded</span>
@@ -229,9 +199,9 @@ export const LenderProfileTab: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div 
                       className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: profile.primaryColor }}
+                      style={{ backgroundColor: lenderInfo.primaryColor }}
                     />
-                    <span className="text-sm">{profile.primaryColor}</span>
+                    <span className="text-sm">{lenderInfo.primaryColor}</span>
                   </div>
                 )}
               </div>
@@ -257,9 +227,9 @@ export const LenderProfileTab: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div 
                       className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: profile.secondaryColor }}
+                      style={{ backgroundColor: lenderInfo.secondaryColor }}
                     />
-                    <span className="text-sm">{profile.secondaryColor}</span>
+                    <span className="text-sm">{lenderInfo.secondaryColor}</span>
                   </div>
                 )}
               </div>
@@ -273,62 +243,6 @@ export const LenderProfileTab: React.FC = () => {
           <CardTitle>Legal & Compliance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="privacyPolicyUrl">Privacy Policy URL</Label>
-              {isEditing ? (
-                <Input
-                  id="privacyPolicyUrl"
-                  type="url"
-                  value={editForm.privacyPolicyUrl}
-                  onChange={(e) => handleInputChange('privacyPolicyUrl', e.target.value)}
-                />
-              ) : (
-                <p className="text-sm">
-                  <a href={profile.privacyPolicyUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {profile.privacyPolicyUrl}
-                  </a>
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="termsOfServiceUrl">Terms of Service URL</Label>
-              {isEditing ? (
-                <Input
-                  id="termsOfServiceUrl"
-                  type="url"
-                  value={editForm.termsOfServiceUrl}
-                  onChange={(e) => handleInputChange('termsOfServiceUrl', e.target.value)}
-                />
-              ) : (
-                <p className="text-sm">
-                  <a href={profile.termsOfServiceUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {profile.termsOfServiceUrl}
-                  </a>
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="userAgreementUrl">User Agreement URL</Label>
-              {isEditing ? (
-                <Input
-                  id="userAgreementUrl"
-                  type="url"
-                  value={editForm.userAgreementUrl}
-                  onChange={(e) => handleInputChange('userAgreementUrl', e.target.value)}
-                />
-              ) : (
-                <p className="text-sm">
-                  <a href={profile.userAgreementUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    {profile.userAgreementUrl}
-                  </a>
-                </p>
-              )}
-            </div>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="complianceStatement">Compliance Statement</Label>
             {isEditing ? (
@@ -339,7 +253,7 @@ export const LenderProfileTab: React.FC = () => {
                 rows={3}
               />
             ) : (
-              <p className="text-sm">{profile.complianceStatement}</p>
+              <p className="text-sm">{lenderInfo.complianceStatement}</p>
             )}
           </div>
 

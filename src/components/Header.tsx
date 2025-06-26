@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { getProjectById } from '@/services';
+import { useLender } from '@/contexts/LenderContext';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Header: React.FC = () => {
   const params = useParams();
   const [searchParams] = useSearchParams();
   const userRole = localStorage.getItem('userRole') || 'bank_officer';
+  const { lenderInfo } = useLender();
   
   // Get project data for accurate breadcrumbs
   const { data: project } = useQuery({
@@ -203,6 +205,27 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="h-14 flex items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-4">
+          {/* Lender Logo and Name */}
+          <div className="flex items-center gap-3">
+            {lenderInfo.logoUrl ? (
+              <img 
+                src={lenderInfo.logoUrl} 
+                alt={`${lenderInfo.name} Logo`}
+                className="h-8 w-auto"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center">
+                <Building2 className="h-5 w-5 text-primary" />
+              </div>
+            )}
+            <div className="hidden md:block">
+              <h1 className="text-sm font-semibold text-foreground">{lenderInfo.name}</h1>
+              <p className="text-xs text-muted-foreground">{lenderInfo.nmlsId}</p>
+            </div>
+          </div>
+          
+          <div className="h-6 w-px bg-border mx-2" />
+          
           {generateBreadcrumbs()}
         </div>
         
