@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -105,6 +104,28 @@ export default {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-5px)' }
+        },
+        'border-glow': {
+          '0%': { 
+            borderColor: '#3b82f6',
+            boxShadow: '0 0 8px rgba(59, 130, 246, 0.3)'
+          },
+          '25%': { 
+            borderColor: '#8b5cf6',
+            boxShadow: '0 0 8px rgba(139, 92, 246, 0.3)'
+          },
+          '50%': { 
+            borderColor: '#ec4899',
+            boxShadow: '0 0 8px rgba(236, 72, 153, 0.3)'
+          },
+          '75%': { 
+            borderColor: '#f59e0b',
+            boxShadow: '0 0 8px rgba(245, 158, 11, 0.3)'
+          },
+          '100%': { 
+            borderColor: '#3b82f6',
+            boxShadow: '0 0 8px rgba(59, 130, 246, 0.3)'
+          }
         }
       },
       animation: {
@@ -118,7 +139,8 @@ export default {
         'slide-out-right': 'slide-out-right 0.3s ease-out',
         'enter': 'fade-in 0.3s ease-out, scale-in 0.2s ease-out',
         'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
-        'float': 'float 3s ease-in-out infinite'
+        'float': 'float 3s ease-in-out infinite',
+        'border-glow': 'border-glow 4s ease-in-out infinite'
       }
     }
   },

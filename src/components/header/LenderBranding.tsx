@@ -12,11 +12,11 @@ const LenderBranding: React.FC = () => {
         <img 
           src={lenderInfo.logoUrl} 
           alt={`${lenderInfo.name} Logo`}
-          className="h-8 w-auto"
+          className="h-8 w-auto rounded border-2 border-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse"
         />
       ) : (
-        <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center">
-          <Building2 className="h-5 w-5 text-primary" />
+        <div className="h-8 w-8 rounded bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center border-2 animate-[border-glow_3s_ease-in-out_infinite] shadow-lg">
+          <Building2 className="h-5 w-5 text-white drop-shadow-sm" />
         </div>
       )}
       <div className="hidden md:block">
