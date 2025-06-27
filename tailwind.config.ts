@@ -128,8 +128,8 @@ export default {
           }
         },
         'border-flow': {
-          '0%': { backgroundPosition: '200% 0' },
-          '100%': { backgroundPosition: '-200% 0' }
+          '0%': { backgroundPosition: '300% 0' },
+          '100%': { backgroundPosition: '-300% 0' }
         }
       },
       animation: {
@@ -145,7 +145,7 @@ export default {
         'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
         'float': 'float 3s ease-in-out infinite',
         'border-glow': 'border-glow 4s ease-in-out infinite',
-        'border-flow': 'border-flow 4s linear infinite'
+        'border-flow': 'border-flow 6s linear infinite'
       }
     }
   },
