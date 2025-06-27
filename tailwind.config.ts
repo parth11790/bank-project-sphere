@@ -126,6 +126,10 @@ export default {
             borderColor: '#3b82f6',
             boxShadow: '0 0 8px rgba(59, 130, 246, 0.3)'
           }
+        },
+        'border-flow': {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' }
         }
       },
       animation: {
@@ -140,7 +144,8 @@ export default {
         'enter': 'fade-in 0.3s ease-out, scale-in 0.2s ease-out',
         'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
         'float': 'float 3s ease-in-out infinite',
-        'border-glow': 'border-glow 4s ease-in-out infinite'
+        'border-glow': 'border-glow 4s ease-in-out infinite',
+        'border-flow': 'border-flow 4s linear infinite'
       }
     }
   },
