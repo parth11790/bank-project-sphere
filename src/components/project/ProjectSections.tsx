@@ -3,39 +3,26 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
-  Users, 
   BarChart3, 
   FileText, 
-  Building2,
   DollarSign
 } from 'lucide-react';
 import { Project } from '@/types/project';
 
 interface ProjectSectionsProps {
   project: Project;
-  onGatherInformation: () => void;
   onAnalysis: () => void;
   onGenerateDocumentation: () => void;
-  onManageBusinessStructure: () => void;
   onManageReferrals?: () => void;
 }
 
 export const ProjectSections: React.FC<ProjectSectionsProps> = ({
   project,
-  onGatherInformation,
   onAnalysis,
   onGenerateDocumentation,
-  onManageBusinessStructure,
   onManageReferrals
 }) => {
   const sections = [
-    {
-      icon: Users,
-      title: "Gather Information",
-      description: "Collect participant data, forms, and documents",
-      action: onGatherInformation,
-      color: "text-blue-600"
-    },
     {
       icon: BarChart3,
       title: "Analysis",
@@ -49,13 +36,6 @@ export const ProjectSections: React.FC<ProjectSectionsProps> = ({
       description: "Create loan packages and required documents",
       action: onGenerateDocumentation,
       color: "text-purple-600"
-    },
-    {
-      icon: Building2,
-      title: "Manage Business Structure",
-      description: "Configure ownership, loans, and business entities",
-      action: onManageBusinessStructure,
-      color: "text-orange-600"
     },
     {
       icon: DollarSign,
@@ -92,7 +72,7 @@ export const ProjectSections: React.FC<ProjectSectionsProps> = ({
                 className="w-full"
                 size="sm"
               >
-                {section.title === "Manage Business Structure" ? "View Structure" : "Open"}
+                Open
               </Button>
             </CardContent>
           </Card>

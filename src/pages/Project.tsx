@@ -59,24 +59,12 @@ const Project = () => {
   const referralFeesData = referralFees || [] as ReferralFee[];
   const dashboardData = generateProjectDashboardData(participantsData);
 
-  const handleGatherInformation = () => {
-    // Navigate to business information instead since participants page is removed
-    navigate(`/business/${projectId}`);
-  };
-
   const handleAnalysis = () => {
     navigate(`/project/analysis/${projectId}`);
   };
 
   const handleGenerateDocumentation = () => {
     navigate(`/project/documentation/${projectId}`);
-  };
-
-  const handleManageBusinessStructure = () => {
-    const structureSection = document.getElementById('business-structure-section');
-    if (structureSection) {
-      structureSection.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   const handleManageReferrals = () => {
@@ -142,10 +130,8 @@ const Project = () => {
           <div className="bg-muted/30 rounded-lg p-4 border border-border/30">
             <ProjectSections 
               project={projectData} 
-              onGatherInformation={handleGatherInformation} 
               onAnalysis={handleAnalysis} 
               onGenerateDocumentation={handleGenerateDocumentation} 
-              onManageBusinessStructure={handleManageBusinessStructure}
               onManageReferrals={handleManageReferrals}
             />
           </div>
