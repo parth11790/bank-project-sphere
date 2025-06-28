@@ -38,16 +38,21 @@ export const getProjects = async (): Promise<Project[]> => {
       status: project.status,
       description: project.description,
       location: project.location,
+      loan_amount: project.loan_amount || 0, // Add missing loan_amount
       created_at: project.created_at,
       updated_at: project.updated_at,
-      created_by_user: project.created_by_user,
+      created_by_user: project.created_by_user ? {
+        name: project.created_by_user.name,
+        email: project.created_by_user.email,
+        user_id: project.created_by || '',
+        role: 'user'
+      } : undefined,
       loan_types: project.loans?.map((loan: any) => ({
         type: loan.loan_type,
         amount: loan.amount
       })) || [],
       participants: project.project_participants?.map((p: any) => ({
-        participant_id: p.participant_id,
-        name: p.name,
+        userId: p.participant_id, // Map participant_id to userId for compatibility
         role: p.role
       })) || []
     }));
@@ -94,9 +99,15 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
       status: data.status,
       description: data.description,
       location: data.location,
+      loan_amount: data.loan_amount || 0, // Add missing loan_amount
       created_at: data.created_at,
       updated_at: data.updated_at,
-      created_by_user: data.created_by_user,
+      created_by_user: data.created_by_user ? {
+        name: data.created_by_user.name,
+        email: data.created_by_user.email,
+        user_id: data.created_by || '',
+        role: 'user'
+      } : undefined,
       loan_types: data.loans?.map((loan: any) => ({
         type: loan.loan_type,
         amount: loan.amount,
@@ -104,10 +115,8 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
         rate: loan.rate
       })) || [],
       participants: data.project_participants?.map((p: any) => ({
-        participant_id: p.participant_id,
-        name: p.name,
-        role: p.role,
-        email: p.email
+        userId: p.participant_id, // Map participant_id to userId for compatibility
+        role: p.role
       })) || [],
       owners: data.owners?.map((owner: any) => ({
         owner_id: owner.owner_id,
@@ -164,6 +173,7 @@ export const updateProject = async (
         project_type: projectData.project_type,
         description: projectData.description,
         location: projectData.location,
+        loan_amount: projectData.loan_amount,
         updated_at: new Date().toISOString()
       })
       .eq('project_id', projectId)

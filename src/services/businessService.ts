@@ -82,7 +82,32 @@ export const getBusinessFinancials = async (businessId: string): Promise<Busines
       return [];
     }
 
-    return data as BusinessFinancialData[];
+    // Transform data to match BusinessFinancialData type
+    return data.map(item => ({
+      data_id: item.data_id,
+      business_id: item.business_id,
+      year: item.year.toString(), // Convert number to string to match type
+      revenue: item.revenue,
+      wages: item.wages,
+      cogs: item.cogs,
+      gross_profit: item.gross_profit,
+      other_expenses: item.other_expenses,
+      total_noi: item.total_noi,
+      nom_percentage: item.nom_percentage,
+      business_name: '', // Will be filled from business data if needed
+      entity_type: 'LLC', // Default value, should be joined from business table
+      years: [{
+        year: item.year.toString(),
+        revenue: item.revenue,
+        wages: item.wages,
+        cogs: item.cogs,
+        gross_profit: item.gross_profit,
+        gross_margin: item.revenue > 0 ? (item.gross_profit / item.revenue) * 100 : 0,
+        other_expenses: item.other_expenses,
+        total_noi: item.total_noi,
+        nom: item.nom_percentage,
+      }]
+    }));
   } catch (error: any) {
     console.error(`Error fetching business financials for ${businessId}:`, error.message);
     toast.error('Failed to load business financial data');

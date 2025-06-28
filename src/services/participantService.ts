@@ -38,24 +38,16 @@ export const getProjectParticipants = async (projectId: string): Promise<Partici
     // Transform the data to match the expected Participant type
     const transformedParticipants: Participant[] = data.map(participant => ({
       participant_id: participant.participant_id,
-      project_id: participant.project_id,
+      user_id: participant.user_id || '',
       name: participant.name,
-      email: participant.email,
+      email: participant.email || '',
       role: participant.role,
       participant_type: participant.participant_type,
-      created_at: participant.created_at,
-      user: participant.user,
-      assigned_forms: participant.assigned_forms?.map((assignment: any) => ({
-        assignment_id: assignment.assignment_id,
-        status: assignment.status,
-        form: assignment.form
+      forms: participant.assigned_forms?.map((assignment: any) => ({
+        form_id: assignment.form?.form_id || '',
+        name: assignment.form?.name || ''
       })) || [],
-      documents: participant.documents?.map((doc: any) => ({
-        document_id: doc.document_id,
-        name: doc.name,
-        status: doc.status,
-        uploaded_at: doc.uploaded_at
-      })) || []
+      business: undefined // Will be populated separately if needed
     }));
 
     return transformedParticipants;

@@ -2,6 +2,21 @@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ReferralFee } from '@/types/referral';
+import { Project } from '@/types/project';
+
+// Utility functions for referral calculations
+export const calculateTotalLoanAmount = (project: Project): number => {
+  if (!project.loan_types) return project.loan_amount || 0;
+  
+  return project.loan_types.reduce((total, loan) => {
+    if (typeof loan === 'string') return total;
+    return total + (loan.amount || 0);
+  }, 0);
+};
+
+export const calculatePercentageFeeAmount = (percentage: number, totalLoanAmount: number): number => {
+  return (percentage / 100) * totalLoanAmount;
+};
 
 // Referral Services
 export const getReferralFees = async (projectId: string): Promise<ReferralFee[]> => {
@@ -20,13 +35,12 @@ export const getReferralFees = async (projectId: string): Promise<ReferralFee[]>
 
     return data.map(fee => ({
       referral_id: fee.referral_id,
-      project_id: fee.project_id,
-      referral_source: fee.referral_source,
+      name: fee.referral_source, // Map referral_source to name
       fee_type: fee.fee_type,
-      fee_amount: fee.fee_amount,
-      fee_percentage: fee.fee_percentage,
-      notes: fee.notes,
-      created_at: fee.created_at
+      fee_amount: fee.fee_amount || 0,
+      discussion_notes: fee.notes || '', // Map notes to discussion_notes
+      created_at: fee.created_at,
+      updated_at: fee.created_at // Use created_at as updated_at fallback
     }));
   } catch (error: any) {
     console.error(`Error fetching referral fees for project ${projectId}:`, error.message);
@@ -55,11 +69,11 @@ export const saveReferralFees = async (projectId: string, fees: ReferralFee[]): 
         .from('referral_fees')
         .insert(fees.map(fee => ({
           project_id: projectId,
-          referral_source: fee.referral_source,
+          referral_source: fee.name, // Map name to referral_source
           fee_type: fee.fee_type,
           fee_amount: fee.fee_amount,
-          fee_percentage: fee.fee_percentage,
-          notes: fee.notes
+          fee_percentage: fee.fee_type === 'percentage' ? fee.fee_amount : null,
+          notes: fee.discussion_notes // Map discussion_notes to notes
         })));
 
       if (insertError) {

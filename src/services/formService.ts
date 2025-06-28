@@ -55,21 +55,18 @@ export const getDocuments = async (entityType: string): Promise<Document[]> => {
       {
         document_id: 'doc-1',
         name: 'Business Tax Returns',
-        description: 'Upload business tax returns for the last 3 years',
         entity_type: entityType as any,
         required: true
       },
       {
         document_id: 'doc-2',
         name: 'Financial Statements',
-        description: 'Balance sheet and profit & loss statements',
         entity_type: entityType as any,
         required: true
       },
       {
         document_id: 'doc-3',
         name: 'Bank Statements',
-        description: 'Business bank statements for the last 12 months',
         entity_type: entityType as any,
         required: true
       }
