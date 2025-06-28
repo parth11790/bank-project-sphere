@@ -2,23 +2,57 @@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Project, isProject } from '@/types/project';
-import { getProjectsData, getProjectByIdData } from '@/lib/mockDataProvider';
 
-// Flag to use mock data or actual supabase
-const USE_MOCK_DATA = true;
+// Flag to use actual Supabase data
+const USE_MOCK_DATA = false;
 
 // Project Services
 export const getProjects = async (): Promise<Project[]> => {
   if (USE_MOCK_DATA) {
+    const { getProjectsData } = await import('@/lib/mockDataProvider');
     return getProjectsData();
   }
   
   try {
-    // When Supabase tables are set up, replace this with proper queries
-    console.log('Supabase query would be made here for projects');
-    
-    // Fallback to mock data since no tables exist
-    return getProjectsData();
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        created_by_user:profiles(name, email),
+        loans(loan_type, amount),
+        project_participants(participant_id, name, role)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching projects:', error);
+      toast.error('Failed to load projects');
+      return [];
+    }
+
+    // Transform the data to match the expected Project type
+    const transformedProjects: Project[] = data.map(project => ({
+      project_id: project.project_id,
+      project_name: project.project_name,
+      project_type: project.project_type,
+      status: project.status,
+      description: project.description,
+      location: project.location,
+      created_at: project.created_at,
+      updated_at: project.updated_at,
+      created_by_user: project.created_by_user,
+      loan_types: project.loans?.map((loan: any) => ({
+        type: loan.loan_type,
+        amount: loan.amount
+      })) || [],
+      participants: project.project_participants?.map((p: any) => ({
+        participant_id: p.participant_id,
+        name: p.name,
+        role: p.role
+      })) || []
+    }));
+
+    return transformedProjects;
   } catch (error: any) {
     console.error('Error fetching projects:', error.message);
     toast.error('Failed to load projects');
@@ -28,15 +62,68 @@ export const getProjects = async (): Promise<Project[]> => {
 
 export const getProjectById = async (projectId: string): Promise<Project | null> => {
   if (USE_MOCK_DATA) {
+    const { getProjectByIdData } = await import('@/lib/mockDataProvider');
     return getProjectByIdData(projectId);
   }
   
   try {
-    // When Supabase tables are set up, replace this with proper queries
-    console.log('Supabase query would be made here for project:', projectId);
-    
-    // Fallback to mock data since no tables exist
-    return getProjectByIdData(projectId);
+    const { data, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        created_by_user:profiles(name, email),
+        loans(loan_type, amount, term, rate),
+        project_participants(participant_id, name, role, email),
+        owners(owner_id, name, ownership_percentage, type),
+        businesses(business_id, name, entity_type, description)
+      `)
+      .eq('project_id', projectId)
+      .single();
+
+    if (error) {
+      console.error(`Error fetching project ${projectId}:`, error);
+      toast.error('Failed to load project details');
+      return null;
+    }
+
+    // Transform the data to match the expected Project type
+    const transformedProject: Project = {
+      project_id: data.project_id,
+      project_name: data.project_name,
+      project_type: data.project_type,
+      status: data.status,
+      description: data.description,
+      location: data.location,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      created_by_user: data.created_by_user,
+      loan_types: data.loans?.map((loan: any) => ({
+        type: loan.loan_type,
+        amount: loan.amount,
+        term: loan.term,
+        rate: loan.rate
+      })) || [],
+      participants: data.project_participants?.map((p: any) => ({
+        participant_id: p.participant_id,
+        name: p.name,
+        role: p.role,
+        email: p.email
+      })) || [],
+      owners: data.owners?.map((owner: any) => ({
+        owner_id: owner.owner_id,
+        name: owner.name,
+        ownership_percentage: owner.ownership_percentage,
+        type: owner.type
+      })) || [],
+      businesses: data.businesses?.map((business: any) => ({
+        business_id: business.business_id,
+        name: business.name,
+        entity_type: business.entity_type,
+        description: business.description
+      })) || []
+    };
+
+    return transformedProject;
   } catch (error: any) {
     console.error(`Error fetching project ${projectId}:`, error.message);
     toast.error('Failed to load project details');
@@ -53,40 +140,43 @@ export const updateProject = async (
     // For mock data, we'll simulate an API call with a delay
     return new Promise((resolve) => {
       setTimeout(() => {
+        const { getProjectByIdData } = require('@/lib/mockDataProvider');
         const currentProject = getProjectByIdData(projectId);
         if (currentProject) {
-          // Merge the current project with the updates
           const updatedProject = {
             ...currentProject,
             ...projectData,
             updated_at: new Date().toISOString()
           };
-          // In a real implementation, we would update the mock data store
-          // Here we just return the updated project
           resolve(updatedProject);
         } else {
           throw new Error('Project not found');
         }
-      }, 500); // simulate network delay
+      }, 500);
     });
   }
   
   try {
-    // When Supabase tables are set up, replace this with proper queries
-    console.log('Supabase update would be made here for project:', projectId, projectData);
-    
-    // Simulate successful update with mock data
-    const currentProject = getProjectByIdData(projectId);
-    if (currentProject) {
-      const updatedProject = {
-        ...currentProject,
-        ...projectData,
+    const { data, error } = await supabase
+      .from('projects')
+      .update({
+        project_name: projectData.project_name,
+        project_type: projectData.project_type,
+        description: projectData.description,
+        location: projectData.location,
         updated_at: new Date().toISOString()
-      };
-      return updatedProject;
-    } else {
-      throw new Error('Project not found');
+      })
+      .eq('project_id', projectId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error(`Error updating project ${projectId}:`, error);
+      toast.error('Failed to update project');
+      throw error;
     }
+
+    return data as Project;
   } catch (error: any) {
     console.error(`Error updating project ${projectId}:`, error.message);
     toast.error('Failed to update project');

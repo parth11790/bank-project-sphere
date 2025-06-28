@@ -1,15 +1,14 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { BusinessFinancialData } from '@/types/business';
-import { getBusinessFinancialDataData } from '@/lib/mockDataProvider';
 
-// Flag to use mock data or actual supabase
-const USE_MOCK_DATA = true;
+// Flag to use actual Supabase data
+const USE_MOCK_DATA = false;
 
 // Business Services
 export const getBusinessById = async (businessId: string) => {
   if (USE_MOCK_DATA) {
-    // Return mock business data
     return {
       id: businessId,
       name: 'Example Business, LLC',
@@ -23,16 +22,39 @@ export const getBusinessById = async (businessId: string) => {
   }
 
   try {
-    // When Supabase tables are set up, replace this with proper queries
-    // Currently we only have an empty database, so we're using mock data instead
-    console.log('Supabase query would be made here for business:', businessId);
-    
-    // Fallback to mock data since no tables exist
+    const { data, error } = await supabase
+      .from('businesses')
+      .select(`
+        *,
+        business_addresses(address_type, street, city, state, zip_code),
+        business_financial_data(year, revenue, wages, total_noi),
+        business_existing_debt(lender, current_balance, payment, rate)
+      `)
+      .eq('business_id', businessId)
+      .single();
+
+    if (error) {
+      console.error(`Error fetching business ${businessId}:`, error);
+      toast.error('Failed to load business data');
+      return null;
+    }
+
     return {
-      id: businessId,
-      name: 'Retrieved Business',
-      entity_type: 'LLC',
-      // ... other fields would be mapped from the data
+      id: data.business_id,
+      name: data.name,
+      entity_type: data.entity_type,
+      ein: data.ein,
+      description: data.description,
+      website: data.website,
+      phone: data.phone,
+      email: data.email,
+      founding_date: data.founding_date,
+      employee_count: data.employee_count,
+      industry: data.industry,
+      naics_code: data.naics_code,
+      addresses: data.business_addresses || [],
+      financial_data: data.business_financial_data || [],
+      existing_debt: data.business_existing_debt || []
     };
   } catch (error: any) {
     console.error(`Error fetching business ${businessId}:`, error.message);
@@ -43,15 +65,24 @@ export const getBusinessById = async (businessId: string) => {
 
 export const getBusinessFinancials = async (businessId: string): Promise<BusinessFinancialData[]> => {
   if (USE_MOCK_DATA) {
-    // Return mock financial data
+    const { getBusinessFinancialDataData } = await import('@/lib/mockDataProvider');
     return getBusinessFinancialDataData(businessId);
   }
   
   try {
-    // When Supabase tables are set up, replace this with proper queries
-    // Since we only have an empty database, we're returning mock data for now
-    const mockData = getBusinessFinancialDataData(businessId);
-    return mockData;
+    const { data, error } = await supabase
+      .from('business_financial_data')
+      .select('*')
+      .eq('business_id', businessId)
+      .order('year', { ascending: false });
+
+    if (error) {
+      console.error(`Error fetching business financials for ${businessId}:`, error);
+      toast.error('Failed to load business financial data');
+      return [];
+    }
+
+    return data as BusinessFinancialData[];
   } catch (error: any) {
     console.error(`Error fetching business financials for ${businessId}:`, error.message);
     toast.error('Failed to load business financial data');
