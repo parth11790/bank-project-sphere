@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FormTemplate, Document } from '@/types/form';
@@ -55,20 +54,17 @@ export const getDocuments = async (entityType: string): Promise<Document[]> => {
       {
         document_id: 'doc-1',
         name: 'Business Tax Returns',
-        entity_type: entityType as any,
-        required: true
+        entity_type: entityType as any
       },
       {
         document_id: 'doc-2',
         name: 'Financial Statements',
-        entity_type: entityType as any,
-        required: true
+        entity_type: entityType as any
       },
       {
         document_id: 'doc-3',
         name: 'Bank Statements',
-        entity_type: entityType as any,
-        required: true
+        entity_type: entityType as any
       }
     ];
 

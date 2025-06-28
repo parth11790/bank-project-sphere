@@ -36,7 +36,7 @@ export const getReferralFees = async (projectId: string): Promise<ReferralFee[]>
     return data.map(fee => ({
       referral_id: fee.referral_id,
       name: fee.referral_source, // Map referral_source to name
-      fee_type: fee.fee_type,
+      fee_type: fee.fee_type as 'percentage' | 'flat', // Ensure proper typing
       fee_amount: fee.fee_amount || 0,
       discussion_notes: fee.notes || '', // Map notes to discussion_notes
       created_at: fee.created_at,
