@@ -6,18 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   CheckCircle, 
-  Clock, 
-  FileText, 
-  User, 
-  Building, 
   LogOut,
-  DollarSign,
-  Calendar
+  DollarSign
 } from 'lucide-react';
 import { toast } from 'sonner';
+import BorrowerFormsSidebar from '@/components/borrower/BorrowerFormsSidebar';
 
 interface AssignedForm {
   id: string;
@@ -26,6 +21,7 @@ interface AssignedForm {
   status: 'pending' | 'in_progress' | 'completed';
   entity_type: 'individual' | 'business';
   due_date?: string;
+  category: string;
 }
 
 const BorrowerDashboard: React.FC = () => {
@@ -54,7 +50,8 @@ const BorrowerDashboard: React.FC = () => {
         description: 'Complete your personal financial information',
         status: 'pending',
         entity_type: 'individual',
-        due_date: '2024-01-15'
+        due_date: '2024-01-15',
+        category: 'personal'
       },
       {
         id: 'form-2',
@@ -62,21 +59,48 @@ const BorrowerDashboard: React.FC = () => {
         description: 'Upload your business tax returns for the past 3 years',
         status: 'pending',
         entity_type: 'business',
-        due_date: '2024-01-20'
+        due_date: '2024-01-20',
+        category: 'business'
       },
       {
         id: 'form-3',
         name: 'Personal Debt Summary',
         description: 'List all personal debts and obligations',
         status: 'pending',
-        entity_type: 'individual'
+        entity_type: 'individual',
+        category: 'financial'
       },
       {
         id: 'form-4',
         name: 'Business Balance Sheet',
         description: 'Provide current business balance sheet',
         status: 'in_progress',
-        entity_type: 'business'
+        entity_type: 'business',
+        category: 'financial'
+      },
+      {
+        id: 'form-5',
+        name: 'Business Information',
+        description: 'Basic business details and registration',
+        status: 'completed',
+        entity_type: 'business',
+        category: 'business'
+      },
+      {
+        id: 'form-6',
+        name: 'Profit & Loss Statement',
+        description: 'Financial performance statements',
+        status: 'pending',
+        entity_type: 'business',
+        category: 'financial'
+      },
+      {
+        id: 'form-7',
+        name: 'Tax Returns',
+        description: 'Personal tax returns for the past 3 years',
+        status: 'pending',
+        entity_type: 'individual',
+        category: 'financial'
       }
     ]);
   }, [user, navigate]);
@@ -97,38 +121,17 @@ const BorrowerDashboard: React.FC = () => {
     navigate(`/borrower/form/${form.id}?${params.toString()}`);
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'in_progress':
-        return <Clock className="h-5 w-5 text-yellow-500" />;
-      default:
-        return <FileText className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Badge variant="default" className="bg-green-500">Completed</Badge>;
-      case 'in_progress':
-        return <Badge variant="default" className="bg-yellow-500">In Progress</Badge>;
-      default:
-        return <Badge variant="outline">Pending</Badge>;
-    }
-  };
 
   const completedForms = assignedForms.filter(f => f.status === 'completed').length;
   const totalForms = assignedForms.length;
   const progressPercentage = (completedForms / totalForms) * 100;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-primary">LendFlow</div>
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shrink-0">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="text-xl font-bold text-primary">LendFlow</div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
               Welcome, {user?.user_metadata?.contact_name || user?.email}
@@ -141,133 +144,68 @@ const BorrowerDashboard: React.FC = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-6"
-        >
-          {/* Welcome Section */}
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold text-foreground">
-              Borrower Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Track your loan application progress and complete required forms.
-            </p>
-          </div>
-
-          {/* Progress Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5" />
-                Application Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span>Forms Completed</span>
-                  <span>{completedForms} of {totalForms}</span>
-                </div>
-                <Progress value={progressPercentage} />
+      <div className="flex flex-1 overflow-hidden">
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="container mx-auto px-4 py-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
+              {/* Compact Header */}
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold text-foreground">
+                  Dashboard
+                </h1>
                 <p className="text-sm text-muted-foreground">
-                  Complete all required forms to proceed with your loan application.
+                  Complete your loan application forms
                 </p>
               </div>
-            </CardContent>
-          </Card>
 
-          <Tabs defaultValue="forms" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="forms">Required Forms</TabsTrigger>
-              <TabsTrigger value="application">Application Details</TabsTrigger>
-            </TabsList>
+              {/* Compact Progress Overview */}
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium text-sm">Progress</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {completedForms} of {totalForms} complete
+                  </span>
+                </div>
+                <Progress value={progressPercentage} className="h-2" />
+              </Card>
 
-            <TabsContent value="forms" className="space-y-4">
-              <div className="grid gap-4">
-                {assignedForms.map((form) => (
-                  <Card 
-                    key={form.id} 
-                    className="cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => handleFormClick(form)}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-4 flex-1">
-                          {getStatusIcon(form.status)}
-                          <div className="space-y-1 flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{form.name}</h3>
-                              {form.entity_type === 'business' ? (
-                                <Building className="h-4 w-4 text-muted-foreground" />
-                              ) : (
-                                <User className="h-4 w-4 text-muted-foreground" />
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {form.description}
-                            </p>
-                            {form.due_date && (
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
-                                Due: {new Date(form.due_date).toLocaleDateString()}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          {getStatusBadge(form.status)}
-                          <Button variant="outline" size="sm">
-                            {form.status === 'completed' ? 'View' : 'Complete'}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="application" className="space-y-4">
+              {/* Application Summary */}
               {applicationData && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Application Summary</CardTitle>
-                    <CardDescription>
-                      Review your submitted application details
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium text-sm text-muted-foreground">Business Name</h4>
-                        <p>{applicationData.business_legal_name}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-sm text-muted-foreground">Contact Person</h4>
-                        <p>{applicationData.primary_contact_name}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-sm text-muted-foreground">Loan Amount</h4>
-                        <p className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4" />
-                          {applicationData.requested_loan_amount?.toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-sm text-muted-foreground">Purpose</h4>
-                        <p>{applicationData.loan_purpose}</p>
-                      </div>
+                <Card className="p-4">
+                  <h3 className="font-medium text-sm mb-3">Application Summary</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Business</p>
+                      <p className="text-sm font-medium">{applicationData.business_legal_name}</p>
                     </div>
-                  </CardContent>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Loan Amount</p>
+                      <p className="text-sm font-medium flex items-center gap-1">
+                        <DollarSign className="h-3 w-3" />
+                        {applicationData.requested_loan_amount?.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
                 </Card>
               )}
-            </TabsContent>
-          </Tabs>
-        </motion.div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Forms Sidebar */}
+        <BorrowerFormsSidebar
+          forms={assignedForms}
+          onFormClick={handleFormClick}
+        />
       </div>
     </div>
   );
