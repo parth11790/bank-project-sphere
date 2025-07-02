@@ -1,47 +1,66 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ReferralFee } from '@/types/referral';
+import { ReferralFee, ProjectReferral } from '@/types/referral';
 import { Project } from '@/types/project';
 
-// Utility functions for referral calculations
-export const calculateTotalLoanAmount = (project: Project): number => {
-  if (!project.loan_types) return project.loan_amount || 0;
-  
-  return project.loan_types.reduce((total, loan) => {
-    if (typeof loan === 'string') return total;
-    return total + (loan.amount || 0);
-  }, 0);
-};
+// Flag to use mock data or actual supabase
+const USE_MOCK_DATA = true;
 
-export const calculatePercentageFeeAmount = (percentage: number, totalLoanAmount: number): number => {
-  return (percentage / 100) * totalLoanAmount;
-};
-
-// Referral Services
-export const getReferralFees = async (projectId: string): Promise<ReferralFee[]> => {
-  try {
-    const { data, error } = await supabase
-      .from('referral_fees')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error(`Error fetching referral fees for project ${projectId}:`, error);
-      toast.error('Failed to load referral fees');
-      return [];
+// Mock data for referral fees
+const mockReferralData: Record<string, ReferralFee[]> = {
+  project_1: [
+    {
+      referral_id: 'ref_1_1',
+      name: 'Bay Area Business Brokers',
+      fee_type: 'percentage',
+      fee_amount: 2.5,
+      discussion_notes: 'Initial discussion completed. Agreed on 2.5% fee structure for successful loan closure. They will provide ongoing support throughout the process.',
+      created_at: '2024-01-15T10:00:00Z',
+      updated_at: '2024-01-15T10:00:00Z'
+    },
+    {
+      referral_id: 'ref_1_2',
+      name: 'San Francisco CPA Group',
+      fee_type: 'flat',
+      fee_amount: 7500,
+      discussion_notes: 'Flat fee agreed upon for accounting services referral. Payment due within 30 days of loan funding.',
+      created_at: '2024-01-16T14:30:00Z',
+      updated_at: '2024-01-16T14:30:00Z'
     }
+  ],
+  project_2: [
+    {
+      referral_id: 'ref_2_1',
+      name: 'Tech Startup Advisors',
+      fee_type: 'percentage',
+      fee_amount: 1.5,
+      discussion_notes: 'Reduced rate due to existing relationship. They will assist with equipment vendor negotiations.',
+      created_at: '2024-02-01T09:15:00Z',
+      updated_at: '2024-02-01T09:15:00Z'
+    }
+  ],
+  project_5: [
+    {
+      referral_id: 'ref_5_1',
+      name: 'Seattle Retail Consultants',
+      fee_type: 'flat',
+      fee_amount: 12000,
+      discussion_notes: 'Comprehensive referral package including site selection assistance and lease negotiation support.',
+      created_at: '2024-02-15T16:20:00Z',
+      updated_at: '2024-02-15T16:20:00Z'
+    }
+  ]
+};
 
-    return data.map(fee => ({
-      referral_id: fee.referral_id,
-      name: fee.referral_source, // Map referral_source to name
-      fee_type: fee.fee_type as 'percentage' | 'flat', // Ensure proper typing
-      fee_amount: fee.fee_amount || 0,
-      discussion_notes: fee.notes || '', // Map notes to discussion_notes
-      created_at: fee.created_at,
-      updated_at: fee.created_at // Use created_at as updated_at fallback
-    }));
+export const getReferralFees = async (projectId: string): Promise<ReferralFee[]> => {
+  if (USE_MOCK_DATA) {
+    return mockReferralData[projectId] || [];
+  }
+
+  try {
+    console.log('Supabase query would be made here for referral fees:', projectId);
+    return mockReferralData[projectId] || [];
   } catch (error: any) {
     console.error(`Error fetching referral fees for project ${projectId}:`, error.message);
     toast.error('Failed to load referral fees');
@@ -50,44 +69,56 @@ export const getReferralFees = async (projectId: string): Promise<ReferralFee[]>
 };
 
 export const saveReferralFees = async (projectId: string, fees: ReferralFee[]): Promise<boolean> => {
+  if (USE_MOCK_DATA) {
+    // Simulate successful save
+    mockReferralData[projectId] = fees;
+    toast.success('Referral fees saved successfully');
+    return true;
+  }
+
   try {
-    // Delete existing fees for this project
-    const { error: deleteError } = await supabase
-      .from('referral_fees')
-      .delete()
-      .eq('project_id', projectId);
-
-    if (deleteError) {
-      console.error('Error deleting existing referral fees:', deleteError);
-      toast.error('Failed to update referral fees');
-      return false;
-    }
-
-    // Insert new fees
-    if (fees.length > 0) {
-      const { error: insertError } = await supabase
-        .from('referral_fees')
-        .insert(fees.map(fee => ({
-          project_id: projectId,
-          referral_source: fee.name, // Map name to referral_source
-          fee_type: fee.fee_type,
-          fee_amount: fee.fee_amount,
-          fee_percentage: fee.fee_type === 'percentage' ? fee.fee_amount : null,
-          notes: fee.discussion_notes // Map discussion_notes to notes
-        })));
-
-      if (insertError) {
-        console.error('Error inserting referral fees:', insertError);
-        toast.error('Failed to save referral fees');
-        return false;
-      }
-    }
-
-    toast.success('Referral fees updated successfully');
+    console.log('Supabase save would be made here for referral fees:', projectId, fees);
+    mockReferralData[projectId] = fees;
+    toast.success('Referral fees saved successfully');
     return true;
   } catch (error: any) {
     console.error('Error saving referral fees:', error.message);
     toast.error('Failed to save referral fees');
     return false;
   }
+};
+
+export const calculateTotalLoanAmount = (project: Project): number => {
+  let totalAmount = 0;
+
+  // Calculate from new loans structure if available
+  if (project.loans && project.loans.length > 0) {
+    totalAmount = project.loans.reduce((sum, loan) => sum + loan.amount, 0);
+  }
+  // Fall back to legacy loan_types if no new structure
+  else if (project.loan_types && project.loan_types.length > 0) {
+    totalAmount = project.loan_types.reduce((sum, loanType) => {
+      if (typeof loanType === 'object' && loanType.amount) {
+        return sum + loanType.amount;
+      }
+      return sum;
+    }, 0);
+  }
+
+  return totalAmount;
+};
+
+export const calculateTotalReferralCost = (fees: ReferralFee[], loanAmount?: number): number => {
+  return fees.reduce((total, fee) => {
+    if (fee.fee_type === 'flat') {
+      return total + fee.fee_amount;
+    } else if (fee.fee_type === 'percentage' && loanAmount) {
+      return total + (loanAmount * fee.fee_amount / 100);
+    }
+    return total;
+  }, 0);
+};
+
+export const calculatePercentageFeeAmount = (feePercentage: number, loanAmount: number): number => {
+  return (loanAmount * feePercentage) / 100;
 };

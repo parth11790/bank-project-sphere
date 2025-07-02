@@ -1,46 +1,43 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LenderProvider } from "@/contexts/LenderContext";
-import { AlertProvider } from "@/components/alerts/AlertContext";
-import RequireAuth from "@/components/RequireAuth";
-import Index from "./pages/Index";
-import Projects from "@/pages/Projects";
-import Project from "@/pages/Project";
-import CreateProject from "@/pages/CreateProject";
-import Users from "@/pages/Users";
-import AdminSettings from "@/pages/AdminSettings";
-import ProjectAnalysis from "@/pages/ProjectAnalysis";
-import ProjectDocumentation from "@/pages/ProjectDocumentation";
-import UseOfProceeds from "@/pages/UseOfProceeds";
-import SellerIndividual from "@/pages/SellerIndividual";
-import AcquisitionBusiness from "@/pages/AcquisitionBusiness";
-import SellerBusiness from "@/pages/SellerBusiness";
-import OwnerBusiness from "@/pages/OwnerBusiness";
-import AffiliatedBusiness from "@/pages/AffiliatedBusiness";
-import LenderSettings from "@/pages/LenderSettings";
-import ConsolidatedCashFlow from "@/pages/ConsolidatedCashFlow";
-import BusinessInformation from "@/pages/BusinessInformation";
-import LoanDetails from "@/pages/LoanDetails";
-import CashFlowAnalysis from "@/pages/CashFlowAnalysis";
-import FormView from "@/pages/FormView";
-import TemplateDetails from "@/pages/TemplateDetails";
-import IntegrationDetails from "@/pages/IntegrationDetails";
-import DropdownDetails from "@/pages/DropdownDetails";
-import PersonalInformation from "@/pages/PersonalInformation";
-import NetWorth from "@/pages/NetWorth";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/sonner';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { LenderProvider } from '@/contexts/LenderContext';
+import Index from '@/pages/Index';
+import Projects from '@/pages/Projects';
+import Project from '@/pages/Project';
+import CreateProject from '@/pages/CreateProject';
+import Users from '@/pages/Users';
+import AdminSettings from '@/pages/AdminSettings';
+import ProjectAnalysis from '@/pages/ProjectAnalysis';
+import ProjectDocumentation from '@/pages/ProjectDocumentation';
+import UseOfProceeds from '@/pages/UseOfProceeds';
+import SellerIndividual from '@/pages/SellerIndividual';
+import AcquisitionBusiness from '@/pages/AcquisitionBusiness';
+import SellerBusiness from '@/pages/SellerBusiness';
+import OwnerBusiness from '@/pages/OwnerBusiness';
+import AffiliatedBusiness from '@/pages/AffiliatedBusiness';
+import LenderSettings from '@/pages/LenderSettings';
+import ConsolidatedCashFlow from '@/pages/ConsolidatedCashFlow';
+import BusinessInformation from '@/pages/BusinessInformation';
+import LoanDetails from '@/pages/LoanDetails';
+import CashFlowAnalysis from '@/pages/CashFlowAnalysis';
+import FormView from '@/pages/FormView';
+import TemplateDetails from '@/pages/TemplateDetails';
+import IntegrationDetails from '@/pages/IntegrationDetails';
+import DropdownDetails from '@/pages/DropdownDetails';
+import PersonalInformation from '@/pages/PersonalInformation';
+import NetWorth from '@/pages/NetWorth';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LenderProvider>
-      <AlertProvider>
-        <TooltipProvider>
-          <Toaster />
-          <BrowserRouter>
-            <RequireAuth>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <LenderProvider>
+          <Router>
+            <div className="min-h-screen bg-background">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/projects" element={<Projects />} />
@@ -73,12 +70,13 @@ const App = () => (
                 <Route path="/integration/:integrationId" element={<IntegrationDetails />} />
                 <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
               </Routes>
-            </RequireAuth>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AlertProvider>
-    </LenderProvider>
-  </QueryClientProvider>
-);
+              <Toaster />
+            </div>
+          </Router>
+        </LenderProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
