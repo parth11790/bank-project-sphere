@@ -120,6 +120,7 @@ const FormView: React.FC = () => {
                 calculatedValues={calculatedValues}
                 businessCalculatedValues={businessCalculatedValues}
                 onInputChange={handleInputChange}
+                enableOCR={false}
               />
               
               <FormNotesSection 

@@ -13,6 +13,7 @@ import DebtSummaryForm from './DebtSummaryForm';
 import ProfessionalReferencesForm from './ProfessionalReferencesForm';
 import ProfessionalResumeForm from './ProfessionalResumeForm';
 import NetWorthForm from '@/components/participants/forms/NetWorthForm';
+import EnhancedDocumentUpload from './EnhancedDocumentUpload';
 
 interface FormContentProps {
   formName: string;
@@ -21,6 +22,7 @@ interface FormContentProps {
   calculatedValues: any;
   businessCalculatedValues: any;
   onInputChange: (field: string, value: string) => void;
+  enableOCR?: boolean;
 }
 
 const FormContent: React.FC<FormContentProps> = ({
@@ -29,7 +31,8 @@ const FormContent: React.FC<FormContentProps> = ({
   formValues,
   calculatedValues,
   businessCalculatedValues,
-  onInputChange
+  onInputChange,
+  enableOCR = true
 }) => {
   if (formName === 'Tax Returns') {
     return (

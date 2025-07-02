@@ -7,6 +7,7 @@ import BusinessTaxReturnRow from './business/BusinessTaxReturnRow';
 import BusinessTaxSectionHeader from './business/BusinessTaxSectionHeader';
 import CustomAddBackManager from './business/CustomAddBackManager';
 import { fieldNotes, formFields } from './business/businessTaxFieldConfig';
+import EnhancedDocumentUpload from './EnhancedDocumentUpload';
 
 interface CustomAddBackRow {
   id: string;
@@ -62,6 +63,15 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
       ...prev,
       [year]: file
     }));
+  };
+
+  const handleOCRDataParsed = (year: string) => (data: Record<string, string>) => {
+    // Apply parsed data to form values
+    Object.entries(data).forEach(([fieldName, value]) => {
+      if (fieldName.endsWith(`_${year}`)) {
+        onInputChange(fieldName, value);
+      }
+    });
   };
 
   const handleAddCustomRow = (row: CustomAddBackRow) => {
@@ -178,6 +188,25 @@ const BusinessTaxReturnsForm: React.FC<BusinessTaxReturnsFormProps> = ({
             onAddRow={handleAddCustomRow}
             onRemoveRow={handleRemoveCustomRow}
           />
+
+          {/* Enhanced document upload with OCR for each year */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Document Upload & Auto-Fill</h3>
+            <div className="grid gap-4">
+              {selectedYears.map((year) => (
+                <EnhancedDocumentUpload
+                  key={`enhanced-upload-${year}`}
+                  file={uploadedFiles[year] || null}
+                  setFile={(file) => handleFileUpload(year, file)}
+                  formType="Business Tax Returns"
+                  year={year}
+                  onDataParsed={handleOCRDataParsed(year)}
+                  title={`${year} Tax Return Document`}
+                  description={`Upload ${year} business tax return to auto-fill form fields`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

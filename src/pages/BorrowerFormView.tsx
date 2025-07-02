@@ -160,6 +160,7 @@ const BorrowerFormView: React.FC = () => {
                   calculatedValues={calculatedValues}
                   businessCalculatedValues={businessCalculatedValues}
                   onInputChange={handleInputChange}
+                  enableOCR={true}
                 />
                 
                 <FormNotesSection 

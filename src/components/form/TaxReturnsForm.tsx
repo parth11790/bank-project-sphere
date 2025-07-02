@@ -9,6 +9,7 @@ import ContributionIndicator from './ContributionIndicator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info, Plus, Minus, Upload } from 'lucide-react';
+import EnhancedDocumentUpload from './EnhancedDocumentUpload';
 
 interface TaxReturnsFormProps {
   formValues: Record<string, string>;
@@ -83,6 +84,15 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
       ...prev,
       [year]: file
     }));
+  };
+
+  const handleOCRDataParsed = (year: string) => (data: Record<string, string>) => {
+    // Apply parsed data to form values
+    Object.entries(data).forEach(([fieldName, value]) => {
+      if (fieldName.endsWith(`_${year}`)) {
+        onInputChange(fieldName, value);
+      }
+    });
   };
 
   const getFieldKey = (fieldName: string, year: string) => `${fieldName}_${year}`;
@@ -281,6 +291,25 @@ const TaxReturnsForm: React.FC<TaxReturnsFormProps> = ({
               {renderFormRow('netCashFlow', 'Net Cash Flow ($)', false, false, true)}
             </TableBody>
           </Table>
+
+          {/* Enhanced document upload with OCR for each year */}
+          <div className="space-y-4 mt-8">
+            <h3 className="text-lg font-semibold">Document Upload & Auto-Fill</h3>
+            <div className="grid gap-4">
+              {selectedYears.map((year) => (
+                <EnhancedDocumentUpload
+                  key={`enhanced-upload-${year}`}
+                  file={uploadedFiles[year] || null}
+                  setFile={(file) => handleFileUpload(year, file)}
+                  formType="Tax Returns"
+                  year={year}
+                  onDataParsed={handleOCRDataParsed(year)}
+                  title={`${year} Tax Return Document`}
+                  description={`Upload ${year} individual tax return (1040) to auto-fill form fields`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
