@@ -28,6 +28,12 @@ import IntegrationDetails from '@/pages/IntegrationDetails';
 import DropdownDetails from '@/pages/DropdownDetails';
 import PersonalInformation from '@/pages/PersonalInformation';
 import NetWorth from '@/pages/NetWorth';
+import BorrowerLanding from '@/pages/BorrowerLanding';
+import BorrowerIntake from '@/pages/BorrowerIntake';
+import BorrowerAuth from '@/pages/BorrowerAuth';
+import BorrowerDashboard from '@/pages/BorrowerDashboard';
+import BorrowerFormView from '@/pages/BorrowerFormView';
+import RequireAuth from '@/components/RequireAuth';
 
 const queryClient = new QueryClient();
 
@@ -69,6 +75,22 @@ function App() {
                 <Route path="/template/:templateId" element={<TemplateDetails />} />
                 <Route path="/integration/:integrationId" element={<IntegrationDetails />} />
                 <Route path="/admin-settings/dropdown/:dropdownId" element={<DropdownDetails />} />
+                
+                {/* Borrower Routes */}
+                <Route path="/borrower" element={<BorrowerLanding />} />
+                <Route path="/borrower/intake" element={<BorrowerIntake />} />
+                <Route path="/borrower/login" element={<BorrowerAuth />} />
+                <Route path="/borrower/register" element={<BorrowerAuth />} />
+                <Route path="/borrower/dashboard" element={
+                  <RequireAuth>
+                    <BorrowerDashboard />
+                  </RequireAuth>
+                } />
+                <Route path="/borrower/form/:formId" element={
+                  <RequireAuth>
+                    <BorrowerFormView />
+                  </RequireAuth>
+                } />
               </Routes>
               <Toaster />
             </div>

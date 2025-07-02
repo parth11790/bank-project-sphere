@@ -8,12 +8,14 @@ interface FormHeaderProps {
   formName: string;
   participantName: string;
   onSubmit: () => void;
+  hideSubmitButton?: boolean;
 }
 
 const FormHeader: React.FC<FormHeaderProps> = ({ 
   formName, 
   participantName, 
-  onSubmit 
+  onSubmit,
+  hideSubmitButton = false
 }) => {
   const navigate = useNavigate();
   
@@ -33,10 +35,12 @@ const FormHeader: React.FC<FormHeaderProps> = ({
           <h1 className="text-2xl sm:text-3xl font-bold">{formName}</h1>
           <p className="text-sm text-muted-foreground">Participant: {participantName}</p>
         </div>
-        <Button onClick={onSubmit} size="sm">
-          <Save className="h-4 w-4 mr-2" />
-          Save Form
-        </Button>
+        {!hideSubmitButton && (
+          <Button onClick={onSubmit} size="sm">
+            <Save className="h-4 w-4 mr-2" />
+            Save Form
+          </Button>
+        )}
       </div>
     </div>
   );
