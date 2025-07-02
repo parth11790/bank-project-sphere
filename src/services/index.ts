@@ -1,10 +1,13 @@
-
 // Re-export all service functions for easier imports
 export { getProjects, getProjectById, updateProject } from './projectService';
 export { getProjectParticipants } from './participantService';
 export { getBusinessById, getBusinessFinancials } from './businessService';
 export { getFormTemplates, getDocuments, getAssignedForms, getAssignedDocuments } from './formService';
 export { getReferralFees, saveReferralFees, calculateTotalLoanAmount, calculatePercentageFeeAmount } from './referralService';
+
+// Import functions to use in aliases
+import { getProjectParticipants } from './participantService';
+import { getBusinessFinancials } from './businessService';
 
 // For backward compatibility, also export some aliases
 export const getParticipantsWithDetails = getProjectParticipants;
