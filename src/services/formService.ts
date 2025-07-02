@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { FormTemplate, Document } from '@/types/form';
 
 // Flag to use actual Supabase data
-const USE_MOCK_DATA = false;
+const USE_MOCK_DATA = true;
 
 // Forms and Documents Services
 export const getFormTemplates = async (entityType: string): Promise<FormTemplate[]> => {

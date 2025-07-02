@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { BusinessFinancialData } from '@/types/business';
 
 // Flag to use actual Supabase data
-const USE_MOCK_DATA = false;
+const USE_MOCK_DATA = true;
 
 // Business Services
 export const getBusinessById = async (businessId: string) => {

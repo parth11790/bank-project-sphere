@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Project, isProject } from '@/types/project';
 
 // Flag to use actual Supabase data
-const USE_MOCK_DATA = false;
+const USE_MOCK_DATA = true;
 
 // Project Services
 export const getProjects = async (): Promise<Project[]> => {
