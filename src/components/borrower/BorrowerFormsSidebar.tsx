@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 
 interface FormGroup {
   category: string;
@@ -30,6 +31,9 @@ const BorrowerFormsSidebar: React.FC<BorrowerFormsSidebarProps> = ({
   forms,
   onFormClick
 }) => {
+  const [search, setSearch] = React.useState('');
+  const [status, setStatus] = React.useState<'all' | 'pending' | 'in_progress' | 'completed'>('all');
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
@@ -52,32 +56,67 @@ const BorrowerFormsSidebar: React.FC<BorrowerFormsSidebarProps> = ({
     }
   };
 
+  // Filter forms
+  const filteredForms = forms.filter((f) => {
+    const text = `${f.name} ${f.description}`.toLowerCase();
+    const matchesSearch = text.includes(search.toLowerCase());
+    const matchesStatus = status === 'all' ? true : f.status === status;
+    return matchesSearch && matchesStatus;
+  });
+
   // Group forms by category
   const groupedForms: FormGroup[] = [
     {
       category: 'Business Information',
       icon: Building,
-      forms: forms.filter(f => f.category === 'business')
+      forms: filteredForms.filter(f => f.category === 'business')
     },
     {
       category: 'Personal Information',
       icon: User,
-      forms: forms.filter(f => f.category === 'personal')
+      forms: filteredForms.filter(f => f.category === 'personal')
     },
     {
       category: 'Financial Documents',
       icon: FileText,
-      forms: forms.filter(f => f.category === 'financial')
+      forms: filteredForms.filter(f => f.category === 'financial')
     }
   ];
 
   return (
     <div className="w-80 border-l bg-muted/30 h-full">
-      <div className="p-4 border-b">
+      <div className="p-4 border-b sticky top-0 z-10 bg-background">
         <h3 className="font-semibold text-sm">Required Forms</h3>
         <p className="text-xs text-muted-foreground mt-1">
           Complete all forms to proceed
         </p>
+
+        <div className="mt-3">
+          <Input
+            placeholder="Search forms..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8"
+          />
+        </div>
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          {[
+            { key: 'all', label: 'All' },
+            { key: 'pending', label: 'Pending' },
+            { key: 'in_progress', label: 'In Progress' },
+            { key: 'completed', label: 'Completed' },
+          ].map((opt) => (
+            <Button
+              key={opt.key}
+              size="sm"
+              variant={status === (opt.key as any) ? 'default' : 'outline'}
+              onClick={() => setStatus(opt.key as any)}
+            >
+              {opt.label}
+            </Button>
+          ))}
+        </div>
       </div>
       
       <ScrollArea className="h-[calc(100vh-8rem)]">
@@ -86,7 +125,12 @@ const BorrowerFormsSidebar: React.FC<BorrowerFormsSidebarProps> = ({
             <div key={group.category}>
               <div className="flex items-center gap-2 mb-3">
                 <group.icon className="h-4 w-4 text-muted-foreground" />
-                <h4 className="font-medium text-sm">{group.category}</h4>
+                <h4 className="font-medium text-sm">
+                  {group.category}
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    {group.forms.filter(f => f.status === 'completed').length}/{group.forms.length}
+                  </span>
+                </h4>
               </div>
               
               <div className="space-y-2">

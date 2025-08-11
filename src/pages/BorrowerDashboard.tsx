@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import BorrowerFormsSidebar from '@/components/borrower/BorrowerFormsSidebar';
+import { Helmet } from 'react-helmet-async';
 
 interface AssignedForm {
   id: string;
@@ -128,6 +129,11 @@ const BorrowerDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <title>Borrower Dashboard | LendFlow</title>
+        <meta name="description" content="Track and complete your loan application forms in your LendFlow dashboard." />
+        <link rel="canonical" href="/borrower" />
+      </Helmet>
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shrink-0">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
