@@ -102,6 +102,7 @@ const ProjectDocumentation: React.FC = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate(`/project/${projectId}`)}
+                onMouseEnter={() => import('@/pages/Project')}
                 className="flex items-center gap-1"
               >
                 <ChevronLeft className="h-4 w-4" />

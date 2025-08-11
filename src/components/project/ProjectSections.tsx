@@ -8,6 +8,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { Project } from '@/types/project';
+import { prefetchProjectAnalysis, prefetchProjectDocumentation } from '@/utils/prefetch';
 
 interface ProjectSectionsProps {
   project: Project;
@@ -68,6 +69,10 @@ export const ProjectSections: React.FC<ProjectSectionsProps> = ({
             <CardContent className="pt-0">
               <Button 
                 onClick={section.action}
+                onMouseEnter={() => {
+                  if (section.title === 'Analysis') prefetchProjectAnalysis();
+                  if (section.title === 'Generate Documentation') prefetchProjectDocumentation();
+                }}
                 variant="outline" 
                 className="w-full"
                 size="sm"
