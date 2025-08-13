@@ -190,6 +190,7 @@ const AssignmentDialog: React.FC<AssignmentDialogProps> = ({
             Cancel
           </Button>
           <Button 
+            type="button"
             onClick={handleSubmit} 
             disabled={selectedItems.length === 0}
           >
