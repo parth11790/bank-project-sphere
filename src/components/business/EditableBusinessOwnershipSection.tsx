@@ -50,6 +50,23 @@ const EditableBusinessOwnershipSection: React.FC<EditableBusinessOwnershipSectio
     setIsEditing(false);
   };
 
+  const handleAddOwner = () => {
+    const newOwner = {
+      owner_id: `owner_${Date.now()}`,
+      name: '',
+      email: '',
+      type: 'individual',
+      role: '',
+      ownership_percentage: 0,
+      phone: '',
+      address: null,
+      affiliated_businesses: []
+    };
+    setEditedOwners(prev => [...prev, newOwner]);
+    setIsEditing(true);
+    toast.success('New owner added. Please fill in the details.');
+  };
+
   const updateOwnerField = (ownerId: string, field: string, value: any) => {
     setEditedOwners(prev => 
       prev.map(owner => 
@@ -87,7 +104,7 @@ const EditableBusinessOwnershipSection: React.FC<EditableBusinessOwnershipSectio
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={handleAddOwner}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Owner
                 </Button>
